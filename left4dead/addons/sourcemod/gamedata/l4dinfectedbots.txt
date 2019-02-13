@@ -1,0 +1,71 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Signatures"
+		{
+			"FlashlightTurnOn"
+			/*	CCSPlayer::FlashlightTurnOn(bool)
+			*	A1 ? ? ? ? 83 EC ? 83 78 ? ? 56 8B F1 0F
+			*/
+			
+			{
+				"library"	"server"
+				"windows"	"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x2A\x83\x78\x2A\x2A\x56\x8B\xF1\x0F\x8E\x2A\x2A\x2A\x2A\x8B\x16"
+				"linux"		"@_ZN9CCSPlayer16FlashlightTurnOnEb"
+			}
+			
+			"TakeOverBot"
+			{
+				"library"	"server"
+				"linux"	"@_ZN13CTerrorPlayer11TakeOverBotEb"
+				"windows" "\x81\x2A\x2A\x2A\x2A\x2A\x53\x55\x56\x57\x8D\x2A\x2A\x2A\x8B\xF9\x33\xDB\x50"
+			}
+			
+			"SetHumanSpec"
+			{
+				"library"	"server"
+				"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
+				"windows" "\x53\x8B\xD9\x83\x2A\x2A\x2A\x2A\x2A\x2A\x56\x8D\x2A\x2A\x2A\x2A\x2A\x7E\x07\x5E\x32\xC0\x5B\xC2\x04\x00"
+			}
+		}
+	}
+	
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"ZombieAbortControl"
+			{
+				"library"	"server"
+				"windows"	"\x83\xEC\x30\x56\x8B\xF1\xE8****\x83\xF8\x03\x0F\x85****\x8B\x06" //found by V10
+				"linux"		"@_ZN13CTerrorPlayer24PlayerZombieAbortControlEv"
+			}
+			
+			"FlashlightTurnOn"
+			/*	CCSPlayer::FlashlightTurnOn(bool)
+			*	A1 ? ? ? ? 83 EC ? 83 78 ? ? 56 8B F1 0F 8E ? ? ? ? 8B 16
+			*/
+			
+			{
+				"library"	"server"
+				"windows"	"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x2A\x83\x78\x2A\x2A\x56\x8B\xF1\x0F\x8E\x2A\x2A\x2A\x2A\x8B\x16"
+				"linux"		"@_ZN9CCSPlayer16FlashlightTurnOnEb"
+			}
+			
+			"TakeOverBot"
+			{
+				"library"    "server"
+				"linux"    "@_ZN13CTerrorPlayer11TakeOverBotEb"
+				"windows" "\x81*****\x53\x55\x56\x8D***\x57\x8B\xF1\x33\xDB"
+			}
+			
+			"SetHumanSpec"
+			{
+				"library"    "server"
+				"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
+				"windows" "\x53\x56\x8B\xF1\x33\xDB\x39*******\x5E\x32\xC0\x5B"
+			}
+		}
+	}
+}

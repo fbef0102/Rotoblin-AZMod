@@ -1,0 +1,64 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins\optional [AI_HardSI.smx]
+//智能AI
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//修改提示
+
+[l4d_versus_spechud.smx]
+//修改特感方分數提示不正確
+
+[rotoblin.smx]
+//不再提示roto過期
+
+[l4d_NoRescueFirstTank.smx]
+//修正rescue first tank復活時特感玩家會有"誰當坦克"提示介面
+
+[votes3.smx]
+//新增音效
+
+[comp_loader.smx]
+//新增音效
+
+[l4d_witchglow.smx]
+//簡化
+
+[l4d_godframes_and_hittable_control.smx]
+//加強判斷last life
+
+[l4d_witchspawnfix_whentank.smx]
+[l4d_versus_same_UnprohibitBosses.smx]
+//修正WP亂回來之後沒有生坦克
+
+[l4d_tank_props.sp]
+//解決看不到車的問題,給坦克打過的車子加上具有微透明顏色的殘影模型, 殘影模型會貼著hitbox實際位置, 所有人都能看到
+
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_multiwitch.smx]
+//Sets glows on witches when survivors are far away
+//Heals the survivor when they kill a witch
+
+[l4dinfectedbots.smx]
+//移除插件自帶的特感強化指令
+
+	       ***cfg***
+-left4dead\cfg\Reloadables [server_custom_convars.cfg]
+//uzi ammo: 800 (default: 480, last time: 650)
+//l4d2_tank_prop_glow_color 255 0 0 (R G B)
+
+-left4dead\addons\stripper\maps [l4d_vs_smalltown05_houseboat.cfg]
+//add rock to fix stuck spot
+
+-left4dead\cfg (All)
+//multi Hunters和Witch Party模式新增智能AI
+
+	       ***txt***
+-left4dead [pure_server_whitelist.txt]
+//調回原本樣子 since it's broken in l4d1 server, value never wants to fix
+
+

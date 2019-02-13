@@ -1,0 +1,14 @@
+"Games"
+{
+     "#default"
+     {
+          "Offsets"
+          {
+               "WindowsOrLinux"
+               {
+                    "windows" "1"   //Windows
+                    "linux"   "2"   //Linux
+                }
+           }
+     }
+}

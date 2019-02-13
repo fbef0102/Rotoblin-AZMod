@@ -1,0 +1,63 @@
+// Advertisements 2.0
+// by Tsunami
+//
+// Types
+// -----
+// center: Center message
+// chat: Chat message
+// hint: Hint message
+// menu: Menu message
+// top: Top message
+//
+// Flags (optional)
+// -----
+// Accepts flags of admins that will not see the advertisement.
+// When omitted everyone will see the advertisement.
+// When "flags"			"" only admins will see the advertisement.
+// "center"		"www.domain55.com"
+// "hint"			"contact@domain55.com"
+// "menu"			"Next map is {sm_nextmap} in {timeleft} minutes."
+// "chat"			"{green}Current {lightgreen}Map: {default}{currentmap}"
+"Advertisements"
+{
+    "1"
+    {
+         "chat"			"{lightgreen}!votes: Vote Menu、!load: Start Match、!info: Information"
+    }
+    "2"
+    {
+		"chat"			"{lightgreen}cl_interp 0; cl_interp_ratio 0"
+    }
+	"3"
+    {
+        "chat"			"{lightgreen}!sur: Survivor, !inf:Infected, !s:Spectators, !r: Ready"
+    }
+	"4"
+    {
+        "chat"			"{lightgreen}advertisements in addons\sourcemod\configs"
+    }
+	"5"
+    {
+        "chat"			"{lightgreen}Roto-AZmod developer: Harry、乘風"
+    }
+	"6"
+    {
+        "chat"			"{lightgreen}Based on L4D2 acemod、L4D2 zonemod、L4D1 roto2"
+    }
+	"7"
+    {
+        "chat"			"{lightgreen}!load: 5v5、classic、multi Hunters、Witch Party"
+    }
+	"8"
+    {
+        "chat"			"{lightgreen}!votes: kick、alltalk、change map、restartmap"
+    }
+	"9"
+    {
+        "chat"			"{lightgreen}Pass Pill With R button"
+    }
+	"10"
+    {
+        "chat"			"{lightgreen}Date: {date}, Time: {time}"
+    }
+}

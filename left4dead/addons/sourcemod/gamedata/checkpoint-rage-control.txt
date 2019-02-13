@@ -1,0 +1,78 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Addresses"
+		{
+			"SaferoomCheck_Sig"
+			{
+				"linux"
+				{
+					"signature" "CTerrorPlayer::UpdateZombieFrustration"
+				}
+				"windows"
+				{
+					"signature" "CTerrorPlayer::UpdateZombieFrustration"
+				}
+			}
+		}
+		"Offsets"
+		{
+			/* Offset into CTerrorPlayer::UpdateZombieFrustration */
+			"UpdateZombieFrustration_SaferoomCheck"
+			{
+				"windows"	"324"   /* call sub_102581C0 (2018/7/2) */
+				"linux"		"436"  /* call _ZNK9CDirector29IsAnySurvivorInExitCheckpointEv sub_8271F0 (2018/7/2)*/
+			}
+		}
+		
+		"Signatures"
+		{
+			"CTerrorPlayer::UpdateZombieFrustration"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer23UpdateZombieFrustrationEv"
+				"windows"	"\x55\x8B\xEC\xA1\x2A\x2A\x2A\x2A\x83\xEC\x08\x83\x78\x30\x00\x56\x8B\xF1\x0F\x84\x2A\x2A\x2A\x2A\xE8"
+						/* 55 8B EC A1 ? ? ? ? 83 EC 08 83 78 30 00 56 8B F1 0F 84 ? ? ? ? E8 */
+			}
+		}
+	}
+  "left4dead"
+	{
+		"Addresses"
+		{
+			"SaferoomCheck_Sig"
+			{
+				"linux"
+				{
+					"signature" "CTerrorPlayer::UpdateZombieFrustration"
+				}
+				"windows"
+				{
+					"signature" "CTerrorPlayer::UpdateZombieFrustration"
+				}
+			}
+		}
+		"Offsets"
+		{
+			/* Offset into CTerrorPlayer::UpdateZombieFrustration */
+			/* string: tank_frustrated*/
+			"UpdateZombieFrustration_SaferoomCheck"
+			{
+				"windows"	"310"   /* call sub_10223D10 (v1.0.3.7 2019/1/29) */
+				"linux"		"475"  /* call _ZNK9CDirector29IsAnySurvivorInExitCheckpointEv (v1.0.3.7 2019/1/29)*/
+			}
+		}
+		
+		"Signatures"
+		{
+			"CTerrorPlayer::UpdateZombieFrustration"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer23UpdateZombieFrustrationEv"
+				"windows"	"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x08\x53\x55\x33\xDB"
+						/*A1 ? ? ? ? 83 EC 08 53 55 33 DB*/
+			}
+		}
+	}
+}

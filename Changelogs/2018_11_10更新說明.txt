@@ -1,0 +1,15 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_tank_count]
+//提示簡化
+[l4d_versus_spechud]
+//提示簡化
+[sm_downloader]
+//語法修正
+
+-新增
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[ratemonitor]
+//顯示玩家的 Cmdrate/Updaterate/Rate (!rates)

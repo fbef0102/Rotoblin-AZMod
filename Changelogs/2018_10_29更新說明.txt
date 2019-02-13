@@ -1,0 +1,9 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[hunter_growl_sound_fix]
+//加強判斷
+
+[huntercrouchsound]
+[left4dead\cfg\sourcemod\sm_plugin_votemanager2.cfg]
+//加強判斷

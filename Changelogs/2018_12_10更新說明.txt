@@ -1,0 +1,29 @@
+﻿-新增
+left4dead\addons\sourcemod\plugins
+[l4d2_smg_reload_tweak.smx]
+//smg裝彈快速動畫
+
+-刪除
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_smg_reload_faster]
+//有更好的插件
+
+-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+\rotoblin_edit
+[rotoblin]
+//加強裝彈時pick up檢查
+
+left4dead\cfg
+[rotoblin_pub_map.cfg]
+//add sm_cvar
+
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//add sm_cvar
+//sm_cvar l4d2_reload_speed_uzi 2.23
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//sm_cvar l4d2_reload_speed_uzi 1.74

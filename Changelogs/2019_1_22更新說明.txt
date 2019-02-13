@@ -1,0 +1,22 @@
+﻿------------------新增------------------
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_multiwitch.smx]
+//戰役模式修正
+
+[l4dinfectedbots.smx]
+//優化
+
+[AI_HardSI.smx]
+//新增smart 坦克可丟石頭指令
+
+	       ***cfg***
+-left4dead\cfg [others]
+//multi hunters and witch party
+//!ht !timer 永久生效
+
+

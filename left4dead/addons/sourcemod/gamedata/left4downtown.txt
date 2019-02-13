@@ -1,0 +1,357 @@
+"Games"
+{
+	"#default"
+	{
+
+		"#supported"
+		{
+			"game"		"left4dead"
+		}
+
+		"Offsets"
+		{
+			/* Offset into SetNextMission or SelectModelByPopulation */
+			"TheDirector"
+			{
+				"windows"	"2"
+			}
+			
+			/* Offset into MPGameModeChanged::ConVar */
+			"IVEngineServer"
+			{
+				"windows" "39"
+			}
+			
+			/* Virtual offset for IVEngineServer::IsReserved() */
+			"IsReserved"
+			{
+				"windows" "131"
+				"linux"   "131"
+			}
+			
+			/* Offset from ConnectClientLobbyCheck
+		       to cmp with max players check
+			   
+			   string #Valve_Reject_Server_Full
+			 */
+			"ValveRejectServerFullFirst"
+			{
+				"windows"	"31"  /* cmp eax, [esi+180h] -> cmp eax, imm32 */ 
+				"linux"         "34"  /* cmp edx, [ebp+178h] -> cmp edx, imm32 */
+			}
+			
+			"ClearTeamScore_A"
+			{
+			    /* Into Director::OnServerShutdown()
+				    mov [esi+70Ch], eax
+			      */
+				"windows" "60"
+				
+				/* Into Director::ClearTeamScores(bool)
+				   mov dword ptr [esi+708h], 0
+				 */
+				"linux" "58"
+			}
+
+			"ClearTeamScore_B"
+			{
+			    /* Into Director::OnServerShutdown()
+				    mov [esi+710h], eax
+			      */
+				"windows" "69"
+				/* Into Director::ClearTeamScores(bool)
+				   mov dword ptr [esi+70Ch], 0
+				 */
+				"linux" "68"
+			}
+		}
+	}
+	
+	"left4dead"
+	{
+		"Signatures"
+		{
+			/* 
+			 * CTerrorGameRules::GetTeamScore(int,bool)
+			 */
+			"GetTeamScore"
+			{
+				"library"	"server"
+				"linux"	"\x55\x89\x2A\x8B\x2A\x2A\x8B\x2A\x2A\x80\x2A\x2A\x2A\x75\x2A\x8B"
+				"windows" "\x80\x7C\x24\x08\x00**\x8B\x44\x24\x04\x8B\x84\x81\x50\x03\x00\x00\xC2\x08\x00"
+			}
+			
+			/*
+			 * CTerrorGameRules::ClearTeamScores()  // Director::ClearTeamScores(bool) is inlined on Windows :( 
+			 */
+			"ClearTeamScores"
+			{
+				"library"	"server"
+				/*"linux" "\x55\x57\x56\x53\x83\xEC\x4C\xB9\x04\x00\x00\x00\xE8\x00\x00\x00\x00\x5B\x81\xC3\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x8B\x2A\x2A\x2A\xC7\x2A\x2A\x2A\x00\x00\x00\x00\x81\xC6\x2A\x2A\x2A\x2A\x89\x2A\x2A\x2A\x89\xC7\xF3\xA6\x74\x13"
+				*/	/* 55 57 56 53 83 EC 4C B9 04 00 00 00 E8 00 00 00 00 5B 81 C3 ? ? ? ? 8D ? ? ? 8B ? ? ? C7 ? ? ? 00 00 00 00 81 C6 ? ? ? ? 89 ? ? ? 89 C7 F3 A6 74 13 */
+				"linux" "@_ZN16CTerrorGameRules15ClearTeamScoresEv"
+				"windows" "\x51\x53\x55\x56\x57\x8B\xF9\x33\xF6\x8D\x9F\x2A\x2A\x2A\x2A\x8D\xAF\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x50\x56"
+					/* 51 53 55 56 57 8B F9 33 F6 8D 9F ? ? ? ? 8D AF ? ? ? ? 8D ? ? ? 50 56 */
+			}
+			
+			/*
+			 * Director::ClearTeamScores(bool clearCampaignScores)  // inlined on Windows :( 
+			 */
+			"ClearTeamScores_Director"
+			{
+				"library"	"server"
+				"linux" "@_ZN8Director15ClearTeamScoresEb"
+			}
+			
+			/*
+			 * CTerrorGameRules::SetCampaignScores(int,int)
+			 */
+			"SetCampaignScores" 
+			{
+				"library"	"server"
+				"linux"		"@_ZN16CTerrorGameRules17SetCampaignScoresEii"
+				"windows" "\x56\x8D\x44\x24\x08\x8D\xB1\x54\x03\x00\x00\x50\x6A\x00\x8B\xCE"
+			}
+			
+			/*
+			 * CBaseServer::ClearReservationStatus()
+			 */
+			"ClearReservationStatus" 
+			{
+				"library"	"engine"
+				"linux"		"@_ZN11CBaseServer22ClearReservationStatusEv"
+				"windows" "\x8B\xC1\x8B\x48\x2A\x56\x8D\x71\x2A\x3B\x70\x2A\xBA\x01\x00\x00\x00\x7E\x03\x88\x50"
+				/* 8B C1 8B 48 ? 56 8D 71 ? 3B 70 ? BA 01 00 00 00 7E 03 88 50 ? */
+			}
+			
+			/*
+			 * CBaseServer::SetReservationCookie(uint64_t, char*, va_list)
+			 */
+			"SetReservationCookie" 
+			{
+				"library"	"engine"
+				"linux"		"@_ZN11CBaseServer20SetReservationCookieEyPKcz"
+				"windows" "\x81\xEC\x2A\x2A\x2A\x2A\x55\x8B\xAC\x24\x2A\x2A\x2A\x2A\x56\x8B\xB4\x24\x2A\x2A\x2A\x2A\x57\x8B\xBC\x24\x2A\x2A\x2A\x2A\x3B\xBE\x2A\x2A\x2A\x2A\x75\x08\x3B\xAE\x2A\x2A\x2A\x2A\x74\x63"
+				/* 81 EC ? ? ? ? 55 8B AC 24 ? ? ? ? 56 8B B4 24 ? ? ? ? 57 8B BC 24 ? ? ? ? 3B BE ? ? ? ? 75 08 3B AE ? ? ? ? 74 63 */
+			}
+			
+			/*
+			 * CTerrorPlayer::TakeOverBot
+			 */
+			"TakeOverBot"
+			{
+				"library"	"server"
+				"linux"	"@_ZN13CTerrorPlayer11TakeOverBotEb"
+				"windows" "\x81\x2A\x2A\x2A\x2A\x2A\x53\x55\x56\x57\x8D\x2A\x2A\x2A\x8B\xF9\x33\xDB\x50"
+			}
+			
+			/* 
+			 * SurvivorBot::SetHumanSpectator(CTerrorPlayer*) 
+			 */
+			"SetHumanSpec"
+			{
+				"library"	"server"
+				"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
+				"windows" "\x53\x8B\xD9\x83\x2A\x2A\x2A\x2A\x2A\x2A\x56\x8D\x2A\x2A\x2A\x2A\x2A\x7E\x07\x5E\x32\xC0\x5B\xC2\x04\x00"
+			}
+			
+			/* Used solely to get the offset for TheDirector */
+			"SetNextMission"
+			{
+				"library"	"server"
+				"windows"	"\x83\x3D\x2A\x2A\x2A\x2A\x00\x0F\x2A\x2A\x2A\x2A\x2A\x53\x56\x57"
+				/* 83 3D ? ? ? ? 00 0F ? ? ? ? ? 53 56 57 */
+			}
+			
+			/* Alternative way to get TheDirector offset */
+			"SelectModelByPopulation"
+			{
+				"library"	"server"
+				"windows"	"\x8B\x0D\x2A\x2A\x2A\x2A\x81\xEC\x2A\x2A\x00\x00\x56\x57\xE8\x2A\x2A\x2A\x2A\x8B\xF8\x85\xFF"
+				/* 8B 0D ? ? ? ? 81 EC ? ? 0 0 56 57 E8 ? ? ? ? 8B F8 85 FF */
+			}
+			
+			/* Get the engine offset on Windows 
+				MPGameModeChanged::ConVar(int)
+			 */
+			"MPGameModeChangedConVar"
+			{
+				"library" "server"
+				"linux" "_ZL17MPGameModeChangedP7IConVarPKcf"
+				"windows" "\x8B\x44\x24\x04\x83\xEC\x08\x56\x57\x50\x8D\x4C\x24\x0C\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x8B\x2A\x2A\x56\xB9\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x11\x8B"
+				/* 8B 44 24 04 83 EC 08 56 57 50 8D 4C 24 0C E8 ? ? ? ? 8B ? ? ? 8B ? ? 56 B9 ? ? ? ? E8 ? ? ? ? 8B 0D ? ? ? ? 8B 11 8B */
+			}
+
+			/* Find the Director/ZombieManager singleton classes */
+			
+			"TheDirector"
+			{
+				"library"	"server"
+				"linux"		"@TheDirector"
+			}
+			
+			/* Currently unsupported */
+			"TheZombieManager"
+			{
+				"library"	"server"
+				"linux"		"@TheDirector"
+			}
+			
+			"IVEngineServer"
+			{
+				"library"	"server"
+				"linux"		"@engine"
+			}
+			
+			/*
+			 * Director::RestartScenario
+			 *    inlined into some other functions on Windows
+			 */
+			"RestartScenario"
+			{
+				"library"	"server"
+				"linux"	"@_ZN8Director15RestartScenarioEv"
+				"windows" "\x83\xEC\x28\x53\x56\x8B\xF1\x33\xDB\x38\x9E\x2A\x2A\x00\x00"
+				/* 83 EC 28 53 56 8B F1 33 DB 38 9E ? ? 00 00 */
+			}
+			
+			/*
+			 * Director::RestartScenarioFromVote(const char*)
+			 */
+			"RestartScenarioFromVote"
+			{
+				"library"	"server"
+				"linux"	"@_ZN8Director23RestartScenarioFromVoteEPKc"
+				"windows" "\x8B\x44\x24\x04\x85\xC0\x56\x8B\xF1\x74\x12\x6A\x20\x50\x8D\x86\x2A\x2A\x00\x00\x50"
+				          /* 8B  44  24  04  85  C0  56  8B  F1  74  12  6A  20  50  8D  86  ?   ?   00  00  50 */
+			}
+			
+			/*
+			* ZombieManager::SpawnTank(Vector  const&, QAngle  const&)
+			*/
+			"SpawnTank"
+			{ 
+				"library" "server"
+				"linux" "@_ZN13ZombieManager9SpawnTankERK6VectorRK6QAngle"
+				"windows" "\x56\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\xF0\x83\xC4\x04\x85\xF6\x75\x04\x5E\xC2\x08\x00\x8B\x06\x8B\x90\x2A\x2A\x2A\x2A\x6A\x00\x6A\x00\x6A\x03\x8B\xCE\xFF\xD2\x6A\x00\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x50\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x51\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x89\x2A\x2A\x2A\x2A\x2A\x8B\x16\x8B\x42\x2A\x8B\xCE\xFF\xD0\x6A\x01\x6A\x05"
+					/* 56 68 ?  ?  ?  ?  E8 ?   ?  ?  ?  8B F0 83 C4 04 85 F6 75 04 5E C2 08 00 8B 06 8B 90 ?  ?  ?  ?  6A 00 6A 00 6A 03 8B CE FF D2 6A 00 8B CE E8 ? ? ? ? 8B ? ? ? 50 8B CE E8 ? ? ? ? 8B ? ? ? 51 8B CE E8 ? ? ? ? 89 ? ? ? ? ? 8B 16 8B 42 ?  8B CE FF D0 6A 01 6A 05 */
+			}
+			
+			/*
+			* ZombieManager::SpawnWitch(Vector  const&, QAngle  const&)
+			*/
+			"SpawnWitch"
+			{ 
+				"library" "server"
+				"linux" "@_ZN13ZombieManager10SpawnWitchERK6VectorRK6QAngle"
+				"windows" "\x56\x6A\x01\x6A\xFF\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\xF0\x83\xC4\x2A\x85\xF6\x75\x04\x5E\xC2\x08\x00"
+					/* 56 6A 01 6A FF 68 ? ? ? ? E8 ? ? ? ? 8B F0 83 C4 ? 85 F6 75 04 5E C2 08 00 */
+			}
+			
+			/*
+			 * bool IVEngineServer::IsReserved() on Linux (virtual)
+			 * bool CBaseServer::IsReserved() on Windows, appears to be inlined on Linux
+			 * 
+			 */
+			"IsReserved"
+			{
+				"library" "engine"
+				"linux" "@_ZN14IVEngineServer10IsReservedEv"
+				"windows" "\x8B\x81\x2A\x2A\x2A\x2A\x0B\x81\x2A\x2A\x2A\x2A\x74\x06\xB8\x01\x00\x00\x00\xC3\x33\xC0\xC3"
+				/* why does the windows one get called statically at all? who knows */
+				/* 8B 81 ? ? ? ? 0B 81 ? ? ? ? 74 06 B8 01 00 00 00 C3 33 C0 C3 */
+			}
+			
+			/*
+			* Director::OnMissionStart()
+			*/
+			"OnMissionStart"
+			{
+				"library" "server"
+				"linux" "@_ZN8Director14OnMissionStartEv"
+			}
+			
+			/*
+			 * Director::OnServerShutdown()
+			 *
+			 * used to get the campaign score offsets on Windows
+			 */
+			"OnServerShutdown"
+			{
+			   "library" "server"
+			   "linux" "@_ZN8Director16OnServerShutdownEv"
+			   "windows" "\x51\x53\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x33\xDB\x89\x9E\x2A\x2A\x2A\x2A\x88\x9E\x2A\x2A\x2A\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x3B\xCB\x88\x1D\x2A\x2A\x2A\x2A\x88\x1D"
+			   /* 51 53 56 8B F1 E8 ? ? ? ? E8 ? ? ? ? 33 DB 89 9E ? ? ? ? 88 9E ? ? ? ? 8B 0D ? ? ? ? 3B CB 88 1D ? ? ? ? 88 1D ? ? ? ?  */
+			}
+			
+			/*
+			 * CGameServer::SetMaxClients(int)
+			 *
+			 * will use in future to change max clients
+			 */
+			"SetMaxClients"
+			{
+			   "library" "server"
+			   "linux" "@_ZN11CGameServer13SetMaxClientsEi"
+			}
+			
+			/*
+			* CBaseServer::GetMaxHumanPlayers(void)
+			* 
+			* This method doesn't appear to be useful :(
+			*/
+			/*
+			"GetMaxHumanPlayers"
+			{
+				"library" "engine"
+				"linux" "@_ZNK11CBaseServer18GetMaxHumanPlayersEv"
+				"windows" "\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x74\x0C\x8B\x01\x8B\x50\x2A\xFF\xD2\x83\xF8\xFF\x75\x0A\x8B\x06\x8B\x50\x2A\x8B\xCE\x5E\xFF\xE2"
+					/* 56 8B F1 8B 0D ?  ?  ?  ?  85 C9 74 0C 8B 01 8B 50 ?  FF D2 83 F8 FF 75 0A 8B 06 8B 50 ?  8B CE 5E FF E2 */
+			/*}*/
+			
+			/*
+			* CTerrorGameRules::GetMaxHumanPlayers(void)
+			* We just override the return value to our own
+			* 
+			* This method is called for max players when viewing server info
+			*/
+			"GetMaxHumanPlayers"
+			{
+				"library" "server"
+				"linux" "@_ZNK16CTerrorGameRules18GetMaxHumanPlayersEv"
+				"windows" "\xF7\x05\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x74\x07\xB8\x2A\x2A\x2A\x2A\xEB\x11\xA1\x2A\x2A\x2A\x2A\x8B\x40\x2A\x85\xC0\x75\x05\xB8\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\x50\xE8\x2A\x2A\x2A\x2A\x83\x2A\x2A\xF7\xD8\x1B\xC0\x83\xE0\xFC\x83\xC0\x08\xC3"
+					/* F7 05 ?  ?  ?  ?  ?  ?  ?  ?  74 07 B8 ?  ?  ?  ?  EB 11 A1 ?  ?  ?  ?   8B 40 ?  85 C0 75 05 B8 ?  ?  ?  ?  68 ?  ?  ?  ?  50 E8 ?  ?  ?  ?  83 ?  ?  F7 D8 1B C0 83 E0 FC 83 C0 08 C3 */
+			}
+			
+			/* Not an actual function,
+			   this is inside CBaseServer::ConnectClient (a jz instruction)
+			   
+			   use it to remove skippable code when sv_allow_lobby_connect 0
+			   */
+			"ConnectClientLobbyCheck"
+			{
+				"library"	"engine"
+				"linux" "\x74\x2A\x8B\x2A\x2A\x8B\x2A\x2A\x89\x2a\x2A\x8B\x2A\x89"
+					/* 74 2F 8B ?  ?  ?  ?  ?  ?  8B 7D ?  8B  71 ?  89 ?  ?  FF ?  ?  89 C7 8B 45 ?  89 ?  ?  FF 50 ?  8D 14 37 29 C2 3B 95 ?  ?  ?  ?  */
+				"windows" "\x74\x2A\x8B\x54\x2A\x2A\x8B\x06\x8B\x7A\x2A\x8B\x50\x2A\x8B\xCE\xFF\xD2\x2B\xF8\x8B\x06\x8B\x50\x2A\x8B\xCE\xFF\xD2\x03\xC7"
+					/* 74 ?  8B 54 ?  ?  8B 06 8B 7A ?  8B 50 ?  8B CE FF D2 2B F8 8B 06 8B 50 ?  8B CE FF D2 03 C7 */			
+			}
+			
+			
+			/* Not an actual function,
+			   This rejects players when there are all full human players
+			   
+			   string "Human player limit reached (%d/%d)"
+			   */
+			"HumanPlayerLimitReached"
+			{
+				"library"	"server"
+				"linux" "\x7E\x2A\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B"
+						   /* 7E 3D 8B 7C 24 ?  8B 6C 24 ?  8B 74 24 ?  8B 44 24 ?  8B 54 24 ?  8B 4C 24 ?  89 7C 24 ?  89 6C 24 ?  89 74 24 ?  89 44 24 ?  89 54 24  ? */
+				"windows" "\x7C\x2A\x8B\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x50\x57\x68\x2A\x2A\x2A\x2A\x51\x52\xE8\x2A\x2A\x2A\x2A\x83\xC4\x2A\x5F\x5E\x32\xC0\x5B"
+				          /* 7C ?  8B ?  ?  ?  8B  ? ?  ?  50 57 68 ?  ?  ?  ? 51 52 E8 ? ?  ? ? 83 C4 ? 5F 5E 32 C0 5B */			
+			}
+		}	
+	}
+}
+

@@ -1,0 +1,133 @@
+"MatchModes"
+{
+
+// You can delete any section. Or add your own, for example:
+//
+//	"Scavenge"
+//	{
+//		"scavogl"				//config's directory
+//		{
+//			"name" "Scavogl"	//that appears in the menu
+//		}
+//		//.... (list of other configs)
+//	}
+
+	"5v5"
+	{
+		"rotoblin_hardcore_5v5" //執行的cfg檔案名子
+		{
+			"name" "5v5 " //大家投票看到的字樣
+		}
+		"rotoblin_hunters_5v5"
+		{
+			"name" "5v5 Hunters Only"
+		}
+		"rotoblin_nob_5v5"
+		{
+			"name" "5v5 No Boomer"
+		}
+	}
+	"4v4"
+	{
+		"rotoblin_hardcore_4v4" //執行的cfg檔案名子
+		{
+			"name" "4v4 " //大家投票看到的字樣
+		}
+		"rotoblin_hunters_4v4"
+		{
+			"name" "4v4 Hunters Only"
+		}
+		"rotoblin_nob_4v4"
+		{
+			"name" "4v4 No Boomer"
+		}
+		"rotoblin_hardcore_4v4_classic"
+		{
+			"name" "4v4 Classic"
+		}
+	}
+	"3v3"
+	{
+		"rotoblin_hardcore_3v3" //執行的cfg檔案名子
+		{
+			"name" "3v3 " //大家投票看到的字樣
+		}
+		"rotoblin_hunters_3v3"
+		{
+			"name" "3v3 Hunters Only"
+		}
+		"rotoblin_nob_3v3"
+		{
+			"name" "3v3 No Boomer"
+		}
+	}
+	"2v2"
+	{
+		"rotoblin_hardcore_2v2" //執行的cfg檔案名子
+		{
+			"name" "2v2 " //大家投票看到的字樣
+		}
+		"rotoblin_hunters_2v2"
+		{
+			"name" "2v2 Hunters Only"
+		}
+		"rotoblin_nob_2v2"
+		{
+			"name" "2v2 No Boomer"
+		}
+	}
+	"1v1"
+	{
+		"rotoblin_hunters_1v1" //執行的cfg檔案名子
+		{
+			"name" "1v1 " //大家投票看到的字樣
+		}
+	}
+	"Special"
+	{
+		"rotoblin_witch_party" //執行的cfg檔案名子
+		{
+			"name" "Witch Party" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_1v2" //執行的cfg檔案名子
+		{
+			"name" "1v2 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_1v3" //執行的cfg檔案名子
+		{
+			"name" "1v3 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_1v4" //執行的cfg檔案名子
+		{
+			"name" "1v4 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_1v5" //執行的cfg檔案名子
+		{
+			"name" "1v5 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_2v3" //執行的cfg檔案名子
+		{
+			"name" "2v3 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_2v4" //執行的cfg檔案名子
+		{
+			"name" "2v4 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_2v5" //執行的cfg檔案名子
+		{
+			"name" "2v5 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_3v4" //執行的cfg檔案名子
+		{
+			"name" "3v4 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_3v5" //執行的cfg檔案名子
+		{
+			"name" "3v5 Hunters Only" //大家投票看到的字樣
+		}
+		"rotoblin_hunters_4v5" //執行的cfg檔案名子
+		{
+			"name" "4v5 Hunters Only" //大家投票看到的字樣
+		}
+	}
+}

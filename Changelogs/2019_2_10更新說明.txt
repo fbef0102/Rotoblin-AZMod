@@ -1,0 +1,44 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins
+[l4d_slot_vote.smx]
+//發起投票增加或減少旁觀者位子
+//!slots: 選擇伺服器總人數
+//!nospec,!kickspec: 踢掉所有非adm的旁觀者(附帶ban)
+
+[bequiet.smx]
+//保持聊天室乾淨 無用的訊息
+
+[l4d_teamshuffle.smx]
+//team shuffle and mix
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins 
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//更多指令
+
+[l4d_witchspawnfix_whentank.smx]
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//錯誤修正
+
+[games.smx]
+//刪除!mixteam !mixall
+
+[comp_loader.smx]
+//修正map mismatch
+
+[l4d_DynamicHostname.smx]
+//房名加[TS]
+
+	       ***txt***
+-left4dead\addons\sourcemod\translations [slotvote.phrases.txt]
+//slot vote 語言翻譯
+
+-left4dead\addons\sourcemod\configs [matchmodes.txt]
+//修正模式
+
+	       ***cfg***
+-left4dead\cfg [server_rates.cfg]
+//優化100tick網路參數

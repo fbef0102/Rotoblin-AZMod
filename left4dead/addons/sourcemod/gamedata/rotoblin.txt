@@ -1,0 +1,28 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Signatures"
+		{
+			/*
+			 * Infected::GetFlowDistance(void)const
+			 */
+			"Infected_GetFlowDistance"
+			{
+				"library"	"server"
+				"linux"	"@_ZNK8Infected15GetFlowDistanceEv"
+				"windows" "\x8B\x01\x8B\x90\x2A\x2A\x2A\x2A\xFF\xD2\x85\xC0\x74\x07\xD9\x80\x2A\x2A\x2A\x2A\xC3\xD9\x05\x2A\x2A\x2A\x2A\xC3"
+			}
+			
+			/*
+			 * CTerrorPlayer::GetFlowDistance(TerrorNavArea::FlowType)const
+			 */
+			"CTerrorPlayer_GetFlowDistance"
+			{
+				"library"	"server"
+				"linux"	"@_ZNK13CTerrorPlayer15GetFlowDistanceEN13TerrorNavArea8FlowTypeE"
+				"windows" "\x8B\x01\x8B\x90\x2A\x2A\x2A\x2A\xFF\xD2\x85\xC0\x74\x0E\x8B\x4C\x24\x04\xD9\x84\x88\x2A\x2A\x2A\x2A\xC2\x04\x00\xD9\x05\x2A\x2A\x2A\x2A\xC2\x04\x00"
+			}
+		}
+	}
+}

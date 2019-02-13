@@ -1,0 +1,23 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_drop_secondary]
+//修正crash
+
+[l4dffannounce]
+//士可殺不可辱 修正
+//坦克再見提示
+
+\rotoblin_edit
+[rotoblin]
+//l4d1 ammo pick-up fix
+
+[l4d_tankpunchstuckfix]
+//增加native
+
+[pounce_maxdamage]
+//優化
+
+[l4d_witchspawnfix_whentank]
+[l4d_versus_same_UnprohibitBosses]
+//edit code for debug

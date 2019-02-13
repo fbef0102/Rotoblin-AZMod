@@ -1,0 +1,7 @@
+﻿-修改
+left4dead/cfg
+[server.cfg] 
+//增加兩個參數 這會在left4dead 資料夾產生一個log檔案 紀錄玩家的對話與伺服器指令
+//1.sm_cvar con_logfile TS_Asia_Server_log.log
+//2.sm_cvar net_showevents 1
+

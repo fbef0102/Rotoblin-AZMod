@@ -1,0 +1,43 @@
+"Games"
+{
+	"#default"
+	{
+		"Offsets"
+		{
+			"EntityListeners"
+			{
+				"windows"	"65572"
+				"linux"		"65572"
+				"mac"		"65572"
+			}
+			"FieldOffset"
+			{
+				"windows"	"8"
+				"linux"		"8"
+				"mac"		"8"
+			}
+		}
+	}
+	"csgo"
+	{
+		"Offsets"
+		{
+			"EntityListeners"
+			{
+				"windows"	"196644"
+				"linux"		"196644"
+				"mac"		"196644"
+			}
+		}
+	}
+	"dota"
+	{
+		"Offsets"
+		{
+			"EntityListeners"
+			{
+				"windows"	"131108"
+			}
+		}
+	}
+}

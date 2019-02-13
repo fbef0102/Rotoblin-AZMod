@@ -1,0 +1,77 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins 
+[l4d_NoRescueFirstTank.smx]
+//移除救援後的第一隻坦克 (犧牲除外)
+//rescue second tank spawn same position for both team
+
+[l4d2_shadow_removal.smx]
+//removed any shadow, Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
+//沒源碼, from zonemod v1.9.3
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[fix_ghostsound.smx]
+//another fixed: when an "alive" infected player "respawns" ghost far away from survivors, survivors could hear some infected sounds from "ghost" infected player  
+
+[l4dffannounce.smx]
+//修正語法
+
+[l4dready_scrds.smx]
+//roto-AZ mod 7.9 + 修正Ready模式中人類未離開安全室,特感能顯示復活的靈魂介面
+
+[l4d_versus_spechud.smx]
+//roto-AZ mod 7.9 + 提示雙方隊伍分數 + 提示坦克誰當
+
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//roto-AZ mod 7.9 + 移除救援關額外加分提示 + Witch Party 提示
+
+[l4dscores.smx]
+//取消救援關額外加分
+
+[rotoblin.smx]
+//最後一關復活距離不變
+//控制指令: rotoblin_finalspawn_range 1 (1:disable)
+//最後一關路上不再有藥丸
+
+[l4d_witchspawnfix_whentank.smx]
+//確保坦克活著真的復活witch 
+
+[l4d_versus_same_UnprohibitBosses.smx]
+[l4d_versus_spechud.smx]
+//簡化語法
+
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//對應l4d_NoRescueFirstTank.smx 不提示rescue first tank
+
+[l4d_tank_control]
+//給spechud native
+
+	       ***cfg***
+-left4dead\cfg [rotoblin_hardcore_4v4_classic_map.cfg] + [others]
+-left4dead\cfg\Reloadables [server_custom_convars.cfg]
+//新增救援關復活距離指令 rotoblin_finalspawn_range 1
+//新增救援關一隻坦克指令 no_final_first_tank 1
+//高撲上限傷害50 (default: 25 last time: 45)
+
+-left4dead\addons\stripper\maps
+[l4d_vs_airport03_garage.cfg]
+[l4d_vs_smalltown01_caves.cfg]
+//zonemod 1.9.3
+
+[l4d_vs_smalltown04_mainstreet.cfg]
+//註解remove saferoom kits
+
+[l4d_vs_airport01_greenhouse.cfg]
+//fix glitch spot
+
+[others]
+//移除所有地圖包括非官方圖(犧牲除外)最後一關額外藥丸
+
+	       ***txt***
+-left4dead\scripts [weapon_smg.txt]
+//再度修改機槍參數based on zonemod v1.9.3
+//1.{　0.32->0.26  }每發子彈的彈道     (last time: 0.18)  
+//2.{　3.0->1.85　 }邊移動邊開槍的準度 (last time: 1.7)

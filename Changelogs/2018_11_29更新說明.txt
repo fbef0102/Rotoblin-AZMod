@@ -1,0 +1,16 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[huntercrouchsound]
+//撲人不會產生低吼聲
+
+[l4d_Harry_Roto2-AZ_mod_info]
+//只是修改上次我寫錯的提示
+
+left4dead\cfg
+[rotoblin_nob_2v2.cfg]
+[rotoblin_nob_3v3.cfg]
+[rotoblin_nob_4v4.cfg]
+[rotoblin_nob_5v5.cfg]
+//簡化提示
+

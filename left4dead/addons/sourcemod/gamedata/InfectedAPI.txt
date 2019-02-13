@@ -1,0 +1,64 @@
+"Games"
+{
+    "left4dead2"
+    {
+
+		"Offsets"
+		{
+			"WindowsOrLinux"
+			{
+				"windows"	"1"
+				"linux"		"2"
+			}
+
+		}
+
+        
+        "Signatures"
+        {
+
+             /*  CBaseAbility::CreateForPlayer(client)   */
+			"CreateAbility"
+			{
+            	"library"	"server"
+            	"windows"	"\x83\xEC\x0C\x56\x8B\x74\x24\x14\x85\xF6\x0F\x84\xF7\x00\x00\x00" //found by V10
+            	"linux"		"@_ZN12CBaseAbility15CreateForPlayerEP13CTerrorPlayer"
+
+			}
+
+			/*  CTerrorPlayer::SetClass(client,class)   */
+
+			"SetClass"
+			{
+            	"library"	"server"
+            	"windows"	"\x56\x8B\xF1\xE8****\x83\xF8\x03\x0F\x85****\xA1****\x83\xC0\x01"  //found by V10
+            	"linux"		"@_ZN13CTerrorPlayer8SetClassE15ZombieClassType"
+
+			}
+
+			/*  CTerrorPlayer::ZombieAbortControl(client,float unknow=0.0)   */
+			/* 83 EC 30 56 8B F1 E8 ? ? ? ? 83 F8 03 0F 85 ? ? ? ? 8B 06 */
+
+			"ZombieAbortControl"
+			{
+            	"library"	"server"
+            	"windows"	"\x83\xEC\x30\x56\x8B\xF1\xE8****\x83\xF8\x03\x0F\x85****\x8B\x06" //found by V10
+            	"linux"		"@_ZN13CTerrorPlayer24PlayerZombieAbortControlEv"
+
+			}
+			
+
+
+			/*  CTerrorPlayer::OnEnterGhostState(client)   */
+			/* 53 55 56 8B F1 8B 86 ? ? ? ? 8B 50 ? 8D 8E ? ? ? ? 57 */
+
+			"OnEnterGhostState"
+			{
+            	"library"	"server"
+            	"windows"	"\x53\x55\x56\x8B\xF1\x8B\x86\x2A\x2A\x2A\x2A\x8B\x50\x2A\x8D\x8E\x2A\x2A\x2A\x2A\x57"
+            	"linux"		"@_ZN13CTerrorPlayer17OnEnterGhostStateEv"
+			}
+		}
+    }
+}
+

@@ -1,0 +1,29 @@
+"mission"
+{
+	"Name"		"credits"
+	"Version"	"1"
+	"Author"	"Valve"
+	"Website"	"http://store.steampowered.com"
+
+	"DisplayTitle"	"#L4D360UI_Extras_Credits"
+	"Description"	"#L4D360UI_Extras_Credits"
+	"OuttroImage"	"vgui/outroTitle_Credits"
+
+	"x360ctx"	"0"
+
+	// No loading poster data
+
+	"modes"
+	{
+		"coop"
+		{
+			"1"
+			{
+				"Map" "credits"
+				"DisplayName" "#L4D360UI_Extras_Credits"
+				"Image" "maps/any"
+				"x360ctx"	"0"
+			}
+		}
+	}
+}

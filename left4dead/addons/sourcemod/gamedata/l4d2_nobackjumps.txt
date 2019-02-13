@@ -1,0 +1,25 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"CLunge_ActivateAbility"
+			{
+				"windows"	"202"
+				"linux"		"203"
+			}
+		}
+	}
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"CLunge_ActivateAbility"
+			{
+				"windows"	"188"
+				"linux"		"189"
+			}
+		}
+	}
+}

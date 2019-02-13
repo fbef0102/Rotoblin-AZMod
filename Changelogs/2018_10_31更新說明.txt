@@ -1,0 +1,5 @@
+﻿-新增
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_tank_count]
+//坦克存活計秒器, 拳頭/石頭/玩具 擊中計數器

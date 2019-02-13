@@ -1,0 +1,39 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins [l4d_QuadCaps.smx]
+//胖子最後死 下一波必定4控
+//The Starting SI remain random (yet equal on both sides)
+-left4dead\addons\sourcemod\gamedata [l4d_QuadCaps.txt]
+-left4dead\cfg\sourcemod [l4d_QuadCaps.cfg]
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_versus_5v5_hud.smx]
+//add infected spawing time
+
+[l4dinfectedbots.smx]
+//優化
+
+-left4dead\addons\sourcemod\plugins
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//v8.0
+
+[l4dready_scrds.smx]
+//v8.0 + native function from l4d_QuadCaps.smx
+
+[l4d_versus_spechud.smx]
+//v8.0
+//add infected spawing time
+
+[rotoblin.smx]
+//When a spawned Infected Player disconnects or becomes Tank the SI will instantly get killed unless it's a Boomer or has someone capped.
+
+	       ***cfg***
+-left4dead\cfg [all]
+//multi hunters 優化參數
+//No Boomer模式提示簡化
+//pub and hardcore 優化參數
+
+
