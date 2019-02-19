@@ -17,9 +17,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * Requirements:
       * [Windows Server files](https://drive.google.com/uc?authuser=0&id=1PjFNLkf_HEWzOOSwTN4WAVBMXQhmR1Hc&export=download) or [Linux Server files](https://drive.google.com/uc?authuser=0&id=10VRJzCoe39Oy-4DPZ7fY4Edcs_h3UScW&export=download)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
       * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
+      * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Launch parameters:
     * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-    * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Optional:
     * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/tree/master/Sourcemod%20Anti-Cheat) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
     * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
