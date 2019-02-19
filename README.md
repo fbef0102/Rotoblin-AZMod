@@ -29,7 +29,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 as they're designed around Roto-AZMod and are likely to be unstable in other configs or general usage.**
 
 * Admin simplicity:
-  * Adm permission: -left4dead/addons/sourcemod/configs/admins_simple.ini
+  * [Be Adm](https://wiki.alliedmods.net/Adding_Admins_(SourceMod)#Quick_Start): -left4dead/addons/sourcemod/configs/admins_simple.ini
   * MatchMod: -left4dead/addons/sourcemod/configs/matchmodes.txt
   * Advertisements: -left4dead/addons/sourcemod/configs/advertisements.txt
   * HostName: -left4dead/addons/sourcemod/configs/hostname/server_hostname.txt
