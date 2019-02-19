@@ -52,5 +52,5 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Specrates.smx is a useful plugin to reduce server load causes by spectators.
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
-  * [Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
+  * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
  
