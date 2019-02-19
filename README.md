@@ -11,10 +11,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 
 * Install:
   * Clean Servers:
-      * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files) and the version must be v1.0.3.7
-      * Delete left4dead/addons folder completely before you copy over any files
+      * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
       * Make sure your server is stopped.
-      * Delete the addons folder on your server (to make sure you have a clean slate).
+      * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
   * Requirements:
       * [Windows Server files](https://drive.google.com/uc?authuser=0&id=1PjFNLkf_HEWzOOSwTN4WAVBMXQhmR1Hc&export=download) or [Linux Server files](https://drive.google.com/uc?authuser=0&id=10VRJzCoe39Oy-4DPZ7fY4Edcs_h3UScW&export=download)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
       * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
