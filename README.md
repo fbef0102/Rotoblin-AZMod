@@ -11,16 +11,16 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 
 * Install:
   * Clean Servers:
-      * A clean L4D1 Dedicated Server and the version must be v1.0.3.7
+      * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files) and the version must be v1.0.3.7
       * Delete left4dead/addons folder completely before you copy over any files
       * Make sure your server is stopped.
       * Delete the addons folder on your server (to make sure you have a clean slate).
   * Requirements:
       * [Windows Server files](https://drive.google.com/uc?authuser=0&id=1PjFNLkf_HEWzOOSwTN4WAVBMXQhmR1Hc&export=download) or [Linux Server files](https://drive.google.com/uc?authuser=0&id=10VRJzCoe39Oy-4DPZ7fY4Edcs_h3UScW&export=download)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
       * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
-  * Run parameters:
+  * Launch parameters:
     * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-    * At this step, you already setup your Server's base for configs, so you can start your server.
+    * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Optional:
     * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/tree/master/Sourcemod%20Anti-Cheat) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
     * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -36,7 +36,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt
   * Jukebox spawn position: -left4dead/addons/sourcemod/data/l4d1_jukebox_spawns.cfg
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
-  * Save errorlog: -left4dead/addons/sourcemod/logs/
+  * Server password、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
     * do not overwrite any plugin that's existed.
   * To make it easy for personal configuration for certain plugins, there's an added "server_custom_convars.cfg" in the left4dead/cfg/Reloadables folder.
