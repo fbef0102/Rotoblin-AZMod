@@ -32,7 +32,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * MatchMod: -left4dead/addons/sourcemod/configs/matchmodes.txt
   * Advertisements: -left4dead/addons/sourcemod/configs/advertisements.txt
   * HostName: -left4dead/addons/sourcemod/configs/hostname/server_hostname.txt
-  * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt
+  * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt、sm_l4dco_mapchanger.txt
   * Jukebox spawn position: -left4dead/addons/sourcemod/data/l4d1_jukebox_spawns.cfg
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Server password、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg

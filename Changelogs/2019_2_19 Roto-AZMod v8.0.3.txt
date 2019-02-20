@@ -1,0 +1,61 @@
+﻿v8.0.3
+------------------New------------------
+-left4dead\addons\sourcemod\plugins 
+[hunter_callout_blocker.smx]
+//Stops Survivors from saying 'Hunter!' (sometimets survivors didn't see the silence hunter but their mouth keep saying 'Hunter!')
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4d_tank_control.smx]
+//fixed "adm force player become the tank" not works when ready stage
+
+[l4d_teamshuffle.smx]
+//fix error
+
+[l4d_slot_vote.smx]
+//給adm直接執行!kickspec,!slots <#>權限
+
+[l4d_tankpunchstuckfix.smx]
+//縮短偵測stuck時間
+
+[l4dready_scrds.smx]
+//coop模式不能換到特感
+
+[sm_l4d_mapchanger.smx]
+//coop最後一關輸掉不換圖(通關才換圖)
+
+[comp_loader.smx]
+//一個人也可以投票換模式
+
+	       ***txt***
+
+	       ***cfg***
+-left4dead\addons\sourcemod\configs [matchmodes.txt]
+//簡化
+
+-left4dead\cfg\sourcemod [sm_l4d_mapchanger.cfg]
+//delete "sm_l4d_fmc_ifdie"
+
+-left4dead\cfg\Reloadables [server_custom_convars.cfg]
+//All SI are now able to break doors with 2 scratches instead of 3
+
+-left4dead\cfg 
+[rotoblin_hardcore_4v4_classic_map]
+//Hunter pounce door dmg default
+//All SI are now able to break doors with 3 scratches
+
+[server_reset_pub_convars.cfg]
+[server_reset_convars.cfg]
+//新增更多指令重設
+
+[server_shared_convars.cfg]
+//刪除不必要指令
+
+[Multi Hunters]
+//multi hunters mode 調整特感bot復活時間
+
+-left4dead\addons\stripper\maps [all]
+//block "this is restricted area" room where infected ghost can not even spawn in all value maps
