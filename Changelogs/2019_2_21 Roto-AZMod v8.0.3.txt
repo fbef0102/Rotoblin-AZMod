@@ -30,6 +30,12 @@
 [comp_loader.smx]
 //一個人也可以投票換模式
 
+[l4d_ladderblock.smx]
+//特感與人類玩家不能再互卡(坦克也一樣不能卡)
+
+[rotoblin.smx]
+//survivor who is Incapacitated will not hurt other teammate with pistol
+
 	       ***txt***
 
 	       ***cfg***
