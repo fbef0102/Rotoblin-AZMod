@@ -48,9 +48,9 @@
 	}
 	"3v3"
 	{
-		"rotoblin_hardcore_3v3" //°õ¦æªºcfgÀÉ®×¦W¤l
+		"rotoblin_hardcore_3v3" //åŸ·è¡Œçš„cfgæª”æ¡ˆåå­
 		{
-			"name" "3v3 Hardcore" //¤j®a§ë²¼¬İ¨ìªº¦r¼Ë
+			"name" "3v3 Hardcore" //å¤§å®¶æŠ•ç¥¨çœ‹åˆ°çš„å­—æ¨£
 		}
 		"rotoblin_hunters_3v3"
 		{
@@ -99,7 +99,7 @@
 		}
 		"rotoblin_hunters_1v4"
 		{
-			"name" "1v4 Hunters Only
+			"name" "1v4 Hunters Only"
 		}
 		"rotoblin_hunters_1v5"
 		{
