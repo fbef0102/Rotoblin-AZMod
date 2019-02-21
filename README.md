@@ -43,7 +43,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * very useful for Admins wanting to load 1v1~4v4 supported plugins on top of the Configs.
 
 * Admin Tips:
-  * Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch each stage on "crash cource"
   * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins or set bequiet's "bq_show_player_team_chat_spec" cvar to 0.
   * l4d_versus_specListener3.0.smx comes with a "Spec-Listening Feature", even if sv_alltalk 0, specators can still see in-game players teamchat and hear their mic voice.
   * TickRateFixes.smx now also fixes Server Gravity and Pistol Scripts.
@@ -52,4 +51,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
- 
+  - - - -
+ ### Bug / Exploit Fixes ###
+   * Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage 
