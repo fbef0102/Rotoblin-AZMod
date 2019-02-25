@@ -91,6 +91,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Block pumpshotgunswap quick shoot
    * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
    * Ammo pickup fix
+   * Prevents people from blocking players who climb on the ladder.
    * Spectators stay spectator on map change.
    * Forces all players on the right team after map/campaign/match change"
    * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them
