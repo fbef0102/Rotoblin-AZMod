@@ -353,8 +353,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **sm_spechud** toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.
   * Spectators can see the witch glow and hittable prop glow.
-  * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **sm_hear**.
-  * Spectators can not call a vote, start the match, or Pause the game. To do these, they must be in-game first.
+  * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **!hear**.
+  * Spectators can not call a vote, start the match, or pause the game. To do these, they must be in-game first.
   * **!s,!spectate,!afk,!away** will help you respectate again, use these commands if 
      * spectator camera being stuck
      * spectator blocks infected teamicon
