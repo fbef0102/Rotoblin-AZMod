@@ -381,5 +381,5 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Adm just type **!slots <#>** to forcechange server slots
 * Usage of **sm_kills** with **sm_mvp**.
   * Fully colorized, Rank prints, console info.. Functional!
-* Auto change maps when second round ends on final map
+* Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
