@@ -53,53 +53,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached   to the sm_admin menu
   * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
-  
-- - - -
-### Bug / Exploit Fixes ###
-   * Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage
-   * Fixed the bug in which doors do not break although the tank is punching at them.
-   * Survivors cannot hear ghost footsteps and spawn sound.
-   * Stops Shoves slowing the Tank and Charger Down
-   * Fixed Players being able to exploit switching team to get earlier SI Spawns.
-   * Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
-   * Fixed no Survivor bots issue and more than 4 bots issue.
-   * Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?p=1823208)
-        * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
-        * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
-        * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
-   * Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
-   * Prevents calling votes while others are loading
-   * Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
-   * Blocking [exploits by using Engine](https://forums.alliedmods.net/showthread.php?t=182002)
-        * no fall damage bug - jump on the incapped survivor while holding USE key
-        * health boost glitch - heal yourself while under water.
-   * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
-   * Fixes the problem where tank-punches get a survivor stuck in the roof
-   * Smash nonstaggering Zombies (stuck or no shove off)
-   * Fixed the problem that versus director won't spawn Witch during Tank alive
-   * Avoid confusion of the witch, when startled by a player who has the same character as another.
-   * Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
-   * Blocked Survivor duck fastspeed block & Infected alive duck fastspeed block
-   * Blocked an exploit where players can remove textures from their game to see through walls.
-   * Blocked an exploit with players using third person shoulder.
-   * Hunters don't fall off of walls after being shot.
-   * AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
-   * Players cannot skip their deathcam by pressing space or clicking.
-   * Block Infected player who use E spawn expolit to teleport to survivor
-   * Block pumpshotgunswap quick shoot
-   * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
-   * Ammo pickup fix
-   * Prevents people from blocking players who climb on the ladder including tank.
-   * Spectators stay spectator on map change.
-   * Forces all players on the right team after map/campaign/match change"
-   * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them
-      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. If you have played l4d1 versus for a long time, you knew what I am fking talking about.
-   * Fixed players using bunnyhop to increase their MaxSpeed.
-   * Fixed second team having different SI spawns on round start.
-        * Spawns for the first hit are announced once round starts.
-   * Blocks all button presses during stumbles
-   * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
-   
+
 - - - -
 ### Gamemodes(!load, !match, !mode) ###
    * 5v5
@@ -185,6 +139,52 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * Map = That level's score multiplier
     > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
+- - - -
+### Bug / Exploit Fixes ###
+   * Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage
+   * Fixed the bug in which doors do not break although the tank is punching at them.
+   * Survivors cannot hear ghost footsteps and spawn sound.
+   * Stops Shoves slowing the Tank and Charger Down
+   * Fixed Players being able to exploit switching team to get earlier SI Spawns.
+   * Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
+   * Fixed no Survivor bots issue and more than 4 bots issue.
+   * Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?p=1823208)
+        * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
+        * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
+        * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
+   * Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
+   * Prevents calling votes while others are loading
+   * Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
+   * Blocking [exploits by using Engine](https://forums.alliedmods.net/showthread.php?t=182002)
+        * no fall damage bug - jump on the incapped survivor while holding USE key
+        * health boost glitch - heal yourself while under water.
+   * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
+   * Fixes the problem where tank-punches get a survivor stuck in the roof
+   * Smash nonstaggering Zombies (stuck or no shove off)
+   * Fixed the problem that versus director won't spawn Witch during Tank alive
+   * Avoid confusion of the witch, when startled by a player who has the same character as another.
+   * Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
+   * Blocked Survivor duck fastspeed block & Infected alive duck fastspeed block
+   * Blocked an exploit where players can remove textures from their game to see through walls.
+   * Blocked an exploit with players using third person shoulder.
+   * Hunters don't fall off of walls after being shot.
+   * AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
+   * Players cannot skip their deathcam by pressing space or clicking.
+   * Block Infected player who use E spawn expolit to teleport to survivor
+   * Block pumpshotgunswap quick shoot
+   * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
+   * Ammo pickup fix
+   * Prevents people from blocking players who climb on the ladder including tank.
+   * Spectators stay spectator on map change.
+   * Forces all players on the right team after map/campaign/match change"
+   * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them
+      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. If you have played l4d1 versus for a long time, you knew what I am fking talking about.
+   * Fixed players using bunnyhop to increase their MaxSpeed.
+   * Fixed second team having different SI spawns on round start.
+        * Spawns for the first hit are announced once round starts.
+   * Blocks all button presses during stumbles
+   * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
+   
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 40s.
