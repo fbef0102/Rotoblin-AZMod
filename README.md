@@ -390,4 +390,4 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Our Group](https://steamcommunity.com/groups/ibserver)
 * [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
-* 简体中文说明版(中文https冒號//pan點baidu點com/s/1v4X80Hx6F8vxZMUp8dgi8g)
+* 简体中文说明版(https冒號//pan點baidu點com/s/1v4X80Hx6F8vxZMUp8dgi8g)
