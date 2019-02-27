@@ -192,7 +192,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Survivors Must move forward, no time to stay put long, or the director will force panic event
   * Baiting is a valid tactic, but nobody wants to fall asleep during very lengthy baiting sessions.
   
-* Special Infected:
+* Special Infected(!inf):
   * **General:**
     * Spawntimers:
 	  - *(5v5)*: **16s**
@@ -223,11 +223,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Hides all weapons and iteams from the infected team or dead survivor until they are (possibly) visible to one of the alive survivors to prevent SI scouting the map
     * It always takes 5 scratches from an infected player to kill a common infected
     * Players cannot scratch while in the stumble animation.
+    * **sm_respec** force the spectator player to respectate, only used by infected.
     
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
     * Show how long is tank alive, and tank punch/rock/car statistics once tank dead
-    * Announce damage dealt to tanks by survivors
+    * Damage dealt to tank is announced after tank dies, when the survivors wipe, or when the round ends, whichever comes first.
     * Tank won't stuck when punches incapped survivor
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed decreased to 205 (survivors speed: 220, default: 210 - zonemod: 205)
@@ -256,7 +257,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(1v1)*: **2000**
   * **Witch:**
     * Announce in chat and via a sound when a Which has spawned
-    * Announce damage dealt to Witch by survivors
+    * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team
@@ -320,7 +321,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Second tank spawns same position for both team
   * No Tank Spawn as the rescue vehicle is coming
     
-* Survivors:
+* Survivors(!sur):
   * Still Water Slowdown with or without Tank Fights.
   * Maximum amount of Friendly Fire per Shotgun: **10** (unchanged)
   * Allow ladder speed glitch(keyboard shortcuts AS,AW,DS,DW depends on your view.), but can't shoot when climb on the ladder
@@ -348,21 +349,22 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
    > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or to escape hittable car.
 
-* Spectators:
+* Spectators(!s):
   * **sm_spechud** toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.
   * Spectators can see the witch glow and hittable prop glow.
   * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **sm_hear**.
-  * Spectators can not call a vote or start the match. To do these, they must be in-game first.
+  * Spectators can not call a vote, start the match, or Pause the game. To do these, they must be in-game first.
+  * **!s,!spectate,!afk,!away** will help you respectate again, use these commands if 
+     * spectator camera being stuck
+     * spectator blocks infected teamicon
   * Added **!slots**, this will start a vote kick all non-adm spectators.
   
 - - - -
 ### Miscellaneous ###
 * **sm_info**/**sm_harry** will help you to find many useful commands
 * **sm_votes** call a vote to kick、alltalk、change map、restartmap
-* **!s,!spectate,!afk,!away** - join to Spectator
-* **!sur,!survivor,!jointeam2** - join to Survivor
-* **!inf,!infected,!jointeam3** - join to Infected
+* **!pause** will directly pause the game without another team's agreement (No !fpause)
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode
 * **sm_current** to display the survivor's percentage progress through the map.
 * **!shuffle, !mixteam** - shuffle and mix
@@ -370,8 +372,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * The round does not go live until each player has readied up if ready plugin enable.
 * l4d_pig_infected_notify.smx to show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
 * l4d_panic_notify .smx to show who triggers the horde event like start final rescue, shoot alarm car, etc.
-* Damage dealt to tank is announced after tank dies, when the survivors wipe, or when the round ends, whichever comes first.
-* Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
 * Some player statistics are printed out at end of round.
 * **sm_flip** to flip a coin, or **sm_roll #** to roll a die.
 * Announce msg who the fking idiot TK you
@@ -388,8 +388,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Others ###
 * [Our Group](https://steamcommunity.com/groups/ibserver)
+* [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * 百度網盤: 中文https冒號//pan點baidu點com/s/1v4X80Hx6F8vxZMUp8dgi8g
-* [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
-
-
