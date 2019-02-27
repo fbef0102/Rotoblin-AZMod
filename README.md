@@ -129,7 +129,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Map Changes(!cm) ###
 
 * **General:**
-  * Remove restricted block where Infected coudn't go through
+  * Remove restricted invisible wall Infected couldn't go through
   * Pills
      * All pill cabinets in Valve maps will now have a maximum of 2 pills
      * There are few pills on the road
@@ -314,7 +314,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Blood Harvest
     * CITY17、Suicide Blitz、I Hate Mountains、Dead Flag Blues、Dead Before Dawn、The Arena of the Dead
     * The Sacrifice
-    > **Developer Comment:** This means Finale tanks are limited to 2. No First Tank Spawn as the final rescue start. We make these changes to make final more balance and playable, we also encourage players not to give up and make a comeback to win.
+    > **Developer Comment:** This means Finale tanks are limited to 2. No First Tank Spawn as the final rescue start. We make these changes to make final more balance and playable, we also encourage players to make a comeback to win.
   * **Finales with 3 event Tanks:**
     * The Sacrifice
   * Second tank spawns same position for both team
@@ -346,7 +346,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * *(Hunter)*: **+0.8s**
      * *(Smoker)*: **+0.8s**
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
-   > **Developer Comment:** Don't even think that you can use god frames to prevent yourself from Witch dmg and escape hittable car
+   > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or to escape hittable car.
 
 * Spectators:
   * **sm_spechud** toggle On/Off spechud
