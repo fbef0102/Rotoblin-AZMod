@@ -383,3 +383,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
+
+- - - -
+### Others ###
+* [Our Group](https://steamcommunity.com/groups/ibserver)
+* [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
+* 百度網盤: 中文https冒號//pan點baidu點com/s/1v4X80Hx6F8vxZMUp8dgi8g
+* [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
+
+
