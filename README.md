@@ -368,7 +368,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **!shuffle, !mixteam** - shuffle and mix
 * Replacement of standard player connected message. Joining players will have their geo-location announced.
 * The round does not go live until each player has readied up if ready plugin enable.
-* l4d_pig_infected_notify.smx to show who the god damn pig S.I like S.I. kills teammates, boomer stumbles tank, etc.
+* l4d_pig_infected_notify.smx to show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
+* l4d_panic_notify .smx to show who triggers the horde event like start final rescue, shoot alarm car, etc.
 * Damage dealt to tank is announced after tank dies, when the survivors wipe, or when the round ends, whichever comes first.
 * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
 * Some player statistics are printed out at end of round.
