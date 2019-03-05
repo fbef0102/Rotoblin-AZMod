@@ -368,6 +368,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode
 * **sm_current** to display the survivor's percentage progress through the map.
 * **!shuffle, !mixteam** - shuffle and mix
+* Blocks the stupid griefers who spam vocalize commands throughout after round is live.
 * Replacement of standard player connected message. Joining players will have their geo-location announced.
 * The round does not go live until each player has readied up if ready plugin enable.
 * l4d_pig_infected_notify.smx to show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
