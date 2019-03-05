@@ -1,0 +1,26 @@
+﻿v8.0.4
+------------------New------------------
+-left4dead\addons\sourcemod\plugins 
+[vocal_block.smx]
+//Blocks the stupid griefers who spam vocalize commands throughout campaigns
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[bequiet.smx]
+//伺服器重要的指令被更改會提示
+
+[l4dready_scrds.smx]
+//ready期間可以使用vocalize commands
+
+[rotoblin.smx]
+//戰役可來自然屍潮
+
+[l4dscores.smx]
+//提示簡化
+
+	       ***txt***
+
+	       ***cfg***
