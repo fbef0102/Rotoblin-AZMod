@@ -1,6 +1,6 @@
 # Rotoblin-AZMod V8.0
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
-* 简体中文说明版(https冒號//pan點baidu點com/s/1v4X80Hx6F8vxZMUp8dgi8g)
+* [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
 
 **LINUX/WINDOWS SERVERS WORK**
