@@ -1,0 +1,27 @@
+﻿v8.0.5
+------------------New------------------
+-left4dead\addons\sourcemod\plugins[l4d_Modo_mix_mm.smx]
+//mix plugin 隊長選人投票制度
+//輸入!mix
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_storm.smx]
+//黑暗戰役插件
+
+[l4d_useful_upgrades.smx]
+//黑暗戰役擴充插件
+//新增夜視鏡/雷射光/消音器
+
+-left4dead\addons\sourcemod\plugins[l4d_teamshuffle.smx]
+//隊伍打亂插件
+//輸入!shuffle
+
+	       ***txt***
+
+	       ***cfg***
+-left4dead\cfg [all]
+//黑暗環境調整

@@ -85,6 +85,10 @@
 	}
 	"Special"
 	{
+		"rotoblin_Dark_Coop"
+		{
+			"name" "Dark Coop"
+		}
 		"rotoblin_witch_party"
 		{
 			"name" "Witch Party"
