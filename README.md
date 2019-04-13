@@ -1,4 +1,4 @@
-# Rotoblin-AZMod V8.0
+# Rotoblin-AZMod V8.0.5
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -77,6 +77,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * 1v1
       * Hunters only
    * Special
+      * Dark Coop
       * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)
       * [l4d1 multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
       
