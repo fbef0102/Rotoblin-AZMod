@@ -1,0 +1,73 @@
+﻿"Phrases"
+{
+	"Laser_On"
+	{
+		"en"			"Laser Sight is On."
+		"es"			"Mira láser es On."
+		"ru"			"Лазерный прицел Включен."
+		"chi"			"启动 红雷射."
+		"zho"			"啟動 紅雷射."
+	}
+	"Laser_Off"
+	{
+		"en"			"Laser Sight is Off."
+		"es"			"Mira láser es Off."
+		"ru"			"Лазерный прицел Выключен."
+		"chi"			"关闭 红雷射."
+		"zho"			"關閉 紅雷射."
+	}
+	"Silencer_On"
+	{
+		"en"			"Silencer is On."
+		"es"			"Silencer es On."
+		"ru"			"Глушитель Надет."
+		"chi"			"启动 消音枪."
+		"zho"			"啟動 消音槍."
+	}
+	"Silencer_Off"
+	{
+		"en"			"Silencer is Off."
+		"es"			"Silencer es Off."
+		"ru"			"Глушитель Снят."
+		"chi"			"关闭 消音枪."
+		"zho"			"關閉 消音槍."
+	}
+	"NightVision_On"
+	{
+		"en"			"Night vision On."
+		"es"			"Visión nocturna En."
+		"ru"			"Ночное виденье Включено."
+		"chi"			"启动 夜视镜."
+		"zho"			"啟動 夜視鏡."
+	}
+	"NightVision_Off"
+	{
+		"en"			"Night vision Off."
+		"es"			"Visión nocturna Fuera."
+		"ru"			"Ночное виденье Отключено."
+		"chi"			"关闭 夜视镜."
+		"zho"			"關閉 夜視鏡."
+	}
+	"Reload_On"
+	{
+		"en"			"Fast Reload is On."
+		"es"			"Recarga rápida está En."
+		"ru"			"Быстрая перезарядка Включена."
+		"chi"			"启动 快速装弹."
+		"zho"			"啟動 快速裝彈."
+	}
+	"Reload_Off"
+	{
+		"en"			"Fast Reload is Off."
+		"es"			"Mira láser es Deshabilitado."
+		"ru"			"Быстрая перезарядка Выключена."
+		"chi"			"关闭 快速装弹."
+		"zho"			"關閉 快速裝彈."
+	}
+	"INFO"
+	{
+		"en"			"[Dark Coop] Type !silent/!laser/!night to Toggle Silencer/Laser Sight/Night Vision."
+		"chi"			"[黑暗战役] 输入 !silent/!laser/!night 启动 消音枪/红雷射/夜视镜."
+		"zho"			"[黑暗戰役] 輸入 !silent/!laser/!night 啟動 消音槍/紅雷射/夜視鏡."
+	}
+}
