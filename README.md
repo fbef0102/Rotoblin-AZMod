@@ -86,7 +86,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
-  * Kill all ambience sounds in order to let survivor focuses on S.I./command
+  * Kill all ambience sounds in order to let survivor focuses on S.I./common
   * Pills
      * All pill cabinets in Valve maps will now have a maximum of 2 pills
      * There are few pills on the road
