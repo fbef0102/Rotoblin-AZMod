@@ -1,4 +1,5 @@
-# Rotoblin-AZMod V8.0.5
+# Rotoblin-AZMod
+v8.0.6
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -34,7 +35,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Advertisements: -left4dead/addons/sourcemod/configs/advertisements.txt
   * HostName: -left4dead/addons/sourcemod/configs/hostname/server_hostname.txt
   * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt、sm_l4dco_mapchanger.txt
-  * Jukebox spawn position: -left4dead/addons/sourcemod/data/l4d1_jukebox_spawns.cfg
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Server password、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
@@ -111,12 +111,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 - - - -
 ### Weapon Adjustments ###
-* **Uzi** (based on Zonemod 1.9.3)
+* **Uzi** (based on Zonemod 1.9.4)
   * Still Spread: 0.32->0.26
   * Moveing Spread: 0.32->0.26
-  * Ammo: 480->800
+  * Ammo: 480->750
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.74
+  * Reload Speed: 2.23->1.88
   * Damage: 20->22
   * Limit: None
       
@@ -296,8 +296,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **21**
 	  - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-	  - *95%*: **3 Hunters + 1 Smoker**
-	  - *5%* : **4 Hunters**
+	  - *90%*: **3 Hunters + 1 Smoker**
+	  - *10%*: **4 Hunters**
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
    
@@ -388,8 +388,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
+* Allows changing of displayed game type in server browser
 
 - - - -
 ### Others ###
 * [Our Group](https://steamcommunity.com/groups/ibserver)
 * [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
+* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/developer.cfg)

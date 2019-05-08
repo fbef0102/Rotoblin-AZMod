@@ -34,7 +34,7 @@
     }
 	"4"
     {
-        "chat"			"{lightgreen}advertisements in addons\sourcemod\configs"
+        "chat"			"{lightgreen}addons\sourcemod\configs\advertisements.txt"
     }
 	"5"
     {
@@ -46,7 +46,7 @@
     }
 	"7"
     {
-        "chat"			"{lightgreen}!load: 5v5、classic、multi Hunters、Witch Party"
+        "chat"			"{lightgreen}!load: 5v5、classic、Hunters、Witch Party、Dark Coop"
     }
 	"8"
     {
