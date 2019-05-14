@@ -54,9 +54,13 @@
     }
 	"9"
     {
-        "chat"			"{lightgreen}Pass Pill With R button"
+        "chat"			"{lightgreen}!mix: captaions select、!shuffle: teamshuffles"
     }
 	"10"
+    {
+        "chat"			"{lightgreen}Pass Pill With R button"
+    }
+	"11"
     {
         "chat"			"{lightgreen}Date: {date}, Time: {time}"
     }
