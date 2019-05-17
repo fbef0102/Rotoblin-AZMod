@@ -21,4 +21,4 @@
 	       ***cfg***
 -left4dead\cfg [all]
 //1.提示當前模式在chat log裡
-//2.modify "Pub VS" mode for newbies: kits、T2 weapons、throwables、gascans、oxytanks
+//2.modify "Pub VS" mode for newbies: kits、T2 weapons、throwables、gascans、oxytanks、default Tanks、AI SI
