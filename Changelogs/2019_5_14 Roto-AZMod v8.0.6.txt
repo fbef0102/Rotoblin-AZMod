@@ -1,0 +1,24 @@
+﻿v8.0.6
+------------------New------------------
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//提示
+
+[votes3.smx]
+//紀錄log
+
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_superversus.smx]
+//修改timer
+
+	       ***txt***
+
+	       ***cfg***
+-left4dead\cfg [all]
+//1.提示當前模式在chat log裡
+//2.modify "Pub VS" mode for newbies: kits、T2 weapons、throwables、gascans、oxytanks

@@ -86,7 +86,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
-  * Kill all ambience sounds in order to let survivor focuses on S.I./common
+  * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Pills
      * All pill cabinets in Valve maps will now have a maximum of 2 pills
      * There are few pills on the road
@@ -271,17 +271,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Allow Bunny hop pounce (one of l4d1 original feature)
     * Maximum pounce damage: **60**
     * Wallkick/Backjumps
-	  - *(5v5)*: **Yes**
-	  - *(4v4)*: **Yes**
-	  - *(3v3)*: **Yes**
-	  - *(2v2)*: **Yes**
-	  - *(1v1)*: **No**
+	  - *(5v5)*: **✔**
+	  - *(4v4)*: **✔**
+	  - *(3v3)*: **✔**
+	  - *(2v2)*: **✔**
+	  - *(1v1)*: **✘**
     * DeadStop
-	  - *(5v5)*: **No**
-	  - *(4v4)*: **No**
-	  - *(3v3)*: **Yes**
-	  - *(2v2)*: **Yes**
-	  - *(1v1)*: **No**
+	  - *(5v5)*: **✘**
+	  - *(4v4)*: **✘**
+	  - *(3v3)*: **✘**
+	  - *(2v2)*: **✘**
+	  - *(1v1)*: **✘**
     * Hunters can't be shoved off when pouncing (fov_pouncing: 0)
     * Hunters can be shoved off when duck or stand still (Shove fov: 30)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
@@ -350,7 +350,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * *(Hunter)*: **+0.8s**
      * *(Smoker)*: **+0.8s**
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
-   > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or to escape hittable car.
+   > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
 
 * Spectators(!s):
   * **sm_spechud** toggle On/Off spechud
@@ -361,7 +361,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **!s,!spectate,!afk,!away** will help you respectate again, use these commands if 
      * spectator camera being stuck
      * spectator blocks infected teamicon
-  * Added **!slots**, this will start a vote kick all non-adm spectators.
+  * Added **!kickspec**, this will start a vote kick all non-adm spectators.
   
 - - - -
 ### Miscellaneous ###

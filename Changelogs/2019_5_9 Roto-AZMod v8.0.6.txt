@@ -45,3 +45,9 @@
 	       ***cfg***
 -left4dead\addons\stripper [global_filters.cfg]
 //燈光穿透
+
+-left4dead\cfg [all]
+//1.notify current mode by changing of displayed game type in server browser
+//2.SMG Weapon modify
+//⠀⠀⠀*Reload speed: 1.88 (Zone 1.9.4: 1.88, was 1.74)
+//⠀⠀ *Ammo: 750 (Zone 1.9.4: 750, was 800)
