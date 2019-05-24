@@ -22,3 +22,7 @@
 -left4dead\cfg [all]
 //1.提示當前模式在chat log裡
 //2.modify "Pub VS" mode for newbies: kits、T2 weapons、throwables、gascans、oxytanks、default Tanks、AI SI
+
+	       ***nav***
+-left4dead\maps [l4d_vs_hospital01_apartment.nav]
+//roto2復古路徑%數
