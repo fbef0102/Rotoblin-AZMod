@@ -1,0 +1,24 @@
+﻿v8.0.6
+------------------New------------------
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4d_rock_lagcomp.smx]
+//自製坦克石頭hitbox + 武器對石頭傷害修改 有助於高ping戰士打掉石頭
+
+[rotoblin.smx]
+//修正暫停機制
+
+[l4d_versus_same_UnprohibitBosses]
+//修正第二回合witch%數不一致
+
+	       ***txt***
+-left4dead\addons\sourcemod\gamedata [rock_lagcomp.txt]
+//windows and linux signature for l4d_rock_lagcomp.smx
+
+	       ***cfg***
+-left4dead\cfg [all]
+//v8.0.7 adjust some convars

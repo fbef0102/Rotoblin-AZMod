@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.0.6
+v8.0.7
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -258,6 +258,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **5025**
 	  - *(2v2)*: **3480**
 	  - *(1v1)*: **2000**
+    * Lag compensation for tank rocks + custom damage & range values.
+    > **Developer Comment:** This plugin provides lag compensation as well as cvars for weapon damage & range values on tank rocks. It's very helpful for high ping players shooting the tank rock. Click [AlliedModders](https://forums.alliedmods.net/showthread.php?p=2646073) and see more detals on how it works.
   * **Witch:**
     * Announce in chat and via a sound when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
