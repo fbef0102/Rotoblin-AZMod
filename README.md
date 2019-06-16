@@ -390,7 +390,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
-* Allows changing of displayed game type in server browser
+* Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
 
 - - - -
 ### Others ###
