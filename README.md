@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.0.7
+v8.1
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -53,6 +53,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached   to the sm_admin menu
   * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
+  * Adm type **!slots <#>** to forcechange server slots
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
 
 - - - -
@@ -89,7 +90,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Pills
      * All pill cabinets in Valve maps will now have a maximum of 2 pills
-     * There are few pills on the road
+     * There are few pills on the road (pain_pill_density: 1.5)
      * Final Rescue: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Spawn jukebox
@@ -111,18 +112,18 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 - - - -
 ### Weapon Adjustments ###
-* **Uzi** (based on Zonemod 1.9.4)
-  * Still Spread: 0.32->0.26
-  * Moveing Spread: 3.0->1.85
-  * Ammo: 480->750
+* **Uzi** (based on Acemod/Zonemod)
+  * Still Spread: 0.32->0.20 (Acemod: 0.20 - Zonemod 1.9.4: 0.26)
+  * Moveing Spread: 3.0->1.65 (Acemod: 1.65 - Zonemod 1.9.4: 1.85)
+  * Ammo: 480->750 (Acemod: 800 - Zonemod 1.9.4: 750) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.88
-  * Damage: 20->22
+  * Reload Speed: 2.23->1.75 (Acemod: 1.75 - Zonemod 1.9.4: 1.88) 
+  * Damage: 20->22 (Acemod: 20 - Zonemod 1.9.4: 22)
   * Limit: None
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->100
+  * Ammo: 128->96 (Acemod: 96 - Zonemod 1.9.4: 80) 
   * Limit: None
       
 * **Hunting Rifle**
@@ -187,6 +188,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
         * Spawns for the first hit are announced once round starts.
    * Blocks all button presses during stumbles
    * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
+   * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
    
 - - - -
 ### Gameplay / Balance Changes ###
@@ -198,14 +200,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Special Infected(!inf):
   * **General:**
     * Spawntimers:
-	  - *(5v5)*: **16s**
-	  - *(4v4)*: **13s**
+	  - *(5v5)*: **15s**
+	  - *(4v4)*: **12s**
 	  - *(3v3)*: **10s**
 	  - *(2v2)*: **7s**
 	  - *(1v1)*: **1s**
-    * When a spawned Infected Player disconnects or becomes Tank the SI will instantly get kicked unless it's a Boomer or has someone capped.
+    * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get kicked unless it's a Boomer or has someone capped.
     * Improvement AI Cvars, make AI Smart
-    * Slay AI bots in 1v1, 2v2 and 3v3
     * Despawning a special infected restores 50% of missing health
     * Allows infected to warp to survivors (MOUSE2 or use command: **sm_warpto [#|name]**)
 	  - *1*: **Francis**
@@ -258,6 +259,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **5025**
 	  - *(2v2)*: **3480**
 	  - *(1v1)*: **2000**
+    * Slay AI Tank in 1v1, 2v2 and 3v3  
     * Lag compensation for tank rocks + custom damage & range values.
     > **Developer Comment:** This plugin provides lag compensation as well as cvars for weapon damage & range values on tank rocks. It's very helpful for high ping players shooting the tank rock. Click [AlliedModders](https://forums.alliedmods.net/showthread.php?p=2646073) and see more detals on how it works.
   * **Witch:**
@@ -363,8 +365,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **!s,!spectate,!afk,!away** will help you respectate again, use these commands if 
      * spectator camera being stuck
      * spectator blocks infected teamicon
-  * Added **!kickspec**, this will start a vote kick all non-adm spectators.
-  
+  * Added **!kickspec**, this will start a vote to kick all non-adm spectators.
+  * **sm_speaklist** toggle On/Off player mic speak list hint
+  * when player on spectator team, add name prefix
+     * Remove prefix when in-game
+	 
 - - - -
 ### Miscellaneous ###
 * **sm_info**/**sm_harry** will help you to find many useful commands
@@ -385,12 +390,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Cleaned up the Chat by blocking useless prints caused by cvar, clients used by Players, etc.
 * Added **!slots**, this will allow players to vote for the Maximum amount of slots on the Server during the game.
   * Very useful when playing Home/Away in Tournaments!
-  * Adm just type **!slots <#>** to forcechange server slots
 * Usage of **sm_kills** with **sm_mvp**.
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
 * Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
+* Voice Announce. Print To Center Message who is Speaking. With cookies
+* secret easter egg trophy ready up
+* AI less retarded Convars
 
 - - - -
 ### Others ###

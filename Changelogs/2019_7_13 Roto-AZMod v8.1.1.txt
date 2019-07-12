@@ -1,0 +1,123 @@
+﻿v8.1.1
+------------------New------------------
+-left4dead\addons\sourcemod\plugins 
+[l4d_vomit_pounce_fix.smx]
+//Fixed that player whom hunter pounces on will not be biled by a boomer (fix smoker also)
+
+[SpeakingList.smx]
+//alltalk off mic speaklist for spectators
+//alltalk on mic speaklist for all players
+
+[voiceannounce_ex.smx]
+//help SpeakingList.smx
+
+[l4d_spectator_prefix.smx]
+//when player on spectator team, add name prefix
+
+-left4dead\addons\sourcemod\gamedata 
+[l4d_vomit.txt]
+//signature for l4d_vomit_pounce_fix.smx
+
+[voiceannounce_ex.games.txt]
+//help voiceannounce_ex.smx
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4dready_scrds.smx]
+//secret easter egg bonesaw ready up (say !bonesaw)
+
+[l4d_versus_spechud.smx]
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//v8.1
+
+[rotoblin.smx]
+//(All mode) When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get kicked unless it's a Boomer or has someone capped.
+//Survivor who is Incapacitated will not hurt other teammate with pistol
+
+[l4d_NoRescueFirstTank.smx]
+//fix the sacrifice finale map, server doesn't force the chosen player to become the tank
+
+[bequiet.smx]
+//shut up "change name"
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+//v8.1.1
+
+[server_pub_convars.cfg]
+//uzi ammo: 480
+//director_pain_pill_density: 1.5 (was 1)
+
+[server_shared_convars.cfg]
+//⠀⠀⠀*Reload speed: 2.23->1.75 (Acemod: 1.75 - Zonemod 1.9.4: 1.88) 
+//⠀⠀ *Ammo: 480->750 (Acemod: 800 - Zonemod 1.9.4: 750) 
+//⠀⠀ *Damage: 20->22 (Acemod: 20 - Zonemod 1.9.4: 22)
+//Pump Shotgun Weapon modify
+//⠀⠀ *Ammo: 128->96 (Acemod: 96 - Zonemod 1.9.4: 80) 
+
+[rotoblin_witch_party_convar.cfg]
+//uzi ammo: 1000
+
+[rotoblin_hardcore_2v2_map.cfg]
+[rotoblin_hardcore_3v3_map.cfg]
+[rotoblin_hardcore_4v4_map.cfg]
+[rotoblin_hardcore_5v5_map.cfg]
+//Spawntimers:
+//(5v5): 15s (was 16s)
+//(4v4): 12s (was 13s)
+//(3v3): 10s (unchanged)
+//(2v2): 7s (unchanged)
+//(1v1): 1s (unchanged)
+
+[rotoblin_hunters_4v5.cfg]
+//close infectet bot hud
+
+[rotoblin_hardcore_2v2_map.cfg]
+[rotoblin_hardcore_3v3_map.cfg]
+[rotoblin_nob_3v3_map.cfg]
+[rotoblin_nob_2v2_map.cfg]
+[rotoblin_hunters_5v5_map.cfg]
+[rotoblin_hunters_4v4_map.cfg]
+//sv_alltalk on only when 1v1,2v2,3v3
+
+[rotoblin_Dark_Coop_convar.cfg]
+[rotoblin_hardcore_4v4_classic_convar.cfg]
+[rotoblin_witch_party_convar.cfg]
+[server_shared_convars.cfg]
+[server_pub_convars.cfg]
+//AI less retarded Convars
+
+-left4dead\addons\stripper\maps 
+[l4d_vs_hospital01_apartment.cfg]
+//block the doors
+//block jumping off building to death before leaving saferoom
+
+[l4d_vs_hospital04_interior.cfg]
+//delete some doors for tank fight area
+//add coca cola light on the car :D
+
+[l4d_vs_airport01_greenhouse.cfg]
+//add the visible barriers on top of saferoom for infected
+//invisible wall on top of saferoom prevent infected fall
+
+[l4d_vs_airport03_garage.cfg]
+//add rocks invisible walls to block the skip patch near alarm car
+
+[l4d_vs_airport04_terminal.cfg]
+//add more barricades
+
+[l4d_vs_farm04_barn.cfg]
+//add new trains to block the path
+//add roto2 path
+
+	       ***txt***
+-left4dead\scripts
+[weapon_smg.txt]
+//Uzi Weapon modify
+//⠀⠀⠀*Still Spread: 0.32->0.20 (Acemod: 0.20 - Zonemod 1.9.4: 0.26)
+//⠀⠀⠀*Moveing Spread: 3.0->1.65 (Acemod: 1.65 - Zonemod 1.9.4: 1.85) 
+//⠀⠀⠀*Damage Drop-off: 0.84->0.84 (unchanged) 
