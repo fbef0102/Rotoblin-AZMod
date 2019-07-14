@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1
+v8.1.1
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -113,17 +113,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.20 (Acemod: 0.20 - Zonemod 1.9.4: 0.26)
-  * Moveing Spread: 3.0->1.65 (Acemod: 1.65 - Zonemod 1.9.4: 1.85)
-  * Ammo: 480->750 (Acemod: 800 - Zonemod 1.9.4: 750) 
+  * Still Spread: 0.32->0.20 (**Acemod: 0.20** - Zonemod 1.9.4: 0.26)
+  * Moveing Spread: 3.0->1.65 (**Acemod: 1.65** - Zonemod 1.9.4: 1.85)
+  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.4: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.75 (Acemod: 1.75 - Zonemod 1.9.4: 1.88) 
-  * Damage: 20->22 (Acemod: 20 - Zonemod 1.9.4: 22)
+  * Reload Speed: 2.23->1.75 (**Acemod: 1.75** - Zonemod 1.9.4: 1.88) 
+  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.4: 22**)
   * Limit: None
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->96 (Acemod: 96 - Zonemod 1.9.4: 80) 
+  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.4: 80) 
   * Limit: None
       
 * **Hunting Rifle**
