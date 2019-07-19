@@ -21,6 +21,10 @@
 [voiceannounce_ex.games.txt]
 //help voiceannounce_ex.smx
 
+-left4dead\addons\stripper\maps 
+[l4d_vs_city17_01.cfg]
+//change positions of shotgun and smg at the begining
+
 ------------------Delete------------------
 
 ------------------Modify------------------
@@ -113,6 +117,9 @@
 [l4d_vs_farm04_barn.cfg]
 //add new trains to block the path
 //add roto2 path
+
+[l4d_vs_smalltown03_ranchhouse.cfg]
+//block a high tickrate shortcut to skip part of the train choke
 
 	       ***txt***
 -left4dead\scripts
