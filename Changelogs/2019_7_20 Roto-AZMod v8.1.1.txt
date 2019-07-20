@@ -47,6 +47,12 @@
 [bequiet.smx]
 //shut up "change name"
 
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//fix linux 
+
+[l4dscores.smx]
+// show panel message "The Survivors have made it 25%/50%/75% of the way!"
+
 	       ***cfg***
 -left4dead\cfg 
 [server.cfg]
@@ -120,6 +126,9 @@
 
 [l4d_vs_smalltown03_ranchhouse.cfg]
 //block a high tickrate shortcut to skip part of the train choke
+
+[l4d_vs_farm05_cornfield.cfg]
+//add rock, prevent survivors from using map bug
 
 	       ***txt***
 -left4dead\scripts
