@@ -53,6 +53,30 @@
 [l4dscores.smx]
 // show panel message "The Survivors have made it 25%/50%/75% of the way!"
 
+[l4d_godframes_and_hittable_control.smx]
+//tank rage refill when hittable incapacitated survivors
+//Precise control over invulnerability (god frames)
+  * Hunter: **1.8s**
+  * Smoker: **0s**
+  * Received:
+     * *(Incap)*: **0s**
+     * *(Hangledge)*: **0s**
+  * Common Extra Time:
+     * *(Hunter)*: **+0s**
+     * *(Smoker)*: **+1.8s**
+  * FF Extra Time:
+     * *(Hunter)*: **+0s**
+     * *(Smoker)*: **+0.8s**
+	 
+[l4d2_ai_damagefix.smx]
+//optimize code
+
+[l4dinfectedbots.smx]
+//show who changes hunter limit and timer
+
+[l4d_witchglow.smx]
+//better glow entity
+
 	       ***cfg***
 -left4dead\cfg 
 [server.cfg]

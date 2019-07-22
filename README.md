@@ -228,6 +228,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * It always takes 5 scratches from an infected player to kill a common infected
     * Players cannot scratch while in the stumble animation.
     * **sm_respec** force the spectator player to respectate, only used by infected.
+	* show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
     
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -340,6 +341,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Stops Survivors from saying 'Hunter!'
    > **Developer Comment:** sometimets survivors didn't see the silence hunter but their mouth keep saying 'Hunter!'
   * Removes pills from bots if they try to use them and restores them when a human takes over.
+  * AI Bots less retarded Convars
+  * Blocks the stupid griefers who spam vocalize commands throughout after round is live.
+  * show who triggers the horde event like start final rescue, shoot alarm car, etc.
+  * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
@@ -348,10 +353,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * *(Incap)*: **0s**
      * *(Hangledge)*: **0s**
   * Common Extra Time: 
-     * *(Hunter)*: **+0.6s**
-     * *(Smoker)*: **+0.6s**
+     * *(Hunter)*: **+0s**
+     * *(Smoker)*: **+1.8s**
   * FF Extra Time: 
-     * *(Hunter)*: **+0.8s**
+     * *(Hunter)*: **+0s**
      * *(Smoker)*: **+0.8s**
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
    > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
@@ -361,12 +366,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Allows spectators to control their own specspeed and move vertically.
   * Spectators can see the witch glow and hittable prop glow.
   * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **!hear**.
-  * Spectators can not call a vote, start the match, or pause the game. To do these, they must be in-game first.
+  * Spectators can see in-game players mic speak list. To close this feature, use **!speaklist** to toggle On/Off.
+  * Spectators can't call a vote, start the match, or pause the game. To do these, they must be in-game first.
   * **!s,!spectate,!afk,!away** will help you respectate again, use these commands if 
      * spectator camera being stuck
      * spectator blocks infected teamicon
   * Added **!kickspec**, this will start a vote to kick all non-adm spectators.
-  * **sm_speaklist** toggle On/Off player mic speak list hint
   * when player on spectator team, add name prefix
      * Remove prefix when in-game
 	 
@@ -378,11 +383,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode
 * **sm_current** to display the survivor's percentage progress through the map.
 * **!shuffle, !mixteam** - shuffle and mix
-* Blocks the stupid griefers who spam vocalize commands throughout after round is live.
 * Replacement of standard player connected message. Joining players will have their geo-location announced.
 * The round does not go live until each player has readied up if ready plugin enable.
-* l4d_pig_infected_notify.smx to show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
-* l4d_panic_notify .smx to show who triggers the horde event like start final rescue, shoot alarm car, etc.
 * Some player statistics are printed out at end of round.
 * **sm_flip** to flip a coin, or **sm_roll #** to roll a die.
 * Announce msg who the fking idiot TK you
@@ -397,8 +399,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
 * Voice Announce. Print To Center Message who is Speaking. With cookies
 * secret easter egg trophy ready up
-* AI less retarded Convars
-
 - - - -
 ### Others ###
 * [Our Group](https://steamcommunity.com/groups/ibserver)
