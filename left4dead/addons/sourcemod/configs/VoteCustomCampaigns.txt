@@ -1,0 +1,33 @@
+"VoteCustomCampaigns"
+{
+	"1"
+	{
+		"mapinfo"		"l4d_vs_city17_01"
+		"mapname"		"第17號城市 City17"
+	}
+	"2"
+	{
+		"mapinfo"		"l4d_vs_stadium1_apartment"
+		"mapname"		"亡命速決 Suicide Blitz"
+	}
+	"3"
+	{
+		"mapinfo"		"l4d_ihm01_forest"
+		"mapname"		"我恨山 I hate mountain"
+	}
+	"4"
+	{
+		"mapinfo"		"l4d_vs_deadflagblues01_city"
+		"mapname"		"死亡記憶 Dead Flag Blues"
+	}
+	"5"
+	{
+		"mapinfo"		"l4d_dbd_citylights"
+		"mapname"		"活死人黎明 Dead Before Dawn"
+	}
+	"6"
+	{
+		"mapinfo"		"l4d_jsarena01_town"
+		"mapname"		"死亡舞台 The Arena of the Dead"
+	}
+}

@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1.1
+v8.1.2
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
@@ -35,6 +35,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Advertisements: -left4dead/addons/sourcemod/configs/advertisements.txt
   * HostName: -left4dead/addons/sourcemod/configs/hostname/server_hostname.txt
   * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt、sm_l4dco_mapchanger.txt
+  * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Server password、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
@@ -174,7 +175,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Hunters don't fall off of walls after being shot.
    * AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
    * Players cannot skip their deathcam by pressing space or clicking.
-   * Block Infected player who use E spawn expolit to teleport to survivor
+   * Block Infected player who use E+spawn expolit to teleport to survivor
+        * use E+Spawn Glitch twice will be kicked and banned
    * Block pumpshotgunswap quick shoot
    * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
    * Ammo pickup fix
@@ -189,6 +191,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Blocks all button presses during stumbles
    * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
    * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
+   * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
    
 - - - -
 ### Gameplay / Balance Changes ###
