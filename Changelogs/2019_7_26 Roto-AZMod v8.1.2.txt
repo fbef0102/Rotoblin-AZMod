@@ -27,7 +27,20 @@
 //infected player who use E+Spawn Glitch Spawn twice will be kicked and banned
 //After AI Infected Bots die, kick AI clients to prevent saferoom unlimited ghost spawn bug
 
+[l4d_tank_props.smx]
+//smooth prop glow
+
+[l4d_witchglow.smx]
+//smooth prop glow
+
 	       ***cfg***
 -left4dead\cfg 
 [server.cfg]
 //v8.1.2
+
+[rotoblin_Dark_Coop_convar.cfg]
+[rotoblin_hardcore_4v4_classic_convar.cfg]
+[rotoblin_witch_party_convar.cfg]
+[server_pub_convars.cfg]
+[server_shared_convars.cfg]
+//delete a convar =_-
