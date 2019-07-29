@@ -1,0 +1,32 @@
+"Games" 
+{ 
+    "left4dead" 
+    { 
+        "Functions" 
+        { 
+            "WitchLocomotion::IsAreaTraversable" 
+            { 
+                "signature"  "WitchLocomotion::IsAreaTraversable" 
+                "callconv"  "thiscall" 
+                "return"  "bool" 
+                "this"  "ignore" 
+                "arguments" 
+                { 
+                    "NavArea" 
+                    { 
+                        "type"    "int" 
+                    } 
+                } 
+            } 
+        }  
+        "Signatures" 
+        { 
+            "WitchLocomotion::IsAreaTraversable" 
+            { 
+                "library"        "server" 
+                "linux"        "@_ZNK15WitchLocomotion17IsAreaTraversableEPK8CNavArea" 
+                "windows"        "\x56\x57\x8B\x7C\x24\x0C\x6A\x00\x8B\xF1" 
+            }    /*56 57 8B 7C 24 0C 6A 00 8B F1 */ 
+        } 
+    } 
+}  

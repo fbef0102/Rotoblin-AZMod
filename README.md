@@ -273,6 +273,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team
     * Instantly incapacitate Survivors
+    * Allows witches to chase victims into safezones
   * **Smoker:**
     * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
   * **Hunter:**

@@ -4,6 +4,9 @@
 [AntiBreach.smx]
 //Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door.
 
+[l4d1_witch_allow_in_safezone.smx]
+//Allows witches to chase victims into safezones
+
 -left4dead\addons\sourcemod\configs
 [VoteCustomCampaigns.txt]
 //custom map vote list
@@ -11,6 +14,10 @@
 -left4dead\addons\stripper\maps
 [l4d_vs_deadflagblues03_arena.cfg]
 //remove AI Tank Spawn event
+
+-left4dead\addons\sourcemod\gamedata
+[witch_allow_in_safezone.txt]
+//signature for l4d1_witch_allow_in_safezone.smx
 
 ------------------Delete------------------
 
