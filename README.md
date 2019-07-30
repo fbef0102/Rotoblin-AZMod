@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1.2
+v8.1.3
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 > **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
