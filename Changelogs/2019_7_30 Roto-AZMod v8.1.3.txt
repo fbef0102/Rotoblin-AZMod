@@ -1,0 +1,22 @@
+﻿v8.1.3
+------------------New------------------
+-left4dead\addons\sourcemod\plugins 
+[l4d1_witch_allow_in_safezone.smx]
+//Allows witches to chase victims into safezones
+
+-left4dead\addons\sourcemod\gamedata
+[witch_allow_in_safezone.txt]
+//signature for l4d1_witch_allow_in_safezone.smx
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4d_tank_control.smx]
+//fix linux two tanks spawn sometimes
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+//v8.1.3
