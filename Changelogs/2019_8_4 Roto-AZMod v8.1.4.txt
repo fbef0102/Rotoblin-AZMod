@@ -1,0 +1,47 @@
+﻿v8.1.4
+------------------New------------------
+-left4dead\addons\sourcemod\plugins\optional
+[l4d2_ssi_teleport_fix.smx]
+//AI infected will teleport to the SI who is the closet to survivors
+
+[l4d2_si_ladder_booster.smx]
+//SI ladder speed booster
+
+-left4dead\addons\sourcemod\plugins
+[l4d_sm_respawn.smx]
+//adm respawn player without sv_cheats 1
+
+-left4dead\addons\sourcemod\configs
+[adminmenu_custom.txt]
+//add menu: Changemap、Respawn Player
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins\optional 
+[l4d_multiwitch.smx]
+//still spawn witch when survivors reach the saferoom
+
+-left4dead\addons\sourcemod\plugins
+[kills.smx]
+//don't print kills statics when 6+ survivors
+
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//fix dealt dmg to tank table
+
+[rotoblin.smx]
+//precise E+Spawn glitch dectet and ban player
+
+[l4d_texture_manager_block.smx]
+//more mathack command detection
+//add convar "l4d1_penalty", "1", "1 - kick clients, 0 - record players in log file (sourcemod/logs/mathack_cheaters.txt)"
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+//v8.1.4
+
+[others]
+//adjust Dark Coop、Witch Party、multihunter convars
+//load and unload l4d2_ssi_teleport_fix.smx、l4d2_si_ladder_booster.smx

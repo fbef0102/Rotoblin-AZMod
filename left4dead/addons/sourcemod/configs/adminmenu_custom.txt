@@ -1,0 +1,54 @@
+// Custom admin menu commands.
+// For more information:
+//
+// http://wiki.alliedmods.net/Custom_Admin_Menu_%28SourceMod%29
+//
+// Note: This file must be in Valve KeyValues format (no multiline comments)
+//
+
+"Commands"
+{
+	"Changemap"
+	{
+		"Blood Harvest"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_farm01_hilltop"
+		}
+		"Death Toll"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_smalltown01_caves"
+		}
+		"Dead Air"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_airport01_greenhouse"
+		}
+		"No Mercy"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_hospital01_apartment"
+		}
+		"Sacrifice"
+		{
+			"cmd" "sm_rcon changelevel l4d_river01_docks"
+		}
+		"Crash Course"
+		{
+			"cmd" "sm_rcon changelevel l4d_garage01_alleys"
+		}
+
+	}
+    "PlayerCommands"
+    {
+        "Respawn Survivor"
+        {
+            "cmd"        "sm_respawn #1"
+            "admin"        "sm_kick"
+            "execute"    "player"
+            "1"
+            {
+                "type"        "player"
+                "method"    "name"
+                "title"        "Player:"
+            }
+        }
+    }
+}

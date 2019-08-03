@@ -1,8 +1,9 @@
 # Rotoblin-AZMod
-v8.1.3
+v8.1.4
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
-> **Developer Comment:** My English is bad, if you guys do not understand the meanings of some paragraphes, add and PM me.
+* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
+> **Developer Comment:** Report any bug? Ask any question? Our English bad, add us via steam.
 
 **LINUX/WINDOWS SERVERS WORK**
 
@@ -55,7 +56,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached   to the sm_admin menu
   * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
   * Adm type **!slots <#>** to forcechange server slots
-  * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/Roto-AZMod%20Adm%20Commands.png)
+  * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Adm%20Commands.png)
+  * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Everyone%20Commands.png)
 
 - - - -
 ### Gamemodes(!load, !match, !mode) ###
@@ -267,13 +269,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Lag compensation for tank rocks + custom damage & range values.
     > **Developer Comment:** This plugin provides lag compensation as well as cvars for weapon damage & range values on tank rocks. It's very helpful for high ping players shooting the tank rock. Click [AlliedModders](https://forums.alliedmods.net/showthread.php?p=2646073) and see more detals on how it works.
   * **Witch:**
-    * Announce in chat and via a sound when a Which has spawned
+    * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team
     * Instantly incapacitate Survivors
-    * Allows witches to chase victims into safezones
+    * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
   * **Smoker:**
     * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
   * **Hunter:**
@@ -325,8 +327,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Death Toll
     * Dead Air
     * Blood Harvest
-    * CITY17、Suicide Blitz、I Hate Mountains、Dead Flag Blues、Dead Before Dawn、The Arena of the Dead
-    * The Sacrifice
+    * Custom addon maps
     > **Developer Comment:** This means Finale tanks are limited to 2. No First Tank Spawn as the final rescue start. We make these changes to make final more balance and playable, we also encourage players to make a comeback to win.
   * **Finales with 3 event Tanks:**
     * The Sacrifice
@@ -402,9 +403,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Addes dynamic lights to handheld throwables
 * Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
 * Voice Announce. Print To Center Message who is Speaking. With cookies
-* secret easter egg trophy ready up
+* **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
+
 - - - -
 ### Others ###
 * [Our Group](https://steamcommunity.com/groups/ibserver)
-* [Report Bug Here](https://steamcommunity.com/groups/ibserver/discussions/0/3397295779068387038/)
-* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Rule%26developer/developer.cfg)
+
