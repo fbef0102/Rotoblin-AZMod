@@ -23,6 +23,9 @@
 [l4d_multiwitch.smx]
 //still spawn witch when survivors reach the saferoom
 
+[l4d_storm.smx]
+//fixed client wrong infection
+
 -left4dead\addons\sourcemod\plugins
 [kills.smx]
 //don't print kills statics when 6+ survivors
@@ -37,7 +40,20 @@
 //more mathack command detection
 //add convar "l4d1_penalty", "1", "1 - kick clients, 0 - record players in log file (sourcemod/logs/mathack_cheaters.txt)"
 
+[l4d_tank_control.smx]
+//support restartmap
+
+[l4d_team_unscramble.smx]
+//support restartmap
+
+[l4dscores.smx]
+//support restartmap
+
 	       ***cfg***
+-left4dead\addons\sourcemod\data
+[l4d1_versus_modifier.cfg]
+//非官方地圖難度倍數分數修改
+
 -left4dead\cfg 
 [server.cfg]
 //v8.1.4
@@ -45,3 +61,10 @@
 [others]
 //adjust Dark Coop、Witch Party、multihunter convars
 //load and unload l4d2_ssi_teleport_fix.smx、l4d2_si_ladder_booster.smx
+
+-left4dead\addons\stripper\maps
+[l4d_vs_hospital01_apartment.cfg]
+//fire barricades
+
+[l4d_vs_smalltown04_mainstreet.cfg]
+//block roof
