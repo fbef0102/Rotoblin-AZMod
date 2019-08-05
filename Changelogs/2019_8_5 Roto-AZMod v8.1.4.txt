@@ -49,6 +49,9 @@
 [l4dscores.smx]
 //support restartmap
 
+[votes3.smx]
+//fix custom map string overflow
+
 	       ***cfg***
 -left4dead\addons\sourcemod\data
 [l4d1_versus_modifier.cfg]
