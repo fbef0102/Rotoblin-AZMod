@@ -52,6 +52,10 @@
 [votes3.smx]
 //fix custom map string overflow
 
+[l4d_versus_specListener3.0.smx]
+[SpeakingList.smx]
+//add convar: "specListener_enable", "1", "Enable Hear Feature? [0-Disable, 1-Enable]"
+
 	       ***cfg***
 -left4dead\addons\sourcemod\data
 [l4d1_versus_modifier.cfg]
