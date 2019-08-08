@@ -56,6 +56,9 @@
 [SpeakingList.smx]
 //add convar: "specListener_enable", "1", "Enable Hear Feature? [0-Disable, 1-Enable]"
 
+[tankdoorfix.smx]
+//fixed 18+ players crashed
+
 	       ***cfg***
 -left4dead\addons\sourcemod\data
 [l4d1_versus_modifier.cfg]
@@ -75,3 +78,9 @@
 
 [l4d_vs_smalltown04_mainstreet.cfg]
 //block roof
+
+	       ***txt***
+-left4dead\scripts
+[weapon_smg.txt]
+//uzi dmg: 20 (was 22)
+

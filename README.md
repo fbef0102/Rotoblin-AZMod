@@ -106,12 +106,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
  	* reduce pills on the road
   
 * **Support Custom maps:**
-  * [City 17](https://www.gamemaps.com/details/2406)
-  * [Suicide Blitz](https://www.gamemaps.com/details/2334)
-  * [Dead Flag Blues](https://www.gamemaps.com/details/2379)
-  * [I Hate Mountains](https://www.gamemaps.com/details/2595)
-  * [Dead Before Dawn](https://www.gamemaps.com/details/2661)
-  * [The Arena of the Dead](https://www.gamemaps.com/details/2214)
+  * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
+  * [Suicide Blitz](https://drive.google.com/file/d/17dWmDEv72Vb7zCgdWyDRg6RERaXCNpAi/view?usp=sharing)
+  * [Dead Flag Blues](https://drive.google.com/file/d/1cca3Pj99A7K8UnHHd6wgpeUD1jn87JuM/view?usp=sharing)
+  * [I Hate Mountains](https://drive.google.com/file/d/188UqXYB7BKFMMduIs7w5CbST2lMJ2-5S/view?usp=sharing)
+  * [Dead Before Dawn](https://drive.google.com/file/d/1_r9HJBdqN8ziejW7Y486TioJwPOIsC6i/view?usp=sharing)
+  * [The Arena of the Dead](https://drive.google.com/file/d/1dv8kkhzV0E2c2usfyANNzCDKs4cG4ARD/view?usp=sharing)
   
 - - - -
 ### Weapon Adjustments ###
@@ -121,7 +121,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.4: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
   * Reload Speed: 2.23->1.75 (**Acemod: 1.75** - Zonemod 1.9.4: 1.88) 
-  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.4: 22**)
+  * Damage: 20->20 (unchanged, **Acemod: 20** - Zonemod 1.9.4: 22)
   * Limit: None
       
 * **Pumpshotgun**
