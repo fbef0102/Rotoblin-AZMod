@@ -59,6 +59,9 @@
 [tankdoorfix.smx]
 //fixed 18+ players crashed
 
+[l4dcompstats.smx]
+//fixed message "you shut down your own boomer"
+
 	       ***cfg***
 -left4dead\addons\sourcemod\data
 [l4d1_versus_modifier.cfg]
