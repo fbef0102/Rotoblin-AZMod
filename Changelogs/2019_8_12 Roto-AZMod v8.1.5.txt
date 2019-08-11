@@ -1,0 +1,25 @@
+﻿v8.1.5
+------------------New------------------
+
+------------------Delete------------------
+
+------------------Modify------------------
+	       ***txt***
+-left4dead\scripts
+[weapon_smg.txt]
+//* Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.4: 0.26**)
+//* Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.4: 1.85**)
+//* Damage Drop-off: 0.84->0.79 (Acemod: 0.84 - **Zonemod 1.9.4: 0.79**)
+//* Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.4: 22**)
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+//v8.1.5
+
+[rotoblin_witch_party_convar.cfg]
+[server_shared_convars.cfg]
+//* Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.4: 750**) 
+//* Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.4: 1.88**) 
+
+

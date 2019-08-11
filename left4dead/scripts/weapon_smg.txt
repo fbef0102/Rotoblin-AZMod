@@ -2,13 +2,13 @@ WeaponData
 {
 	// Terror-specific Data --------------------
 	"VerticalPunch"			"0.9"
-	"SpreadPerShot"			"0.20"
+	"SpreadPerShot"			"0.26"
 	"MaxSpread"			"30"
 	"SpreadDecay"			"5"
 	"MinDuckingSpread"		"0.7"
 	"MinStandingSpread"		"1.0"
 	"MinInAirSpread"		"1.7"
-	"MaxMovementSpread"		"1.65"
+	"MaxMovementSpread"		"1.85"
 	"AddonAttachment"		"primary"
 
 	// 360 Terror Data
@@ -41,9 +41,9 @@ WeaponData
 	"PenetrationPower"			"30"
 	"PenetrationMaxDistance"	"0"	// none
 
-	"Damage"			"20"
+	"Damage"			"22"
 	"Range"				"2500"
-	"RangeModifier"			"0.84"
+	"RangeModifier"			"0.79"
 	"Bullets"			"1"
 	"CycleTime"			"0.0625"
 
