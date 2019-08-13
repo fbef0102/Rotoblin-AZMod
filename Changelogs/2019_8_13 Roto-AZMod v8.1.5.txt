@@ -4,6 +4,14 @@
 ------------------Delete------------------
 
 ------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins
+[l4d_texture_manager_block.smx]
+//block auto behop commands from l4dbhop.dll
+
+[l4d_versus_specListener3.0.smx]
+//fixed native
+
 	       ***txt***
 -left4dead\scripts
 [weapon_smg.txt]
@@ -20,5 +28,9 @@
 [server_shared_convars.cfg]
 //* Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.4: 750**) 
 //* Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.4: 1.88**) 
+
+-left4dead\addons\stripper\maps
+[l4d_vs_city17_03.cfg]
+//C17 m3: add board to get on ladder
 
 
