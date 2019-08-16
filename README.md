@@ -48,8 +48,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Admin Tips:
   * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins or set bequiet's "bq_show_player_team_chat_spec" cvar to 0.
   * l4d_versus_specListener3.0.smx comes with a "Spec-Listening Feature", even if sv_alltalk 0, spectators can still see in-game players teamchat and hear their mic voice. To close this feature, use **sm_hear**.
-  * TickRateFixes.smx now also fixes Server Gravity and Pistol Scripts.
+  * TickRateFixes now also fixes Slow Doors and Pistol Scripts, useful for use with other configs.
     * Make sure you're not loading l4dpistoldelay if you're using this Plugin.
+    * Make sure you don't have any adjustments to prop_rotating and prop_rotating_checkpoint speeds in your cfg/stripper folder.
+    * The cvar controlling the door speed is "tick_door_speed" and is set to 2.0 by default, 128 Tick requires this to be set to 2.5 in your server_rates.cfg
+	  - *tickrate 128*: **tick_door_speed 2.5**
+	  - *tickrate 100*: **tick_door_speed 2.0**
+	  - *tickrate 60*: **tick_door_speed 1.5**
+	  - *tickrate 30*: **tick_door_speed 1.0**
   * Specrates.smx is a useful plugin to reduce server load causes by spectators.
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
