@@ -39,4 +39,9 @@
 [l4d_vs_city17_03.cfg]
 //C17 m3: add board to get on ladder
 
-
+[l4d_vs_stadium5_stadium.cfg]
+[l4d_vs_stadium4_city2.cfg]
+[l4d_vs_stadium3_city1.cfg]
+[l4d_vs_stadium1_apartment.cfg]
+[l4d_vs_stadium2_underground.cfg]
+//spawn ammo 
