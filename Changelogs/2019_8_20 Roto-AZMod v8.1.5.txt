@@ -1,5 +1,12 @@
 ﻿v8.1.5
 ------------------New------------------
+-left4dead\addons\sourcemod\plugins
+[firebulletsfix.smx]
+//Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving.
+
+-left4dead\addons\sourcemod\gamedata
+[dhooks.weapon_shootposition.txt]
+//offset for firebulletsfix.smx
 
 ------------------Delete------------------
 
@@ -14,6 +21,9 @@
 
 [TickrateFixes.smx]
 //TickRateFixes now also fixes Slow Doors and Pistol Scripts, useful for use with other configs.
+
+[SpeakingList.smx]
+//English
 
 	       ***txt***
 -left4dead\scripts
@@ -45,3 +55,14 @@
 [l4d_vs_stadium1_apartment.cfg]
 [l4d_vs_stadium2_underground.cfg]
 //spawn ammo 
+
+[l4d_dbd_anna_is_gone.cfg]
+[l4d_dbd_citylights.cfg]
+[l4d_dbd_clean_up.cfg]
+[l4d_dbd_new_dawn.cfg]
+[l4d_dbd_the_mall.cfg]
+//dead before dawn map remove the radio voice
+
+[l4d_jsarena01_town.cfg]
+[l4d_vs_smalltown01_caves.cfg]
+//zm 194 stripper

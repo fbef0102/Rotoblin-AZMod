@@ -18,13 +18,13 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
       * Make sure your server is stopped.
       * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
   * Requirements:
-      * [Windows Server files](https://drive.google.com/uc?id=1Tg5GSfnfDU4swxoB_dsk8ek79Jg_ZSZr&export=download) or [Linux Server files](https://drive.google.com/uc?id=1R3ByWyc6GyB-kVcf0lpSCf_BPdfXsGWC&export=download)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
+      * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
       * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
       * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Launch parameters:
     * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
   * Optional:
-    * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/tree/master/Sourcemod%20Anti-Cheat) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+    * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
     * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
     
 **Warning: If you try to use the plugins which are included in this package in other configs, plugins may not work correctly
@@ -38,7 +38,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt、sm_l4dco_mapchanger.txt
   * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
-  * Server password、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
+  * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
     * do not overwrite any plugin that's existed.
   * To make it easy for personal configuration for certain plugins, there's an added "server_custom_convars.cfg" in the left4dead/cfg/Reloadables folder.
@@ -410,6 +410,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
 * Voice Announce. Print To Center Message who is Speaking. With cookies
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
+* Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
 
 - - - -
 ### Others ###

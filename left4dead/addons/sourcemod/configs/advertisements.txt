@@ -26,11 +26,11 @@
     }
     "2"
     {
-		"chat"			"{lightgreen}cl_interp 0; cl_interp_ratio 0"
+		"chat"			"{lightgreen}Lerp 0: cl_interp 0; cl_interp_ratio 0"
     }
 	"3"
     {
-        "chat"			"{lightgreen}!sur: Survivor, !inf:Infected, !s:Spectators, !r: Ready"
+        "chat"			"{lightgreen}!sur:Survivor, !inf:Infected, !s:Spectators, !r:Ready"
     }
 	"4"
     {
