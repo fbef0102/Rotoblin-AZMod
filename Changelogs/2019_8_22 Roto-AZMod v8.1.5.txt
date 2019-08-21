@@ -4,6 +4,9 @@
 [firebulletsfix.smx]
 //Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving.
 
+[l4d_bossvote.smx]
+//Allow players to change server slots by using vote.
+
 -left4dead\addons\sourcemod\gamedata
 [dhooks.weapon_shootposition.txt]
 //offset for firebulletsfix.smx
@@ -24,6 +27,20 @@
 
 [SpeakingList.smx]
 //English
+
+[l4d_tank_control.smx]
+//!settankplayer <name>: force this player become tank (adm commands)
+
+[l4d_boss_percent.smx]
+//create native
+
+[l4dready_scrds.smx]
+[l4d_versus_spechud.smx]
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//get tank/witch percent correctly
+
+[lerptracker.smx]
+//3 lerp changes limit after round starts
 
 	       ***txt***
 -left4dead\scripts
