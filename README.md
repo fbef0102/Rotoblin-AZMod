@@ -339,6 +339,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * The Sacrifice
   * Second tank spawns same position for both team
   * No Tank Spawn as the rescue vehicle is coming
+  * **sm_voteboss <tank> <witch>** Boss Percents Vote
     
 * Survivors(!sur):
   * Still Water Slowdown with or without Tank Fights.
@@ -356,6 +357,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Blocks the stupid griefers who spam vocalize commands throughout after round is live.
   * show who triggers the horde event like start final rescue, shoot alarm car, etc.
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
+  * Enlarge car alarm distance
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
