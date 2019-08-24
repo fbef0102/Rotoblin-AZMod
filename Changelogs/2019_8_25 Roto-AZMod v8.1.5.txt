@@ -42,6 +42,11 @@
 [l4d_Harry_Roto2-AZ_mod_info.smx]
 //get tank/witch percent correctly
 
+[l4d_versus_same_UnprohibitBosses.smx]
+[l4d_witchspawnfix_whentank.smx]
+[l4d2_witch_restore.smx]
+//fix c17 map1 no witch restore after tank kills witch
+
 [lerptracker.smx]
 //3 lerp changes limit after round starts
 
