@@ -1,0 +1,48 @@
+﻿v8.1.6
+------------------New------------------
+-left4dead
+[myhost.txt]
+[mymotd.txt]
+//This ensures that Valve doesn't overwrite the MoTD and Hostfile every Update.      [Edit this file instead of motd.txt, found in the same folder (/left4dead)]
+
+------------------Delete------------------
+-left4dead
+[host.txt]
+[motd.txt]
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins
+[lerptracker.smx]
+//fix message
+
+[l4dcompstats.smx]
+//when hunter pounces survivor, print health remaining to attacker and victim
+
+[rotoblin.smx]
+//time count when pause
+
+[l4dready_scrds.smx]
+//time count when ready
+
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_tankhud.smx]
+//tankhud close when pause game
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+//v8.1.6
+//Some tweaking convars from sir: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/cfg/server.cfg
+
+-left4dead\addons\stripper\maps
+[l4d_vs_stadium2_underground.cfg]
+[l4d_vs_stadium3_city1.cfg]
+[l4d_vs_stadium4_city2.cfg]
+//delete prop_fuel_barrel (because they are different random positions between first round and second round)
+
+[l4d_vs_hospital04_interior.cfg]
+//add path for above roof tank spawn before elevator
+
+[l4d_vs_smalltown03_ranchhouse.cfg]
+//block ambulance dog hole

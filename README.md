@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1.5
+v8.1.6
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
@@ -8,7 +8,7 @@ v8.1.5
 **LINUX/WINDOWS SERVERS WORK**
 
 
-A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more balance changes and more difficult challenges. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 60 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 - - - -
 ### Server Admins! ###
 
