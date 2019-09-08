@@ -29,6 +29,9 @@
 [l4d_versus_spechud.smx]
 //translate English
 
+[l4d_texture_manager_block.smx]
+//block cl_fov(fov_override),value not default: 90
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
