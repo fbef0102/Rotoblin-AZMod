@@ -25,7 +25,8 @@
 [l4dready_scrds.smx]
 //time count when ready
 
-[l4d_boss_percent]
+[l4d_boss_percent.smx]
+[l4d_versus_spechud.smx]
 //translate English
 
 -left4dead\addons\sourcemod\plugins\optional
