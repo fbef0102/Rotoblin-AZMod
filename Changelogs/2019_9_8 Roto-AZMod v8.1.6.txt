@@ -25,6 +25,9 @@
 [l4dready_scrds.smx]
 //time count when ready
 
+[l4d_boss_percent]
+//translate English
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
