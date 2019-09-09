@@ -42,6 +42,13 @@
 //v8.1.6
 //Some tweaking convars from sir: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/cfg/server.cfg
 
+[server_rates.cfg]
+//delete Duplicate commands
+
+-left4dead\cfg 
+[server_rates.cfg]
+//delete Duplicate commands
+
 -left4dead\addons\stripper\maps
 [l4d_vs_stadium2_underground.cfg]
 [l4d_vs_stadium3_city1.cfg]
