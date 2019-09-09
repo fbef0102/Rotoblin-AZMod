@@ -60,3 +60,6 @@
 
 [l4d_vs_smalltown03_ranchhouse.cfg]
 //block ambulance dog hole
+
+[l4d_vs_smalltown04_mainstreet.cfg]
+//forget block wall only for survivor =.=
