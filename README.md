@@ -25,6 +25,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
     * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
   * Optional:
     * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+    * [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected.
     * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
     
 **Warning: If you try to use the plugins which are included in this package in other configs, plugins may not work correctly

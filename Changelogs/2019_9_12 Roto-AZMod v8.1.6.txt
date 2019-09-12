@@ -35,6 +35,9 @@
 [firebulletsfix.smx]
 //Fixed redundancy check
 
+[command_buffer.smx]
+//Fixes the 'Cbuf_AddText: buffer overflow' console error on servers, which causes ConVars to use their default value.
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
