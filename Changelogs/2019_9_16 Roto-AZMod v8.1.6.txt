@@ -38,6 +38,9 @@
 [command_buffer.smx]
 //Fixes the 'Cbuf_AddText: buffer overflow' console error on servers, which causes ConVars to use their default value.
 
+[l4dscores.smx]
+//修正linux路程
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
