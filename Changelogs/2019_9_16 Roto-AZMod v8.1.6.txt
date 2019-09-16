@@ -54,10 +54,6 @@
 [server_rates.cfg]
 //delete Duplicate commands
 
--left4dead\cfg 
-[server_rates.cfg]
-//delete Duplicate commands
-
 -left4dead\addons\stripper\maps
 [l4d_vs_stadium2_underground.cfg]
 [l4d_vs_stadium3_city1.cfg]
