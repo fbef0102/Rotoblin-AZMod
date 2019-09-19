@@ -41,6 +41,16 @@
 [l4dscores.smx]
 //修正linux路程
 
+[l4d_passing_Tank_no_instant_respawn.smx]
+//print message for player who passes tank to AI
+
+[l4d_tank_control.smx]
+//sm_settankplayer
+
+[l4d_tank_count.smx]
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+//fixed that the report of the statics for tank does not appear after passing tank to another player
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
