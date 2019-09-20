@@ -51,6 +51,9 @@
 [l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
 //fixed that the report of the statics for tank does not appear after passing tank to another player
 
+[l4d_versus_same_UnprohibitBosses.smx]
+//city 17 map2 tank won't spawn during infinite horde event
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]
 //tankhud close when pause game
