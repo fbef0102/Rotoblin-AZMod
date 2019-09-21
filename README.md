@@ -47,7 +47,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * very useful for Admins wanting to load 1v1~5v5 supported plugins on top of the Configs.
 
 * Admin Tips:
-  * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins or set bequiet's "bq_show_player_team_chat_spec" cvar to 0.
+  * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins.
+    * Block name change announcement
+    * Block server convars change announcement
+    * Block chat with '!' or '/'
   * l4d_versus_specListener3.0.smx comes with a "Spec-Listening Feature", even if sv_alltalk 0, spectators can still see in-game players teamchat and hear their mic voice. To close this feature, use **sm_hear**.
   * TickRateFixes now also fixes Slow Doors and Pistol Scripts, useful for use with other configs.
     * Make sure you're not loading l4dpistoldelay if you're using this Plugin.
