@@ -421,7 +421,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
 * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
-
+* In pub mode, I have to do some changes to prevent idiots and griefers
+     * forces survivors and infected to spectate if they're AFK after certain time
+     * Team Switch is not allowed during the game
+     * Shoot teammate = Shoot yourself
+	 
 - - - -
 ### Others ###
 * [Our Group](https://steamcommunity.com/groups/ibserver)

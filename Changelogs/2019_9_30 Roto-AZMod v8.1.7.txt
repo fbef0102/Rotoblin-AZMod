@@ -8,6 +8,9 @@
 //anti friendly fire
 //add convar anti_friendly_fire_enable
 
+[L4DVSAutoSpectateOnAFK.smx]
+//Forces survivors and infected to spectate if they're AFK after certain time
+
 ------------------Modify------------------
 	       ***plugin***
 -left4dead\addons\sourcemod\plugins
@@ -51,3 +54,8 @@
 [l4d_vs_city17_02.cfg]
 [l4d_vs_city17_04.cfg]
 //add ammo on the road
+
+	       ***txt***
+-left4dead
+[mymotd.txt]
+//server picture
