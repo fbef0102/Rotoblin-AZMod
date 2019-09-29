@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1.6
+v8.1.7
 * [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
@@ -99,6 +99,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Map Changes(!cm) ###
 
 * **General:**
+  * Spawn jukebox
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Pills
@@ -106,7 +107,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * There are few pills on the road (pain_pill_density: 1.5)
      * Final Rescue: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
-  * Spawn jukebox
   * Block "this is restricted area" room where infected ghost can not even spawn
   * Fixed many map tricks and glitches
   * Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps))
@@ -114,6 +114,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 * **The Sacrifice:**
  	* reduce pills on the road
+	
+* **suicide blitz:**
+ 	* delete prop_fuel_barrel (because they are different random positions on first and second round)
   
 * **Support Custom maps:**
   * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
@@ -238,7 +241,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * **These players will NOT be moved back onto the team automatically.**
     * Reduces the SI spawning range on finales to normal spawning range
     * All SI are able to be on fire!!
-    * All SI are now able to break doors with 2 scratches instead of 3
+    * All SI are now able to break doors with 1 scratch instead of 3
     * Hides all weapons and iteams from the infected team or dead survivor until they are (possibly) visible to one of the alive survivors to prevent SI scouting the map
     * It always takes 5 scratches from an infected player to kill a common infected
     * Players cannot scratch while in the stumble animation.
@@ -417,6 +420,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Voice Announce. Print To Center Message who is Speaking. With cookies
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
+* Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
 
 - - - -
 ### Others ###
