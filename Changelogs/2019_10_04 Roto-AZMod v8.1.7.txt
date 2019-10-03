@@ -50,6 +50,10 @@
 //adjust vs_max_team_switches in pub mode
 //All SI are now able to break doors with 1 scratch instead of 3
 
+[rotoblin_pub_hunters.cfg]
+[rotoblin_pub.cfg]
+//replace "Pug" with "Pub", sry my bad :(
+
 -left4dead\addons\stripper\maps
 [l4d_vs_city17_02.cfg]
 [l4d_vs_city17_04.cfg]

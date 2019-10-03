@@ -47,6 +47,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * very useful for Admins wanting to load 1v1~5v5 supported plugins on top of the Configs.
 
 * Admin Tips:
+  * For people who don't like "extra pills", set convar **rotoblin_health_style 3**
+  * For people who don't like "Who will be the tank", set convar **tank_control_disable 1**
   * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins.
     * Block name change announcement
     * Block server convars change announcement
@@ -63,11 +65,16 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Specrates.smx is a useful plugin to reduce server load causes by spectators.
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
-  * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached   to the sm_admin menu
+  * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached to the sm_admin menu
   * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
   * Adm type **!slots <#>** to forcechange server slots
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Adm%20Commands.png)
   * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Everyone%20Commands.png)
+  * Sever Startup default Mod is "Pub VS", still some limits
+    * forces survivors and infected to spectate if they're AFK after certain time
+    * Team Switch is not allowed during the game
+    * Shoot teammate = Shoot yourself
+> **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
 
 - - - -
 ### Gamemodes(!load, !match, !mode) ###
@@ -96,6 +103,18 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * [l4d1 multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
       
 - - - -
+### Votes Menu(!votes) ###
+   * Turn On/Off Ready Plugin
+   * Give HP
+   * Turn On Alltalk
+   * Turn Off Alltalk
+   * Restartmap
+   * Change maps
+   * Change addon map
+   * Kick player
+   * Forcespectate player
+   
+- - - -
 ### Map Changes(!cm) ###
 
 * **General:**
@@ -116,7 +135,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
  	* reduce pills on the road
 	
 * **suicide blitz:**
- 	* delete prop_fuel_barrel (because they are different random positions on first and second round)
+ 	* delete prop_fuel_barrel
   
 * **Support Custom maps:**
   * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
@@ -421,10 +440,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
 * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
-* In pub mode, I have to do some changes to prevent idiots and griefers
-     * forces survivors and infected to spectate if they're AFK after certain time
-     * Team Switch is not allowed during the game
-     * Shoot teammate = Shoot yourself
 	 
 - - - -
 ### Others ###
