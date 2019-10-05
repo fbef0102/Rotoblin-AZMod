@@ -63,3 +63,7 @@
 -left4dead
 [mymotd.txt]
 //server picture
+
+-left4dead\addons\sourcemod\configs
+[advertisements.txt]
+//more information
