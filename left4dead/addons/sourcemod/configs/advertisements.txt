@@ -30,7 +30,7 @@
     }
 	"3"
     {
-        "chat"			"{lightgreen}!sur:Survivor, !inf:Infected, !s:Spectators, !r:Ready"
+        "chat"			"{lightgreen}!sur/!inf/!s: Switch Team, !r:Ready, !pause:Pause Game"
     }
 	"4"
     {
@@ -63,5 +63,33 @@
 	"11"
     {
         "chat"			"{lightgreen}Date: {date}, Time: {time}"
+    }
+	"12"
+    {
+        "chat"			"{lightgreen}Join Our Group: ibserver"
+    }
+	"13"
+    {
+        "chat"			"{lightgreen}Harry's Youtube: youtube.com/c/HarryPotterxToy"
+    }
+	"14"
+    {
+        "chat"			"{lightgreen}!slots、!kickspec、!cm"
+    }
+	"15"
+    {
+        "chat"			"{lightgreen}!cur、!boss、!tankhud、!spechud、!scores、!ps"
+    }
+	"16"
+    {
+        "chat"			"{lightgreen}!health、!kills、!mvp、!lerps、!rates"
+    }
+	"17"
+    {
+        "chat"			"{lightgreen}Let's play a game: !coin、!roll、!code"
+    }
+	"18"
+    {
+        "chat"			"{lightgreen}Multi Hunters mode: !ht、!timer"
     }
 }
