@@ -11,6 +11,9 @@
 [L4DVSAutoSpectateOnAFK.smx]
 //Forces survivors and infected to spectate if they're AFK after certain time
 
+[sv_steamgroup_fixer.smx]
+//Fixes the MOTD Join Group button linking to the wrong Steam Group for some groups.
+
 ------------------Modify------------------
 	       ***plugin***
 -left4dead\addons\sourcemod\plugins
