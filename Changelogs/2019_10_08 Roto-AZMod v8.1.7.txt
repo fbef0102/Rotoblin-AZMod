@@ -14,6 +14,10 @@
 [sv_steamgroup_fixer.smx]
 //Fixes the MOTD Join Group button linking to the wrong Steam Group for some groups.
 
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_wind.smx]
+//create a survivor bot
+
 ------------------Modify------------------
 	       ***plugin***
 -left4dead\addons\sourcemod\plugins
