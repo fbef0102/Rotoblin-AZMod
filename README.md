@@ -1,7 +1,7 @@
 # Rotoblin-AZMod
-v8.1.7
-* [繁體中文說明版](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
-* [简体中文说明版](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
+v8.1.8
+* [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
+* [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
 > **Developer Comment:** Report any bug? Ask any question? Our English bad, add us via steam.
 
@@ -19,6 +19,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
       * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
   * Requirements:
       * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
+      > **Developer Comment:** recommended system **win 10** for windows and **ubuntu** for linux
       * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
       * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Launch parameters:
@@ -46,10 +47,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * To make it easy for personal configuration for certain plugins, there's an added "server_custom_convars.cfg" in the left4dead/cfg/Reloadables folder.
     * Keep in mind that this is a shared cfg, server excutes it after every mode loaded and map change, so it'll only contain shared cvars.
     * very useful for Admins wanting to load 1v1~5v5 supported plugins on top of the Configs.
+	  - *For people who don't like "extra pills"*: **rotoblin_health_style 3**
+	  - *For people who don't like "Who will be the tank"*: **tank_control_disable 1**
 
 * Admin Tips:
-  * For people who don't like "extra pills", set convar **rotoblin_health_style 3**
-  * For people who don't like "Who will be the tank", set convar **tank_control_disable 1**
   * bequiet.smx is a very useful plugin to keep chat clean, if you decide to load it in other configs, make sure it's loaded before other plugins.
     * Block name change announcement
     * Block server convars change announcement
@@ -99,7 +100,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * 1v1
       * Hunters only
    * Special
-      * Dark Coop
+      * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
       * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)
       * [l4d1 multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
       
@@ -122,21 +123,16 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Spawn jukebox
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
-  * Pills
+  * Extra Pills
      * All pill cabinets in Valve maps will now have a maximum of 2 pills
      * There are few pills on the road (pain_pill_density: 1.5)
      * Final Rescue: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Block "this is restricted area" room where infected ghost can not even spawn
   * Fixed many map tricks and glitches
-  * Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps))
+  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps))
   * make distance score correspond to final rescue event progress
-  
-* **The Sacrifice:**
- 	* reduce pills on the road
-	
-* **suicide blitz:**
- 	* delete prop_fuel_barrel
+  * Fixed l4d1 several bugs that happen in custom maps
   
 * **Support Custom maps:**
   * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
@@ -149,17 +145,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.4: 0.26**)
-  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.4: 1.85**)
-  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.4: 750**) 
+  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.5: 0.26**)
+  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.5: 1.85**)
+  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.5: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.4: 1.88**) 
-  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.4: 22**)
+  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.5: 1.88**) 
+  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.5: 22**)
   * Limit: None
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.4: 80) 
+  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.5: 80) 
   * Limit: None
       
 * **Hunting Rifle**
@@ -218,7 +214,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Prevents people from blocking players who climb on the ladder including tank.
    * Spectators stay spectator on map change.
    * Forces all players on the right team after map/campaign/match change"
-   * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them
+   * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
       > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. If you have played l4d1 versus for a long time, you knew what I am fking talking about.
    * Fixed players using bunnyhop to increase their MaxSpeed.
    * Fixed second team having different SI spawns on round start.
@@ -227,6 +223,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
    * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
    * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
+   * Prevents players' data in ghost mode from being sent to Survivors
    
 - - - -
 ### Gameplay / Balance Changes ###
@@ -246,7 +243,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get kicked unless it's a Boomer or has someone capped.
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
-    * Allows infected to warp to survivors (MOUSE2 or use command: **sm_warpto [#|name]**)
+    * Allows infected to warp to survivors (MOUSE2 or Command: **sm_warpto [#|name]**)
 	  - *1*: **Francis**
 	  - *2*: **Bill**
 	  - *3*: **Zoey**
@@ -385,6 +382,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show who triggers the horde event like start final rescue, shoot alarm car, etc.
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
+  * Survivors bleed out Temp Health every **2.7s** (default: **2.7** Zonemod: **4.5**)
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
