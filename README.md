@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.1.8
+v8.2.0
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
@@ -8,10 +8,9 @@ v8.1.8
 **LINUX/WINDOWS SERVERS WORK**
 
 
-A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 60 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、[Nextmod](https://github.com/spoon-l4d2/NextMod/tree/master/cfg/stripper/nextmod/maps)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 - - - -
-### Server Admins! ###
-
+### Server Install ###
 * Install:
   * Clean Servers:
       * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
@@ -24,14 +23,19 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
       * At this step, you already setup your Server's base for configs, so you can finally start your server.
   * Launch parameters:
     * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-    
-### Optional ###
+	> **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D) If you're going to adjust your Tickrate above 100, you will run into Boomer Vomit Range issues. You will need to add 
+	***-frametime 0.037 -frametime_override 0.037*** to the launch parameters to resolve this, make sure to place them after the tickrate parameter.
+	
+- - - -	
+### Server Install Optional ###
 * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
-* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected.
+* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX** or **WINDOWS with HLSM**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
-    
+
+- - - -
+### Server Admins! ###
 **Warning: If you try to use the plugins which are included in this package in other configs, plugins may not work correctly
 as they're designed around Roto-AZMod and are likely to be unstable in other configs or general usage.**
 
@@ -44,6 +48,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
+  * translations: -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
+  > **Developer Comment:** Want to translate this config into any language? Hate to see English? contact us and we will help translate your country language in next Roto-AZ mod update.
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
     * do not overwrite any plugin that's existed.
   * To make it easy for personal configuration for certain plugins, there's an added "server_custom_convars.cfg" in the left4dead/cfg/Reloadables folder.
@@ -74,11 +80,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Adm type **!slots <#>** to forcechange server slots
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Adm%20Commands.png)
   * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Everyone%20Commands.png)
-  * Sever Startup default Mod is "Pub VS", still some limits
+  * Sever Startup default Mode is "Pub VS", there are some limits in pub mode
     * forces survivors and infected to spectate if they're AFK after certain time
     * Team Switch is not allowed during the game
     * Shoot teammate = Shoot yourself
-> **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
+    > **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
 
 - - - -
 ### Gamemodes(!load, !match, !mode) ###
@@ -103,8 +109,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * Hunters only
    * Special
       * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
-      * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)
-      * [l4d1 multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
+      * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
+   * Skeet Practice
+      * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
       
 - - - -
 ### Votes Menu(!votes) ###
@@ -126,15 +133,19 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Extra Pills
-     * All pill cabinets in Valve maps will now have a maximum of 2 pills
-     * There are few pills on the road (pain_pill_density: 1.5)
-     * Final Rescue: No any extra pills on the road, only pills on Final Rescue area
+     * All pill cabinets in all maps will now have a maximum of 1 pills
+     * There are few pills on the road (pain_pill_density: 0.5)
+     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
-  * Block "this is restricted area" room where infected ghost can not even spawn
+  * Blocked "this is restricted area" room where infected ghost can not even spawn
   * Fixed many map tricks and glitches
-  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps))
-  * make distance score correspond to final rescue event progress
+  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps) + [Nextmod](https://github.com/spoon-l4d2/NextMod/tree/master/cfg/stripper/nextmod/maps))
+  * Make distance score correspond to final rescue event progress
   * Fixed l4d1 several bugs that happen in custom maps
+  
+* **Dead Air:** 
+  * Removed Plane + Crashing Plane SFX
+  * Removed Crashing Plane Screen Shake
   
 * **Support Custom maps:**
   * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
@@ -153,7 +164,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Damage Drop-off: 0.84->0.84 (unchanged)
   * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.5: 1.88**) 
   * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.5: 22**)
-  * Limit: None
+  * Limit: 3 (Acemod: None - **Zonemod 1.9.5: 3**)
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
@@ -229,7 +240,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    
 - - - -
 ### Gameplay / Balance Changes ###
-* Anti-baiting Timer: 40s.
+* Anti-baiting Timer: 30s.
 * Anti-baiting Sensitivity Delay: 15s.
   * Survivors Must move forward, no time to stay put long, or the director will force panic event
   * Baiting is a valid tactic, but nobody wants to fall asleep during very lengthy baiting sessions.
@@ -238,8 +249,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **General:**
     * Spawntimers:
 	  - *(5v5)*: **15s**
-	  - *(4v4)*: **12s**
-	  - *(3v3)*: **10s**
+	  - *(4v4)*: **11s**
+	  - *(3v3)*: **9s**
 	  - *(2v2)*: **7s**
 	  - *(1v1)*: **1s**
     * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get kicked unless it's a Boomer or has someone capped.
@@ -257,7 +268,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Can't M2 scratch when duck (one of l4d1 original feature)
     * Stop special infected getting bashed to death except for Boomer 
     * Players that try to bypass the Death Cam by spectating and switching back will be prevented from joining back for a few seconds.
-      * **These players will NOT be moved back onto the team automatically.**
     * Reduces the SI spawning range on finales to normal spawning range
     * All SI are able to be on fire!!
     * All SI are now able to break doors with 1 scratch instead of 3
@@ -292,27 +302,30 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * **If each infected player has been tank at once, random choose!**
       * **Tank player has two control chances, it won't pass!!**
     * Health
-	  - *(5v5)*: **8500**
-	  - *(4v4)*: **7000**
+	  - *(5v5)*: **9000**
+	  - *(4v4)*: **7500**
 	  - *(3v3)*: **5025**
 	  - *(2v2)*: **3480**
 	  - *(1v1)*: **2000**
     * Slay AI Tank in 1v1, 2v2 and 3v3  
-    * Lag compensation for tank rocks + custom damage & range values.
-    > **Developer Comment:** This plugin provides lag compensation as well as cvars for weapon damage & range values on tank rocks. It's very helpful for high ping players shooting the tank rock. Click [AlliedModders](https://forums.alliedmods.net/showthread.php?p=2646073) and see more detals on how it works.
+    * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
+	
   * **Witch:**
     * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
-    * Glow for Infected Team
+    * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
     * Instantly incapacitate Survivors
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
+	* Prevent common infected from pushing witch away when witch not startled yet
+	
   * **Smoker:**
     * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
+	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)
-    * Maximum pounce damage: **60**
+    * Maximum pounce damage: **50**
     * Wallkick/Backjumps
 	  - *(5v5)*: **✔**
 	  - *(4v4)*: **✔**
@@ -325,8 +338,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **✘**
 	  - *(2v2)*: **✘**
 	  - *(1v1)*: **✘**
-    * Hunters can't be shoved off when pouncing (fov_pouncing: 0)
-    * Hunters can be shoved off when duck or stand still (Shove fov: 30)
+    * Hunters can't be shoved when pouncing
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **30**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
     
   * **Boomer:**
@@ -339,8 +352,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **21**
 	  - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-	  - *90%*: **3 Hunters + 1 Smoker**
-	  - *10%*: **4 Hunters**
+	  - *85%*: **3 Hunters + 1 Smoker**
+	  - *15%*: **4 Hunters**
+	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
    
@@ -385,7 +399,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
   * Survivors bleed out Temp Health every **2.7s** (default: **2.7** Zonemod: **4.5**)
-  
+  * Give ammo when the weapon limit is reached
+  * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
+  * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
+
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
   * Smoker: **0s**
@@ -417,12 +434,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	 
 - - - -
 ### Miscellaneous ###
-* **sm_info**/**sm_harry** will help you to find many useful commands
-* **sm_votes** call a vote to kick、alltalk、change map、restartmap
+* **sm_info**/**sm_harry** will help you to search many useful commands
 * **!pause** will directly pause the game without another team's agreement (No !fpause)
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode
 * **sm_current** to display the survivor's percentage progress through the map.
-* **!shuffle, !mixteam** - shuffle and mix
+* **!shuffle, !mix** - shuffle and mix
 * Replacement of standard player connected message. Joining players will have their geo-location announced.
 * The round does not go live until each player has readied up if ready plugin enable.
 * Some player statistics are printed out at end of round.
@@ -437,10 +453,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
 * Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
-* Voice Announce. Print To Center Message who is Speaking. With cookies
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
-* Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
-* Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
 	 
 - - - -
 ### Others ###

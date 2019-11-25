@@ -1,0 +1,153 @@
+﻿v8.2.0
+------------------Delete---------------
+-left4dead\addons\sourcemod\translations
+[slotvote.phrases.txt]
+
+-left4dead\addons\sourcemod\plugins
+[voiceannounce_ex.smx]
+-left4dead\addons\sourcemod\gamedata
+[voiceannounce_ex.games.txt]
+
+-left4dead\cfg
+[server_rates.cfg]
+* already included in linux server and windows server package
+
+-left4dead\addons\stripper
+[maps]
+[global_filters.cfg]
+
+------------------New------------------
+-left4dead\addons\sourcemod\gamedata
+[l4d_shove_penalty.txt]
+* unlocks the shove penalty in coop and survival
+
+-left4dead\addons\stripper\DarkCoop
+* maps for dark coop mode
+
+-left4dead\addons\stripper\Roto-AZMod
+* maps for roto-azmod config
+* All pill cabinets in all maps will now have a maximum of **1** pills (was 2)
+
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+-Developer&Commands
+[translation list.txt]
+* all translations, now support multi languages
+* Traditional Chinese 		- 繁體中文 	- zho 	, by Harry
+* English 					- English 	- en 	, by Harry
+* Simplified Chinese 		- 简体中文 	- chi 	, by Target
+* Spanish 					- Espanol   - es 	, by LuigixD
+* Portuguese				- portugues - pt 	, by Kadabra
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins
+[rotoblin.smx]
+* add two comvars "rotoblin_limit_pumpshotgun", "rotoblin_limit_smg"
+* rotoblin_limit_pumpshotgun - Maximum of pumpshotguns the survivors can pick up.
+* rotoblin_limit_smg - Maximum of smgs the survivors can pick up. [-1:No limit]
+* Give ammo when the weapon limit is reached
+
+[l4dcompstats.smx]
+* beautiful sounds when someone shuts down your boomer :D
+
+[l4d_versus_spechud.smx]
+* show tank player's ping and lerp
+
+[SpeakingList.smx]
+* fixed linux, update new voicehook.ext in "Linux Server files" package
+
+[l4d_witchglow.smx]
+* Prevent common infected from pushing witch away when witch not startled yet
+
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_tankhud.smx]
+[l4d_versus_5v5_hud.smx]
+* show tank player's ping and lerp
+
+[l4d_storm.smx]
+* unlocks the shove penalty in coop and survival (code from Silvers: l4d_shove_penalty.smx)
+
+	       ***txt***
+left4dead\addons\sourcemod\configs
+[matchmodes.txt]
+//add "4v4 Pub","4v4 Pub Hunters Only" mode and "Skeet Practice" option
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+* v8.2.0
+
+[rotoblin_Dark_Coop_convar.cfg]
+[rotoblin_hardcore_4v4_classic_convar.cfg]
+[rotoblin_witch_party_convar.cfg]
+[server_pub_convars.cfg]
+[server_shared_convars.cfg]
+[server_reset_convars.cfg]
+[server_reset_pub_convars.cfg]
+* Anti-baiting Timer: **30s**. (was 40s)
+* add more Balancing Cvars and Competitive Cvars
+* Uzi Limits:
+(Completitive HardCore) 3
+(Witch Party) 0
+(Dark Coop) 3
+(Classic) 3
+* Pumpshotgun Limits:
+(Dark Coop) 4
+
+[server_custom_plugins.cfg]
+[server_Dark_Coop_plugins.cfg]
+[server_plugins.cfg]
+[server_pub_plugins.cfg]
+[server_witch_party_plugins.cfg]
+* (Witch Party)(Dark Coop) load l4d_grenades.smx
+
+[rotoblin.cfg]
+* director_pain_pill_density "0.5" (was 1.5)
+
+[rotoblin_Dark_Coop.cfg]
+* shove penalty: 2 times
+
+[rotoblin_hardcore_3v3_map.cfg]
+[rotoblin_hunters_3v3_map.cfg]
+[rotoblin_nob_3v3_map.cfg]
+* 3v3 spawn timers: **9s** (was 10s)
+
+[rotoblin_nob_5v5_map.cfg]
+[rotoblin_hunters_5v5_map.cfg]
+[rotoblin_hardcore_5v5_map.cfg]
+* 5v5 Tank Health: **9000** (was 8500)
+
+[rotoblin_nob_4v4_map.cfg]
+[rotoblin_hunters_4v4_map.cfg]
+[rotoblin_hardcore_4v4_map.cfg]
+* 4v4 spawn timers: **11s** (was 12s)
+* 4v4 Tank Health: **7500** (was 7000)
+
+-left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+* Maximum pounce damage: **50** (was 60)
+
+-left4dead\cfg\sourcemod
+[l4d_QuadCpas.cfg]
+* If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
+  - **85%** (was 90%): 3 Hunters + 1 Smoker
+  - **15%** (was 10%): 4 Hunters
+  
+-left4dead\addons\stripper\Roto-AZMod\maps
+[l4d_vs_airport01_greenhouse.cfg]
+* block access to upper rails and upper roof sections of greenhouse (Tank can't do any damage here)
+
+[l4d_vs_airport05_runway.cfg]
+* Removed Plane + Crashing Plane SFX (from Nextmod)
+* Removed Crashing Plane Screen Shake (from Nextmod)
+
+[l4d_vs_city17_02.cfg]
+[l4d_vs_deadflagblues02_library.cfg]
+[l4d_jsarena01_town.cfg]
+[l4d_vs_farm02_traintunnel.cfg]
+* make infected ghost can go through the alarm door
+
+[l4d_vs_farm04_barn.cfg]
+* Added props for extra SI spawns.
+* prevent S.I. from falling off and under map

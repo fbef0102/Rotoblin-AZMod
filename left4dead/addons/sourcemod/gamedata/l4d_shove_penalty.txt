@@ -1,0 +1,46 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Addresses"
+		{
+			"CTerrorWeapon::TrySwing"
+			{
+				"windows"
+				{
+					"signature"	"CTerrorWeapon::TrySwing"			
+				}
+				"linux"
+				{
+					"signature"	"CTerrorWeapon::TrySwing"
+				}
+			}
+		}
+
+		"Offsets"
+		{
+			"TrySwing_Offset"
+			{
+				"windows"		"244" // 0xF4
+				"linux"			"296" // 0x128
+			}
+			"TrySwing_Count"
+			{
+				"windows"		"20"
+				"linux"			"23"
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorWeapon::TrySwing"
+			{
+				"library"		"server"
+				"windows"		"\x83\x2A\x2A\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x55"
+				"linux"			"@_ZN13CTerrorWeapon8TrySwingEfff"
+				/* 83 ? ? 56 8B ? 8B ? 8B ? ? ? ? ? ? ? 84 ? 0F 85 ? ? ? ? 55 */
+				/* Search: "Weapon.Swing" - xref vtable. */
+			}
+		}
+	}
+}

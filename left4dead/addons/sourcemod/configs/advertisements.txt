@@ -42,7 +42,7 @@
     }
 	"6"
     {
-        "chat"			"{lightgreen}Based on L4D2 acemod、L4D2 zonemod、L4D1 roto2"
+        "chat"			"{lightgreen}Based on L4D2 Acemod、Zonemod、Nextmod、L4D1 roto2"
     }
 	"7"
     {

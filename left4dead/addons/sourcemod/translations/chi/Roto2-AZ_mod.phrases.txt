@@ -1,0 +1,2221 @@
+"Phrases"
+{
+	//Every Language
+	"Language"
+	{
+		"chi"			"你在这伺服器会看到的语言: 简体中文, 翻译者：Target"
+	}
+	"Plugin_Information"
+	{
+		"chi"			"插件信息"
+	}
+	"Information"
+	{
+		"chi"			"资讯"
+	}
+	"Survivor"
+	{
+		"chi"			"生还者"
+	}
+	"Infected"
+	{
+		"chi"			"感染者"
+	}
+	"Spectator"
+	{
+		"chi"			"旁观者"
+	}
+	"Witch"
+	{
+		"chi"			"妹子"
+	}
+	"Tank"
+	{
+		"chi"			"坦克"
+	}
+	"Spawn"
+	{
+		"chi"			"复活"
+	}
+	"Tank_Spawn"
+	{
+		"chi"			"坦克路程"
+	}
+	"Witch_Spawn"
+	{
+		"chi"			"妹子路程"
+	}
+	"Boss_Percent"
+	{
+		"chi"			"Boss 路程"
+	}
+	"Tank_Health"
+	{
+		"chi"			"坦克血量"
+	}
+	"Max_Pounce_Damage"
+	{
+		"chi"			"最大高扑"
+	}
+	"Yes"
+	{
+		"chi"			"有"
+	}
+	"No"
+	{
+		"chi"			"没有"
+	}
+	"Wallkicks"
+	{
+		"chi"			"弹墙(背跳)"
+	}
+	"Deadstops"
+	{
+		"chi"			"推开"
+	}
+	"Spawn_Timer"
+	{
+		"chi"			"复活时间"
+	}
+	"Commands"
+	{
+		"chi"			"指令"
+	}
+	"More"
+	{
+		"chi"			"更多..."
+	}
+	"next"
+	{
+		"chi"			"下一页"
+	}
+	"previous"
+	{
+		"chi"			"上一页"
+	}
+	"back"
+	{
+		"chi"			"回去"
+	}
+	"exit"
+	{
+		"chi"			"离开"
+	}
+	"Survivor_Current"
+	{
+		"chi"			"生还者路程"
+	}
+	"Vote"
+	{
+		"chi"			"投票"
+	}
+	"Show_Scores"
+	{
+		"chi"			"显示分数"
+	}
+	"Round_Scores"
+	{
+		"chi"			"回合分数"
+	}
+	"Pause"
+	{
+		"chi"			"暂停"
+	}
+	"Stats"
+	{
+		"chi"			"统计"
+	}
+	"MVP"
+	{
+		"chi"			"MVP"
+	}
+	"Tankhud"
+	{
+		"chi"			"坦克界面"
+	}
+	"Spechud"
+	{
+		"chi"			"旁观界面"
+	}
+	"Listen_Mode"
+	{
+		"chi"			"聆听模式"
+	}
+	"Print_Scores"
+	{
+		"chi"			"列出分数"
+	}
+	"WarpToSurvivor"
+	{
+		"chi"			"特感转移至生还者"
+	}
+	"Change_Match"
+	{
+		"chi"			"更换比赛模式"
+	}
+	"Change_Map"
+	{
+		"chi"			"更换地图"
+	}
+	"Show_Player_Lerp"
+	{
+		"chi"			"显示玩家Lerp"
+	}
+	"Force_Player_Respectate"
+	{
+		"chi"			"强制玩家重新旁观"
+	}
+	"Stop_Jukebox"
+	{
+		"chi"			"关闭自动点唱机"
+	}
+	"Auto_Choose_Team"
+	{
+		"chi"			"自动选择队伍"
+	}
+	"Game"
+	{
+		"chi"			"游戏"
+	}
+	"Mix"
+	{
+		"chi"			"队长选人混合制"
+	}
+	"Team_Shuffle"
+	{
+		"chi"			"队伍重新分配"
+	}
+	"Change_Server_Slots"
+	{
+		"chi"			"改变服务器人数上限"
+	}
+	"Kick_All_Spectators"
+	{
+		"chi"			"踢掉所有旁观者"
+	}
+	"HunterBot_Limit"
+	{
+		"chi"			"Hunter电脑玩家数量上限"
+	}
+	"Close"
+	{
+		"chi"			"关闭"
+	}
+	"Bot_Spawn_Timer"
+	{
+		"chi"			"电脑玩家复活时间"
+	}
+	"Close_Speaklist"
+	{
+		"chi"			"关闭语音列表显示"
+	}
+	"Vote_Boss_Percent"
+	{
+		"chi"			"投票坦克与妹子路程数"
+	}
+	"Top_5_Skeeter"
+	{
+		"chi"			"前五名Skeeter"
+	}
+	"Show_Your_Skeet_Rank"
+	{
+		"chi"			"显示你的skeet排名"
+	}
+	"Show_Your_Skeets"
+	{
+		"chi"			"显示你的skeet数量"
+	}
+	"Top_5_Pouncer"
+	{
+		"chi"			"前五名高扑者"
+	}
+	"Show_Your_Pounce_Stats"
+	{
+		"chi"			"显示你的高扑统计"
+	}
+	"About"
+	{
+		"chi"			"关于"
+	}
+	"Based_on"
+	{
+		"chi"			"改编自"
+	}
+	"New_Mode"
+	{
+		"chi"			"新模式"
+	}
+	"Nerf_Hunting_Rifle"
+	{
+		"chi"			"削弱狙击枪"
+	}
+	"Extra_Pills"
+	{
+		"chi"			"额外药丸"
+	}
+	"UZI_more_powerful"
+	{
+		"chi"			"机关增强"
+	}
+	"More_Map_barriers"
+	{
+		"chi"			"更多地图障碍物"
+	}
+	"Final_Stage_balance"
+	{
+		"chi"			"救援关平衡"
+	}
+	"Developed_by"
+	{
+		"chi"			"制作者:"
+	}
+	"Scores_calculation"
+	{
+		"chi"			"分数计算"
+	}
+	"Average_Distance"
+	{
+		"chi"			"平均距离"
+	}
+	"Health_Bonus"
+	{
+		"chi"			"生命值分数加成"
+	}
+	"PermanentHealth"
+	{
+		"chi"			"实血"
+	}
+	"TemporaryHealth"
+	{
+		"chi"			"虚血"
+	}
+	"Bonus_per_pill"
+	{
+		"chi"			"每颗药丸加20分"
+	}
+	"Number_of_players_that_survived"
+	{
+		"chi"			"存活的生还者数量"
+	}
+	"level_score_multiplier"
+	{
+		"chi"			"关卡难度倍数"
+	}
+	///////////////l4dready_scrds.smx///////////////
+	"command cannot be used by server."
+	{
+		"chi"		"该指令无法在服务器端上使用"
+	}
+	"ReadyPlugin_1"
+	{
+		"chi"		"两位玩家已在同一个队伍上"
+	}
+	"ReadyPlugin_2"
+	{
+		"chi"		"{olive}{1}{default} 已被转移到旁观。"
+	}
+	"ReadyPlugin_3"
+	{
+		"chi"		"{olive}{1}{default} 已被转移到生还者队伍。"
+	}
+	"ReadyPlugin_4"
+	{
+		"chi"		"{olive}{1}{default} 已被转移到特殊感染者队伍。"
+	}
+	"ReadyPlugin_5"
+	{
+		"chi"		"你已经在{blue}生还者{default}队伍。"
+	}
+	"ReadyPlugin_6"
+	{
+		"chi"		"{blue}生还者{default}队伍已满。"
+	}
+	"ReadyPlugin_7"
+	{
+		"chi"		"你已经在{red}特殊感染者{default}队伍。"
+	}
+	"ReadyPlugin_8"
+	{
+		"chi"		"{red}特殊感染者{default}队伍已满。"
+	}
+	"ReadyPlugin_9"
+	{
+		"chi"		"有人中断了准备，回合开始被取消。"
+	}
+	"ReadyPlugin_10"
+	{
+		"chi"		"{1:i} / {2:i} 位玩家已准备完毕。"
+	}
+	"ReadyPlugin_11"
+	{
+		"chi"		"将于 {green}{1}{default} 秒后强制开始对局。"
+	}
+	"ReadyPlugin_12"
+	{
+		"chi"		"所有玩家已准备，将于 {green}{1}{default} 秒后开始对局。"
+	}
+	"ReadyPlugin_13"
+	{
+		"chi"		"两个回合重新之后比赛就会开始。"
+	}
+	"ReadyPlugin_14"
+	{
+		"chi"		"下一个回合重新之后比赛就会开始！"
+	}
+	"ReadyPlugin_15"
+	{
+		"chi"		"欢迎来到TS服务器！\n\n!sur=生还者队伍， !inf=特殊感染者队伍，!s=旁观者"
+	}
+	"ReadyPlugin_16"
+	{
+		"chi"		"你已经准备。\n\n等待其他玩家准备开始。"
+	}
+	"ReadyPlugin_17"
+	{
+		"chi"		"你目前是旁观者\n\n输入 !sur加入生还者队伍或者!inf加入特感队伍。"
+	}
+	"ReadyPlugin_18"
+	{
+		"chi"		"你已经是死去的生还者, {red}更换队伍已被禁止{default}!!"
+	}
+	"ReadyPlugin_19"
+	{
+		"chi"		"请回去{green}{1}{default} 队伍, {red}更换队伍是不允许的操作 {default}!!"
+	}
+	"ReadyPlugin_20"
+	{
+		"chi"		"回合手动开始。"
+	}
+	"ReadyPlugin_21"
+	{
+		"chi"		"地图将在{green}{1}{default}秒后重置。"
+	}
+	"ReadyPlugin_22"
+	{
+		"chi"		"准备好！\n将于{1}秒后重置地图。"
+	}
+	"ReadyPlugin_23"
+	{
+		"chi"		"{red}{1}{default} 强制你转到旁观者。"
+	}
+	"ReadyPlugin_24"
+	{
+		"chi"		"{lightgreen}{1}{default}强制你重新旁观。"
+	}
+	"ReadyPlugin_25"
+	{
+		"chi"		"等待 {green}{1}秒 {default}才可重新加入 {red}特感队伍{default}。"
+	}
+	"ReadyPlugin_26"
+	{
+		"chi"		"你现已经可以加入{red}特殊感染者队伍{default}了。"
+	}
+	"ReadyPlugin_27"
+	{
+		"chi"		"游戏开始之后，{red}任何换队是被禁止的操作{default}!!"
+	}
+	"ReadyPlugin_28"
+	{
+		"chi"		"相关玩家rates数据请查看控制台。"
+	}
+	"ReadyPlugin_29"
+	{
+		"chi"		"准备插件已启动\n输入!ready进行准备或者!unready取消准备"
+	}
+	"ReadyPlugin_30"
+	{
+		"chi"		"准备插件已启动。"
+	}
+	"ReadyPlugin_31"
+	{
+		"chi"		"准备插件已关闭。"
+	}
+	"ReadyPlugin_32"
+	{
+		"chi"		"{1} 和 {2} 已互相交换队伍"
+	}
+	"ReadyPlugin_33"
+	{
+		"chi"		"特感队伍和生还者队伍已互相对换。"
+	}
+	"ReadyPlugin_34"
+	{
+		"chi"		"准备好！"
+	}
+	"ReadyPlugin_35"
+	{
+		"chi"		"回合开始!\nGL&HF!"
+	}
+	"ReadyPlugin_36"
+	{
+		"chi"		"所有玩家已准备完毕!\n将开始于{1}秒后"
+	}
+	"ReadyPlugin_37"
+	{
+		"chi"		"|彩蛋| 奖杯准备!"
+	}
+	"ReplyToCommand1"
+	{
+		"chi"		"指定的两名玩家互相交换队伍。"
+	}
+	"ReplyToCommand2"
+	{
+		"chi"		"只有特感玩家能使用。"
+	}
+	"ReplyToCommand3"
+	{
+		"chi"		"强制旁观者重新旁观(避免卡图标)。"
+	}
+	"ReplyToCommand4"
+	{
+		"chi"		"{1} 不是旁观者"
+	}
+	"ReplyToCommand5"
+	{
+		"chi"		"{1} 已重新旁观。"
+	}
+	"ReplyToCommand6"
+	{
+		"chi"		"你必须等待 {2} 秒才可再次旁观 {1}"
+	}
+	"ReplyToCommand7"
+	{
+		"chi"		"对换指定玩家的队伍"
+	}
+	///////////////comp_loader.smx///////////////
+	"request timed out."
+	{
+		"chi"		"request timed out."
+	}
+	"canceled the command request."
+	{
+		"chi"		"has canceled the {green}{1}{default} request."
+	}
+	"canceled all requests."
+	{
+		"chi"		"has canceled all requests."
+	}
+	"Spectators cannot use command."
+	{
+		"chi"		"Spectators cannot use {green}{1}{default} command."
+	}
+	"Invalid Config."
+	{
+		"chi"		"Invalid Config."
+	}
+	"command is not available."
+	{
+		"chi"	"{green}{1}{default} 指令目前不可用。"
+	}
+	"The team have canceled the command request."
+	{
+		"chi"	"{1} 已取消了 {green}{2}{default} 请求."
+	}
+	"Nothing to cancel."
+	{
+		"chi"	"没什么需要取消的。"
+	}
+	"mode is disabled."
+	{
+		"chi"	"{green}{1}{default} 模式目前关闭。"
+	}
+	"command is disabled."
+	{
+		"chi"	"{green}{1}{default} 指令尚不可用。"
+	}
+	"Check the console for available commands."
+	{
+		"chi"	"控制台查看可用的指令。"
+	}
+	"Invalid Map."
+	{
+		"chi"	"地图不存在。"
+	}
+	"Invalid Mapname."
+	{
+		"chi"	"地图名称不正确。"
+	}
+	"The team must agree by typing command"
+	{
+		"chi"	"{1} 队伍必须打上 {green}{2}{default} 才能同意生效。"
+	}
+	"Map Mismatch."
+	{
+		"chi"	"地图匹配失败。"
+	}
+	"Agree"
+	{
+		"chi"	"同意"
+	}
+	"Disagree"
+	{
+		"chi"	"不同意"
+	}
+	"A vote is already in progress!"
+	{
+		"chi"	"一个投票正在进行中！傻逼！"
+	}
+	"Not enough players."
+	{
+		"chi"	"服务器人数未达到{red}{1}{default} 位玩家。"
+	}
+	"No votes"
+	{
+		"chi"	"没人投票"
+	}
+	"Vote fail."
+	{
+		"chi"	"{red}投票不通过。{default} 至少要 {red}{1}%%{default} 同意(同意比例： {green}{2}%%{default},全票： {green}{3}{default})"
+	}
+	"Vote pass."
+	{
+		"chi"	"{blue}投票通过.{default}(同意比例: {green}{1}%%{default}, 全票: {green}{2}{default})"
+	}
+	"comp_loader1"
+	{
+		"chi"		"特感队伍已强制你重新旁观。"
+	}
+	"comp_loader2"
+	{
+		"chi"		"强制载入 {green}{1}{default} 模式。"
+	}
+	"comp_loader4"
+	{
+		"chi"		"{blue}{1}{default} 发起新投票: 更换 {green}{2}{default} 模式。"
+	}
+	"comp_loader5"
+	{
+		"chi"		"更换 '{1}' 模式?"
+	}
+	"comp_loader6"
+	{
+		"chi"	"准备好!\n将于{1} 秒后更换地图"
+	}
+	"comp_loader7"
+	{
+		"chi"	"强制更换地图 {green}{1}{default}."
+	}
+	"comp_loader8"
+	{
+		"chi"	"{1} 队伍要求更换地图 {green}'{2}'{default}"
+	}
+	"comp_loader9"
+	{
+		"chi"	"{1} 队伍已同意更换地图 {green}'{2}'{default}."
+	}
+	"comp_loader10"
+	{
+		"chi"	"你的队伍已经发起更换地图要求了，傻逼！"
+	}
+	"comp_loader11"
+	{
+		"chi"	"你必须等待 {green}{1}{default} 秒后才可开始新模式。"
+	}
+	"comp_loader12"
+	{
+		"chi"	"找不到匹配的模式文件。"
+	}
+	"comp_loader13"
+	{
+		"chi"	"无法发起新模式投票。"
+	}
+	///////////////l4dcompstats.smx///////////////
+	"You deadstopped Hunter"
+	{
+		"chi"	"你推了 {red}{1}{default}."
+	}
+	"You were deadstopped by player"
+	{
+		"chi"	"你被 {blue}{1}{default} 推了。"
+	}
+	"You don't have to be mad..."
+	{
+		"chi"	"你不必生气（傻逼）"
+	}
+	"skeeted a tank rock."
+	{
+		"chi"	"打掉了Tank石头"
+	}
+	"l4dcompstats1"
+	{
+		"chi"	"特感杀手: {blue}{1}{default} ({olive}{2}{default} 伤害 [{green{3}%%{default}], {olive}{4}{default} 击杀 [{green}{5}%%{default}])"
+	}
+	"l4dcompstats2"
+	{
+		"chi"	"清尸达人: {blue}{1}{default} ({olive}{2}{default} 数量 [{green}{3}%%{default}])"
+	}
+	"l4dcompstats3"
+	{
+		"chi"	"黑枪王: {blue}{1}{default} ({olive}{2}{default} 友伤 [{green}{3}%%{default}])"
+	}
+	"l4dcompstats4"
+	{
+		"chi"	"Skeet: {blue}{1}{default} ({olive}{2}{default} 单人击杀 [{green}{3}%%{default}], {olive}{4}{default} 队伍助攻 [{green}{5}%%{default}])"
+	}
+	"l4dcompstats5"
+	{
+		"chi"	"推: {blue}{1}{default} ({olive}{2}{default} 次数 [{green}{3}%%{default}])"
+	}
+	"l4dcompstats6"
+	{
+		"chi"	"{red}Witch{default} 还剩 {green}{1}{default} 血量。"
+	}
+	"l4dcompstats7"
+	{
+		"chi"	"{blue}{1}{default} 被 {green}Witch{default} 杀了。"
+	}
+	"l4dcompstats8"
+	{
+		"chi"	"你射爆了 {red}AI{default} 肥宅."
+	}
+	"l4dcompstats9"
+	{
+		"chi"	"你射爆了 {red}{1}{default} 肥宅."
+	}
+	"l4dcompstats10"
+	{
+		"chi"	"{blue}{1}{default} 射爆了你的肥宅。"
+	}
+	"l4dcompstats11"
+	{
+		"chi"	"{blue}{1}{default} 反被 {green}妹子 {olive}击倒。"
+	}
+	"l4dcompstats12"
+	{
+		"chi"	"{red}{1}{default} 还剩 {green}{2}{default} 血量!"
+	}
+	"l4dcompstats13"
+	{
+		"chi"	"你还剩 {green}{1}{default} 血量!"
+	}
+	///////////////games.smx///////////////
+	"You must spec first"
+	{
+		"chi"	"你得先旁观!"
+	}
+	"All teams are full."
+	{
+		"chi"	"双方队伍已无空位。"
+	}
+	"game1"
+	{
+		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}正面{default}!"
+	}
+	"game2"
+	{
+		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}反面{default}!"
+	}
+	"game3"
+	{
+		"chi"	"为你随机选择队伍!"
+	}
+	"game4"
+	{
+		"chi"	"BINGO! {olive}{1}{default} 猜对了 {olive}{2}{default} 的终极密码: {lightgreen}{3}{default}. 鼓掌clapclap!"
+	}
+	"game5"
+	{
+		"chi"	"{olive}{1}{default} 猜密码 {green}{2}{default}. 终极密码比较大。"
+	}
+	"game6"
+	{
+		"chi"	"{olive}{1}{default} 猜密码 {green}{2}{default}. 终极密码比较小。"
+	}
+	"game7"
+	{
+		"chi"	"已有人开始了一场密码游戏，请先找出密码！"
+	}
+	"game8"
+	{
+		"chi"	"来玩终极密码."
+	}
+	"game9"
+	{
+		"chi"	"{default}你选择了 {lightgreen}{1}{default} 作为密码。"
+	}
+	"game10"
+	{
+		"chi"	"{olive}{1}{default} 已选择了 {green}终极密码{default}. 有谁想来猜?"
+	}
+	"game11"
+	{
+		"chi"	"{olive}{1} {default}掷出了 {lightgreen}{2} {default}面骰子!. 结果是 {green}{2}{default}!"
+	}
+	"game12"
+	{
+		"chi"	"嘿老兄，慢点，请等待多至少 {1} 秒"
+	}
+	"game13"
+	{
+		"chi"	"多面骰子游戏。"
+	}
+	///////////////kills.smx///////////////
+	"kills1"
+	{
+		"chi"	"{default}击杀特感: {olive}{1}{default}[{green}爆头{default}: {olive}{2}{default}],僵尸: {olive}{3}{default}[{green}爆头{default}: {olive}{4}{default}],黑枪: {olive}{5}{default} - {olive}{6}"
+	}
+	"kills2"
+	{
+		"chi"	"累计被控: {olive}{1}{default}[{lightgreen}被扑{default}: {olive}}{2}{default},{lightgreen}被拉{default}: {olive}}{3}{default},{lightgreen}被喷{default}: {olive}}{4}{default}] - {olive}}{5}"
+	}
+	///////////////l4d_panic_notify.smx///////////////
+	"l4d_panic_notify1"
+	{
+		"chi"	"{default}启动了 {lightgreen}最终救援。"
+	}
+	"l4d_panic_notify2"
+	{
+		"chi"	"{default}触发了 {lightgreen}尸潮事件。"
+	}
+	"l4d_panic_notify3"
+	{
+		"chi"	"{default}触发了 {lightgreen}警报尸潮事件。"
+	}
+	"l4d_panic_notify4"
+	{
+		"chi"	"{olive}乌鸦 {lightgreen}尸潮事件。"
+	}
+	"l4d_panic_notify5"
+	{
+		"chi"	"{olive}幽灵船 {lightgreen}闹鬼尸潮事件"
+	}
+	"l4d_panic_notify6"
+	{
+		"chi"	"{lightgreen}救援开始。"
+	}
+	///////////////l4d_pig_infected_notify.smx///////////////
+	"killed by fire"
+	{
+		"chi"	"玩火自焚"
+	}
+	"killed by map"
+	{
+		"chi"	"自爆"
+	}
+	"killed himself"
+	{
+		"chi"	"自杀"
+	}
+	"killed by toy"
+	{
+		"chi"	"玩物丧志"
+	}
+	"killed by boom"
+	{
+		"chi"	"被炸死"
+	}
+	"killed by server"
+	{
+		"chi"	"被天谴"
+	}
+	"One-Punch"
+	{
+		"chi"	"一拳超人"
+	}
+	"Rock-Stone"
+	{
+		"chi"	"泰山压顶"
+	}
+	"Toy"
+	{
+		"chi"	"车子玩具"
+	}
+	"Alarm-Car"
+	{
+		"chi"	"致命警报车"
+	}
+	"Tank is killed by something"
+	{
+		"chi"	"{green}坦克 {olive}{1}{default}了。"
+	}
+	"Player is killed by something"
+	{
+		"chi"	"{red}{1}{default} {olive}{2}{default}了。"
+	}
+	"Tank Kill Witch"
+	{
+		"chi"	"Tank {default}使用 {olive}{1}{default} 终结了 {red}Witch{default}."
+	}
+	"punches"
+	{
+		"chi"	"拍死"
+	}
+	"smashes"
+	{
+		"chi"	"砸死"
+	}
+	"plays toy to kill"
+	{
+		"chi"	"玩车杀死"
+	}
+	"plays alarm car to kill"
+	{
+		"chi"	"玩警报车杀死"
+	}
+	"Tank kill teammate"
+	{
+		"chi"	"{green}Tank {olive}{1}{default} {2}队友。"
+	}
+	"l4d_pig_infected1"
+	{
+		"chi"	"{olive}{1}{default} 用门击晕 {green}Tank{default}。"
+	}
+	"l4d_pig_infected2"
+	{
+		"chi"	"{red}Witch{default} 使出 {olive}天马流星拳 {default}打死队友。"
+	}
+	"l4d_pig_infected3"
+	{
+		"chi"	"{red}Witch{default} 使出 {olive}北斗神拳 {default}打死AI队友。"
+	}
+	"l4d_pig_infected4"
+	{
+		"chi"	"{red}Witch{default} {olive}狗带{default}了。"
+	}
+	"l4d_pig_infected5"
+	{
+		"chi"	"{olive}{1}{default} 杀死 {red}{2}{default} 肥宅炸晕 {green}Tank{default}。"
+	}
+	"l4d_pig_infected6"
+	{
+		"chi"	"{olive}{1}{default} 杀死 {red}AI{default} 肥宅炸晕 {green}Tank{default}。"
+	}
+	"l4d_pig_infected7"
+	{
+		"chi"	"{green}Tank {olive}{1} {red}{2}{default} 的肥宅炸晕自己。"
+	}
+	"l4d_pig_infected8"
+	{
+		"chi"	"{green}Tank {olive}{1} {red}AI{default} 的肥宅炸晕自己。"
+	}
+	"l4d_pig_infected9"
+	{
+		"chi"	"{green}Tank {olive}{1} {red}{2}{default} 的肥宅。"
+	}
+	"l4d_pig_infected10"
+	{
+		"chi"	"{green}Tank {olive}{1} {red}AI{default} 肥宅。"
+	}
+	"l4d_pig_infected11"
+	{
+		"chi"	"{red}{1}{default}的肥宅爆炸了。"
+	}
+	"l4d_pig_infected12"
+	{
+		"chi"	"{red}AI{default} 的肥宅爆炸啦。"
+	}
+	"l4d_pig_infected13"
+	{
+		"chi"	"{default}猪队友 {red}{1}{default} 的肥宅炸晕 {green}Tank{default}。"
+	}
+	"l4d_pig_infected14"
+	{
+		"chi"	"{red}AI{default} 肥宅炸晕 {green}坦克{default}。"
+	}
+	///////////////l4dffannounce.smx///////////////
+	"fell from top floor."
+	{
+		"chi"	"{olive}{1}{default} 跳楼了..."
+	}
+	"player kill teammate"
+	{
+		"chi"	"{lightgreen}{1}{default} 星爆气流斩 {olive}{2}{default}."
+	}
+	"Tank Punch survivor fly away and die"
+	{
+		"chi"	"Tank {default}一拳再见本垒打 {olive}{1}{default}."
+	}
+	"Survivor suicides"
+	{
+		"chi"	"{lightgreen}士可杀不可辱{default}."
+	}
+	"l4dffannounce1"
+	{
+		"chi"	"你刚射 {green}{1}{default} 滴血给 {lightgreen}{2}"
+	}
+	"l4dffannounce2"
+	{
+		"chi"	"{lightgreen}{1}{default} 射了 {green}{2}{default} 滴血给你"
+	}	
+	"l4dffannounce13"
+	{
+		"chi"	"你刚射 {1} 滴血给 {2}"
+	}
+	"l4dffannounce14"
+	{
+		"chi"	"{1} 射了 {2} 滴血给你"
+	}
+	///////////////checkpoint-rage-control.smx///////////////
+	"Survivors are in saferoom, Tank still loses rage!!!"
+	{
+		"chi"	"{olive}生还者{default} 即使处于安全区域, {green}Tank{default} 依然会掉控制权!!!"
+	}
+	///////////////caster_assister.smx///////////////
+	"Your movement speed would be out of bounds, permission denied."
+	{
+		"chi"	"你的移动速度已超出上线，权限被拒绝。"
+	}
+	///////////////l4d_antibaiter.smx///////////////
+	"Survivors must move forward"
+	{
+		"chi"	"生还者必須前进\n尸潮倒计时:{1}"
+	}
+	"Force Panic Event!!"
+	{
+		"chi"	"强制刷尸潮!!"
+	}
+	///////////////caster_assister.smx///////////////
+	"Player is black and white."
+	{
+		"chi"	"{1} ({2}) 黑白了"
+	}
+	///////////////l4d_NoRescueFirstTank.smx///////////////
+	"Only One Tank after Final Rescue"
+	{
+		"chi"	"{green}Only One Tank {default}after {olive}Final Rescue"
+	}
+	///////////////l4d_tank_attack_control.smx///////////////
+	"l4d_tank_attack_control_Rock"
+	{
+		"chi"	"{default}[{green}石头姿势选择{default}] ({olive}鼠标右键{default}) 过肩石头\n({olive}E{default}) 低砖\n({olive}R{default}) 高砖"
+	}
+	///////////////l4d_tank_control.smx///////////////
+	"player will be the tank"
+	{
+		"chi"	"{green}[我是坦] {red}{1}{default} 将成为 {green}Tank{default}!"
+	}
+	"force this player will become the tank"
+	{
+		"chi"	"强制指定玩家下次必然是坦克"
+	}
+	"target is not in infected team"
+	{
+		"chi"	"{1} 并不在特感队伍里"
+	}
+	"Tank Control has been clear and reset!"
+	{
+		"chi"	"已经清除并重新开始轮流坦克顺序"
+	}
+	"l4d_tank_control1"
+	{
+		"chi"	"强制当坦克插件目前已关闭, 请先设定 \"tank_control_disable 1\""
+	}
+	"l4d_tank_control2"
+	{
+		"chi"	"{green}[我是坦]{default} 管理员强制 {red}{1}{default} 成为下一个 {green}Tank{default}!"
+	}
+	"l4d_tank_control3"
+	{
+		"chi"	"{green}[抢坦之乱]{default} 所有人已经当过 {green}Tank{default}，{olive}现在开始自由抢Tank{default}!"
+	}
+	"l4d_tank_control4"
+	{
+		"chi"	"{green}[我是坦] {red}特感队伍{default} 没有人，无法选玩家成为 {green}Tank{default}."
+	}
+	"l4d_tank_control5"
+	{
+		"chi"	"{green}[我是坦] {default}({olive}{1}{default}) {green}坦克怒气值数已充值:)"
+	}
+	"l4d_tank_control6"
+	{
+		"chi"	"{green}[我是坦] {default}不会换人，剩下 {red}1{default} 次控制权!"
+	}
+	///////////////l4d_tank_count.smx///////////////
+	"First Tank"
+	{
+		"chi"	"第一只Tank"
+	}
+	"Second Tank"
+	{
+		"chi"	"第二只Tank"
+	}
+	"Third Tank"
+	{
+		"chi"	"第三只Tank"
+	}
+	"AI Tank"
+	{
+		"chi"	"AI Tank"
+	}
+	"l4d_tank_count1"
+	{
+		"chi"	"存活了 {green}{1}{olive}分 {green}{2}{olive}秒.(拳: {green}{3}{olive}, 石: {green}{4}{olive}, 鐵: {green}{5}{olive})"
+	}
+	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
+	"Tank (player) health remaining"
+	{
+		"chi"	"Tank {default}({red}{1}{default}) 还剩 {red}{2}{default} 血量"
+	}
+	"Tank health remaining"
+	{
+		"chi"	"Tank还剩 {red}{1}{default} 血量"
+	}
+	"Tank has spawned!"
+	{
+		"chi"	"{green}Tank{default} 已刷新"
+	}
+	"Tank got lost and lost control."
+	{
+		"chi"	"迷路失去控制权了."
+	}
+	"Witch has spawned!"
+	{
+		"chi"	"{green}Witch{default} 已刷新"
+	}
+	"Damage dealt to Tank"
+	{
+		"chi"	"Tank集火表 ({red}{1}{olive}):"
+	}
+	"Damage dealt to Witch"
+	{
+		"chi"	"{red}Witch{olive} 集火表:"
+	}
+	"Other damage"
+	{
+		"chi"	"来自其他伤害"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer1"
+	{
+		"chi"	"{default}还剩下 {red}{1}{default} 血量"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer2"
+	{
+		"chi"	"造成 {olive}{1}{default} 伤害给 {green}Tank"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer3"
+	{
+		"chi"	"{blue}{1}{default} 一枪 {olive}爆✩杀 {green}Witch{default}."
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer4"
+	{
+		"chi"	"{blue}{1}{default} 引秒 {olive}爆☆杀 {green}Witch{default}."
+	}	
+	"l4d_tank_witch_damage_announce_spawnAnnouncer5"
+	{
+		"chi"	"Tank集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer6"
+	{
+		"chi"	"Witch集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+	}
+	///////////////l4d_tankpunchstuckfix.smx///////////////
+	"l4d_tankpunchstuckfix"
+	{
+		"chi"	"<{olive}Tank一拳卡住{default}> 已发现 {blue}{1}{default} 吃拳之后卡住. 转移到有效的位置上"
+	}
+	///////////////l4d_versus_despawn_health.smx///////////////
+	"l4d_versus_despawn_health1"
+	{
+		"chi"	"你无法恢复 {red}HP{default}，冷却时间 {lightgreen}20{default} 秒未到!"
+	}
+	"l4d_versus_despawn_health2"
+	{
+		"chi"	"你恢复了 {red}{1} {default} 血量。"
+	}
+	///////////////l4d_versus_specListener3.0.smx///////////////
+	"On"
+	{
+		"chi"	"开启"
+	}
+	"Off"
+	{
+		"chi"	"关闭"
+	}
+	"Listen Mode1"
+	{
+		"chi"	"[{green}监听插件{default}] {olive}输入 {green}{2} {olive}{1} {lightgreen}监听模式{olive}."
+	}
+	"Listen Mode2"
+	{
+		"chi"	"[{green}监听插件{default}] {lightgreen}监听模式{default} 已 {olive}{1}{default}."
+	}
+	"Listen Mode3"
+	{
+		"chi"	"{olive}(你可以透过聊天窗口看到 {green}生还者{olive}和 {green}特感{olive} 的队伍对话，亦可透过音频听到队伍麦克风谈话)"
+	}
+	///////////////admin_hp.smx///////////////
+	"admin_hp"
+	{
+		"chi"	"管理员({lightgreen}{1}{default}) 恢复了 {olive}所有生还者 {green}血量"
+	}
+	///////////////L4DVSAutoSpectateOnAFK.smx///////////////
+	"L4DVSAutoSpectateOnAFK1"
+	{
+		"chi"	"按M键或是输入 !sur/!inf 加入队伍..."
+	}
+	"L4DVSAutoSpectateOnAFK2"
+	{
+		"chi"	"[挂机检测] 检测到挂机行为! 你再不移动，{1}秒后移至旁观。"
+	}
+	"L4DVSAutoSpectateOnAFK3"
+	{
+		"chi"	"[挂机检测] 检测到挂机行为! 一旦有人离开安全室，你会被移至旁观."
+	}
+	"L4DVSAutoSpectateOnAFK4"
+	{
+		"chi"	"[挂机检测] 检测到挂机行为! {1}秒后踢出服务器."
+	}
+	"L4DVSAutoSpectateOnAFK5"
+	{
+		"chi"	"[挂机检测] 一旦有人离开安全室，你会被踢出服务器"
+	}
+	"L4DVSAutoSpectateOnAFK6"
+	{
+		"chi"	"{lightgreen}{1}{default} 因为长期挂机被踢出服务器"
+	}
+	///////////////lerptracker.smx///////////////
+	"Illegal lerp value"
+	{
+		"chi"	"lerp值不合理"
+	}
+	"Min"
+	{
+		"chi"	"最小"
+	}
+	"Max"
+	{
+		"chi"	"最大"
+	}
+	"lerptracker1"
+	{
+		"chi"	"lerp太高被踢出服务器。"
+	}
+	"lerptracker2"
+	{
+		"chi"	"lerp值不符被踢至旁观"
+	}
+	"lerptracker3"
+	{
+		"chi"	"{1}{green}的lerp改变 {olive}{2} {green}成 {olive}{3}{default} [{4}{5}{default}/{6} 次数]"
+	}
+	"lerptracker4"
+	{
+		"chi"	"{1}{default} 被移至旁观(超过次数修改)!"
+	}
+	"lerptracker5"
+	{
+		"chi"	"比赛中途Lerp不可再修改! 请改回 {olive}{1}{default} 再回队伍"
+	}
+	"lerptracker6"
+	{
+		"chi"	"{1}{green}的lerp改变 {olive}{2} {green}成 {olive}{3}"
+	}
+	///////////////pounceannounce.smx///////////////
+	"pounceannounce1"
+	{
+		"chi"	"{green}{1}{default} 高扑 {olive}{2}{default} 造成了 {lightgreen}{3}{default} 伤害.(最大: {4})"
+	}
+	"PounceDistanceDisplay1"
+	{
+		"chi"	"距离 {green}{1}{default} Units"
+	}
+	"PounceDistanceDisplay2"
+	{
+		"chi"	"距离 {green}{1}{default} Units ({2} 尺)"
+	}
+	"PounceDistanceDisplay3"
+	{
+		"chi"	"距离 {green}{1}{default} Units ({2} 米)"
+	}
+	"PounceDistanceDisplay4"
+	{
+		"chi"	"距离 {green}{1}{default} 尺"
+	}
+	"PounceDistanceDisplay5"
+	{
+		"chi"	"距离 {green}{1}{default} 米"
+	}
+	///////////////ratemonitor.smx///////////////
+	"ratemonitor1"
+	{
+		"chi"	"{lightgreen}你的{default} 网络收发设置改变{green}{1}{default}/{green}{2}{default}/{olive}{3}{default} 成{green}{4}{default }/{green}{5}{default}/{olive}{6}{default}{7}"
+	}
+	"ratemonitor2"
+	{
+		"chi"	"{olive}你的{default} 网络收发设置已设成 {green}{1}{default}/{green}{2}{default}/{olive}{3}{default}"
+	}
+	"ratemonitor3"
+	{
+		"chi"	"{lightgreen}{1}{default}的网络收发设置设成不合法的值"
+	}
+	"ratemonitor4"
+	{
+		"chi"	"{lightgreen}{1}{default}的网络收发设置在游戏中途改变"
+	}	
+	"ratemonitor5"
+	{
+		"chi"	"{lightgreen}{1}{default}的网络收发设置值不符被移至旁观"
+	}	
+	"ratemonitor6"
+	{
+		"chi"	"{default}请调整你的rates值高于 {green}{1}{default}/{olive}{2}{default}{3}"
+	}	
+	"ratemonitor7"
+	{
+		"chi"	"(并且移除任何 {lightgreen}不是数字的字)"
+	}	
+	"ratemonitor8"
+	{
+		"chi"	"{lightgreen}{1}{default} 因修改网络收发设置被移至旁观。"
+	}
+	"ratemonitor9"
+	{
+		"chi"	"{default}请改回你的网络收发设置: {green}{1}{default}/{green}{2}{default}/{olive}{3}"
+	}
+	"ratemonitor10"
+	{
+		"chi"	"{lightgreen}{1}{default} 因网络收发设置不合法被踢出服务器。"
+	}
+	"ratemonitor11"
+	{
+		"chi"	"{lightgreen}{1}{default} 因修改网络收发设置被踢出服务器。"
+	}
+	///////////////sm_l4d_mapchanger.smx///////////////
+	"sm_l4d_mapchanger1"
+	{
+		"chi"	"下张地图: {blue}{1}{default}."
+	}
+	///////////////votes3.smx///////////////
+	"Vote Menu"
+	{
+		"chi"	"投票菜单"
+	}
+	"Turn On"
+	{
+		"chi"	"开启"
+	}
+	"Turn Off"
+	{
+		"chi"	"关闭"
+	}
+	"Give hp"
+	{
+		"chi"	"回血"
+	}
+	"All talk"
+	{
+		"chi"	"全体语音"
+	}
+	"Turn on All talk"
+	{
+		"chi"	"开启全体语音"
+	}
+	"Turn off all talk"
+	{
+		"chi"	"关闭全体语音"
+	}
+	"Restartmap"
+	{
+		"chi"	"重启当前地图"
+	}
+	"Change map"
+	{
+		"chi"	"更换地图"
+	}
+	"Change addon map"
+	{
+		"chi"	"更换第三方地图"
+	}
+	"Kick player"
+	{
+		"chi"	"踢出玩家"
+	}
+	"Forcespectate player"
+	{
+		"chi"	"强制玩家旁观"
+	}
+	"starts a vote"
+	{
+		"chi"	"发起新投票"
+	}
+	"only their team can vote"
+	{
+		"chi"	"只有他们队伍才能投票"
+	}
+	"This vote is prohibited"
+	{
+		"chi"	"这项投票被禁止"
+	}
+	"Plz choose addon maps"
+	{
+		"chi"	"请选择一张官方图"
+	}
+	"No Mercy"
+	{
+		"chi"	"毫不留情"
+	}
+	"Dead Air"
+	{
+		"chi"	"寂静时分"
+	}
+	"Death Toll"
+	{
+		"chi"	"死亡丧钟"
+	}
+	"Blood Harvest"
+	{
+		"chi"	"血腥收获"
+	}
+	"Crash Course"
+	{
+		"chi"	"坠机险途"
+	}
+	"The Sacrifice"
+	{
+		"chi"	"牺牲"
+	}
+	"Vote Custom Maps"
+	{
+		"chi"	"投票三方图 <共计{1}张>"
+	}
+	"votes3_1"
+	{
+		"chi"	"禁用ready插件"
+	}
+	"votes3_2"
+	{
+		"chi"	"禁用回血"
+	}
+	"votes3_3"
+	{
+		"chi"	"禁用全体语音"
+	}
+	"votes3_4"
+	{
+		"chi"	"禁用关闭全体语音"
+	}
+	"votes3_5"
+	{
+		"chi"	"禁用重置当前地图"
+	}
+	"votes3_6"
+	{
+		"chi"	"禁止换图"
+	}
+	"votes3_7"
+	{
+		"chi"	"禁止更换三方图"
+	}
+	"votes3_8"
+	{
+		"chi"	"{1}准备插件"
+	}
+	//{1} in "votes3_8" and "votes3_9" are different type
+	"votes3_9" 
+	{
+		"chi"	"{1}准备插件"
+	}
+	"votes3_10" 
+	{
+		"chi"	"你已经被投票强制旁观! 等待 {green}{1}{default} 秒重新加入队伍."
+	}
+	"votes3_11" 
+	{
+		"chi"	"你现在可以重新加入队伍了"
+	}
+	"votes3_12"
+	{
+		"chi"	"你必须等待 {red}{1}{default} 秒才能发起新投票"
+	}
+	"votes3_13"
+	{
+		"chi"	"无法发起新投票。"
+	}
+	"votes3_14"
+	{
+		"chi"	"{green}5{default} 秒后换图 {blue}{1}"
+	}
+	"votes3_15"
+	{
+		"chi"	"{blue}{1}{default} 被投票踢出!"
+	}
+	"votes3_16"
+	{
+		"chi"	"{blue}{1}{default} 被投票强制旁观!"
+	}
+	///////////////cannounce.smx///////////////
+	"cannounce1"
+	{
+		"chi"	"{blue}玩家 {green}{1} {blue}加入游戏{default}."
+	}
+	"cannounce2"
+	{
+		"chi"	"{red}玩家 {green}{1} {red}离开游戏{default}."
+	}		///////////////l4d_current_survivor_progress.smx//////////////
+	"l4d_current_survivor_progress"
+	{
+		"chi"	"{blue}当前路程{default}: {green}{1}%%"
+	}
+	///////////////l4d_bossvote.smx//////////////
+	"l4d_bossvote1"
+	{
+		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 使用方式: {green}{1}{olive} <tank> <witch>"
+	}
+	"l4d_bossvote2"
+	{
+		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 示例: 聊天窗口输入{green}{1}{default} 70 50"
+	}
+	"l4d_bossvote3"
+	{
+		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 游戏设定将会是 {olive}Tank: 70%% {default}和 {olive}Witch: 50%"
+	}
+	"l4d_bossvote4"
+	{
+		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 只能在第一回合的准备阶段中的玩家发起投票"
+	}
+	"l4d_bossvote5"
+	{
+		"chi"	"改变Boss路程 Tank: {1}%%, Witch: {2}%%"
+	}
+	"l4d_bossvote6"
+	{
+		"chi"	"{blue}投票通过. {default}正在修改Boss路程..."
+	}
+	///////////////l4d_wind.smx//////////////
+	"Failed to add a bot"
+	{
+		"chi"	"添加Bot失败"
+	}
+	"Succeed to add a bot"
+	{
+		"chi"	"成功增加一个Bot, 旁观者输入 {green}{1}{default} 将加入生还者取代"
+	}
+	"You are not Spectator..."
+	{
+		"chi"	"你不是旁观者..."
+	}
+	"Could not teleport player after create a bot"
+	{
+		"chi"	"新增电脑Bot之后无法传送至玩家附近"
+	}
+	///////////////SpeakingList.smx//////////////
+	"SpeakingList1"
+	{
+		"chi"	"[语音显示插件] 关闭语音显示插件"
+	}
+	"SpeakingList2"
+	{
+		"chi"	"[语音显示插件] 开启语音显示插件"
+	}
+	"Spectator MIC"
+	{
+		"chi"	"旁观者MIC"
+	}
+	"Survivor MIC"
+	{
+		"chi"	"生还者MIC"
+	}
+	"Infected MIC"
+	{
+		"chi"	"特感MIC"
+	}
+	///////////////l4d_jukebox_spawner.smx//////////////
+	"stopped jukebox playing."
+	{
+		"chi"	"关闭了点唱机音乐"
+	}
+	"Wait seconds to play a song again."
+	{
+		"chi"	"等待 {lightgreen}{1}秒{default} 再次使用点唱机音乐."
+	}
+	///////////////AntiBreach.smx//////////////
+	"You can't spawn near safe room doors."
+	{
+		"chi"	"你现在不能在安全门附近复活."
+	}
+	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
+	"No Instant Spawn"
+	{
+		"chi"	"失去 {green}Tank{default} 控制权给{red}AI{default}, {lightgreen}不得马上回灵魂状态{default}!! 强制自杀"
+	}
+	///////////////l4d_PillsHere.smx//////////////
+	"l4d_PillsHere1"
+	{
+		"chi"	"给生还者药丸"
+	}	
+	"l4d_PillsHere2"
+	{
+		"chi"	"{1} 玩家不在生还者队伍"
+	}
+	"l4d_PillsHere3"
+	{
+		"chi"	"你给了 {1} 一颗药丸."
+	}
+	"l4d_PillsHere4"
+	{
+		"chi"	"{1} 已经拥有药丸."
+	}
+	///////////////l4d_slot_vote.smx//////////////
+	"Server slots count locked!"
+	{
+		"chi"		"服务器人数上限已锁!"
+	}
+	"Server slots count unlocked!"
+	{
+		"chi"		"服务器人数上限已解锁!"
+	}
+	"locked by config or admin.1"
+	{
+		"chi"		"你不能更改服务器人数上限，权限被文件或管理员锁住"
+	}
+	"locked by config or admin.2"
+	{
+		"chi"		"你不能踢掉旁观，权限被文件或管理员锁住"
+	}
+	"kicks all spectators"
+	{
+		"chi"		"踢掉所有旁观者"
+	}
+	"Usage"
+	{
+		"chi"		"{default}使用方式: {olive}{3}{default} <数字介于 {olive}{1}{default} 和 {olive}{2}{default} 之间>"
+	}
+	"Same as current"
+	{
+		"chi"		"{default}服务器已有 {olive}{1} {default}空位."
+	}
+	"No spectators"
+	{
+		"chi"		"目前没有旁观者"
+	}
+	"Slot vote title"
+	{
+		"chi"		"目前空位 : {1}\n-------------------------\n选择新数值:"
+	}
+	"Slots"
+	{
+		"chi"		"空位上限"
+	}
+	"All spectators kicked"
+	{
+		"chi"		"所有旁观者已成功被踢出去"
+	}
+	"Spectator kick reason"
+	{
+		"chi"		"你已被投票踢出"
+	}
+	"Vote denied"
+	{
+		"chi"		"目前无法发起投票，请稍后再试"
+	}
+	"Spectator response"
+	{
+		"chi"		"旁观者不得发起投票"
+	}
+	"ADM IMMUNE"
+	{
+		"chi"		"无法从旁观者中踢掉 {olive}{1}{default}(管理员)."
+	}
+	///////////////l4d_sm_respawn.smx//////////////
+	"l4d_sm_respawn1"
+	{
+		"chi"		"复活指定的玩家"
+	}
+	"You Dumb? Target is still alive!"
+	{
+		"chi"		"傻逼？目标是活着的。"
+	}
+	"Failed! Target is not survivor"
+	{
+		"chi"		"失败! 目标不是生还者"
+	}
+	"Failed! Target is spectator"
+	{
+		"chi"		"失败! 目标是旁观者"
+	}
+	"Could not teleport player after respawn"
+	{
+		"chi"		"复活后无法传送玩家位置"
+	}
+	///////////////l4d_tankhud.smx//////////////
+	"l4d_tankhud1"
+	{
+		"chi"		"{default}[{green}界面插件{default}]{lightgreen} Tank Hud {default}目前 {olive}{1}{default}."
+	}
+	"l4d_tankhud2"
+	{
+		"chi"		"{default}[{green}界面插件{default}] 身为一个 {green}Tank{default}, 你不会看见 {lightgreen}Tank Hud{default}."
+	}
+	///////////////l4d_team_unscramble.smx//////////////
+	"Voting is not enabled until unscramble is completed"
+	{
+		"chi"		"队伍载入完成之前不准投票"
+	}
+	///////////////l4d_thirdpersonshoulderblock.smx//////////////
+	"l4d_thirdpersonshoulderblock1"
+	{
+		"chi"		"{lightgreen}{1}{default} 因为 {green}c_thirdpersonshoulder{default} 指令不合法或是锁住而旁观!"
+	}
+	"l4d_thirdpersonshoulderblock2"
+	{
+		"chi"		"{lightgreen}{1}{default} 因为 {green}c_thirdpersonshoulder{default} 指令不合法而旁观, 请设为 {olive}0{default} 再加入游戏!"
+	}
+	///////////////l4d_teamshuffle.smx//////////////
+	"Team shuffle"
+	{
+		"chi"		"队伍大洗牌"
+	}
+	"You are not in-game!"
+	{
+		"chi"		"你不是正在游戏中的玩家"
+	}
+	"Shuffle is already in progress!"
+	{
+		"chi"		"正在{1}! 你这星际2玩家!"
+	}
+	"has forced the team shuffle"
+	{
+		"chi"		"强制{1}"
+	}
+	"Teams were shuffled."
+	{
+		"chi"		"队伍已洗牌完毕"
+	}
+	"The Infected must agree by typing command"
+	{
+		"chi"		"{red}特感队伍{default} 必须输入 {green}{1}{default} 才能同意生效."
+	}
+	"The Survivors must agree by typing command"
+	{
+		"chi"		"{blue}幸存者队伍{default} 必须输入 {green}{1}{default} 才能同意生效."
+	}
+	"l4d_teamshuffle1"
+	{
+		"chi"		"{1}只允许在准备阶段使用"
+	}
+	"l4d_teamshuffle2"
+	{
+		"chi"		"太快再次{2}. (等待{olive}{1}{default}秒)."
+	}
+	"l4d_teamshuffle3"
+	{
+		"chi"		"无法{1}，双方队伍必须满人"
+	}	
+	"l4d_teamshuffle4"
+	{
+		"chi"		"{blue}生还者队伍{default} 已同意 {green}{1}{default}. 于 {green}3{default} 秒后洗牌."
+	}	
+	"l4d_teamshuffle5"
+	{
+		"chi"		"{blue}生还者队伍{default} 已要求 {green}{1}{default}."
+	}
+	"l4d_teamshuffle6"
+	{
+		"chi"		"{red}特感队伍{default} 已同意 {green}{1}{default}. 于 {green}3{default} 秒后洗牌."
+	}
+	"l4d_teamshuffle7"
+	{
+		"chi"		"{blue}特感队伍{default} 已要求 {green}{1}{default}."
+	}
+	///////////////l4d_Modo_mix_mm.smx//////////////
+	"Mix"
+	{
+		"chi"		"队长选人混搭制"
+	}
+	"Can't start a mix, not enough players"
+	{
+		"chi"		"无法开始队长选人混搭制，人数不够"
+	}
+	"Choose Survivor Captain"
+	{
+		"chi"		"选择生还者队伍队长#1"
+	}
+	"Choose Infected Captain"
+	{
+		"chi"		"选择特感队伍队长#1"
+	}
+	"Choose wisely..."
+	{
+		"chi"		"选队员..."
+	}
+	"selected"
+	{
+		"chi"		"选择了"
+	}
+	"l4d_Modo_mix_mm1"
+	{
+		"chi"		"队长现在开始选队员({1})."
+	}
+	"l4d_Modo_mix_mm2"
+	{
+		"chi"		"队伍设置完毕，队长选人混搭制完毕"
+	}
+	"l4d_Modo_mix_mm3"
+	{
+		"chi"		"你的队伍已要求队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm4"
+	{
+		"chi"		"{1} 已同意队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm5"
+	{
+		"chi"		"{1} 已要求队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm6"
+	{
+		"chi"		"{1} 必须输入 {2} 才能同意生效"
+	}
+	"l4d_Modo_mix_mm7"
+	{
+		"chi"		"没想到吧! 第一位队长已离开了服务器，停止队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm8"
+	{
+		"chi"		"第一位队长: {lightgreen}{1}{default} 获得 {green}{2}{default} 选票"
+	}
+	"l4d_Modo_mix_mm9"
+	{
+		"chi"		"没想到吧! 第二位队长已离开了服务器，停止队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm10"
+	{
+		"chi"		"这位玩家已离开服务器，请重新选择"
+	}
+	"l4d_Modo_mix_mm11"
+	{
+		"chi"		"服务器人数不够({red}{1}{default}/{green}{2}{default}), 已停止队长选人混搭制"
+	}
+	"l4d_Modo_mix_mm12"
+	{
+		"chi"		"第二位队长: {lightgreen}{1}{default} 获得 {green}{2}{default} 选票"
+	}
+	///////////////l4d_versus_5v5_hud.smx//////////////
+	"l4d_versus_5v5_hud1"
+	{
+		"chi"		"{default}[{green}界面插件{default}]{default} 输入 {green}{2} {default}{1} {lightgreen}5v5界面{default}."
+	}
+	"l4d_versus_5v5_hud2"
+	{
+		"chi"		"{default}[{green}界面插件{default}] {lightgreen}5v5界面 {default}目前 {olive}{1}{default}."
+	}
+	///////////////l4d_versus_GhostWarp.smx//////////////
+	"l4d_versus_GhostWarp"
+	{
+		"chi"		"使用右键或是指令传送特感灵魂的你到人类位置"
+	}
+	///////////////l4d_versus_spechud.smx//////////////
+	"l4d_versus_spechud1"
+	{
+		"chi"		"{default}[{green}界面插件{default}]{olive} 输入 {green}{1} {default}{2} {lightgreen}旁观界面{olive}"
+	}
+	"l4d_versus_spechud2"
+	{
+		"chi"		"{default}[{green}界面插件{default}] {lightgreen}旁观界面 {default}目前 {olive}{1}{default}."
+	}
+	///////////////l4d2_nobackjumps.smx//////////////
+	"No backjumps"
+	{
+		"chi"		"不能 {lightgreen}直接弹墙{default}, 请使用左键进行飞扑"
+	}
+	///////////////l4dinfectedbots.smx//////////////
+	"Hunter Infected Bot Limit."
+	{
+		"chi"		"决定AI Hunter玩家数量"
+	}
+	"You are not survivor, dumbass!"
+	{
+		"chi"		"你不是生还者，想干什么？"
+	}
+	"why you need so many hunter bots?"
+	{
+		"chi"		"那么多AI Hunter玩家?何必呢?"
+	}
+	"why no hunter bots?"
+	{
+		"chi"		"不想要AI Hunter玩家就别玩?"
+	}
+	"Infected Bot Spawn Timer."
+	{
+		"chi"		"决定AI特感玩家的复活时间."
+	}
+	"why so long?"
+	{
+		"chi"		"为什么那么久?"
+	}
+	"Failed to set timer! minimum value is 1."
+	{
+		"chi"		"设定时间失败! 最小复活时间是1."
+	}
+	"The Infected Team is full."
+	{
+		"chi"		"特感队伍已满."
+	}
+	"No survivor bots to take over."
+	{
+		"chi"		"没有可以取代的幸存者AI玩家."
+	}
+	"l4dinfectedbots1"
+	{
+		"chi"		"目前AI Hunter玩家数量是: {1}"
+	}
+	"l4dinfectedbots2"
+	{
+		"chi"		"AI Hunter玩家数量变更为: {green}{1}"
+	}
+	"l4dinfectedbots3"
+	{
+		"chi"		"AI Hunter玩家已经是: {1}"
+	}
+	"l4dinfectedbots4"
+	{
+		"chi"		"目前的AI特感玩家复活时间: {1}-{2}"
+	}
+	"l4dinfectedbots5"
+	{
+		"chi"		"电脑特感玩家复活时间更改成 {green}{1}{default} - {green}{2}"
+	}
+	"l4dinfectedbots6"
+	{
+		"chi"		"把你换到特感队伍，原因是幸存者队伍已满"
+	}
+	"l4dinfectedbots7"
+	{
+		"chi"		"把你换到幸存者队伍"
+	}	
+	"l4dinfectedbots8"
+	{
+		"chi"		"只有管理员才能加入特感队伍"
+	}	
+	"l4dinfectedbots9"
+	{
+		"chi"		"输入{1}加入特感队伍或是输入{2}加入幸存者队伍"
+	}	
+	"l4dinfectedbots10"
+	{
+		"chi"		"{lightgreen}特感玩家: {green}请稍等, 你复活 {lightgreen}灵魂状态 {green}太快了"
+	}	
+	"l4dinfectedbots11"
+	{
+		"chi"		"服务器安装AI特感玩家插件，版本号{1} - 输入{2}开启/关闭 特感界面"
+	}
+	"l4dinfectedbots12"
+	{
+		"chi"		"{green}[特感界面]{default} 特感界面 已关闭 - 输入{1}开启."
+	}
+	"l4dinfectedbots13"
+	{
+		"chi"		"{green}[特感界面]{default} 特感界面 已开启 - 输入{1}关闭."
+	}
+	"l4dinfectedbots14"
+	{
+		"chi"		"{green}[特感界面]{default} 特感界面所有玩家均关闭"
+	}
+	///////////////l4dscores.smx//////////////
+	"The scores have been reset."
+	{
+		"chi"		"分数已重置."
+	}
+	//same as "Health_Bonus"
+	"HB"
+	{
+		"chi"		"血分"
+	}
+	//same as "Average_Distance"
+	"AD"
+	{
+		"chi"		"路程分"
+	}
+	"Pills"
+	{
+		"chi"		"药分"
+	}
+	//same as "Number_of_players_that_survived"
+	"Alive"
+	{
+		"chi"		"存活数"
+	}
+	//same as "level_score_multiplier"
+	"Map"
+	{
+		"chi"		"地图难度加成"
+	}
+	"wiped out"
+	{
+		"chi"		"{default}[{green}灭团{default}]"
+	}
+	"You don't have access to set score."
+	{
+		"chi"		"你没有调整分数的权限"
+	}
+	"l4dscores1"
+	{
+		"chi"		"转移指定的玩家们到指定阵营"
+	}
+	"l4dscores2"
+	{
+		"chi"		"已经转移到{1}队伍"
+	}
+	"l4dscores3"
+	{
+		"chi"		"转移指定的玩家们到指定的队伍(1:旁观 2:生还者 3:特感)"
+	}
+	"l4dscores4"
+	{
+		"chi"		"队伍代号不正确，1:旁观 2:生还者 3:特感"
+	}
+	"The scores have been swapped."
+	{
+		"chi"		"双方队伍分数已经交换"
+	}
+	//Round {1} Scores: {2}
+	"l4dscores5"
+	{
+		"chi"		"{default}回合{green}#{1}{default} 分数: {olive}{2}"
+	}
+	//Round 1 Scores: {1}
+	"l4dscores6"
+	{
+		"chi"		"{default}回合{green}#1{default} 分数: {olive}{1}"
+	}
+	"l4dscores7"
+	{
+		"chi"		"队伍分数: {olive}生还者{default}/{green}特感"
+	}
+	//Map #{1}
+	"l4dscores8"
+	{
+		"chi"		"{default}关卡{green}#{1}"
+	}
+	"l4dscores9"
+	{
+		"chi"		"{default}关卡{green}#总共"
+	}
+	"l4dscores10"
+	{
+		"chi"		"为队伍 {1} 设置关卡分数: {2}"
+	}
+	"l4dscores11"
+	{
+		"chi"		"队伍分数是 {1}"
+	}
+	//////////////si_class_announce.smx//////////////
+	"si_class_announce"
+	{
+		"chi"		"第一波特感配置"
+	}
+	//////////////vocal_block.smx//////////////
+	"vocal_block1"
+	{
+		"chi"		"你无法投票踢掉这位玩家!"
+	}
+	"vocal_block2"
+	{
+		"chi"		"{1} 正在尝试将你踢出服务器!"
+	}
+	"vocal_block2"
+	{
+		"chi"		"你已达到角色语音限制"
+	}
+	"vocal_block3"
+	{
+		"chi"		"你必须等待 {green}{1} {default}秒才能使用角色语音"
+	}
+	"vocal_block4"
+	{
+		"chi"		"{1} 由于滥用角色语音而被踢出游戏"
+	}
+	"vocal_block4"
+	{
+		"chi"		"{1} 由于滥用角色语音而被封禁 {2} 分鐘"
+	}
+	//////////////votemanager2.smx//////////////
+	"Invalid vote type"
+	{
+		"chi"		"无效的投票项目"
+	}
+	"votemanager21"
+	{
+		"chi"		"目前还有未结束的投票项目，你个傻逼"
+	}
+	"votemanager22"
+	{
+		"chi"		"等待 {1} 秒才能发起投票"
+	}
+	"votemanager23"
+	{
+		"chi"		"{1} 发起了 {2} 投票"
+	}
+	"votemanager24"
+	{
+		"chi"		"{1} 尝试发起 {2} 投票但是没有相应的权限"
+	}
+	"votemanager25"
+	{
+		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家不存在"
+	}
+	"votemanager26"
+	{
+		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家是Tank"
+	}
+	"votemanager27"
+	{
+		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家是旁观者"
+	}
+	"votemanager28"
+	{
+		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家免疫"
+	}
+	"votemanager29"
+	{
+		"chi"		"{1} 正在发起投票踢出 {2}."
+	}
+	"votemanager210"
+	{
+		"chi"		"服务器已否决了这项投票."
+	}
+	"votemanager211"
+	{
+		"chi"		"{1} 已否决了这项投票."
+	}
+	"votemanager212"
+	{
+		"chi"		"{1} 尝试否决投票但是没有相应的权限."
+	}
+	"votemanager213"
+	{
+		"chi"		"服务器已通过了这项投票."
+	}
+	"votemanager214"
+	{
+		"chi"		"{1} 已通过了这项投票."
+	}
+	"votemanager215"
+	{
+		"chi"		"{1} 尝试通过投票但是没有响应的权限."
+	}
+	"votemanager216"
+	{
+		"chi"		"{1} 尝试发起自定义投票但是有项投票正在进行之中."
+	}
+	"votemanager217"
+	{
+		"chi"		"{1} 正在发起自定义投票."
+	}
+	//////////////l4d_texture_manager_block.smx//////////////
+	"l4d_texture_manager_block"
+	{
+		"chi"		"{lightgreen}{1}{default} 使用{green}mathack{default}指令作弊被踢出"
+	}
+	"l4d_texture_manager_block2"
+	{
+		"chi"		"{lightgreen}{1}{default} 使用{green}{2}{default}指令作弊被踢出"
+	}
+	//////////////rotoblin.smx//////////////
+	"Paused!"
+	{
+		"chi"		"暂停!"
+	}
+	"rotoblin1"
+	{
+		"chi"		"目前模式不可以使用暂停"
+	}
+	"rotoblin2"
+	{
+		"chi"		"无法在准备阶段使用暂停"
+	}
+	"rotoblin3"
+	{
+		"chi"		"游戏正在解除暂停，你个傻逼."
+	}
+	"rotoblin4"
+	{
+		"chi"		"游戏被管理员强制暂停."
+	}
+	"rotoblin4_2"
+	{
+		"chi"		"游戏暂停.\n输入 {green}{1}{default} 标记队伍已准备."
+	}
+	"rotoblin5"
+	{
+		"chi"		"只有游玩中的玩家才可以使用暂停"
+	}
+	"rotoblin6"
+	{
+		"chi"		"{blue}{1}{default} 呼叫暂停!"
+	}
+	"rotoblin7"
+	{
+		"chi"		"于{1}秒后暂停"
+	}
+	"rotoblin8"
+	{
+		"chi"		"旁观者不能解除暂停."
+	}
+	"rotoblin9"
+	{
+		"chi"		"marked {blue}Survivors{default} as ready."
+	}
+	"rotoblin10"
+	{
+		"chi"		"marked {red}Infected{default} as ready."
+	}
+	"rotoblin11"
+	{
+		"chi"		"标记{blue}生还者{default}队伍已准备."
+	}
+	"rotoblin12"
+	{
+		"chi"		"标记{blue}特感{default}队伍已准备."
+	}
+	"rotoblin13"
+	{
+		"chi"		"只有管理员才能使用强制暂停"
+	}
+	"rotoblin14"
+	{
+		"chi"		"管理员强制暂停游戏.\n管理员输入{green}{1}{default}解除暂停"
+	}
+	"rotoblin15"
+	{
+		"chi"		"只有管理员才能解除暂停"
+	}
+	"rotoblin16"
+	{
+		"chi"		"管理员已解除暂停"
+	}
+	"rotoblin17"
+	{
+		"chi"		"游戏将于{1}秒后解除暂停"
+	}
+	"rotoblin18"
+	{
+		"chi"		"游戏继续"
+	}
+	"rotoblin19"
+	{
+		"chi"		"游戏延后暂停因为生还者正在救人"
+	}
+	"Hunting Rifle"
+	{
+		"chi"		"狙击枪"
+	}
+	"Auto Shotgun"
+	{
+		"chi"		"连发散弹枪"
+	}
+	"Rifle"
+	{
+		"chi"		"步枪"
+	}
+	"Pump Shotgun"
+	{
+		"chi"		"单发散弹枪"
+	}
+	"Smg"
+	{
+		"chi"		"微型冲锋枪"
+	}
+	"rotoblin20"
+	{
+		"chi"		"队伍中已达 {lightgreen}{1}{default} 数量限制: {green}{2}{default}."
+	}
+	"rotoblin21"
+	{
+		"chi"		"{lightgreen}{1}{default} 不允许携带."
+	}
+	"rotoblin22"
+	{
+		"chi"		"{green}{1}{default} 被发现使用 {lightgreen}传送复活(telespawning){default} 而强制自杀."
+	}
+}

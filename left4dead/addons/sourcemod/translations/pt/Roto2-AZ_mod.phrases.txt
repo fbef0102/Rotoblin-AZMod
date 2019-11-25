@@ -1,0 +1,2230 @@
+"Phrases"
+{
+	//Every Language
+	"Language"
+	{
+		"pt"			"Seu idioma nesse servidor é: Português-BR, tradutor: Kadabra"
+	}
+	"Plugin_Information"
+	{
+		"pt"			"Informações sobre o plugin"
+	}
+	"Information"
+	{
+		"pt"			"Informação"
+	}
+	"Survivor"
+	{
+		"pt"			"Sobrevivente"
+	}
+	"Infected"
+	{
+		"pt"			"Infectado"
+	}
+	"Spectator"
+	{
+		"pt"			"Espectador"
+	}
+	"Witch"
+	{
+		"pt"			"Witch"
+	}
+	"Tank"
+	{
+		"pt"			"Tank"
+	}
+	"Spawn"
+	{
+		"pt"			"Spawn"
+	}
+	"Tank_Spawn"
+	{
+		"pt"			"Tank Spawn"
+	}
+	"Witch_Spawn"
+	{
+		"pt"			"Witch Spawn"
+	}
+	"Boss_Percent"
+	{
+		"pt"			"Porcentagem até o boss"
+	}
+	"Tank_Health"
+	{
+		"pt"			"Saúde do Tank"
+	}
+	"Max_Pounce_Damage"
+	{
+		"pt"			"Dano máximo da investida"
+	}
+	"Yes"
+	{
+		"pt"			"Sim"
+	}
+	"No"
+	{
+		"pt"			"Não"
+	}
+	"Wallkicks"
+	{
+		"pt"			"Wallkicks"
+	}
+	"Deadstops"
+	{
+		"pt"			"Deadstops"
+	}
+	"Spawn_Timer"
+	{
+		"pt"			"Tempo de Spawn"
+	}
+	"Commands"
+	{
+		"pt"			"Comandos"
+	}
+	"More"
+	{
+		"pt"			"Mais..."
+	}
+	"next"
+	{
+		"pt"			"Proxima"
+	}
+	"previous"
+	{
+		"pt"			"Anterior"
+	}
+	"back"
+	{
+		"pt"			"Voltar"
+	}
+	"exit"
+	{
+		"pt"			"Sair"
+	}
+	"Survivor_Current"
+	{
+		"pt"			"Porcentagem do caminho dos sobreviventes"
+	}
+	"Vote"
+	{
+		"pt"			"Vote"
+	}
+	"Show_Scores"
+	{
+		"pt"			"Mostrar pontuações"
+	}
+	"Round_Scores"
+	{
+		"pt"			"Pontuação do mapa"
+	}
+	"Pause"
+	{
+		"pt"			"Pausar"
+	}
+	"Stats"
+	{
+		"pt"			"Estatísticas"
+	}
+	"MVP"
+	{
+		"pt"			"MVP"
+	}
+	"Tankhud"
+	{
+		"pt"			"Tankhud"
+	}
+	"Spechud"
+	{
+		"pt"			"Spechud"
+	}
+	"Listen_Mode"
+	{
+		"pt"			"Listen Mode"
+	}
+	"Print_Scores"
+	{
+		"pt"			"Mostrar pontuação"
+	}
+	"WarpToSurvivor"
+	{
+		"pt"			"Infected Warp To Survivor"
+	}
+	"Change_Match"
+	{
+		"pt"			"Mudar Modo"
+	}
+	"Change_Map"
+	{
+		"pt"			"Mudar Campanha"
+	}
+	"Show_Player_Lerp"
+	{
+		"pt"			"Mostrar Lerps"
+	}
+	"Force_Player_Respectate"
+	{
+		"pt"			"Force Player Respectate"
+	}
+	"Stop_Jukebox"
+	{
+		"pt"			"Parar Jukebox"
+	}
+	"Auto_Choose_Team"
+	{
+		"pt"			"Seleção automática da equipe"
+	}
+	"Game"
+	{
+		"pt"			"Game"
+	}
+	"Mix"
+	{
+		"pt"			"Mix"
+	}
+	"Team_Shuffle"
+	{
+		"pt"			"Time aleatório"
+	}
+	"Change_Server_Slots"
+	{
+		"pt"			"Alterar slots do servidor"
+	}
+	"Kick_All_Spectators"
+	{
+		"pt"			"Expulsar todos espectadores"
+	}
+	"HunterBot_Limit"
+	{
+		"pt"			"Limite de hunters IA"
+	}
+	"Close"
+	{
+		"pt"			"Fechar"
+	}
+	"Bot_Spawn_Timer"
+	{
+		"pt"			"Tempo de spawn para IA"
+	}
+	"Close_Speaklist"
+	{
+		"pt"			"Fechar lista de discussão"
+	}
+	"Vote_Boss_Percent"
+	{
+		"pt"			"Votar para porcentagem do boss"
+	}
+	"Top_5_Skeeter"
+	{
+		"pt"			"Top 5 Skeeter"
+	}
+	"Show_Your_Skeet_Rank"
+	{
+		"pt"			"Mostrar sua classificação no ranking de skeet"
+	}
+	"Show_Your_Skeets"
+	{
+		"pt"			"Mostrar seus skeets"
+	}
+	"Top_5_Pouncer"
+	{
+		"pt"			"Top 5 Pouncer"
+	}
+	"Show_Your_Pounce_Stats"
+	{
+		"pt"			"Mostrar suas estatísticas de ataque"
+	}
+	"About"
+	{
+		"pt"			"Sobre"
+	}
+	"Based_on"
+	{
+		"pt"			"Baseado em"
+	}
+	"New_Mode"
+	{
+		"pt"			"Novo modo"
+	}
+	"Nerf_Hunting_Rifle"
+	{
+		"pt"			"Hunting Rifle Nerfada"
+	}
+	"Extra_Pills"
+	{
+		"pt"			"Pills extras"
+	}
+	"UZI_more_powerful"
+	{
+		"pt"			"SMG mais poderosa"
+	}
+	"More_Map_barriers"
+	{
+		"pt"			"Mais barreiras"
+	}
+	"Final_Stage_balance"
+	{
+		"pt"			"Estagio final balanciado"
+	}
+	"Developed_by"
+	{
+		"pt"			"Desenvolvido por"
+	}
+	"Scores_calculation"
+	{
+		"pt"			"Cálculos de pontuação"
+	}
+	"Average_Distance"
+	{
+		"pt"			"Distância média"
+	}
+	"Health_Bonus"
+	{
+		"pt"			"Bônus de Saúde"
+	}
+	"PermanentHealth"
+	{
+		"pt"			"Saúde Permanente"
+	}
+	"TemporaryHealth"
+	{
+		"pt"			"Saúde temporária"
+	}
+	"Bonus_per_pill"
+	{
+		"pt"			"Bônus de 20 pontos por pill"
+	}
+	"Number_of_players_that_survived"
+	{
+		"pt"			"Número de jogadores que sobreviveram"
+	}
+	"level_score_multiplier"
+	{
+		"pt"			"Multiplicador de pontuação do nível"
+	}
+	///////////////l4dready_scrds.smx///////////////
+	"command cannot be used by server."
+	{
+		"pt"		"Este comando nao pode ser usado pelo servidor."
+	}
+	"ReadyPlugin_1"
+	{
+		"pt"		"Ambos os jogadores estão no mesmo time."
+	}
+	"ReadyPlugin_2"
+	{
+		"pt"		"{olive}{1}{default} foi colocado para a assistir."
+	}
+	"ReadyPlugin_3"
+	{
+		"pt"		"{olive}{1}{default} foi trocado para a equipe Sobrevivente."
+	}
+	"ReadyPlugin_4"
+	{	
+		"pt"		"{olive}{1}{default} foi trocado para a equipe Infectado."
+	}
+	"ReadyPlugin_5"
+	{
+		"pt"		"Você já está na equipe {blue}Sobrevivente{default}."
+	}
+	"ReadyPlugin_6"
+	{
+		"pt"		"Equipe {blue}Sobrevivente{default} está cheia."
+	}
+	"ReadyPlugin_7"
+	{
+		"pt"		"Você já está na equipe {red}Infectado{default}."
+	}
+	"ReadyPlugin_8"
+	{
+		"pt"		"Equipe {red}Infectado{default} está cheia."
+	}
+	"ReadyPlugin_9"
+	{
+		"pt"		"Contagem interrompida, alguem não está pronto."
+        //          "Aborted going live due to player unreadying"
+	}
+	"ReadyPlugin_10"
+	{		
+        "pt"		"{1:i} de {2:i} jogadores estão prontos."
+	}
+	"ReadyPlugin_11"
+	{		
+        "pt"		"O round inicia em {green}{1}{default} segundo(s)."
+	}
+	"ReadyPlugin_12"
+	{		
+        "pt"		"Todos estão prontos. Iniciando em {green}{1}{default} segundo(s)."
+	}
+	"ReadyPlugin_13"
+	{
+		"pt"		"Restam 2 rounds."
+        //          "Match will be live after 2 round restarts"
+	}
+	"ReadyPlugin_14"
+	{
+		"pt"		"Resta 1 round."
+        //          "Match will be live after 1 round restart!"
+	}
+	"ReadyPlugin_15"
+	{
+		"pt"		"Bem-Vindo ao TS server\n\n!sur=Sobrevivente. !inf=Infectado. !s=Spectador"
+	}
+	"ReadyPlugin_16"
+	{
+		"pt"		"Você está pronto.\n\nEsperando por outros jogadores."
+	}
+	"ReadyPlugin_17"
+	{
+		"pt"		"Você está no time spectador.\n\nDigite !sur para sobrevivente e !inf para infectado"
+	}
+	"ReadyPlugin_18"
+	{
+		"pt"		"Você é um sobrevivente morto, {red}Mudar de time não é permitido{default}!!"
+	}
+	"ReadyPlugin_19"
+	{
+		"pt"		"Volte para sua equipe {green}{1}{default}, {red}mudar de time não é permitido{default}!!"
+	}
+	"ReadyPlugin_20"
+	{
+		"pt"		"Rodada reiniciada manualmente."
+	}
+	"ReadyPlugin_21"
+	{		
+        "pt"		"Reinicialização do mapa em {green}{1}{default} segundos."
+	}
+	"ReadyPlugin_22"
+	{		
+        "pt"		"Prepare-se!\nReiniciando mapa em: {1}"
+	}
+	"ReadyPlugin_23"
+	{
+		"pt"		"{red}{1}{default} forçou voce a assistir."
+        //          "has forced you to respectate."
+	}
+	"ReadyPlugin_24"
+	{
+		"pt"		"{lightgreen}{1}{default} foi forçado a assistir."
+	}
+	"ReadyPlugin_25"
+	{		
+        "pt"		"Aguarde {green}{1}s {default}para entrar novamente no time {red}Infectado{default}."
+	}
+	"ReadyPlugin_26"
+	{
+		"pt"		"Você pode voltar para o time {red}Infectado{default}."
+	}
+	"ReadyPlugin_27"
+	{
+		"pt"		"{red}Mudança de time não é permitida durante a partida{default}!"
+	}
+	"ReadyPlugin_28"
+	{
+		"pt"		"De uma olhada no console para saber as rates dos jogadores."
+	}
+	"ReadyPlugin_29"
+	{
+		"pt"		"Modo pronto ativado.\nDigite !ready para pronto ou !unready para não pronto."
+	}
+	"ReadyPlugin_30"
+	{
+		"pt"		"Ready plugin foi ativado"
+	}
+	"ReadyPlugin_31"
+	{
+		"pt"		"Ready plugin foi desativado"
+	}
+	"ReadyPlugin_32"
+	{		
+        "pt"		"{1} e {2} foram trocados de equipe."
+	}
+	"ReadyPlugin_33"
+	{
+		"pt"		"Os Infectados e Sobreviventes foram trocados"
+	}
+	"ReadyPlugin_34"
+	{
+		"pt"		"Prepare-se!"
+	}
+	"ReadyPlugin_35"
+	{
+		"pt"		"Round esta livre!\nVamos nessa!"
+	}
+	"ReadyPlugin_36"
+	{		
+        "pt"		"Prepare-se!\nIniciando em: {1}"
+	}
+	"ReadyPlugin_37"
+	{
+		"pt"		"|Easter Egg| Trophy Ready\n\nBone Saw Is Ready!"
+	}
+	"ReplyToCommand1"
+	{
+		"pt"		"Mudar os dois jogadores para o time oposto."
+	}
+	"ReplyToCommand2"
+	{
+		"pt"		"Só pode ser usado pelo infectado."
+	}
+	"ReplyToCommand3"
+	{
+		"pt"		"forçar o jogador a assistir (impedir que o ícone infectado fique preso)."
+        //          "force the player to respectate(prevent infected icon stuck)-"
+	}
+	"ReplyToCommand4"
+	{
+		"pt"		"{1} não é um espectador."
+	}
+	"ReplyToCommand5"
+	{
+		"pt"		"{1} ja esta assistindo."
+        //          "is already being respected."
+	}
+	"ReplyToCommand6"
+	{		
+        "pt"		"{1} não pode ser especificado por mais {2} segundo(s), aguarde."
+	}
+	"ReplyToCommand7"
+	{
+		"pt"		"Trocar equipe do player1 e player2"
+	}
+	///////////////comp_loader.smx///////////////
+	"request timed out."
+	{
+		"pt"		"O pedido expirou."
+	}
+	"canceled the command request."
+	{	
+		"pt"		"Cancelou a solicitação de {green}{1}{default}."
+	}
+	"canceled all requests."
+	{
+		"pt"		"Cancelou todas as solicitações."
+	}
+	"Spectators cannot use command."
+	{
+		"pt"		"Espectadores não podem usar esse comando {green}{1}{default}."
+	}
+	"Invalid Config."
+	{
+		"pt"		"Config inválida."
+	}
+	"command is not available."
+	{	
+		"pt"	"{green}{1}{default} não está disponivel."
+	}
+	"The team have canceled the command request."
+	{		
+        "pt"	"O {1} cancelou a solicitação {green}{2}{default}."
+	}
+	"Nothing to cancel."
+	{
+		"pt"	"Nada para cancelar."
+	}
+	"mode is disabled."
+	{
+		"pt"	"{green}{1}{default} este modo está desativado."
+	}
+	"command is disabled."
+	{
+		"pt"	"{green}{1}{default} este comando está desativado."
+	}
+	"Check the console for available commands."
+	{
+		"pt"	"Verifique o console para ver os comandos disponíveis."
+	}
+	"Invalid Map."
+	{
+		"pt"	"Mapa inválido."
+	}
+	"Invalid Mapname."
+	{
+		"pt"	"Nome do mapa inválido."
+	}
+	"The team must agree by typing command"
+	{		
+        "pt"	"O {1} deve concordar digitando {green}{2} {3}{default}."
+	}
+	"Map Mismatch."
+	{
+		"pt"	"Incompatibilidade de mapa."
+	}
+	"Agree"
+	{
+		"pt"	"Aceita"
+	}
+	"Disagree"
+	{
+		"pt"	"Discoda"
+	}
+	"A vote is already in progress!"
+	{
+		"pt"	"Uma votação já está em andamento!"
+	}
+	"Not enough players."
+	{
+		"pt"	"Jogadores {red}{1}{default} insuficientes."
+	}
+	"No votes"
+	{
+		"pt"	"Sem votos"
+	}
+	"Vote fail."
+	{		
+        "pt"	"{red}Falha na votação.{default} ao menos {red}{1}%%{default} devem concordar.(Concordo: {green}{2}%%{default}, total: {green}{3}{default} votos)"
+	}
+	"Vote pass."
+	{		
+        "pt"	"{blue}Votação aceita.{default}(Concordo: {green}{1}%%{default}, total: {green}{2}{default} votos)"
+	}
+	"comp_loader1"
+	{
+		"pt"		"Os infectados obrigaram você a assistir."
+        //          "The Infected have forced you to respectate"
+	}
+	"comp_loader2"
+	{	
+		"pt"		"Forçou a config {green}{1}{default}."
+	}
+	"comp_loader4"
+	{		
+        "pt"		"{blue}{1}{default} Iniciou uma votação: config {green}{2}{default}."
+	}
+	"comp_loader5"
+	{
+		"pt"		"Match '{1}' mode?"
+	}
+	"comp_loader6"
+	{
+		"pt"	"Prepare-se!\nMudando campanha em: {1}"
+	}
+	"comp_loader7"
+	{
+		"pt"	"Forçou a mudança de campanha {green}{1}{default}."
+	}
+	"comp_loader8"
+	{		
+        "pt"	"Os {1} solicitaram a mudança de mapa para {green}'{2}'{default}"
+	}
+	"comp_loader9"
+	{		
+        "pt"	"Os {1} concordaram com a mudança de mapa para {green}'{2}'{default}."
+	}
+	"comp_loader10"
+	{
+		"pt"	"Sua equipe ja solicitou uma mudança de mapa."
+	}
+	"comp_loader11"
+	{
+		"pt"	"Você deve aguardar {green}{1}{default} segundos para iniciar um novo match!"
+	}
+	"comp_loader12"
+	{
+		"pt"	"Nenhuma configuração para esse modo foi encontrada."
+	}
+	"comp_loader13"
+	{
+		"pt"	"A votação da partida não pode ser iniciada."
+	}
+	///////////////l4dcompstats.smx///////////////
+	"You deadstopped Hunter"
+	{
+		"pt"	"Você deadstopped {red}{1}{default}."
+	}
+	"You were deadstopped by player"
+	{
+		"pt"	"Você foi deadstopped por {blue}{1}{default}."
+	}
+	"You don't have to be mad..."
+	{
+		"pt"	"Ja aconteu comigo, eu superei..."
+	}
+	"skeeted a tank rock."
+	{
+		"pt"	"skeetou a pedra do tank."
+	}
+	"l4dcompstats1"
+	{		
+        "pt"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
+	}
+	"l4dcompstats2"
+	{		
+      	"pt"	"CI: {blue}{1}{default} ({olive}{2}{default} commons [{green}{3}%%{default}])"
+	}
+	"l4dcompstats3"
+	{		
+        "pt"	"FF: {blue}{1}{default} ({olive}{2}{default} dmg [{green}{3}%%{default}])"
+	}
+	"l4dcompstats4"
+	{		
+        "pt"	"Skeet: {blue}{1}{default} ({olive}{2}{default} Full Skeets [{green}{3}%%{default}], {olive}{4}{default} Team Skeets [{green}{5}%%{default}])"
+	}
+	"l4dcompstats5"
+	{		
+        "pt"	"Deadstops: {blue}{1}{default} ({olive}{2}{default} times [{green}{3}%%{default}])"
+	}
+	"l4dcompstats6"
+	{
+		"pt"	"{red}Witch{default} had {green}{1}{default} health remaining."
+	}
+	"l4dcompstats7"
+	{
+		"pt"	"{blue}{1}{default} was killed by {green}Witch{default}."
+	}
+	"l4dcompstats8"
+	{
+		"pt"	"Você explodiu o boomer {red}AI{default}."
+	}
+	"l4dcompstats9"
+	{
+		"pt"	"Você fez um boomdoge no boomer de {red}{1}{default}'s."
+	}
+	"l4dcompstats10"
+	{
+		"pt"	"{blue}{1}{default} explodiu seu boomer."
+	}
+	"l4dcompstats11"
+	{
+		"pt"	"{green}Witch {default}crowned {blue}{1}{default}."
+	}
+	"l4dcompstats12"
+	{		
+        "pt"	"{red}{1}{default} tinha {green}{2}{default} de vida restante!"
+	}
+	"l4dcompstats13"
+	{
+		"pt"	"Você tinha {green}{1}{default} de vida restante!"
+	}
+	///////////////games.smx///////////////
+	"You must spec first"
+	{
+		"pt"	"Voce deve assistir primeiro!"
+        //      "You must spec first"
+	}
+	"All teams are full."
+	{
+		"pt"	"Todas as equipes estão cheias."
+	}
+	"game1"
+	{
+		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}H Cara{default}!"
+	}
+	"game2"
+	{	
+		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}T Coroa{default}!"
+	}
+	"game3"
+	{
+		"pt"	"Equipe aleatoria escolhida pra você!"
+        //      "Choose Random team for you!"
+	}
+	"game4"
+	{		
+        "pt"	"BINGO! {olive}{1}{default} adivinhou o codigo certo de {olive}{2}{default}: {lightgreen}{3}{default}. Bravo!"
+	}
+	"game5"
+	{		
+        "pt"	"{olive}{1}{default} adivinhou {green}{2}{default}. O codigo é maior que isso."
+	}
+	"game6"
+	{		
+        "pt"	"{olive}{1}{default} adivinhou {green}{2}{default}. O codigo é maior que isso."
+	}
+	"game7"
+	{
+		"pt"	"Alguém escolheu o codigo Da Vinci. Descobriu primeiro!"
+	}
+	"game8"
+	{
+		"pt"	"Reproduza um codigo Da Vinci."
+	}
+	"game9"
+	{
+		"pt"	"{default}Voce escolheu {lightgreen}{1}{default} como codigo."
+	}
+	"game10"
+	{
+		"pt"	"{olive}{1}{default}escolheu o codigo {green}Da Vinci{default}. Alguem quer adivinhar?"
+	}
+	"game11"
+	{		
+        "pt"	"{olive}{1} {default}rolou um dado de {lightgreen}{2}{default}lados!. Está {green}{2}{default}!"
+	}
+	"game12"
+	{
+		"pt"	"Vá com calma amigo, espere ao menos {1} segundo's."
+	}
+	"game13"
+	{
+		"pt"	"Jogue um dado com número inteiro."
+	}
+	///////////////kills.smx///////////////
+	"kills1"
+	{		
+        "pt"	"{default}SI: {olive}{1}{default}[{green}headshot{default}: {olive}{2}{default}],Common: {olive}{3}{default}[{green}headshot{default}: {olive}{4}{default}],FF: {olive}{5}{default} - {olive}{6}"
+	}
+	"kills2"
+	{		
+        "pt"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}}{2}{default},{lightgreen}tounge{default}: {olive}}{3}{default},{lightgreen}boom{default}: {olive}}{4}{default}] - {olive}}{5}"
+	}
+	///////////////l4d_panic_notify.smx///////////////
+	"l4d_panic_notify1"
+	{
+		"pt"	"{default}Iniciou o {lightgreen}Resgate Final"
+	}
+	"l4d_panic_notify2"
+	{
+		"pt"	"{default}Desencadeou um {lightgreen}evento de horda"
+	}
+	"l4d_panic_notify3"
+	{
+		"pt"	"{default}Desencadeou um {lightgreen}alerta de horda"
+	}
+	"l4d_panic_notify4"
+	{
+		"pt"	"{olive}corvo {lightgreen}evento de horda"
+	}
+	"l4d_panic_notify5"
+	{
+		"pt"	"{olive}Deadth Aboard {lightgreen}evento de horda"
+	}
+	"l4d_panic_notify6"
+	{
+		"pt"	"{lightgreen}Resgate iniciado"
+	}
+	///////////////l4d_pig_infected_notify.smx///////////////
+	"killed by fire"
+	{
+		"pt"	"morto por fogo"
+	}
+	"killed by map"
+	{
+		"pt"	"morto pelo mapa"
+	}
+	"killed himself"
+	{
+		"pt"	"se matou"
+	}
+	"killed by toy"
+	{
+		"pt"	"morto por um brinquedo"
+	}
+	"killed by boom"
+	{
+		"pt"	"morto por um brinquedo"
+	}
+	"killed by server"
+	{
+		"pt"	"morto pelo servidor"
+	}
+	"One-Punch"
+	{
+		"pt"	"Um-Soco"
+	}
+	"Rock-Stone"
+	{
+		"pt"	"Rock-Stone"
+	}
+	"Toy"
+	{
+		"pt"	"Brinquedo"
+	}
+	"Alarm-Car"
+	{
+		"pt"	"Carro com alarme"
+	}
+	"Tank is killed by something"
+	{
+		"pt"	"{green}Tank é {olive}{1}{default}."
+	}
+	"Player is killed by something"
+	{		
+       "pt"	"{red}{1}{default} é {olive}{2}{default}."
+	}
+	"Tank Kill Witch"
+	{
+		"pt"	"Tank {default}usou {olive}{1}{default} para finalizar a {red}Witch{default}."
+	}
+	"punches"
+	{
+		"pt"	"socou"
+	}
+	"smashes"
+	{
+		"pt"	"esmagou"
+	}
+	"plays toy to kill"
+	{
+		"pt"	"joga brinquedos para matar"
+	}
+	"plays alarm car to kill"
+	{
+		"pt"	"toca carro com alarme para matar"
+	}
+	"Tank kill teammate"
+	{		
+        "pt"	"{green}Tank {olive}{1}{default} {2} companheiro de equipe."
+	}
+	"l4d_pig_infected1"
+	{	
+		"pt"	"{olive}{1}{default} usou a porta para o {green}Tank{default}tropeçar."
+	}
+	"l4d_pig_infected2"
+	{
+		"pt"	"{red}Witch{default} matou companheiro de equipe."
+	}
+	"l4d_pig_infected3"
+	{
+		"pt"	"{red}Witch{default} matou AI companheiro de equipe."
+	}
+	"l4d_pig_infected4"
+	{
+		"pt"	"{red}Witch{default} {olive}se foi{default}."
+	}
+	"l4d_pig_infected5"
+	{		
+        "pt"	"{olive}{1}{default} matou {red}{2}{default}'s Boomer para o {green}Tank{default} tropeçar."
+	}
+	"l4d_pig_infected6"
+	{		
+        "pt"	"{olive}{1}{default} matou {red}AI{default} Boomer para o {green}Tank{default} tropeçar."
+	}
+	"l4d_pig_infected7"
+	{		
+        "pt"	"{green}Tank {olive}{1}{default} matou {red}{2}{default}'s Boomer e tropeçou."
+	}
+	"l4d_pig_infected8"
+	{		
+        "pt"	"{green}Tank {olive}{1}{default} matou {red}AI{default} Boomer {default}e tropeçou."
+	}
+	"l4d_pig_infected9"
+	{		
+        "pt"	"{green}Tank {olive}{1}{default} matou {red}{2}{default}'s Boomer."
+	}
+	"l4d_pig_infected10"
+	{		
+        "pt"	"{green}Tank {olive}{1}{default} matou {red}AI{default} Boomer"
+	}
+	"l4d_pig_infected11"
+	{
+		"pt"	"{red}{1}{default}'s Boomer explodiu."
+	}
+	"l4d_pig_infected12"
+	{
+		"pt"	"{red}AI{default} Boomer explodiu."
+	}
+	"l4d_pig_infected13"
+	{
+		"pt"	"{red}{1}{default}'s Boomer fez o {green}Tank{default} tropeçar."
+	}
+	"l4d_pig_infected14"
+	{
+		"pt"	"{red}AI{default} Boomer fez o {green}Tank{default} tropeçar."
+	}
+	///////////////l4dffannounce.smx///////////////
+	"fell from top floor."
+	{
+		"pt"	"{olive}{1}{default} caiu do ultimo andar."
+	}
+	"player kill teammate"
+	{
+		"pt"	"{lightgreen}{1}{default} matou {olive}{2}{default}."
+	}
+	"Tank Punch survivor fly away and die"
+	{
+		"pt"	"Tank {default}Walk-off Home Run {olive}{1}{default}."
+	}
+	"Survivor suicides"
+	{
+		"pt"	"{lightgreen}Eu desisto da minha vida{default}."
+	}
+	"l4dffannounce1"
+	{
+		"pt"	"Você causou {green}{1}{default} fogo amigo em {olive}{2}"
+	}
+	"l4dffannounce2"
+	{
+		"pt"	"{olive}{1}{default} fez {green}{2}{default} fogo amigo em você"
+	}	
+	"l4dffannounce13"
+	{
+		"pt"	"Você fez {1} fogo amigo em {2}"
+	}
+	"l4dffannounce14"
+	{
+		"pt"	"{1} fez {2} fogo amigo em você"
+	}
+	///////////////checkpoint-rage-control.smx///////////////
+	"Survivors are in saferoom, Tank still loses rage!!!"
+	{
+		"pt"	"{olive}Sobreviventes{default} estão na sala segura, o {green}Tank{default} ainda perde a raiva!!!"
+	}
+	///////////////caster_assister.smx///////////////
+	"Your movement speed would be out of bounds, permission denied."
+	{
+		"pt"	"Sua velocidade de movimento estaria fora dos limites, permissão negada."
+	}
+	///////////////l4d_antibaiter.smx///////////////
+	"Survivors must move forward"
+	{
+		"pt"	"Sobreviventes movam-se\nHorda em: {1}"
+	}
+	"Force Panic Event!!"
+	{
+		"pt"	"Evento de panico forçado!!"
+	}
+	///////////////caster_assister.smx///////////////
+	"Player is black and white."
+	{
+		"pt"	"{1} ({2}) está preto e branco."
+	}
+	///////////////l4d_NoRescueFirstTank.smx///////////////
+	"Only One Tank after Final Rescue"
+	{
+		"pt"	"{green}Apenas um TANK {default}após {olive}Final Rescue"
+	}
+	///////////////l4d_tank_attack_control.smx///////////////
+	"l4d_tank_attack_control_Rock"
+	{
+		"pt"	"{default}[{green}Rock{default}] ({olive}MOUSE2{default}) uma mão\n({olive}E{default}) acima da cabeça\n({olive}R{default}) duas mãos"
+	}
+	///////////////l4d_tank_control.smx///////////////
+	"player will be the tank"
+	{
+		"pt"	"{green}[EuSouTank] {red}{1}{default} vai se tornar o {green}tank{default}!"
+	}
+	"force this player will become the tank"
+	{
+		"pt"	"Força o jogador a se tornar o tank"
+	}
+	"target is not in infected team"
+	{
+		"pt"	"{1} não está no time infectado"
+	}
+	"Tank Control has been clear and reset!"
+	{
+		"pt"	"O controle do tanque foi limpo e redefinido!"
+	}
+	"l4d_tank_control1"
+	{
+		"pt"	"o plugin esta desativado, defina a convar \"tank_control_disable 1\" primeiro!"
+	}
+	"l4d_tank_control2"
+	{
+		"pt"	"{green}[EuSouTank]{default} Adm forçou {red}{1}{default} a se tornar {green}tank{default}!"
+	}
+	"l4d_tank_control3"
+	{
+		"pt"	"{green}[EuSouTank]{default} Todos ja se tornaram o {green}tank{default}，{olive}aleatorio agora{default}!"
+	}
+	"l4d_tank_control4"
+	{
+		"pt"	"{green}[EuSouTank]{default} Não ha {red}Jogadores Infectados {default}nesse momento."
+	}
+	"l4d_tank_control5"
+	{
+		"pt"	"{green}[EuSouTank] {default}({olive}{1}{default}) {green}Medidor de raiva do tanque recarregado."
+	}
+	"l4d_tank_control6"
+	{
+		"pt"	"{green}[Tank] {default}não perca o controle, resta apenas {red}1{default} controle!"
+	}
+	///////////////l4d_tank_count.smx///////////////
+	"First Tank"
+	{
+		"pt"	"Primeiro Tank"
+	}
+	"Second Tank"
+	{
+		"pt"	"Segundo Tank"
+	}
+	"Third Tank"
+	{
+		"pt"	"Terceiro Tank"
+	}
+	"AI Tank"
+	{
+		"pt"	"AI Tank"
+	}
+	"l4d_tank_count1"
+	{
+		"pt"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Pounch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
+	}
+	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
+	"Tank (player) health remaining"
+	{
+		"pt"	"Tank {default}({red}{1}{default}) tinha {red}{2}{default} de vida restante"
+	}
+	"Tank health remaining"
+	{
+		"pt"	"Tank tinha {red}{1}{default} de vida restante"
+	}
+	"Tank has spawned!"
+	{
+		"pt"	"{green}Tank{default} foi spawnado!"
+	}
+	"Tank got lost and lost control."
+	{
+		"pt"	"Se perdeu e o controle do tank foi perdido."
+	}
+	"Witch has spawned!"
+	{
+		"pt"	"{green}Witch{default} foi spawnada!"
+	}
+	"Damage dealt to Tank"
+	{
+		"pt"	"Dano causado ao Tank ({red}{1}{olive}):"
+	}
+	"Damage dealt to Witch"
+	{
+		"pt"	"Dano causado a {red}Witch{olive}:"
+	}
+	"Other damage"
+	{
+		"pt"	"Outros danos"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer1"
+	{
+		"pt"	"{default}Ele tinha {red}{1}{default} de vida restante"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer2"
+	{
+		"pt"	"causou {olive}{1}{default} dano ao {green}Tank"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer3"
+	{
+		"pt"	"{blue}{1}{default} {olive}crowned {default}a {green}Witch{default}."
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer4"
+	{
+		"pt"	"{blue}{1}{default} {olive}draw-crowned {green}Witch{default}."
+	}	
+	"l4d_tank_witch_damage_announce_spawnAnnouncer5"
+	{
+		"pt"	"Dano causado ao Tank ({red}{1}{default}):\nVocê: {olive}{2}{default} ({green}{3}%%{default})"
+	}
+	"l4d_tank_witch_damage_announce_spawnAnnouncer6"
+	{
+		"pt"	"Dano causado a Witch ({red}{1}{default}):\nVocê: {olive}{2}{default} ({green}{3}%%{default})"
+	}
+	///////////////l4d_tankpunchstuckfix.smx///////////////
+	"l4d_tankpunchstuckfix"
+	{
+		"pt"	"<{olive}TankPunchStuck{default}> encontrado {blue}{1}{default} teleportando para uma posição válida."
+	}
+	///////////////l4d_versus_despawn_health.smx///////////////
+	"l4d_versus_despawn_health1"
+	{
+		"pt"	"Você não pode recuperar {red}HP{default}, Espere {lightgreen}20s{default} ainda não!"
+	}
+	"l4d_versus_despawn_health2"
+	{
+		"pt"	"Você recuperou {red}{1} {default}HP."
+	}
+	///////////////l4d_versus_specListener3.0.smx///////////////
+	"On"
+	{
+		"pt"	"On"
+	}
+	"Off"
+	{
+		"pt"	"Off"
+	}
+	"Listen Mode1"
+	{
+		"pt"	"[{green}ListenMode{default}] {olive}digite {green}{2} {olive}{1} {lightgreen}Listen Mode{olive}."
+	}
+	"Listen Mode2"
+	{
+		"pt"	"[{green}ListenMode{default}] {lightgreen}Listen Mode{default} agora é {olive}{1}{default}."
+	}
+	"Listen Mode3"
+	{
+		"pt"	"{olive}(Você pode ver oque os {green}Survivor{olive} e {green}Infected{olive} digitam e escutar o microfone)"
+	}
+	///////////////admin_hp.smx///////////////
+	"admin_hp"
+	{
+		"pt"	"Adm({lightgreen}{1}{default}) deu vida {olive}a todos os sobreviventes {green}FULL HP"
+	}
+	///////////////L4DVSAutoSpectateOnAFK.smx///////////////
+	"L4DVSAutoSpectateOnAFK1"
+	{
+		"pt"	"Aperte M ou escreve !sur/!inf parar entrar no jogo..."
+	}
+	"L4DVSAutoSpectateOnAFK2"
+	{
+		"pt"	"[AFK] Você será movido para espectador dentro de {1} segundos caso não se mova."
+	}
+	"L4DVSAutoSpectateOnAFK3"
+	{
+		"pt"	"[AFK] Você será forçado a assistir assim que um jogador sair da sala segura."
+	}
+	"L4DVSAutoSpectateOnAFK4"
+	{
+		"pt"	"[AFK] Você será expulso dentro de {1} segundos."
+	}
+	"L4DVSAutoSpectateOnAFK5"
+	{
+		"pt"	"[AFK] Você será expulso assim que um jogador sair da sala segura"
+	}
+	"L4DVSAutoSpectateOnAFK6"
+	{
+		"pt"	"{lightgreen}{1}{default} foi expulso por ficar afk por muito tempo."
+	}
+	///////////////lerptracker.smx///////////////
+	"Illegal lerp value"
+	{
+		"pt"	"O valor da sua lerp não é aceita"
+	}
+	"Min"
+	{
+		"pt"	"Minimo"
+	}
+	"Max"
+	{
+		"pt"	"Maximo"
+	}
+	"lerptracker1"
+	{
+		"pt"	"foi expulso por ter a lerp muito alta."
+	}
+	"lerptracker2"
+	{
+		"pt"	"foi movido para o espectador por causa de sua lerp"
+	}
+	"lerptracker3"
+	{
+		"pt"	"{1}{green}'s mudou sua lerp de {olive}{2} {green}para {olive}{3}{default} [{4}{5}{default}/{6} mudanças]"
+	}
+	"lerptracker4"
+	{
+		"pt"	"{1}{default} foi movido para os espectadores (mudança ilegal de lerp)!"
+	}
+	"lerptracker5"
+	{
+		"pt"	"mudança ilegal de lerp no meio do jogo, volte sua lerp para {olive}{1}"
+	}
+	"lerptracker6"
+	{
+		"pt"	"{1}{green}'s mudou sua lerp de {olive}{2} {green}para {olive}{3}"
+	}
+	///////////////pounceannounce.smx///////////////
+	"pounceannounce1"
+	{
+		"pt"	"{green}{1}{default} pounced {olive}{2}{default} por {lightgreen}{3}{default} dano. (Max: {4})"
+	}
+	"PounceDistanceDisplay1"
+	{
+		"pt"	"mais de {green}{1}{default} unidades"
+	}
+	"PounceDistanceDisplay2"
+	{
+		"pt"	"mais de {green}{1}{default} unidades ({2} pés)"
+	}
+	"PounceDistanceDisplay3"
+	{
+		"pt"	"mais de {green}{1}{default} unidades ({2} metros)"
+	}
+	"PounceDistanceDisplay4"
+	{
+		"pt"	"mais de {green}{1}{default} pés"
+	}
+	"PounceDistanceDisplay5"
+	{
+		"pt"	"mais de {green}{1}{default} meteros"
+	}
+	///////////////ratemonitor.smx///////////////
+	"ratemonitor1"
+	{
+		"pt"	"{lightgreen}Suas{default} configurações de rede foram alteradas de {green}{1}{default}/{green}{2}{default}/{olive}{3}{default} para {green}{4}{default}/{green}{5}{default}/{olive}{6}{default}{7}"
+	}
+	"ratemonitor2"
+	{
+		"pt"	"{olive}Suas{default} configurações de rede foram definidas para {green}{1}{default}/{green}{2}{default}/{olive}{3}{default}"
+	}
+	"ratemonitor3"
+	{
+		"pt"	"{lightgreen}{1}{default}'s configurações de rede definidas para valores ilegais"
+	}
+	"ratemonitor4"
+	{
+		"pt"	"{lightgreen}{1}{default}'s configurações de rede não podem ser alteradas no meio do jogo"
+	}	
+	"ratemonitor5"
+	{
+		"pt"	"{lightgreen}{1}{default} foi movido para os espectadores por configurações de rede ilegais"
+	}	
+	"ratemonitor6"
+	{
+		"pt"	"{default}Ajuste suas taxas para valores maiores que {green}{1}{default}/{olive}{2}{default}{3}"
+	}	
+	"ratemonitor7"
+	{
+		"pt"	"(e remova quaisquer {lightgreen}caracteres não digitais)"
+	}	
+	"ratemonitor8"
+	{
+		"pt"	"{lightgreen}{1}{default} foi movido para os espectadores por alterações ilegais nas redes"
+	}
+	"ratemonitor9"
+	{
+		"pt"	"{default}Altere suas configurações de rede novamente para: {green}{1}{default}/{green}{2}{default}/{olive}{3}"
+	}
+	"ratemonitor10"
+	{
+		"pt"	"{lightgreen}{1}{default} foi expulso devido a configurações ilegais"
+	}
+	"ratemonitor11"
+	{
+		"pt"	"{lightgreen}{1}{default} foi expulso devido a alteração ilegal de configurações de rede"
+	}
+	///////////////sm_l4d_mapchanger.smx///////////////
+	"sm_l4d_mapchanger1"
+	{
+		"pt"	"Proximo map: {blue}{1}{default}."
+	}
+	///////////////votes3.smx///////////////
+	"Vote Menu"
+	{
+		"pt"	"Vote Menu"
+	}
+	"Turn On"
+	{
+		"pt"	"Ligar"
+	}
+	"Turn Off"
+	{
+		"pt"	"Desligar"
+	}
+	"Give hp"
+	{
+		"pt"	"Dê HP"
+	}
+	"All talk"
+	{
+		"pt"	"All talk"
+	}
+	"Turn on All talk"
+	{
+		"pt"	"Ligar All talk"
+	}
+	"Turn off all talk"
+	{
+		"pt"	"Desligar all talk"
+	}
+	"Restartmap"
+	{
+		"pt"	"Restartmap"
+	}
+	"Change map"
+	{
+		"pt"	"Mudar map"
+	}
+	"Change addon map"
+	{
+		"pt"	"Mudar map addon"
+	}
+	"Kick player"
+	{
+		"pt"	"Kick player"
+	}
+	"Forcespectate player"
+	{
+		"pt"	"Forcespectate player"
+	}
+	"starts a vote"
+	{
+		"pt"	"inicia uma votação"
+	}
+	"only their team can vote"
+	{
+		"pt"	"somente sua equipe pode votar"
+	}
+	"This vote is prohibited"
+	{
+		"pt"	"Este voto é proibido"
+	}
+	"Plz choose addon maps"
+	{
+		"pt"	"Escolha um mapa"
+	}
+	"No Mercy"
+	{
+		"pt"	"No Mercy"
+	}
+	"Dead Air"
+	{
+		"pt"	"Dead Air"
+	}
+	"Death Toll"
+	{
+		"pt"	"Death Toll"
+	}
+	"Blood Harvest"
+	{
+		"pt"	"Blood Harvest"
+	}
+	"Crash Course"
+	{
+		"pt"	"Crash Course"
+	}
+	"The Sacrifice"
+	{
+		"pt"	"The Sacrifice"
+	}
+	"Vote Custom Maps"
+	{
+		"pt"	"Vote Custom Maps <{1} total>"
+	}
+	"votes3_1"
+	{
+		"pt"	"ready plugin é proibido"
+	}
+	"votes3_2"
+	{
+		"pt"	"givehp é proibido"
+	}
+	"votes3_3"
+	{
+		"pt"	"alltalk on é proibido"
+	}
+	"votes3_4"
+	{
+		"pt"	"alltalk off é proibido"
+	}
+	"votes3_5"
+	{
+		"pt"	"restart map é proibido"
+	}
+	"votes3_6"
+	{
+		"pt"	"chane map é proibido"
+	}
+	"votes3_7"
+	{
+		"pt"	"chane custom map é proibido"
+	}
+	"votes3_8"
+	{
+		"pt"	"{1} ready plugin"
+	}
+	//{1} in "votes3_8" and "votes3_9" are different type
+	"votes3_9" 
+	{
+		"pt"	"{1} ready plugin"
+	}
+	"votes3_10" 
+	{
+		"pt"	"Você foi votado para ser forçado a ssistir! Espere {green}{1}s{default} para entrar novamente."
+	}
+	"votes3_11" 
+	{
+		"pt"	"Você pode se juntar à equipe agora."
+	}
+	"votes3_12"
+	{
+		"pt"	"Você deve esperar {red}{1}{default} sec para iniciar uma nova votação!"
+	}
+	"votes3_13"
+	{
+		"pt"	"A votação não pode ser iniciada."
+	}
+	"votes3_14"
+	{
+		"pt"	"{green}5{default} sec para mudar o mapa {blue}{1}"
+	}
+	"votes3_15"
+	{
+		"pt"	"{blue}{1}{default} foi chutado!"
+	}
+	"votes3_16"
+	{
+		"pt"	"{blue}{1}{default} foi forçado a assistir!"
+	}
+	///////////////cannounce.smx///////////////
+	"cannounce1"
+	{
+		"pt"	"{blue}Jogador {green}{1} {blue}entrou{default}."
+	}
+	"cannounce2"
+	{
+		"pt"	"{red}Jogador {green}{1} {red}saiu{default}."
+	}		///////////////l4d_current_survivor_progress.smx//////////////
+	"l4d_current_survivor_progress"
+	{
+		"pt"	"{blue}Caminho{default}: {green}{1}%%"
+	}
+	///////////////l4d_bossvote.smx//////////////
+	"l4d_bossvote1"
+	{
+		"pt"	"{blue}[{default}BossVote{blue}]{default} Use: {green}{1}{olive} <tank> <witch>"
+	}
+	"l4d_bossvote2"
+	{
+		"pt"	"{blue}[{default}BossVote{blue}]{default} Exemplo: {green}{1}{default} 70 50"
+	}
+	"l4d_bossvote3"
+	{
+		"pt"	"{blue}[{default}BossVote{blue}]{default} Sua configuração será {olive}Tank: 70%%, {default}e {olive}Witch: 50%"
+	}
+	"l4d_bossvote4"
+	{
+		"pt"	"{blue}[{default}BossVote{blue}]{default} A votação só pode ser iniciada por um jogador durante a preparação @ primeiro round!"
+	}
+	"l4d_bossvote5"
+	{
+		"pt"	"Mudar Tank: {1}%%, Witch: {2}%%"
+	}
+	"l4d_bossvote6"
+	{
+		"pt"	"{blue}Votação aceita. {default}Aplicando spawn personalizado de boss..."
+	}
+	///////////////l4d_wind.smx//////////////
+	"Failed to add a bot"
+	{
+		"pt"	"Falha ao adicionar um bot"
+	}
+	"Succeed to add a bot"
+	{
+		"pt"	"Foi possível adicionar um bot, espectador digite {green}{1}{default} para entrar"
+	}
+	"You are not Spectator..."
+	{
+		"pt"	"Você não é espectador..."
+	}
+	"Could not teleport player after create a bot"
+	{
+		"pt"	"Não foi possível teleportar o jogador depois de criar um bot"
+	}
+	///////////////SpeakingList.smx//////////////
+	"SpeakingList1"
+	{
+		"pt"	"[SpeakList] Lista de fala desligada"
+	}
+	"SpeakingList2"
+	{
+		"pt"	"[SpeakList] Lista de fala ligada"
+	}
+	"Spectator MIC"
+	{
+		"pt"	"Espectador MIC"
+	}
+	"Survivor MIC"
+	{
+		"pt"	"Survivor MIC"
+	}
+	"Infected MIC"
+	{
+		"pt"	"Infected MIC"
+	}
+	///////////////l4d_jukebox_spawner.smx//////////////
+	"stopped jukebox playing."
+	{
+		"pt"	"parou de tocar jukebox."
+	}
+	"Wait seconds to play a song again."
+	{
+		"pt"	"Aguarde {lightgreen}{1}s{default} para tocar uma musica novamente"
+	}
+	///////////////AntiBreach.smx//////////////
+	"You can't spawn near safe room doors."
+	{
+		"pt"	"Você não pode aparecer perto das portas da sala segura."
+	}
+	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
+	"No Instant Spawn"
+	{
+		"pt"	"Passando {green}Tank {default}para {red}AI{default}, {lightgreen}Sem instante spawn{default}!! Forçar suicidio"
+	}
+	///////////////l4d_PillsHere.smx//////////////
+	"l4d_PillsHere1"
+	{
+		"pt"	"dar ao jogador sobrevivente uma pílula."
+	}	
+	"l4d_PillsHere2"
+	{
+		"pt"	"{1} não está no time de sobreviventes."
+	}
+	"l4d_PillsHere3"
+	{
+		"pt"	"Você deu uma pills para {1}."
+	}
+	"l4d_PillsHere4"
+	{
+		"pt"	"{1} já tem pílula."
+	}
+	///////////////l4d_slot_vote.smx//////////////
+	"Server slots count locked!"
+	{
+		"pt"		"A quantidade de slots do servidor está bloqueada!"
+	}
+	"Server slots count unlocked!"
+	{
+		"pt"		"A quantidade de slots do servidor está desbloqueada!"
+	}
+	"locked by config or admin.1"
+	{
+		"pt"		"Você não pode alterar a contagem de slots. Está bloqueado por configuração ou administrador."
+	}
+	"locked by config or admin.2"
+	{
+		"pt"		"YVocê não pode expulsar espectadores. Está bloqueado por configuração ou administrador."
+	}
+	"kicks all spectators"
+	{
+		"pt"		"Expulsar todos espectadores"
+	}
+	"Usage"
+	{
+		"pt"		"{default}Use: {olive}{3}{default} <Numero de slots entre {olive}{1} {default}e {olive}{2}{default}>"
+	}
+	"Same as current"
+	{
+		"pt"		"{default}O servidor já possui {olive}{1} {default}slots."
+	}
+	"No spectators"
+	{
+		"pt"		"Não há espectadores."
+	}
+	"Slot vote title"
+	{
+		"pt"		"Slots atuais: {1}\n-------------------------\nEscolha novo valor:"
+	}
+	"Slots"
+	{
+		"pt"		"slots"
+	}
+	"All spectators kicked"
+	{
+		"pt"		"Todos os espectadores foram chutados com sucesso."
+	}
+	"Spectator kick reason"
+	{
+		"pt"		"Você foi eliminado"
+	}
+	"Vote denied"
+	{
+		"pt"		"A votação não pode ser iniciada agora, tente novamente mais tarde."
+	}
+	"Spectator response"
+	{
+		"pt"		"Espectadores não podem votar."
+	}
+	"ADM IMMUNE"
+	{
+		"pt"		"Não é possivel expulsar {olive}{1}{default}(ADM) dos espectadores."
+	}
+	///////////////l4d_sm_respawn.smx//////////////
+	"l4d_sm_respawn1"
+	{
+		"pt"		"renascer todos os jogadores listados"
+	}
+	"You Dumb? Target is still alive!"
+	{
+		"pt"		"Você é idiota? O alvo ainda está vivo!"
+	}
+	"Failed! Target is not survivor"
+	{
+		"pt"		"Falhou! O alvo não é sobrevivente"
+	}
+	"Failed! Target is spectator"
+	{
+		"pt"		"Falhou! O alvo é espectador"
+	}
+	"Could not teleport player after respawn"
+	{
+		"pt"		"Não foi possível teleportar o jogador após o reaparecimento"
+	}
+	///////////////l4d_tankhud.smx//////////////
+	"l4d_tankhud1"
+	{
+		"pt"		"{default}[{green}介面插件{default}]{lightgreen} Tank Hud {default}agora é {olive}{1}{default}."
+	}
+	"l4d_tankhud2"
+	{
+		"pt"		"{default}Como um {green}Tank{default}, você não verá o {lightgreen} Tank Hud{default}."
+	}
+	///////////////l4d_team_unscramble.smx//////////////
+	"Voting is not enabled until unscramble is completed"
+	{
+		"pt"		"A votação não é ativada até que desembaralhar for concluída"
+	}
+	///////////////l4d_thirdpersonshoulderblock.smx//////////////
+	"l4d_thirdpersonshoulderblock1"
+	{
+		"pt"		"{lightgreen}{1}{default} assistir devido a {green}c_thirdpersonshoulder{default} não ser valido ou protegido!"
+	}
+	"l4d_thirdpersonshoulderblock2"
+	{
+		"pt"		"{lightgreen}{1}{default} assistir devido a {green}c_thirdpersonshoulder{default}, coloque{olive} 0{default} para jogar!"
+	}
+	///////////////l4d_teamshuffle.smx//////////////
+	"Team shuffle"
+	{
+		"pt"		"Embaralhar time"
+	}
+	"You are not in-game!"
+	{
+		"pt"		"Você não está no jogo!"
+	}
+	"Shuffle is already in progress!"
+	{
+		"pt"		"{1} já está em andamento!"
+	}
+	"has forced the team shuffle"
+	{
+		"pt"		"forçou o {1}"
+	}
+	"Teams were shuffled."
+	{
+		"pt"		"Equipes foram embaralhadas."
+	}
+	"The Infected must agree by typing command"
+	{
+		"pt"		"{red}Os infectados{default} devem concordar digitando {green}{1}{default}."
+	}
+	"The Survivors must agree by typing command"
+	{
+		"pt"		"{blue}Os sobreviventes{default} devem concordar digitando {green}{1}{default}."
+	}
+	"l4d_teamshuffle1"
+	{
+		"pt"		"{1} permitido somente durante a preparação"
+	}
+	"l4d_teamshuffle2"
+	{
+		"pt"		"Muito cedo depois do anterior {2}. (Aguarde {olive}{1}{default}s)."
+	}
+	"l4d_teamshuffle3"
+	{
+		"pt"		"Não é possivel {1}, as duas equipes teem que estar cheia antes"
+	}	
+	"l4d_teamshuffle4"
+	{
+		"pt"		"{blue}Os sobreviventes{default} aceitaram iniciar o {green}{1}{default}. Embaralhando em {green}3 {default}segundos."
+	}	
+	"l4d_teamshuffle5"
+	{
+		"pt"		"{blue}Os sobreviventes{default} solicitaram iniciar um {green}{1}{default}."
+	}
+	"l4d_teamshuffle6"
+	{
+		"pt"		"{red}Os infectados{default} aceitaram iniciar o {green}{1}{default}. Embaralhando em {green}3 {default}segundos."
+	}
+	"l4d_teamshuffle7"
+	{
+		"pt"		"{red}Os infectados{default} solicitaram iniciar um {green}{1}{default}."
+	}
+	///////////////l4d_Modo_mix_mm.smx//////////////
+	"Mix"
+	{
+		"pt"		"Mix"
+	}
+	"Can't start a mix, not enough players"
+	{
+		"pt"		"Não é possível iniciar uma mixagem, não há jogadores suficientes"
+	}
+	"Choose Survivor Captain"
+	{
+		"pt"		"Escolha o capitão sobrevivente #1"
+	}
+	"Choose Infected Captain"
+	{
+		"pt"		"Escolha o capitão infectado #2"
+	}
+	"Choose wisely..."
+	{
+		"pt"		"Escolha sabiamente, e não foda a partida"
+	}
+	"selected"
+	{
+		"pt"		"selecionado"
+	}
+	"l4d_Modo_mix_mm1"
+	{
+		"pt"		"Os capitães agora começam a escolher jogadores({1})."
+	}
+	"l4d_Modo_mix_mm2"
+	{
+		"pt"		"Equipes definidas, vamos começar a mistura!"
+	}
+	"l4d_Modo_mix_mm3"
+	{
+		"pt"		"Sua equipe já solicitou uma mistura."
+	}
+	"l4d_Modo_mix_mm4"
+	{
+		"pt"		"O {1} concordaram em começar o mix."
+	}
+	"l4d_Modo_mix_mm5"
+	{
+		"pt"		"O {1} solicitaram iniciar um mix."
+	}
+	"l4d_Modo_mix_mm6"
+	{
+		"pt"		"O {1} devem concordar digitando {green}{2}{default}."
+	}
+	"l4d_Modo_mix_mm7"
+	{
+		"pt"		"Surpresa! O primeiro capitão escolhido saiu do servidor, parou o processo de mixagem."
+	}
+	"l4d_Modo_mix_mm8"
+	{
+		"pt"		"Primeiro Capitão: {lightgreen}{1}{default} Com {green}{2}{default} votos."
+	}
+	"l4d_Modo_mix_mm9"
+	{
+		"pt"		"Surpresa! O segundo capitão escolhido saiu do servidor, parou o processo de mixagem"
+	}
+	"l4d_Modo_mix_mm10"
+	{
+		"pt"		"Este jogador saiu do servidor, escolha novamente!"
+	}
+	"l4d_Modo_mix_mm11"
+	{
+		"pt"		"Jogadores insuficientes no servidor ({red}{1}{default}/{green}{2}{default}), interromperam o processo de mixagem.."
+	}
+	"l4d_Modo_mix_mm12"
+	{
+		"pt"		"Segundo Capitão: {lightgreen}{1}{default} Com {green}{2}{default} votos."
+	}
+	///////////////l4d_versus_5v5_hud.smx//////////////
+	"l4d_versus_5v5_hud1"
+	{
+		"pt"		"{default}[{green}HUD{default}]{default} digite {green}{2} {default}{1} {lightgreen}5v5 HUD{default}."
+	}
+	"l4d_versus_5v5_hud2"
+	{
+		"pt"		"{default}[{green}HUD{default}] {lightgreen}5v5 HUD {default} agora é {olive}{1}{default}."
+	}
+	///////////////l4d_versus_GhostWarp.smx//////////////
+	"l4d_versus_GhostWarp"
+	{
+		"pt"		"teleportar você como fantasma infectado para sobrevivente ao usar M2 ou E"
+	}
+	///////////////l4d_versus_spechud.smx//////////////
+	"l4d_versus_spechud1"
+	{
+		"pt"		"{default}[{green}spechud{default}]{olive} digite {green}{1} {default}{2} {lightgreen}Espectador HUD{olive}."
+	}
+	"l4d_versus_spechud2"
+	{
+		"pt"		"{default}[{green}spechud{default}]{lightgreen} Espectador HUD {default} agora é {olive}{1}{default}."
+	}
+	///////////////l4d2_nobackjumps.smx//////////////
+	"No backjumps"
+	{
+		"pt"		"Sem {lightgreen}backjumps{default}, desculpe"
+	}
+	///////////////l4dinfectedbots.smx//////////////
+	"Hunter Infected Bot Limit."
+	{
+		"pt"		"Limite de BOT HUNTER."
+	}
+	"You are not survivor, dumbass!"
+	{
+		"pt"		"Você não é sobrevivente, idiota!"
+	}
+	"why you need so many hunter bots?"
+	{
+		"pt"		"por que você precisa de tantos BOT HUNTER?"
+	}
+	"why no hunter bots?"
+	{
+		"pt"		"por que não BOT HUNTER?"
+	}
+	"Infected Bot Spawn Timer."
+	{
+		"pt"		"Temporizador de Spawn de Bot infectado."
+	}
+	"why so long?"
+	{
+		"pt"		"Por que tão demorado?"
+	}
+	"Failed to set timer! minimum value is 1."
+	{
+		"pt"		"Falha ao setar o timer! valor minimo 1."
+	}
+	"The Infected Team is full."
+	{
+		"pt"		"A equipe infectada está cheia."
+	}
+	"No survivor bots to take over."
+	{
+		"pt"		"Nenhum bot sobrevivente para assumir."
+	}
+	"l4dinfectedbots1"
+	{
+		"pt"		"O limite atual do bot de Hunter é {1}"
+	}
+	"l4dinfectedbots2"
+	{
+		"pt"		"O limite de bot hunter foi alterado para {green}{1}"
+	}
+	"l4dinfectedbots3"
+	{
+		"pt"		"O Hunter Bot Limit já está {1}"
+	}
+	"l4dinfectedbots4"
+	{
+		"pt"		"Temporizador de geração atual {1}-{2}"
+	}
+	"l4dinfectedbots5"
+	{
+		"pt"		"Bot Spawn Timer foi alterado para {green}{1}{default} - {green}{2}"
+	}
+	"l4dinfectedbots6"
+	{
+		"pt"		"Colocar você na equipe infectada devido à equipe de sobreviventes estar cheia"
+	}
+	"l4dinfectedbots7"
+	{
+		"pt"		"Colocando você na equipe Survivor"
+	}	
+	"l4dinfectedbots8"
+	{
+		"pt"		"Somente administradores podem ingressar nos infectados."
+	}	
+	"l4dinfectedbots9"
+	{
+		"pt"		"Digite {1} no chat para se juntar aos infectado ou digite {2} para sobreviventes!"
+	}	
+	"l4dinfectedbots10"
+	{
+		"pt"		"{lightgreen}Bot infectados: {green}Aguarde, você ira aparecer como um {lightgreen}fantasma {green}em breve para passar pela falha final"
+	}	
+	"l4dinfectedbots11"
+	{
+		"pt"		"O servidor roda Infected Bots version{1} - diga {2} para HUD on/off"
+	}
+	"l4dinfectedbots12"
+	{
+		"pt"		"{green}[infhud]{default} Infectado HUD DESATIVADO - digta {1} para re-ativar."
+	}
+	"l4dinfectedbots13"
+	{
+		"pt"		"{green}[infhud]{default} Infectado HUD ATIVADO - diga {1} para desativar."
+	}
+	"l4dinfectedbots14"
+	{
+		"pt"		"{green}[infhud]{default} O Infectado HUD está DESATIVADO neste servidor para todos os jogadores."
+	}
+	///////////////l4dscores.smx//////////////
+	"The scores have been reset."
+	{
+		"pt"		"As pontuações foram redefinidas."
+	}
+	//same as "Health_Bonus"
+	"HB"
+	{
+		"pt"		"HB"
+	}
+	//same as "Average_Distance"
+	"AD"
+	{
+		"pt"		"AD"
+	}
+	"Pills"
+	{
+		"pt"		"Pills"
+	}
+	//same as "Number_of_players_that_survived"
+	"Alive"
+	{
+		"pt"		"Sobreviveu"
+	}
+	//same as "level_score_multiplier"
+	"Map"
+	{
+		"pt"		"Map"
+	}
+	"wiped out"
+	{
+		"pt"		"{default}[{green}apagado{default}]"
+	}
+	"You don't have access to set score."
+	{
+		"pt"		"Você não tem acesso para definir a pontuação."
+	}
+	"l4dscores1"
+	{
+		"pt"		"Trocar todos os jogadores listados por times opostos"
+	}
+	"l4dscores2"
+	{
+		"pt"		"Foi trocado para o time {1}."
+	}
+	"l4dscores3"
+	{
+		"pt"		"Trocar todos os jogadores listados pelo time <teamnum> (1,2,ou 3)"
+	}
+	"l4dscores4"
+	{
+		"pt"		"Time invalido {1}, precisa de 1, 2, ou 3"
+	}
+	"The scores have been swapped."
+	{
+		"pt"		"As pontuações foram trocadas."
+	}
+	//Round {1} Scores: {2}
+	"l4dscores5"
+	{
+		"pt"		"{default}R{green}#{1}{default} Scores: {olive}{2}"
+	}
+	//Round 1 Scores: {1}
+	"l4dscores6"
+	{
+		"pt"		"{default}R{green}#1{default} Scores: {olive}{1}"
+	}
+	"l4dscores7"
+	{
+		"pt"		"Pontuação do time: {olive}Sur{default}/{green}Inf"
+	}
+	//Map #{1}
+	"l4dscores8"
+	{
+		"pt"		"{default}M{green}#{1}"
+	}
+	"l4dscores9"
+	{
+		"pt"		"{default}M{green}#All"
+	}
+	"l4dscores10"
+	{
+		"pt"		"Definir pontuação da campanha para a equipe {1}: {2}"
+	}
+	"l4dscores11"
+	{
+		"pt"		"A pontuação da equipe é {1}"
+	}
+	//////////////si_class_announce.smx//////////////
+	"si_class_announce"
+	{
+		"pt"		"Especial Infectado"
+	}
+	//////////////vocal_block.smx//////////////
+	"vocal_block1"
+	{
+		"pt"		"Você não pode expulsar esse jogador!"
+	}
+	"vocal_block2"
+	{
+		"pt"		"{1} fez uma tentativa de expulsá-lo do servidor!"
+	}
+	"vocal_block2"
+	{
+		"pt"		"Você atingiu a quantidade máxima de spam de vocalização"
+	}
+	"vocal_block3"
+	{
+		"pt"		"Você deve esperar {green}{1} {default}Segundos antes de iniciar outro Vocalize"
+	}
+	"vocal_block4"
+	{
+		"pt"		"{1} foi expulso por vocalize abuse"
+	}
+	"vocal_block4"
+	{
+		"pt"		"{1} foi banido por {2} Minutos por vocalize abuse"
+	}
+	//////////////votemanager2.smx//////////////
+	"Invalid vote type"
+	{
+		"pt"		"Tipo de voto inválido"
+	}
+	"votemanager21"
+	{
+		"pt"		"Você não pode iniciar uma votação até que a votação atual termine."
+	}
+	"votemanager22"
+	{
+		"pt"		"Você deve esperar {1} segundos entre as votações."
+	}
+	"votemanager23"
+	{
+		"pt"		"{1} iniciou um {2} votação."
+	}
+	"votemanager24"
+	{
+		"pt"		"{1} tentou iniciar uma {2} votação mas não tem acesso."
+	}
+	"votemanager25"
+	{
+		"pt"		"{1} tentou iniciar um Kick Vote contra {2}, mas esse não é um alvo válido."
+	}
+	"votemanager26"
+	{
+		"pt"		"{1} tentou iniciar um Kick Vote contra {2}, mas os tanques não podem ser chutados."
+	}
+	"votemanager27"
+	{
+		"pt"		"{1} tentou iniciar um Kick Vote contra {2}, mas os espectadores não podem chutar."
+	}
+	"votemanager28"
+	{
+		"pt"		"{1} tentou iniciar um Kick Vote contra {2}, mas ele tem imunidade."
+	}
+	"votemanager29"
+	{
+		"pt"		"{1} está iniciando um Kick Vote contra {2}."
+	}
+	"votemanager210"
+	{
+		"pt"		"O servidor vetou este voto."
+	}
+	"votemanager211"
+	{
+		"pt"		"{1} vetou este voto."
+	}
+	"votemanager212"
+	{
+		"pt"		"{1} tentou vetar uma votação, mas não tem acesso.."
+	}
+	"votemanager213"
+	{
+		"pt"		"O servidor passou esta votação."
+	}
+	"votemanager214"
+	{
+		"pt"		"{1} passou esta votação."
+	}
+	"votemanager215"
+	{
+		"pt"		"{1} tentou passar uma votação, mas não tem acesso."
+	}
+	"votemanager216"
+	{
+		"pt"		"{1} tentou iniciar uma votação personalizada, mas uma já está em andamento."
+	}
+	"votemanager217"
+	{
+		"pt"		"{1} está iniciando um voto personalizado"
+	}
+	//////////////l4d_texture_manager_block.smx//////////////
+	"l4d_texture_manager_block"
+	{
+		"pt"		"{lightgreen}{1}{default} foi expulso por estar usando {green}mathack"
+	}
+	"l4d_texture_manager_block2"
+	{
+		"pt"		"{lightgreen}{1}{default} foi expulso por estar usando {green}{2}"
+	}
+	//////////////rotoblin.smx//////////////
+	"Paused!"
+	{
+		"pt"		"Pausado!"
+	}
+	"rotoblin1"
+	{
+		"pt"		"Não é permitido fazer uma pausa no jogo no modo atual."
+	}
+	"rotoblin2"
+	{
+		"pt"		"O jogo não pode ser pausado durante o pronto."
+	}
+	"rotoblin3"
+	{
+		"pt"		"O jogo não está pausado. Seu idiota."
+	}
+	"rotoblin4"
+	{
+		"pt"		"O jogo foi pausado pelo admin."
+	}
+	"rotoblin4_2"
+	{
+		"pt"		"O jogo está em pausa.\nUse {green}{1}{default} para marcar seu time como pronto."
+	}
+	"rotoblin5"
+	{
+		"pt"		"Somente jogadores no jogo podem pausar o jogo."
+	}
+	"rotoblin6"
+	{
+		"pt"		"{1}{default} chama uma pausa!"
+	}
+	"rotoblin7"
+	{
+		"pt"		"Jogo pausando em: {1}"
+	}
+	"rotoblin8"
+	{
+		"pt"		"O jogo não pode ser pausado pelos espectadores."
+	}
+	"rotoblin9"
+	{
+		"pt"		"Marcou {blue}Survivors{default} como prontos."
+	}
+	"rotoblin10"
+	{
+		"pt"		"Marcou {red}Infected{default} como prontos."
+	}
+	"rotoblin11"
+	{
+		"pt"		"Marcou {blue}Survivors{default} como não pronto."
+	}
+	"rotoblin12"
+	{
+		"pt"		"Marcou {red}Infected{default} como não pronto."
+	}
+	"rotoblin13"
+	{
+		"pt"		"Somente administradores podem forçar a pausa do jogo."
+	}
+	"rotoblin14"
+	{
+		"pt"		"O jogo foi pausado por um admin.\nUnpause apenas com {green}{1}{default} por um adm."
+	}
+	"rotoblin15"
+	{
+		"pt"		"Somente os administradores podem forçar o unpause no jogo."
+	}
+	"rotoblin16"
+	{
+		"pt"		"O jogo foi despausado pelo admin."
+	}
+	"rotoblin17"
+	{
+		"pt"		"O jogo será retomado em {1}..."
+	}
+	"rotoblin18"
+	{
+		"pt"		"Game está Livre"
+	}
+	"rotoblin19"
+	{
+		"pt"		"Esta pausa foi adiada devido a uma coleta em andamento!"
+	}
+	"Hunting Rifle"
+	{
+		"pt"		"Hunting Rifle"
+	}
+	"Auto Shotgun"
+	{
+		"pt"		"Auto Shotgun"
+	}
+	"Rifle"
+	{
+		"pt"		"Rifle"
+	}
+	"Pump Shotgun"
+	{
+		"pt"		"Pump Shotgun"
+	}
+	"Smg"
+	{
+		"pt"		"Smg"
+	}
+	"rotoblin20"
+	{
+		"pt"		"A quantidade máxima de {lightgreen}{1}{default} é {green}{2}{default}."
+	}
+	"rotoblin21"
+	{
+		"pt"		"{lightgreen}{1}{default} não é permitido."
+	}
+	"rotoblin22"
+	{
+		"pt"		"{green}{1}{default} foi descoberto como {lightgreen}telespawning{default} e foi morto."
+	}
+}

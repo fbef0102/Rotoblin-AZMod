@@ -1,0 +1,100 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			/*
+			* CTerrorPlayer::Deafen(float,float,float)
+			*/
+			"CTerrorPlayer::Deafen"
+			{
+				"windows"	"491"
+				"linux"		"494"
+				"mac"		"494"
+			}
+		}
+
+		"Signatures"
+		{
+			/*
+			* CEntityDissolve::Create(CBaseEntity *pTarget, const char *pMaterialName, float flStartTime, int nDissolveType, bool *pRagdollCreated)
+			*/
+			"CEntityDissolve_Create"
+			{
+				"library"		"server"
+				"linux"			"@_ZN15CEntityDissolve6CreateEP11CBaseEntityPKcfiPb"
+				"windows"		"\x8B\x44\x24\x14\x81\xEC\x94\x00\x00\x00"
+				/* 8B 44 24 14 81 EC 94 00 00 00 */
+				/* Search: "sprites/blueglow1.vmt" */
+			}
+
+			/*
+			 * CTerrorPlayer::OnStaggered(CBaseEntity *, Vector const)
+			 */
+			"CTerrorPlayer::OnStaggered"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer11OnStaggeredEP11CBaseEntityPK6Vector"
+				"windows"	"\x83\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x8B\x2A\x8B"
+				/* 83 ? ? ? 8B ? E8 ? ? ? ? 84 ? 0F 85 ? ? ? ? 8B ? 8B */
+				/* Search: "Player.Shoved" */
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			/*
+			* CTerrorPlayer::Deafen(float,float,float)
+			*/
+			"CTerrorPlayer::Deafen"
+			{
+				"windows"	"516"
+				"linux"		"517"
+				"mac"		"517"
+			}
+		}
+
+		"Signatures"
+		{
+			/*
+			* CEntityDissolve::Create(CBaseEntity *pTarget, const char *pMaterialName, float flStartTime, int nDissolveType, bool *pRagdollCreated)
+			*/
+			"CEntityDissolve_Create"
+			{
+				"library"		"server"
+				"linux"			"@_ZN15CEntityDissolve6CreateEP11CBaseEntityPKcfiPb"
+				"windows"		"\x55\x8B\xEC\x8B\x45\x18\x81\xEC\xC0\x00\x00\x00"
+				/* 55 8B EC 8B 45 18 81 EC C0 00 00 00 */
+				/* Search: "sprites/blueglow1.vmt" */
+			}
+
+			/*
+			* CSpitterProjectile::Create(Vector const&,QAngle const&,Vector const&,Vector const&,CBaseCombatCharacter *)
+			*/
+			"CSpitterProjectile_Create"
+			{
+				"library"	"server"
+				"linux"		"@_ZN18CSpitterProjectile6CreateERK6VectorRK6QAngleS2_S2_P20CBaseCombatCharacter"
+				"windows"	"\x55\x8B\x2A\x8B\x2A\x2A\x8B\x2A\x2A\x53\x8B\x2A\x2A\x56\x57\x50\x51\x53\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\xD9\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x8B\x2A\xD9\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x57"
+				/* 55 8B ? 8B ? ? 8B ? ? 53 8B ? ? 56 57 50 51 53 68 ? ? ? ? E8 ? ? ? ? 8B ? ? ? ? ? 83 ? ? ? ? ? ? 8B ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 68 ? ? ? ? E8 ? ? ? ? D9 ? ? ? ? ? 83 ? ? 8B ? D9 ? ? E8 ? ? ? ? 57 8B ? E8 ? ? ? ? 57 8B ? E8 ? ? ? ? ? ? ? 57 */
+				/* Search: "Spitter projectile spawned at %f %f %f, velocity %f %f %f" */
+			}
+
+			/*
+			 * CTerrorPlayer::OnStaggered(CBaseEntity *, Vector const*)
+			 */
+			"CTerrorPlayer::OnStaggered"
+			{
+				"library"	"server"
+				"linux"	"@_ZN13CTerrorPlayer11OnStaggeredEP11CBaseEntityPK6Vector"
+				"windows" "\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x8B\x2A\x8B"
+				/* ? ? ? ? ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 83 ? ? 56 57 8B ? E8 ? ? ? ? 84 ? 0F 85 ? ? ? ? 8B ? 8B */
+				/* Wildcard first few bytes due to left4downtown2 detour */
+			}
+		}
+	}
+}
