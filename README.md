@@ -2,7 +2,7 @@
 v8.2.0
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
-* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/developer.cfg)
+* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/developer.cfg)
 > **Developer Comment:** Report any bug? Ask any question? Our English bad, add us via steam.
 
 **LINUX/WINDOWS SERVERS WORK**
@@ -48,7 +48,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
-  * translations: -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
+  * [translations](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/translation%20list.txt): -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
   > **Developer Comment:** Want to translate this config into any language? Hate to see English? contact us and we will help translate your country language in next Roto-AZ mod update.
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
     * do not overwrite any plugin that's existed.
@@ -457,5 +457,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	 
 - - - -
 ### Others ###
-* [Our Group](https://steamcommunity.com/groups/ibserver)
+* <b>[Our Group](https://steamcommunity.com/groups/ibserver)</b>
+* <b>[L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)</b>: L4D1/2 general purpose and freaky-fun plugins.
 
