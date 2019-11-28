@@ -1,5 +1,6 @@
 # Rotoblin-AZMod
 v8.2.0
+<img src="http://m.qpic.cn/psb?/V12cgbNm31Hhoz/jsPu*WXqetyaaeVmVOsdB3kpeSYlkY8U9x2A6AJtuF8!/b/dE8BAAAAAAAA&bo=TAQmAkwEJgIDByI!&rf=viewer_4" alt="ImageGlass 7.0.7.26" width="1000" height = "500">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/developer.cfg)
@@ -228,7 +229,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    * Spectators stay spectator on map change.
    * Forces all players on the right team after map/campaign/match change"
    * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
-      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. If you have played l4d1 versus for a long time, you knew what I am fking talking about.
+      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see.
+      
    * Fixed players using bunnyhop to increase their MaxSpeed.
    * Fixed second team having different SI spawns on round start.
         * Spawns for the first hit are announced once round starts.
@@ -285,6 +287,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed decreased to 205 (survivors speed: 220, default: 210 - zonemod: 205)
     * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players can see, and add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. 
+    <img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="800" height = "400">
+    
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
     * Players cannot shove tanks.
@@ -452,7 +456,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
-* Allows changing of [displayed game type](https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
+* Allows changing of displayed game type in server browser
+<img src="https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png" alt="l4d1_game_type_name.png" width="800" height="400">
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 	 
 - - - -
