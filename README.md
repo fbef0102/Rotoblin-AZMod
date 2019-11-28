@@ -78,8 +78,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached to the sm_admin menu
   * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
   * Adm type **!slots <#>** to forcechange server slots
-  * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Adm%20Commands.png)
-  * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26commands/Roto-AZMod%20Everyone%20Commands.png)
+  * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Adm%20Commands.png)
+  * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Everyone%20Commands.png)
   * Sever Startup default Mode is "Pub VS", there are some limits in pub mode
     * forces survivors and infected to spectate if they're AFK after certain time
     * Team Switch is not allowed during the game
@@ -452,7 +452,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
-* Allows changing of [displayed game type](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
+* Allows changing of [displayed game type](https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png) in server browser
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 	 
 - - - -
