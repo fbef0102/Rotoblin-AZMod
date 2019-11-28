@@ -59,6 +59,7 @@
 
 [l4d_witchglow.smx]
 * Prevent common infected from pushing witch away when witch not startled yet
+* Optimize code and smooth glow
 
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_tankhud.smx]

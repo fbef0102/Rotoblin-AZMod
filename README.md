@@ -12,20 +12,19 @@ v8.2.0
 A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、[Nextmod](https://github.com/spoon-l4d2/NextMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 - - - -
 ### Server Install ###
-* Install:
-  * Clean Servers:
-      * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
-      * Make sure your server is stopped.
-      * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
-  * Requirements:
-      * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
-      > **Developer Comment:** recommended system **win 10** for windows and **ubuntu** for linux
-      * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
-      * At this step, you already setup your Server's base for configs, so you can finally start your server.
-  * Launch parameters:
-    * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-	> **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D) If you're going to adjust your Tickrate above 100, you will run into Boomer Vomit Range issues. You will need to add 
-	***-frametime 0.037 -frametime_override 0.037*** to the launch parameters to resolve this, make sure to place them after the tickrate parameter.
+* Clean Servers:
+  * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
+  * Make sure your server is stopped.
+  * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
+* Requirements:
+  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
+  > **Developer Comment:** recommended system **win 10** for windows and **ubuntu** for linux
+  * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
+  * At this step, you already setup your Server's base for configs, so you can finally start your server.
+* Launch parameters:
+  * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
+  > **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D) If you're going to adjust your Tickrate above 100, you will run into Boomer Vomit Range issues. You will need to add 
+***-frametime 0.037 -frametime_override 0.037*** to the launch parameters to resolve this, make sure to place them after the tickrate parameter.
 	
 - - - -	
 ### Server Install Optional ###
@@ -89,42 +88,47 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Gamemodes(!load, !match, !mode) ###
-   * 5v5
-      * Hunters only
-      * No Boomer
-      * Hardcore
-   * 4v4 
-      * Hunters only
-      * No Boomer
-      * Hardcore
-      * [Classic](https://steamcommunity.com/groups/ibserver#announcements/detail/1688172020573940161) 
-   * 3v3
-      * Hunters only
-      * No Boomer
-      * Hardcore
-   * 2v2
-      * Hunters only
-      * No Boomer
-      * Hardcore
-   * 1v1
-      * Hunters only
-   * Special
-      * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
-      * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
-   * Skeet Practice
-      * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
+* 5v5
+  * Hunters only
+  * No Boomer
+  * Hardcore
+* 4v4 
+  * Hunters only
+  * No Boomer
+  * Hardcore
+  * [Classic](https://steamcommunity.com/groups/ibserver#announcements/detail/1688172020573940161) 
+* 3v3
+  * Hunters only
+  * No Boomer
+  * Hardcore
+* 2v2
+  * Hunters only
+  * No Boomer
+  * Hardcore
+* 1v1
+  * Hunters only
+* Special
+  * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
+  <img src="https://i.imgur.com/IMVp3NI.jpg" alt="IMVp3NI.jpg" width="750" height = "400">
+  
+  * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
+  <img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
+  
+* Skeet Practice
+  * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
+  <img src="https://i.imgur.com/ycHlIRZ.jpg" alt="ycHlIRZ.jpg" width="750" height = "400">
       
 - - - -
 ### Votes Menu(!votes) ###
-   * Turn On/Off Ready Plugin
-   * Give HP
-   * Turn On Alltalk
-   * Turn Off Alltalk
-   * Restartmap
-   * Change maps
-   * Change addon map
-   * Kick player
-   * Forcespectate player
+* Turn On/Off Ready Plugin
+* Give HP
+* Turn On Alltalk
+* Turn Off Alltalk
+* Restartmap
+* Change maps
+* Change addon map
+* Kick player
+* Forcespectate player
    
 - - - -
 ### Map Changes(!cm) ###
@@ -134,9 +138,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Extra Pills
-     * All pill cabinets in all maps will now have a maximum of 1 pills
-     * There are few pills on the road (pain_pill_density: 0.5)
-     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
+    * All Pill cabinets: a maximum of 1 pills
+    * On the road: few pills (pain_pill_density: 0.5)
+    * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
   * Fixed many map tricks and glitches
@@ -155,7 +159,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * [I Hate Mountains](https://drive.google.com/file/d/188UqXYB7BKFMMduIs7w5CbST2lMJ2-5S/view?usp=sharing)
   * [Dead Before Dawn](https://drive.google.com/file/d/1_r9HJBdqN8ziejW7Y486TioJwPOIsC6i/view?usp=sharing)
   * [The Arena of the Dead](https://drive.google.com/file/d/1dv8kkhzV0E2c2usfyANNzCDKs4cG4ARD/view?usp=sharing)
-  
+
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
@@ -181,64 +185,63 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Score Calculation(!health/!bonus) ###
-  * ( AD + HB + PILLS ) x Alive x Map 
-     * AD = Average distance
-     * HB = Health Bonus , Floor(PermanentHealth/2)+RoundToNearest(TemporaryHealth/4)
-     * PILLS = 20 Health Bonus per pill
-     * Alive = Number of players that survived
-     * Map = That level's score multiplier
-    > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
+* ( AD + HB + PILLS ) x Alive x Map 
+   * AD = Average distance
+   * HB = Health Bonus , Floor(PermanentHealth/2)+RoundToNearest(TemporaryHealth/4)
+   * PILLS = 20 Health Bonus per pill
+   * Alive = Number of players that survived
+   * Map = That level's score multiplier
+   > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
 - - - -
 ### Bug / Exploit Fixes ###
-   * Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage
-   * Fixed the bug in which doors do not break although the tank is punching at them.
-   * Survivors cannot hear ghost footsteps and spawn sound.
-   * Stops Shoves slowing the Tank and Charger Down
-   * Fixed Players being able to exploit switching team to get earlier SI Spawns.
-   * Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
-   * Fixed no Survivor bots issue and more than 4 bots issue.
-   * Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?p=1823208)
-        * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
-        * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
-        * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
-   * Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
-   * Prevents calling votes while others are loading
-   * Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
-   * Blocking [exploits by using Engine](https://forums.alliedmods.net/showthread.php?t=182002)
-        * no fall damage bug - jump on the incapped survivor while holding USE key
-        * health boost glitch - heal yourself while under water.
-   * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
-   * Fixes the problem where tank-punches get a survivor stuck in the roof
-   * Smash nonstaggering Zombies (stuck or no shove off)
-   * Fixed the problem that versus director won't spawn Witch during Tank alive
-   * Avoid confusion of the witch, when startled by a player who has the same character as another.
-   * Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
-   * Blocked Survivor duck fastspeed block & Infected alive duck fastspeed block
-   * Blocked an exploit where players can remove textures from their game to see through walls.
-   * Blocked an exploit with players using third person shoulder.
-   * Hunters don't fall off of walls after being shot.
-   * AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
-   * Players cannot skip their deathcam by pressing space or clicking.
-   * Block Infected player who use E+spawn expolit to teleport to survivor
-        * use E+Spawn Glitch twice will be kicked and banned
-   * Block pumpshotgunswap quick shoot
-   * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
-   * Ammo pickup fix
-   * Prevents people from blocking players who climb on the ladder including tank.
-   * Spectators stay spectator on map change.
-   * Forces all players on the right team after map/campaign/match change"
-   * Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
-      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see.
-      
-   * Fixed players using bunnyhop to increase their MaxSpeed.
-   * Fixed second team having different SI spawns on round start.
-        * Spawns for the first hit are announced once round starts.
-   * Blocks all button presses during stumbles
-   * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
-   * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
-   * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
-   * Prevents players' data in ghost mode from being sent to Survivors
+* Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage
+* Fixed the bug in which doors do not break although the tank is punching at them.
+* Survivors cannot hear ghost footsteps and spawn sound.
+* Stops Shoves slowing the Tank and Charger Down
+* Fixed Players being able to exploit switching team to get earlier SI Spawns.
+* Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
+* Fixed no Survivor bots issue and more than 4 bots issue.
+* Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?p=1823208)
+     * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
+     * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
+     * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
+* Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
+* Prevents calling votes while others are loading
+* Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
+* Blocking [exploits by using Engine](https://forums.alliedmods.net/showthread.php?t=182002)
+     * no fall damage bug - jump on the incapped survivor while holding USE key
+     * health boost glitch - heal yourself while under water.
+* Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
+* Fixes the problem where tank-punches get a survivor stuck in the roof
+* Smash nonstaggering Zombies (stuck or no shove off)
+* Fixed the problem that versus director won't spawn Witch during Tank alive
+* Avoid confusion of the witch, when startled by a player who has the same character as another.
+* Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
+* Blocked Survivor duck fastspeed block & Infected alive duck fastspeed block
+* Blocked an exploit where players can remove textures from their game to see through walls.
+* Blocked an exploit with players using third person shoulder.
+* Hunters don't fall off of walls after being shot.
+* AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
+* Players cannot skip their deathcam by pressing space or clicking.
+* Block Infected player who use E+spawn expolit to teleport to survivor
+     * use E+Spawn Glitch twice will be kicked and banned
+* Block pumpshotgunswap quick shoot
+* Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
+* Ammo pickup fix
+* Prevents people from blocking players who climb on the ladder including tank.
+* Spectators stay spectator on map change.
+* Forces all players on the right team after map/campaign/match change"
+* Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
+     > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see.
+* Fixed players using bunnyhop to increase their MaxSpeed.
+* Fixed second team having different SI spawns on round start.
+     * Spawns for the first hit are announced once round starts.
+* Blocks all button presses during stumbles
+* Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
+* Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
+* Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
+* Prevents players' data in ghost mode from being sent to Survivors
    
 - - - -
 ### Gameplay / Balance Changes ###
@@ -287,7 +290,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed decreased to 205 (survivors speed: 220, default: 210 - zonemod: 205)
     * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players can see, and add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. 
-    <img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="800" height = "400">
+	<img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
     
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
@@ -320,11 +323,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Enlarge witch personal space
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
+	<img src="https://i.imgur.com/RKAuCjY.jpg" alt="RKAuCjY.jpg" width="750" height = "400">
+	
     * Instantly incapacitate Survivors
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
 	* Prevent common infected from pushing witch away when witch not startled yet
 	
   * **Smoker:**
+	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
     * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
 	
   * **Hunter:**
@@ -457,7 +463,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
 * Allows changing of displayed game type in server browser
-<img src="https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png" alt="l4d1_game_type_name.png" width="800" height="400">
+<img src="https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png" alt="l4d1_game_type_name.png" width="750" height="400">
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 	 
 - - - -
