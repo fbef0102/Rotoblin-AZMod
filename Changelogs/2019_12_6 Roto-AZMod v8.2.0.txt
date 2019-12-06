@@ -17,6 +17,10 @@
 [global_filters.cfg]
 
 ------------------New------------------
+-left4dead\addons\sourcemod\plugins
+[[L4D] Rock Glow.smx]
+//when tank throws a rock, it add glow to rock which all infected and spectator can see
+
 -left4dead\addons\sourcemod\gamedata
 [l4d_shove_penalty.txt]
 * unlocks the shove penalty in coop and survival

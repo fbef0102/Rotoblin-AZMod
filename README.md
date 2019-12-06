@@ -138,7 +138,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Extra Pills
-    * All Pill cabinets: a maximum of 1 pills
+    * All pill cabinets: a maximum of 1 pills
     * On the road: few pills (pain_pill_density: 0.5)
     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
@@ -289,6 +289,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Tank won't stuck when punches incapped survivor
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed decreased to 205 (survivors speed: 220, default: 210 - zonemod: 205)
+	* When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
+	<img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
+	
     * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players can see, and add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. 
 	<img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
     
@@ -431,7 +434,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Spectators(!s):
   * **sm_spechud** toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.
-  * Spectators can see the witch glow and hittable prop glow.
+  * Spectators can see the witch glow, hittable prop glow and tank rock glow.
   * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **!hear**.
   * Spectators can see in-game players mic speak list. To close this feature, use **!speaklist** to toggle On/Off.
   * Spectators can't call a vote, start the match, or pause the game. To do these, they must be in-game first.

@@ -611,7 +611,7 @@
 	"ReplyToCommand5"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} is already being respecced."
+		"en"		"{1} is already being respected."
 		"zho"		"{1} 已重新旁觀."
 	}
 	"ReplyToCommand6"
@@ -2980,5 +2980,11 @@
 		"#format"	"{1:s}"
 		"en"		"{green}{1}{default} was found to be {lightgreen}telespawning{default} and was killed."
 		"zho"		"{green}{1}{default} 被發現使用 {lightgreen}傳送復活(telespawning){default} 而強制自殺."
+	}
+	//////////////l4d_NoRescueFirstTank.smx//////////////
+	"l4d_NoRescueFirstTank"
+	{
+		"en"		"{default}No Rescue First {green}Tank {default}spawn, {lightgreen}continue final rescue progress{default}!"
+		"zho"		"{default}沒有救援後第一隻 {green}坦克, {lightgreen}將繼續終關救援進展{default}!"
 	}
 }

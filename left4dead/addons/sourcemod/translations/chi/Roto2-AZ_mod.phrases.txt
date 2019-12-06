@@ -2218,4 +2218,9 @@
 	{
 		"chi"		"{green}{1}{default} 被发现使用 {lightgreen}传送复活(telespawning){default} 而强制自杀."
 	}
+	//////////////l4d_NoRescueFirstTank.smx//////////////
+	"l4d_NoRescueFirstTank"
+	{
+		"chi"		"{default}没有救援第一只 {green}坦克 {default}, {lightgreen}将继续救援关进程{default}!"
+	}
 }

@@ -2227,4 +2227,9 @@
 	{
 		"pt"		"{green}{1}{default} foi descoberto como {lightgreen}telespawning{default} e foi morto."
 	}
+	//////////////l4d_NoRescueFirstTank.smx//////////////
+	"l4d_NoRescueFirstTank"
+	{
+		"pt"		"{default}Apenas um {green}Tank {default}no final, {lightgreen}continue aguardando o resgate{default}!"
+	}
 }
