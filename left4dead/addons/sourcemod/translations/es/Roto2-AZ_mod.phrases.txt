@@ -923,7 +923,7 @@
 	}
 	"Tank Punch survivor fly away and die"
 	{
-		"es"	"Tank {default}Walk-off Home Run {olive}{1}{default}."
+		"es"	"Tank{default}: Hasta la vista, baby {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
@@ -2208,7 +2208,7 @@
 	}
 	"rotoblin20"
 	{
-		"es"		"The maximum amount of {lightgreen}{1}{default} is {green}{2}{default}."
+		"es"		"La cantidad máxima de {lightgreen}{1}{default} es {green}{2}{default}."
 	}
 	"rotoblin21"
 	{
@@ -2217,5 +2217,15 @@
 	"rotoblin22"
 	{
 		"es"		"{green}{1}{default} fue descubierto haciendo{lightgreen}telespawning{default} y fue asesinado."
+	}
+	//////////////l4d_NoRescueFirstTank.smx//////////////
+	"l4d_NoRescueFirstTank"
+	{
+		"es"		"{default}Al principio del rescate no {green}Tank {default}spawn, {lightgreen}Continuando con el proceso de rescate{default}!"
+	}
+	//////////////l4d_bash_kills.smx//////////////
+	"shove boomer and boomer dead"
+	{
+		"es"		"{olive}{1}{default} Mato {red}{2}{default} que era Boomer!"
 	}
 }

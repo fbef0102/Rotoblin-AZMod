@@ -932,7 +932,7 @@
 	}
 	"Tank Punch survivor fly away and die"
 	{
-		"pt"	"Tank {default}Walk-off Home Run {olive}{1}{default}."
+		"pt"	"Tank{default}: Hasta la vista, baby {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
@@ -2231,5 +2231,11 @@
 	"l4d_NoRescueFirstTank"
 	{
 		"pt"		"{default}Apenas um {green}Tank {default}no final, {lightgreen}continue aguardando o resgate{default}!"
+	}
+	//////////////l4d_bash_kills.smx//////////////
+	"shove boomer and boomer dead"
+	{
+		"pt"		"{olive}{1}{default} espancou o {red}{2}{default}'s Boomer!"
+        //shove-kill
 	}
 }

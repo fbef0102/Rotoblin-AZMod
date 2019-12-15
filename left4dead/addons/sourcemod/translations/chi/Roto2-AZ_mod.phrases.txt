@@ -485,23 +485,23 @@
 	///////////////comp_loader.smx///////////////
 	"request timed out."
 	{
-		"chi"		"request timed out."
+		"chi"		"要求逾时。"
 	}
 	"canceled the command request."
 	{
-		"chi"		"has canceled the {green}{1}{default} request."
+		"chi"		"已取消了 {green}{1}{default} 要求。"
 	}
 	"canceled all requests."
 	{
-		"chi"		"has canceled all requests."
+		"chi"		"已取消了所有要求。"
 	}
 	"Spectators cannot use command."
 	{
-		"chi"		"Spectators cannot use {green}{1}{default} command."
+		"chi"		"旁观者不能使用 {green}{1}{default} 指令。"
 	}
 	"Invalid Config."
 	{
-		"chi"		"Invalid Config."
+		"chi"		"文件不合法。"
 	}
 	"command is not available."
 	{
@@ -509,7 +509,7 @@
 	}
 	"The team have canceled the command request."
 	{
-		"chi"	"{1} 已取消了 {green}{2}{default} 请求."
+		"chi"	"{1} 已取消了 {green}{2}{default} 请求。"
 	}
 	"Nothing to cancel."
 	{
@@ -2222,5 +2222,10 @@
 	"l4d_NoRescueFirstTank"
 	{
 		"chi"		"{default}没有救援第一只 {green}坦克 {default}, {lightgreen}将继续救援关进程{default}!"
+	}
+	//////////////l4d_bash_kills.smx//////////////
+	"shove boomer and boomer dead"
+	{
+		"chi"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
 	}
 }

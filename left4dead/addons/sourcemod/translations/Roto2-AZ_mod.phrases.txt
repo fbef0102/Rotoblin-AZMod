@@ -706,7 +706,6 @@
 	}
 	"Map Mismatch."
 	{
-		"#format"	"{1:s}"
 		"en"	"Map Mismatch."
 		"zho"	"地圖匹配失敗"
 	}
@@ -1099,19 +1098,19 @@
 	}
 	"Tank is killed by something"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:t}"
 		"en"	"{green}Tank is {olive}{1}{default}."
 		"zho"	"{green}坦克 {olive}{1}{default}了."
 	}
 	"Player is killed by something"
 	{
-		"#format"	"{1:s},{2:s}"
+		"#format"	"{1:s},{2:t}"
 		"en"	"{red}{1}{default} is {olive}{2}{default}."
 		"zho"	"{red}{1}{default} {olive}{2}{default}了."
 	}
 	"Tank Kill Witch"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:t}"
 		"en"	"Tank {default}uses {olive}{1}{default} to terminate {red}Witch{default}."
 		"zho"	"坦克 {default}使用 {olive}{1}{default} 終結了 {red}妹子{default}."
 	}
@@ -1137,7 +1136,7 @@
 	}
 	"Tank kill teammate"
 	{
-		"#format"	"{1:s},{2:s}"
+		"#format"	"{1:t},{2:s}"
 		"en"	"{green}Tank {olive}{1}{default} {2}teammate."
 		"zho"	"{green}坦克 {olive}{1}{default} {2}隊友."
 	}
@@ -1236,8 +1235,8 @@
 	"Tank Punch survivor fly away and die"
 	{
 		"#format"	"{1:s}"
-		"en"	"Tank {default}Walk-off Home Run {olive}{1}{default}."
-		"zho"	"坦克 {default}一拳再見全壘打 {olive}{1}{default}."
+		"en"	"Tank{default}: Hasta la vista, baby {olive}{1}{default}."
+		"zho"	"坦克{default} 一拳再見全壘打 {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
@@ -1591,7 +1590,7 @@
 	{
 		"#format"	"{1:s},{2:.01f},{3:.01f},{4:s},{5:i},{6:i}"
 		"en"	"{1}{green}'s lerp changed from {olive}{2} {green}to {olive}{3}{default} [{4}{5}{default}/{6} changes]"
-		"zho"	"{1}{green}的lerp改變 {olive}{2} {green}成 {olive}{3}{default} [{4}{5}{default}/{6} 次數]"
+		"zho"	"{1}{green} 的lerp改變 {olive}{2} {green}成 {olive}{3}{default} [{4}{5}{default}/{6} 次數]"
 	}
 	"lerptracker4"
 	{
@@ -1609,7 +1608,7 @@
 	{
 		"#format"	"{1:s},{2:.01f},{3:.01f}"
 		"en"	"{1}{green}'s lerp changed from {olive}{2} {green}to {olive}{3}"
-		"zho"	"{1}{green}的lerp改變 {olive}{2} {green}成 {olive}{3}"
+		"zho"	"{1}{green} 的lerp改變 {olive}{2} {green}成 {olive}{3}"
 	}
 	///////////////pounceannounce.smx///////////////
 	"pounceannounce1"
@@ -2986,5 +2985,12 @@
 	{
 		"en"		"{default}No Rescue First {green}Tank {default}spawn, {lightgreen}continue final rescue progress{default}!"
 		"zho"		"{default}沒有救援後第一隻 {green}坦克, {lightgreen}將繼續終關救援進展{default}!"
+	}
+	//////////////l4d_bash_kills.smx//////////////
+	"shove boomer and boomer dead"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{olive}{1}{default} shoves-kill {red}{2}{default}'s Boomer!"
+		"zho"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
 	}
 }
