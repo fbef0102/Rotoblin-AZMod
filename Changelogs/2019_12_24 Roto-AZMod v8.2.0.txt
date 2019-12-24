@@ -156,6 +156,7 @@ left4dead\addons\sourcemod\configs
 [l4d_vs_deadflagblues04_woods.cfg]
 * fixed crash
 * add more static ammo on the maps
+* remove more radio and voice
 
 [l4d_vs_farm02_traintunnel.cfg]
 * blocked room
