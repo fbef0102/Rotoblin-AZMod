@@ -32,7 +32,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX** or **WINDOWS with HLSM**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
-* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
+* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
 
 - - - -
 ### Server Admins! ###
@@ -163,17 +163,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.5: 0.26**)
-  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.5: 1.85**)
-  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.5: 750**) 
+  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.6: 0.26**)
+  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.6: 1.85**)
+  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.6: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.5: 1.88**) 
-  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.5: 22**)
-  * Limit: 3 (Acemod: None - **Zonemod 1.9.5: 3**)
+  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.6: 1.88**) 
+  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.6: 22**)
+  * Limit: 3 (Acemod: None - **Zonemod 1.9.6: 3**)
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.5: 80) 
+  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.6: 80) 
   * Limit: None
       
 * **Hunting Rifle**
