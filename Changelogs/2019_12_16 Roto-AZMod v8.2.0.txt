@@ -23,7 +23,7 @@
 
 -left4dead\addons\sourcemod\gamedata
 [l4d_shove_penalty.txt]
-* unlocks the shove penalty in coop and survival
+* gamedata for l4d_storm.smx
 
 -left4dead\addons\stripper\DarkCoop
 * maps for dark coop mode
@@ -100,13 +100,6 @@ left4dead\addons\sourcemod\configs
 * Pumpshotgun Limits:
 (Dark Coop) 4
 
-[server_custom_plugins.cfg]
-[server_Dark_Coop_plugins.cfg]
-[server_plugins.cfg]
-[server_pub_plugins.cfg]
-[server_witch_party_plugins.cfg]
-* (Witch Party)(Dark Coop) load l4d_grenades.smx
-
 [rotoblin.cfg]
 * director_pain_pill_density "0.5" (was 1.5)
 
@@ -152,7 +145,3 @@ left4dead\addons\sourcemod\configs
 [l4d_jsarena01_town.cfg]
 [l4d_vs_farm02_traintunnel.cfg]
 * make infected ghost can go through the alarm door
-
-[l4d_vs_farm04_barn.cfg]
-* Added props for extra SI spawns.
-* prevent S.I. from falling off and under map
