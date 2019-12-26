@@ -162,3 +162,7 @@ left4dead\addons\sourcemod\configs
 [l4d_vs_farm02_traintunnel.cfg]
 * blocked room
 
+-left4dead\addons\sourcemod\data
+[l4d1_versus_modifier.cfg]
+* deadflagblues map 4 VersusModifier: changed 1.6 to 1.3
+
