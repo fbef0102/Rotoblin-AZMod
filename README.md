@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
 v8.2.0
-<img src="http://m.qpic.cn/psb?/V12cgbNm31Hhoz/jsPu*WXqetyaaeVmVOsdB3kpeSYlkY8U9x2A6AJtuF8!/b/dE8BAAAAAAAA&bo=TAQmAkwEJgIDByI!&rf=viewer_4" alt="ImageGlass 7.0.7.26" width="1000" height = "500">
+<img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/developer.cfg)
