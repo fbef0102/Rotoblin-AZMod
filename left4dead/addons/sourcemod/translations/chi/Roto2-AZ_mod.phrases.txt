@@ -400,7 +400,7 @@
 	}
 	"ReadyPlugin_24"
 	{
-		"chi"		"{lightgreen}{1}{default}强制你重新旁观。"
+		"chi"		"{lightgreen}{1}{default}已强制重新旁观。"
 	}
 	"ReadyPlugin_25"
 	{
@@ -1228,11 +1228,11 @@
 	///////////////ratemonitor.smx///////////////
 	"ratemonitor1"
 	{
-		"chi"	"{lightgreen}你的{default} 网络收发设置改变{green}{1}{default}/{green}{2}{default}/{olive}{3}{default} 成{green}{4}{default }/{green}{5}{default}/{olive}{6}{default}{7}"
+		"chi"	"{lightgreen}你的{default}网络收发设置改变{green}{1}{default}/{green}{2}{default}/{olive}{3}{default} 成{green}{4}{default}/{green}{5}{default}/{olive}{6}{default}{7}"
 	}
 	"ratemonitor2"
 	{
-		"chi"	"{olive}你的{default} 网络收发设置已设成 {green}{1}{default}/{green}{2}{default}/{olive}{3}{default}"
+		"chi"	"{olive}你的{default}网络收发设置已设成{green}{1}{default}/{green}{2}{default}/{olive}{3}{default}"
 	}
 	"ratemonitor3"
 	{

@@ -73,6 +73,9 @@
 [l4d_storm.smx]
 * unlocks the shove penalty in coop and survival (code from Silvers: l4d_shove_penalty.smx)
 
+[l4d_rock_lagcomp.smx]
+* fixed hunting rifle unable to hit tank rocks.
+
 	       ***txt***
 left4dead\addons\sourcemod\configs
 [matchmodes.txt]
