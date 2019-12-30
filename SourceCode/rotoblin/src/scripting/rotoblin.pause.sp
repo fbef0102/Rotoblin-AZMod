@@ -358,11 +358,11 @@ public Action:Pause_Cmd(client, args)
 		return Plugin_Handled;
 	}
 	
-	if(IsInReady())
-	{
-		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin2",client);
-		return Plugin_Handled;
-	}
+	//if(IsInReady())
+	//{
+	//	CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin2",client);
+	//	return Plugin_Handled;
+	//}
 	if(g_bIsUnpausing) 
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin3",client);
@@ -542,7 +542,7 @@ public Action:_P_RotoblinUnpause_Command(client, const String:command[], args)
  */
 public Action:_P_RotoblinForcePause_Command(client, const String:command[], args)
 {
-	if (client == SERVER_INDEX || !g_bIsPauseEnable||IsInReady()||g_bIsUnpausing) return Plugin_Handled;
+	if (client == SERVER_INDEX || !g_bIsPauseEnable||g_bIsUnpausing) return Plugin_Handled;
 
 	new flags = GetUserFlagBits(client);
 	if (!(flags & ADMFLAG_ROOT || flags & ADMFLAG_GENERIC))
@@ -732,7 +732,7 @@ UpdatePanel()
 	}
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientVoteMenu(client) && !IsClientInfoMenu(client))
+		if(IsClientInGame(client) && !IsFakeClient(client))
 		{
 			SendPanelToClient(menuPanel, client, DummyHandler, 1);
 		}
