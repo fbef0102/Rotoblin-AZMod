@@ -14,7 +14,12 @@
 	{
 		"next mission map" "l4d_hospital01_apartment"
 		"next mission name" "No Mercy"
-	}	
+	}
+    	"l4d_river03_port"
+	{
+		"next mission map" "l4d_vs_hospital01_apartment"
+		"next mission name" "No Mercy (5 Maps)"
+	}
 	"l4d_hospital05_rooftop"
 	{
 		"next mission map" "l4d_smalltown01_caves"
@@ -24,5 +29,25 @@
 	{
 		"next mission map" "l4d_airport01_greenhouse"
 		"next mission name" "Dead Air"
+	}
+	"l4d_vs_airport05_runway"
+	{
+		"next mission map" "l4d_vs_farm01_hilltop"
+		"next mission name" "Blood Harvest (5 Maps)"
+	}
+	"l4d_vs_farm05_cornfield"
+	{
+		"next mission map" "l4d_river01_docks"
+		"next mission name" "The Sacrifice (3 Maps)"
+	}
+	"l4d_vs_hospital05_rooftop"
+	{
+		"next mission map" "l4d_garage01_alleys"
+		"next mission name" "Crash Course (2 Maps)"
+	}
+	"l4d_vs_smalltown05_houseboat"
+	{
+		"next mission map" "l4d_vs_airport01_greenhouse"
+		"next mission name" "Dead Air (5 Maps)"
 	}
 }
