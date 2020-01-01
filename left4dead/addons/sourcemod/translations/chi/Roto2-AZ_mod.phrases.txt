@@ -638,7 +638,7 @@
 	}
 	"l4dcompstats1"
 	{
-		"chi"	"特感杀手: {blue}{1}{default} ({olive}{2}{default} 伤害 [{green{3}%%{default}], {olive}{4}{default} 击杀 [{green}{5}%%{default}])"
+		"chi"	"特感杀手: {blue}{1}{default} ({olive}{2}{default} 伤害 [{green}{3}%%{default}], {olive}{4}{default} 击杀 [{green}{5}%%{default}])"
 	}
 	"l4dcompstats2"
 	{

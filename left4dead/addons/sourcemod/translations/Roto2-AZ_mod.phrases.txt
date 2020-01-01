@@ -1915,11 +1915,13 @@
 	}
 	"votes3_15"
 	{
+		"#format"	"{1:s}"
 		"en"	"{blue}{1}{default} has been kicked!"
 		"zho"	"{blue}{1}{default} 被投票踢出!"
 	}
 	"votes3_16"
 	{
+		"#format"	"{1:s}"
 		"en"	"{blue}{1}{default} has been forcespectated!"
 		"zho"	"{blue}{1}{default} 被投票強制旁觀!"
 	}
