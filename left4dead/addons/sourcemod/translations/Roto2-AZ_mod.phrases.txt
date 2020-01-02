@@ -841,7 +841,7 @@
 	"l4dcompstats1"
 	{
 		"#format"	"{1:s},{2:i},{3:i},{4:i},{5:i}"
-		"en"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
+		"en"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green}{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
 		"zho"	"特感殺手: {blue}{1}{default} ({olive}{2}{default} 傷害 [{green}{3}%%{default}], {olive}{4}{default} 擊殺 [{green}{5}%%{default}])"
 	}
 	"l4dcompstats2"
@@ -1011,8 +1011,8 @@
 	"kills2"
 	{
 		"#format"	"{1:i},{2:i},{3:i},{4:i},{5:s}"
-		"en"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}}{2}{default},{lightgreen}tounge{default}: {olive}}{3}{default},{lightgreen}boom{default}: {olive}}{4}{default}] - {olive}}{5}"
-		"zho"	"總計被控: {olive}{1}{default}[{lightgreen}被撲{default}: {olive}}{2}{default},{lightgreen}被拉{default}: {olive}}{3}{default},{lightgreen}被噴{default}: {olive}}{4}{default}] - {olive}}{5}"
+		"en"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}{2}{default},{lightgreen}tounge{default}: {olive}{3}{default},{lightgreen}boom{default}: {olive}{4}{default}] - {olive}{5}"
+		"zho"	"總計被控: {olive}{1}{default}[{lightgreen}被撲{default}: {olive}{2}{default},{lightgreen}被拉{default}: {olive}{3}{default},{lightgreen}被噴{default}: {olive}{4}{default}] - {olive}{5}"
 	}
 	///////////////l4d_panic_notify.smx///////////////
 	"l4d_panic_notify1"

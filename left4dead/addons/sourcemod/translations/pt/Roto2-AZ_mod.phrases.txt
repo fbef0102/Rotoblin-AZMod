@@ -645,7 +645,7 @@
 	}
 	"l4dcompstats1"
 	{		
-        "pt"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
+        "pt"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green}{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
 	}
 	"l4dcompstats2"
 	{		
@@ -765,7 +765,7 @@
 	}
 	"kills2"
 	{		
-        "pt"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}}{2}{default},{lightgreen}tounge{default}: {olive}}{3}{default},{lightgreen}boom{default}: {olive}}{4}{default}] - {olive}}{5}"
+        "pt"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}{2}{default},{lightgreen}tounge{default}: {olive}{3}{default},{lightgreen}boom{default}: {olive}{4}{default}] - {olive}{5}"
 	}
 	///////////////l4d_panic_notify.smx///////////////
 	"l4d_panic_notify1"

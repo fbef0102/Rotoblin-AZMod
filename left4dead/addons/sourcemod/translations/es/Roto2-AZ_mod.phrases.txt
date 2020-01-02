@@ -756,7 +756,7 @@
 	}
 	"kills2"
 	{
-		"es"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}}{2}{default},{lightgreen}tounge{default}: {olive}}{3}{default},{lightgreen}boom{default}: {olive}}{4}{default}] - {olive}}{5}"
+		"es"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}{2}{default},{lightgreen}tounge{default}: {olive}{3}{default},{lightgreen}boom{default}: {olive}{4}{default}] - {olive}{5}"
 	}
 	///////////////l4d_panic_notify.smx///////////////
 	"l4d_panic_notify1"

@@ -756,7 +756,7 @@
 	}
 	"kills2"
 	{
-		"chi"	"累计被控: {olive}{1}{default}[{lightgreen}被扑{default}: {olive}}{2}{default},{lightgreen}被拉{default}: {olive}}{3}{default},{lightgreen}被喷{default}: {olive}}{4}{default}] - {olive}}{5}"
+		"chi"	"累计被控: {olive}{1}{default}[{lightgreen}被扑{default}: {olive}{2}{default},{lightgreen}被拉{default}: {olive}{3}{default},{lightgreen}被喷{default}: {olive}{4}{default}] - {olive}{5}"
 	}
 	///////////////l4d_panic_notify.smx///////////////
 	"l4d_panic_notify1"
