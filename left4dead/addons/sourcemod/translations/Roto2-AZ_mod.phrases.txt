@@ -517,7 +517,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{lightgreen}{1}{default} has been forced to respectate."
-		"zho"		"{lightgreen}{1}default} 被強制重新旁觀."
+		"zho"		"{lightgreen}{1}{default} 被強制重新旁觀."
 	}
 	"ReadyPlugin_25"
 	{
