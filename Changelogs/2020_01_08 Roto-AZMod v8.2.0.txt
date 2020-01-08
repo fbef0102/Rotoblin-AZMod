@@ -76,6 +76,9 @@
 [l4d_rock_lagcomp.smx]
 * fixed hunting rifle unable to hit tank rocks.
 
+[l4d_versus_same_UnprohibitBosses.smx]
+* tank and witch will not spawn after 80% in suicide blitz map 4
+
 	       ***txt***
 left4dead\addons\sourcemod\configs
 [matchmodes.txt]
