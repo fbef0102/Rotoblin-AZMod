@@ -177,10 +177,6 @@
 	{
 		"es"			"Game"
 	}
-	"Mix"
-	{
-		"es"			"Mix"
-	}
 	"Team_Shuffle"
 	{
 		"es"			"Tiempo aletorio"
@@ -291,7 +287,7 @@
 	}
 	"Bonus_per_pill"
 	{
-		"es"			"Bonus de 20 puntos por pills"
+		"es"			"Bonus de 15 puntos por pills"
 	}
 	"Number_of_players_that_survived"
 	{
@@ -739,7 +735,7 @@
 	}
 	"game11"
 	{
-		"es"	"{olive}{1} {default}lanzo el {lightgreen}{2} {default}sided die!. It's {green}{2}{default}!"
+		"es"	"{olive}{1} {default}lanzo el {lightgreen}{2} {default}sided die!. It's {green}{3}{default}!"
 	}
 	"game12"
 	{
@@ -1527,6 +1523,10 @@
 	"No Instant Spawn"
 	{
 		"es"	"Pasate al {green}Tank {default}a {red}BOT{default}, {lightgreen}No hay spawn instantaneo{default}!! Espera"
+	}
+	"Give Tank To AI"
+	{
+		"es"	"{red}{1}{default} is given to AI Tank!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"

@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.2.0
+v8.2.1
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
@@ -23,8 +23,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * At this step, you already setup your Server's base for configs, so you can finally start your server.
 * Launch parameters:
   * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-  > **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D) If you're going to adjust your Tickrate above 100, you will run into Boomer Vomit Range issues. You will need to add 
-***-frametime 0.037 -frametime_override 0.037*** to the launch parameters to resolve this, make sure to place them after the tickrate parameter.
+  > **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D)
 	
 - - - -	
 ### Server Install Optional ###
@@ -138,8 +137,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove restricted invisible wall Infected couldn't go through
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Extra Pills
-    * All pill cabinets: a maximum of 1 pills
-    * On the road: few pills (pain_pill_density: 0.5)
+    * No pill cabinets
+    * On the road: few pills (pain_pill_density: 0.75)
     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
@@ -177,7 +176,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Limit: None
       
 * **Hunting Rifle**
-  * Rate of fire: 1->0.13
+  * Rate of fire: 1->0.19
   * Tank dmg: 90->135
   * Hunter dmg: Chest, neck *2.8 - abdominal muscles *1.8
   * Limit: 1
@@ -188,7 +187,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * ( AD + HB + PILLS ) x Alive x Map 
    * AD = Average distance
    * HB = Health Bonus , Floor(PermanentHealth/2)+RoundToNearest(TemporaryHealth/4)
-   * PILLS = 20 Health Bonus per pill
+   * PILLS = 15 Health Bonus per pill
    * Alive = Number of players that survived
    * Map = That level's score multiplier
    > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
@@ -242,7 +241,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
 * Prevents players' data in ghost mode from being sent to Survivors
-   
+* Mother fucker no collisions to fix a handful of silly collision bugs in l4d1 (only works in **Linux**)
+     * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
+     * Pulled Survivors go through Common Infected
+     * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
+     * Commons go through Witch? (prevent commons from pushing witch in l4d1)
+  
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 30s.
@@ -281,7 +285,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Players cannot scratch while in the stumble animation.
     * **sm_respec** force the spectator player to respectate, only used by infected.
 	* show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
-    
+	* Overrides special infected targeting incapacitated players.
+      * ignore player who is pinned by smoker & hunter.
+      * change target to nearest survivor no matter anyone gets vomited.
+	 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
     * Show how long is tank alive, and tank punch/rock/car statistics once tank dead
@@ -319,6 +326,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(1v1)*: **2000**
     * Slay AI Tank in 1v1, 2v2 and 3v3  
     * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
+	* Ignites the rock thrown by the Tank when he is on fire.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -367,6 +375,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
 	  - *85%*: **3 Hunters + 1 Smoker**
 	  - *15%*: **4 Hunters**
+	* Explode after 3 times shove (original: 5)
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
@@ -468,7 +477,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Allows changing of displayed game type in server browser
 <img src="https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png" alt="l4d1_game_type_name.png" width="750" height="400">
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
-	 
+* Simply block pause commands when the server doesn't even support pausing.
+
 - - - -
 ### Others ###
 * <b>[Our Group](https://steamcommunity.com/groups/ibserver)</b>

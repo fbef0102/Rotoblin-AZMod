@@ -1,0 +1,36 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Functions"
+		{
+			/* BossZombiePlayerBot::ChooseVictim(CTerrorPlayer *) */
+			"BossZombiePlayerBot::ChooseVictim"
+			{
+				"signature"		"BossZombiePlayerBot::ChooseVictim"
+				"callconv"		"thiscall"
+				"return"		"cbaseentity"
+				"this"			"entity"
+				"arguments"
+				{
+					"player"
+					{
+						"type"	"int"
+					}
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"BossZombiePlayerBot::ChooseVictim"
+			{
+				"library"		"server"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x53\x55\x33\x2A\x39\x2A\x2A\x8B"
+				"linux"			"@_ZN19BossZombiePlayerBot12ChooseVictimEP13CTerrorPlayer"
+				/* ? ? ? ? ? 83 ? ? 53 55 33 ? 39 ? ? 8B */
+				/* Search: "switching to mobile victim" */
+			}
+		}
+	}
+}

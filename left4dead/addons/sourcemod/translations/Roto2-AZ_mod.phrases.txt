@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.2.0"
+		"en"			"Rotoblin-AZ Mod v8.2.1"
 	}
 	"Plugin_Information"
 	{
@@ -227,11 +227,6 @@
 		"en"			"Game"
 		"zho"			"遊戲"
 	}
-	"Mix"
-	{
-		"en"			"Mix"
-		"zho"			"混合制"
-	}
 	"Team_Shuffle"
 	{
 		"en"			"Team Shuffle"
@@ -369,8 +364,8 @@
 	}
 	"Bonus_per_pill"
 	{
-		"en"			"20 Bonus per pill"
-		"zho"			"每顆藥丸加20分"
+		"en"			"15 Bonus per pill"
+		"zho"			"每顆藥丸加15分"
 	}
 	"Number_of_players_that_survived"
 	{
@@ -702,7 +697,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"	"The {1} must agree by typing {green}{2} {3}{default}."
-		"zho"	"{1} 隊伍必須打上 {green}{2}{default} 才能同意生效"
+		"zho"	"{1} 隊伍必須打上 {green}{2} {3}{default} 才能同意生效"
 	}
 	"Map Mismatch."
 	{
@@ -986,7 +981,7 @@
 	"game11"
 	{
 		"#format"	"{1:s},{2:i},{3:i}"
-		"en"	"{olive}{1} {default}rolled a {lightgreen}{2} {default}sided die!. It's {green}{2}{default}!"
+		"en"	"{olive}{1} {default}rolled a {lightgreen}{2} {default}sided die!. It's {green}{3}{default}!"
 		"zho"	"{olive}{1} {default}擲出了 {lightgreen}{2} {default}面骰子!. 結果是 {green}{3}{default}!"
 	}
 	"game12"
@@ -997,7 +992,6 @@
 	}
 	"game13"
 	{
-		"#format"	"{1:i}"
 		"en"	"Play a Integer-sided dice."
 		"zho"	"多面骰子遊戲."
 	}
@@ -2050,6 +2044,12 @@
 		"en"	"Passing {green}Tank {default}to {red}AI{default}, {lightgreen}No Instant Spawn{default}!! Force suicide"
 		"zho"	"失去 {green}Tank{default} 控制權給{red}AI{default}, {lightgreen}不得馬上回靈魂{default}!! 強制自殺"
 	}
+	"Give Tank To AI"
+	{
+		"#format"	"{1:s}"
+		"en"	"{red}{1}{default} is given to AI Tank!"
+		"zho"	"{red}{1}{default} 轉移給AI坦克了!"
+	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"
 	{
@@ -2659,7 +2659,7 @@
 	}
 	"l4dscores10"
 	{
-		"#format"	"{1:i},{2:i}"
+		"#format"	"{1:t},{2:i}"
 		"en"		"Set campaign score for team {1}: {2}"
 		"zho"		"為隊伍 {1} 設置關卡分數: {2}"
 	}

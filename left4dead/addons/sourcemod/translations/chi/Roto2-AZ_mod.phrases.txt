@@ -177,10 +177,6 @@
 	{
 		"chi"			"游戏"
 	}
-	"Mix"
-	{
-		"chi"			"队长选人混合制"
-	}
 	"Team_Shuffle"
 	{
 		"chi"			"队伍重新分配"
@@ -291,7 +287,7 @@
 	}
 	"Bonus_per_pill"
 	{
-		"chi"			"每颗药丸加20分"
+		"chi"			"每颗药丸加15分"
 	}
 	"Number_of_players_that_survived"
 	{
@@ -537,7 +533,7 @@
 	}
 	"The team must agree by typing command"
 	{
-		"chi"	"{1} 队伍必须打上 {green}{2}{default} 才能同意生效。"
+		"chi"	"{1} 队伍必须打上 {green}{2} {3}{default} 才能同意生效。"
 	}
 	"Map Mismatch."
 	{
@@ -739,7 +735,7 @@
 	}
 	"game11"
 	{
-		"chi"	"{olive}{1} {default}掷出了 {lightgreen}{2} {default}面骰子!. 结果是 {green}{2}{default}!"
+		"chi"	"{olive}{1} {default}掷出了 {lightgreen}{2} {default}面骰子!. 结果是 {green}{3}{default}!"
 	}
 	"game12"
 	{
@@ -1527,6 +1523,10 @@
 	"No Instant Spawn"
 	{
 		"chi"	"失去 {green}Tank{default} 控制权给{red}AI{default}, {lightgreen}不得马上回灵魂状态{default}!! 强制自杀"
+	}
+	"Give Tank To AI"
+	{
+		"chi"	"Skyline已上线, {red}{1}{default}: 交给你了{olive}孤军{default}!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"

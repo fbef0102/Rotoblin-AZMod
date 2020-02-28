@@ -177,10 +177,6 @@
 	{
 		"pt"			"Game"
 	}
-	"Mix"
-	{
-		"pt"			"Mix"
-	}
 	"Team_Shuffle"
 	{
 		"pt"			"Time aleatório"
@@ -291,7 +287,7 @@
 	}
 	"Bonus_per_pill"
 	{
-		"pt"			"Bônus de 20 pontos por pill"
+		"pt"			"Bônus de 15 pontos por pill"
 	}
 	"Number_of_players_that_survived"
 	{
@@ -748,7 +744,7 @@
 	}
 	"game11"
 	{		
-        "pt"	"{olive}{1} {default}rolou um dado de {lightgreen}{2}{default}lados!. Está {green}{2}{default}!"
+        "pt"	"{olive}{1} {default}rolou um dado de {lightgreen}{2}{default}lados!. Está {green}{3}{default}!"
 	}
 	"game12"
 	{
@@ -1536,6 +1532,10 @@
 	"No Instant Spawn"
 	{
 		"pt"	"Passando {green}Tank {default}para {red}AI{default}, {lightgreen}Sem instante spawn{default}!! Forçar suicidio"
+	}
+	"Give Tank To AI"
+	{
+		"pt"	"{red}{1}{default} foi dado ao AI TANK!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"

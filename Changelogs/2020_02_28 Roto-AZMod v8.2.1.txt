@@ -1,0 +1,86 @@
+﻿v8.2.1
+------------------Delete---------------
+
+------------------New------------------
+-left4dead\addons\sourcemod\plugins
+[l4d_collision_adjustments.smx]
+* mother fucker no collisions to fix a handful of silly collision bugs in l4d1
+     * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
+     * Pulled Survivors go through Common Infected
+     * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
+     * Commons go through Witch? (prevent commons from pushing witch in l4d1)
+	
+[l4d_pause_message.smx]
+* Simply block pause commands when the server doesn't even support pausing.
+	
+[l4d_tank_rock_ignition.smx]	
+* Ignites the rock thrown by the Tank when he is on fire.
+
+[l4d_target_patch.smx]
+* Overrides special infected targeting incapacitated players.
+     * ignore player who is pinned by smoker & hunter.
+     * change target to nearest survivor no matter anyone gets vomited.
+
+-left4dead\addons\sourcemod\gamedata
+[l4d_target_patch.txt]
+* support [l4d_target_patch.smx]
+
+------------------Modify------------------
+	       ***plugin***
+left4dead\addons\sourcemod\plugins
+[comp_loader.smx]
+[l4d_bossvote.smx]
+[l4d_bash_kills.smx]
+[l4d_Modo_mix_mm.smx]
+[l4d_godframes_and_hittable_control.smx]
+[l4d_passing_Tank_no_instant_respawn.smx]
+[l4d_versus_same_UnprohibitBosses.smx]
+[l4d_witchspawnfix_whentank.smx]
+[L4DVSAutoSpectateOnAFK.smx]
+[si_class_announce.smx]
+[votemanager2.smx]
+[votes3.smx]
+* optimize codes
+* fix translation phase
+
+[l4d_boss_percent.smx]
+[l4d_current_survivor_progress.smx]
+[l4d_tank_control.smx]
+[l4dscores.smx]
+* player can see the command print by only himself
+
+[l4dscores]
+* 15 Health Bonus per pill (was **20**)
+
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_vesus_nerf_huntingrifle.smx]
+* **Hunting Rifle**
+  * Rate of fire: 0.19 (was **0.13**)
+
+	       ***txt***
+-left4dead\addons\sourcemod\translations
+* fix translation phase
+
+	       ***cfg***
+-left4dead\cfg 
+[server.cfg]
+* v8.2.1
+
+[server_shared_convars.cfg]
+* pain_pill_density: 0.75 (was **0.5**)
+* boomer explodes after 3 times shove (was **4**)
+* vs_score_pp_health 0.65 (was **0.75**)
+
+-left4dead\addons\stripper\Roto-AZMod\maps
+[global_filters.cfg]
+* No pill cabinets
+
+[l4d_vs_smalltown04_mainstreet.cfg]
+* block fking room
+
+	       ***png***
+Developer&Commands
+[Roto-AZMod Adm Commands.png]
+[Roto-AZMod Everyone Commands.png]
+* add more commands
+
