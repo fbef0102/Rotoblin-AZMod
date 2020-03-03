@@ -72,8 +72,7 @@ left4dead\addons\sourcemod\plugins
 * vs_score_pp_health 0.65 (was **0.75**)
 
 -left4dead\addons\stripper\Roto-AZMod\maps
-[global_filters.cfg]
-* No pill cabinets
+* Remove pill cabinets on some maps
 
 [l4d_vs_smalltown04_mainstreet.cfg]
 * block fking room
