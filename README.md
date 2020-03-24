@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.2.1
+v8.2.2
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
@@ -337,8 +337,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	<img src="https://i.imgur.com/RKAuCjY.jpg" alt="RKAuCjY.jpg" width="750" height = "400">
 	
     * Instantly incapacitate Survivors
-    * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
 	* Prevent common infected from pushing witch away when witch not startled yet
+	* Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
+	* Prevents the witch from randomly loosing target.
 	
   * **Smoker:**
 	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)

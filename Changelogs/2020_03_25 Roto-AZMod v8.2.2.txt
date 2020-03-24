@@ -1,0 +1,26 @@
+﻿v8.2.2
+------------------New------------------
+-left4dead\addons\sourcemod\gamedata
+[witch_prevent_target_loss.txt]
+//gamedata for witch_prevent_target_loss.smx
+
+-left4dead\addons\sourcemod\plugins
+[witch_prevent_target_loss.smx]
+//Prevents the witch from randomly loosing target.
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4d_boss_percent.smx]
+//fixed "witch party" notify
+
+
+	       ***txt***
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+//v8.2.2
+		   
+	       ***cfg***
+-left4dead\cfg
+[server.cfg]
+//v8.2.2
