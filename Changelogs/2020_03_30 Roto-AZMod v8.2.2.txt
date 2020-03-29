@@ -14,6 +14,8 @@
 [l4d_boss_percent.smx]
 //fixed "witch party" notify
 
+[l4d_rock_lagcomp.smx]
+//fixed mounted machine gun can't break tank rock
 
 	       ***txt***
 -left4dead\addons\sourcemod\translations
