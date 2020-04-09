@@ -17,6 +17,9 @@
 [l4d_rock_lagcomp.smx]
 //fixed mounted machine gun can't break tank rock
 
+[cannounce.smx]
+//show player region and city
+
 	       ***txt***
 -left4dead\addons\sourcemod\translations
 [Roto2-AZ_mod.phrases.txt]
