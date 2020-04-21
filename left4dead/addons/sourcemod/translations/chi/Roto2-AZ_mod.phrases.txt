@@ -1035,7 +1035,7 @@
 	}
 	"l4d_tank_count1"
 	{
-		"chi"	"存活了 {green}{1}{olive}分 {green}{2}{olive}秒.(拳: {green}{3}{olive}, 石: {green}{4}{olive}, 鐵: {green}{5}{olive})"
+		"chi"	"存活了 {green}{1}{olive}分 {green}{2}{olive}秒.(拳: {green}{3}{olive}, 石: {green}{4}{olive}, 铁: {green}{5}{olive})"
 	}
 	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
 	"Tank (player) health remaining"
