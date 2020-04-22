@@ -4,16 +4,6 @@
 	{
 		"Signatures"
 		{
-			"FlashlightTurnOn"
-			/*	CCSPlayer::FlashlightTurnOn(bool)
-			*	A1 ? ? ? ? 83 EC ? 83 78 ? ? 56 8B F1 0F
-			*/
-			
-			{
-				"library"	"server"
-				"windows"	"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x2A\x83\x78\x2A\x2A\x56\x8B\xF1\x0F\x8E\x2A\x2A\x2A\x2A\x8B\x16"
-				"linux"		"@_ZN9CCSPlayer16FlashlightTurnOnEb"
-			}
 			
 			"TakeOverBot"
 			{
@@ -40,17 +30,6 @@
 				"library"	"server"
 				"windows"	"\x83\xEC\x30\x56\x8B\xF1\xE8****\x83\xF8\x03\x0F\x85****\x8B\x06" //found by V10
 				"linux"		"@_ZN13CTerrorPlayer24PlayerZombieAbortControlEv"
-			}
-			
-			"FlashlightTurnOn"
-			/*	CCSPlayer::FlashlightTurnOn(bool)
-			*	A1 ? ? ? ? 83 EC ? 83 78 ? ? 56 8B F1 0F 8E ? ? ? ? 8B 16
-			*/
-			
-			{
-				"library"	"server"
-				"windows"	"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x2A\x83\x78\x2A\x2A\x56\x8B\xF1\x0F\x8E\x2A\x2A\x2A\x2A\x8B\x16"
-				"linux"		"@_ZN9CCSPlayer16FlashlightTurnOnEb"
 			}
 			
 			"TakeOverBot"
