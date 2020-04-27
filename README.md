@@ -162,17 +162,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod 1.9.6: 0.26**)
-  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod 1.9.6: 1.85**)
-  * Ammo: 480->750 (Acemod: 800 - **Zonemod 1.9.6: 750**) 
+  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod: 0.26**)
+  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod: 1.85**)
+  * Ammo: 480->750 (Acemod: 800 - **Zonemod: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod 1.9.6: 1.88**) 
-  * Damage: 20->22 (Acemod: 20 - **Zonemod 1.9.6: 22**)
-  * Limit: 3 (Acemod: None - **Zonemod 1.9.6: 3**)
+  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod: 1.88**) 
+  * Damage: 20->22 (Acemod: 20 - **Zonemod: 22**)
+  * Limit: 3 (Acemod: None - **Zonemod 3**)
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->96 (**Acemod: 96** - Zonemod 1.9.6: 80) 
+  * Ammo: 128->96 (**Acemod: 96** - Zonemod: 80) 
   * Limit: None
       
 * **Hunting Rifle**
