@@ -20,6 +20,10 @@
 [cannounce.smx]
 //show player region and city
 
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_storm.smx]
+//sm_envtools_fogend 500
+
 	       ***txt***
 -left4dead\addons\sourcemod\translations
 [Roto2-AZ_mod.phrases.txt]
@@ -29,3 +33,6 @@
 -left4dead\cfg
 [server.cfg]
 //v8.2.2
+
+[rotoblin_Dark_Coop_convar.cfg]
+//adjust S.I limit
