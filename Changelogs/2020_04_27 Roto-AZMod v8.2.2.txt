@@ -39,4 +39,4 @@
 
 -left4dead\addons\stripper\Roto-AZMod\maps
 [l4d_vs_airport01_greenhouse.cfg]
-block access to upper rails and upper roof sections of greenhouse
+//block access to upper rails and upper roof sections of greenhouse
