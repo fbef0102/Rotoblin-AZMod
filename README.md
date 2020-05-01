@@ -138,7 +138,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Kill all ambience sounds in order to let survivor focus on S.I./common
   * Extra Pills
     * No pill cabinets
-    * On the road: few pills (pain_pill_density: 0.75)
+    * On the road: few pills (pain_pill_density: 1)
     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn

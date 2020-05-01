@@ -20,6 +20,9 @@
 [cannounce.smx]
 //show player region and city
 
+[l4d_no_hunter_deadstops.smx]
+//fixed deadstop issue when hunter pouncing
+
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_storm.smx]
 //sm_envtools_fogend 500
@@ -36,6 +39,9 @@
 
 [rotoblin_Dark_Coop_convar.cfg]
 //adjust S.I limit
+
+[server_shared_convars.cfg]
+//pain_pill_density: 1
 
 -left4dead\addons\stripper\Roto-AZMod\maps
 [l4d_vs_airport01_greenhouse.cfg]
