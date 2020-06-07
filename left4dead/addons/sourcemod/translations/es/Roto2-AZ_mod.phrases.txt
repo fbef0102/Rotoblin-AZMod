@@ -2228,4 +2228,18 @@
 	{
 		"es"		"{olive}{1}{default} Mato {red}{2}{default} que era Boomer!"
 	}
+	//////////////antisaferoomdooropen.smx//////////////
+	"antisaferoomdooropen"
+	{
+		"es"		"{1} second(s) left to open the saferoom door!"
+	}
+	//////////////l4d_flashlight.smx//////////////
+	"Flashlight Intro"
+	{
+		"es"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"es"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+	}
 }

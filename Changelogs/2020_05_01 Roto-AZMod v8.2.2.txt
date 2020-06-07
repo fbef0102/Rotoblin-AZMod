@@ -41,7 +41,7 @@
 //adjust S.I limit
 
 [server_shared_convars.cfg]
-//pain_pill_density: 1
+//pain_pill_density: 1 (was **0.75**)
 
 -left4dead\addons\stripper\Roto-AZMod\maps
 [l4d_vs_airport01_greenhouse.cfg]

@@ -8,7 +8,7 @@
  *  Description:	Tinkers with general items like throwables and cannisters
  *
  *  Copyright (C) 2010  Defrag <mjsimpson@gmail.com>
- *  Copyright (C) 2017-2019  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2020  Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  This program is free software: you can redistribute it and/or modify

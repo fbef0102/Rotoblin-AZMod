@@ -1,0 +1,42 @@
+﻿v8.2.3
+------------------New------------------
+-left4dead\addons\sourcemod\plugins 
+[l4d_flashlight.smx]
+//flashlight for spectators, better view
+
+-left4dead\addons\sourcemod\plugins\optional
+[antisaferoomdooropen.smx]
+//anti open start saferoom door for pub, witch party, multi hunters, dark coop
+
+-cfg\sourcemod
+[l4d_flashlight.cfg]
+[antisaferoomdoorclose.cfg]
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4dready_scrds.smx]
+//fix switch team bug
+
+[comp_loader.smx]
+//remove useless configs
+
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_multiwitch.smx]
+//set witch glow for survivor in witch party mode
+
+	       ***txt***
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+//v8.2.3
+		   
+	       ***cfg***
+-left4dead\cfg
+[server.cfg]
+//v8.2.3
+
+[rotoblin_Dark_Coop_convar.cfg]
+//adjust S.I limit
+
+[all]
+//delete useless configs

@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.2.2"
+		"en"			"Rotoblin-AZ Mod v8.2.3"
 	}
 	"Plugin_Information"
 	{
@@ -2994,5 +2994,23 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{olive}{1}{default} shoves-kill {red}{2}{default}'s Boomer!"
 		"zho"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
+	}
+	//////////////antisaferoomdooropen.smx//////////////
+	"antisaferoomdooropen"
+	{
+		"#format"	"{1:d}"
+		"en"		"{1} second(s) left to open the saferoom door!"
+		"zho"		"剩餘 {1} 秒才能開門!"
+	}
+	//////////////l4d_flashlight.smx//////////////
+	"Flashlight Intro"
+	{
+		"en"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"zho"		"開啟發光效果: 聊天視窗輸入{green}!light{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"en"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"zho"		"使用方式: 聊天視窗輸入{green}!light <顏色名稱或R G B>{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
 	}
 }
