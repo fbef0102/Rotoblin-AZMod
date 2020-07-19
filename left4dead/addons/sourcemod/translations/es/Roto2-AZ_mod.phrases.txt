@@ -1606,27 +1606,6 @@
 	{
 		"es"		"No puede patear {olive}{1}{default}(ADM) de espectadores."
 	}
-	///////////////l4d_sm_respawn.smx//////////////
-	"l4d_sm_respawn1"
-	{
-		"es"		"reaparecer todos los jugadores de la lista"
-	}
-	"You Dumb? Target is still alive!"
-	{
-		"es"		"¿Usted tonto? ¡Target todavía está vivo!"
-	}
-	"Failed! Target is not survivor"
-	{
-		"es"		"¡Ha fallado! El objetivo no es sobreviviente"
-	}
-	"Failed! Target is spectator"
-	{
-		"es"		"¡Ha fallado! El objetivo es espectador"
-	}
-	"Could not teleport player after respawn"
-	{
-		"es"		"No se pudo teletransportar al jugador después de reaparecer"
-	}
 	///////////////l4d_tankhud.smx//////////////
 	"l4d_tankhud1"
 	{
@@ -2229,9 +2208,13 @@
 		"es"		"{olive}{1}{default} Mato {red}{2}{default} que era Boomer!"
 	}
 	//////////////antisaferoomdooropen.smx//////////////
-	"antisaferoomdooropen"
+	"antisaferoomdooropen1"
 	{
 		"es"		"{1} second(s) left to open the saferoom door!"
+	}
+	"antisaferoomdooropen2"
+	{
+		"es"		"{1} second(s) left to be allowed to leave start area!"
 	}
 	//////////////l4d_flashlight.smx//////////////
 	"Flashlight Intro"

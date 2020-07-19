@@ -1615,27 +1615,6 @@
 	{
 		"pt"		"Não é possivel expulsar {olive}{1}{default}(ADM) dos espectadores."
 	}
-	///////////////l4d_sm_respawn.smx//////////////
-	"l4d_sm_respawn1"
-	{
-		"pt"		"renascer todos os jogadores listados"
-	}
-	"You Dumb? Target is still alive!"
-	{
-		"pt"		"Você é idiota? O alvo ainda está vivo!"
-	}
-	"Failed! Target is not survivor"
-	{
-		"pt"		"Falhou! O alvo não é sobrevivente"
-	}
-	"Failed! Target is spectator"
-	{
-		"pt"		"Falhou! O alvo é espectador"
-	}
-	"Could not teleport player after respawn"
-	{
-		"pt"		"Não foi possível teleportar o jogador após o reaparecimento"
-	}
 	///////////////l4d_tankhud.smx//////////////
 	"l4d_tankhud1"
 	{
@@ -2236,12 +2215,15 @@
 	"shove boomer and boomer dead"
 	{
 		"pt"		"{olive}{1}{default} espancou o {red}{2}{default}'s Boomer!"
-        //shove-kill
 	}
 	//////////////antisaferoomdooropen.smx//////////////
-	"antisaferoomdooropen"
+	"antisaferoomdooropen1"
 	{
 		"pt"		"{1} second(s) left to open the saferoom door!"
+	}
+	"antisaferoomdooropen2"
+	{
+		"pt"		"{1} second(s) left to be allowed to leave start area!"
 	}
 	//////////////l4d_flashlight.smx//////////////
 	"Flashlight Intro"

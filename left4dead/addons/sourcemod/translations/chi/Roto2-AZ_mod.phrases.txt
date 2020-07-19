@@ -1606,27 +1606,6 @@
 	{
 		"chi"		"无法从旁观者中踢掉 {olive}{1}{default}(管理员)."
 	}
-	///////////////l4d_sm_respawn.smx//////////////
-	"l4d_sm_respawn1"
-	{
-		"chi"		"复活指定的玩家"
-	}
-	"You Dumb? Target is still alive!"
-	{
-		"chi"		"傻逼？目标是活着的。"
-	}
-	"Failed! Target is not survivor"
-	{
-		"chi"		"失败! 目标不是生还者"
-	}
-	"Failed! Target is spectator"
-	{
-		"chi"		"失败! 目标是旁观者"
-	}
-	"Could not teleport player after respawn"
-	{
-		"chi"		"复活后无法传送玩家位置"
-	}
 	///////////////l4d_tankhud.smx//////////////
 	"l4d_tankhud1"
 	{

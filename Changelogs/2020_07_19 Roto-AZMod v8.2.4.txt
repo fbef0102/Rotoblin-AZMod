@@ -1,18 +1,22 @@
 ﻿v8.2.4
 
 ------------------Delete------------------
-left4dead\scripts
+-left4dead\scripts
 [weapon_hunting_rifle.txt]
 [weapon_pumpshotgun.txt]
 [weapon_smg.txt]
 * new plugin to replace weapon modify
 
-left4dead\
+-left4dead
 [pure_server_whitelist.txt]
 * sv_pure 2 (and it will not load pure_server_whitelist.txt)
 
 ------------------New------------------
-left4dead\addons\sourcemod\data\
+-left4dead\addons\sourcemod\translations
+[l4d_sm_respawn.phrases.txt]
+* translation for l4d_sm_respawn.smx
+
+-left4dead\addons\sourcemod\data
 [l4d_info_editor_mission.cfg]
 * modify keyvalues from mission
 
@@ -21,7 +25,7 @@ left4dead\addons\sourcemod\data\
 	* Uzi:
 	* Increased spread while moving to **2.00**. (was **1.85**)
 
-left4dead\addons\sourcemod\gamedata
+-left4dead\addons\sourcemod\gamedata
 [l4d_info_editor.txt]
 * l4d_info_editor.smx signature
 
@@ -34,7 +38,14 @@ left4dead\addons\sourcemod\gamedata
 
 ------------------Modify------------------
 	       ***plugin***
--left4dead\addons\sourcemod\plugins 
+-left4dead\addons\sourcemod\plugins
+[l4d_sm_respawn.smx]
+* Allow adm to be respawn dead survivor players at one's crosshair
+* Add 'Respawn player' item in admin menu under 'Player commands' category
+
+[command_buffer.smx]
+* update version
+
 [l4dready_scrds.smx]
 * better code to detect player has left safe area
 
@@ -52,9 +63,21 @@ left4dead\addons\sourcemod\gamedata
 * saferoom door anti open + anti rush start area in map 1
 
 	       ***txt***
+-left4dead\addons\sourcemod\gamedata
+[l4drespawn.txt]
+* update "Addresses" and "Offsets"
+
+[command_buffer.games.txt]
+* update signature
+
+-left4dead\addons\sourcemod\configs
+[adminmenu_custom.txt]
+- delete respawn player menu
+	
 -left4dead\addons\sourcemod\translations
 [Roto2-AZ_mod.phrases.txt]
 * v8.2.4
+* update translation
 		   
 	       ***cfg***
 -left4dead\cfg

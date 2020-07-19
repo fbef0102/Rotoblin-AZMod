@@ -2,16 +2,34 @@
 {
     "left4dead"
     {
-		/* unneeded now
-        "Offsets"
-        {
-            "RoundRespawn"
-            {
-                "windows"    "488"
-                "linux"        "491"
-            }
-        }
-		*/
+		"Addresses"
+		{
+			"RoundRespawn"
+			{
+				"windows"
+				{
+					"signature"	"RoundRespawn"			
+				}
+				"linux"
+				{
+					"signature"	"RoundRespawn"
+				}
+			}
+		}
+
+		"Offsets"
+		{
+			"RoundRespawn_Offset"
+			{
+				"windows"		"15" // 0xF
+				"linux"			"35" // 0x23
+			}
+			"RoundRespawn_Byte" // JNZ => JNS
+			{
+				"windows"		"117" // 0x75
+				"linux"			"117" // 0x75
+			}
+		}
 		
 		"Signatures"
 		{
@@ -25,20 +43,38 @@
 				/* previous function in vtable has a string */
 			}
 		}
-
     }
+    
     "left4dead2"
     {
-		/* unneeded now
-        "Offsets"
-        {
-            "RoundRespawn"
-            {
-                "windows"    "512"
-                "linux"        "513"
-            }
-        }
-		*/
+		"Addresses"
+		{
+			"RoundRespawn"
+			{
+				"windows"
+				{
+					"signature"	"RoundRespawn"			
+				}
+				"linux"
+				{
+					"signature"	"RoundRespawn"
+				}
+			}
+		}
+
+		"Offsets"
+		{
+			"RoundRespawn_Offset"
+			{
+				"windows"		"15" // 0xF
+				"linux"			"25" // 0x19
+			}
+			"RoundRespawn_Byte" // JNZ => JNS
+			{
+				"windows"		"117" // 0x75
+				"linux"			"117" // 0x75
+			}
+		}
 		
 		"Signatures"
 		{

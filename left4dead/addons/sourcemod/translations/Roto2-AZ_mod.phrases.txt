@@ -2154,32 +2154,6 @@
 		"en"		"Can not kick {olive}{1}{default}(ADM) from spectators."
 		"zho"		"無法從旁觀者中踢掉 {olive}{1}{default}(管理員)."
 	}
-	///////////////l4d_sm_respawn.smx//////////////
-	"l4d_sm_respawn1"
-	{
-		"en"		"respawn all listed players"
-		"zho"		"復活指定的玩家們"
-	}
-	"You Dumb? Target is still alive!"
-	{
-		"en"		"You Dumb? Target is still alive!"
-		"zho"		"蠢包? 目標是活著的!"
-	}
-	"Failed! Target is not survivor"
-	{
-		"en"		"Failed! Target is not survivor"
-		"zho"		"失敗! 目標不是倖存者"
-	}
-	"Failed! Target is spectator"
-	{
-		"en"		"Failed! Target is spectator"
-		"zho"		"失敗! 目標是旁觀者"
-	}
-	"Could not teleport player after respawn"
-	{
-		"en"		"Could not teleport player after respawn"
-		"zho"		"復活後無法傳送玩家位置"
-	}
 	///////////////l4d_tankhud.smx//////////////
 	"l4d_tankhud1"
 	{
