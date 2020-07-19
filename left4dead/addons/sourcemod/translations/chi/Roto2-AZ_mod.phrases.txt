@@ -2229,9 +2229,13 @@
 		"chi"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
 	}
 	//////////////antisaferoomdooropen.smx//////////////
-	"antisaferoomdooropen"
+	"antisaferoomdooropen1"
 	{
 		"chi"		"还有 {1} 秒才能开门!"
+	}
+	"antisaferoomdooropen2"
+	{
+		"chi"		"还有 {1} 秒才能离开安全区域！"
 	}
 	//////////////l4d_flashlight.smx//////////////
 	"Flashlight Intro"

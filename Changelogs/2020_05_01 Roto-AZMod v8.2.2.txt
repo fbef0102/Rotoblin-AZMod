@@ -2,47 +2,47 @@
 ------------------New------------------
 -left4dead\addons\sourcemod\gamedata
 [witch_prevent_target_loss.txt]
-//gamedata for witch_prevent_target_loss.smx
+* gamedata for witch_prevent_target_loss.smx
 
 -left4dead\addons\sourcemod\plugins
 [witch_prevent_target_loss.smx]
-//Prevents the witch from randomly loosing target.
+* Prevents the witch from randomly loosing target.
 
 ------------------Modify------------------
 	       ***plugin***
 -left4dead\addons\sourcemod\plugins 
 [l4d_boss_percent.smx]
-//fixed "witch party" notify
+* fixed "witch party" notify
 
 [l4d_rock_lagcomp.smx]
-//fixed mounted machine gun can't break tank rock
+* fixed mounted machine gun can't break tank rock
 
 [cannounce.smx]
-//show player region and city
+* show player region and city
 
 [l4d_no_hunter_deadstops.smx]
-//fixed deadstop issue when hunter pouncing
+* fixed deadstop issue when hunter pouncing
 
 -left4dead\addons\sourcemod\plugins\optional
 [l4d_storm.smx]
-//sm_envtools_fogend 500
+* sm_envtools_fogend 500
 
 	       ***txt***
 -left4dead\addons\sourcemod\translations
 [Roto2-AZ_mod.phrases.txt]
-//v8.2.2
+* v8.2.2
 		   
 	       ***cfg***
 -left4dead\cfg
 [server.cfg]
-//v8.2.2
+* v8.2.2
 
 [rotoblin_Dark_Coop_convar.cfg]
-//adjust S.I limit
+* adjust S.I limit
 
 [server_shared_convars.cfg]
-//pain_pill_density: 1 (was **0.75**)
+* pain_pill_density: 1 (was **0.75**)
 
 -left4dead\addons\stripper\Roto-AZMod\maps
 [l4d_vs_airport01_greenhouse.cfg]
-//block access to upper rails and upper roof sections of greenhouse
+* block access to upper rails and upper roof sections of greenhouse

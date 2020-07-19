@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.2.3"
+		"en"			"Rotoblin-AZ Mod v8.2.4"
 	}
 	"Plugin_Information"
 	{
@@ -2996,11 +2996,17 @@
 		"zho"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
 	}
 	//////////////antisaferoomdooropen.smx//////////////
-	"antisaferoomdooropen"
+	"antisaferoomdooropen1"
 	{
 		"#format"	"{1:d}"
 		"en"		"{1} second(s) left to open the saferoom door!"
 		"zho"		"剩餘 {1} 秒才能開門!"
+	}
+	"antisaferoomdooropen2"
+	{
+		"#format"	"{1:d}"
+		"en"		"{1} second(s) left to be allowed to leave start area!"
+		"zho"		"剩餘 {1} 秒才能離開安全區域!"
 	}
 	//////////////l4d_flashlight.smx//////////////
 	"Flashlight Intro"

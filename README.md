@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.2.3
+v8.2.4
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
@@ -9,7 +9,7 @@ v8.2.3
 **LINUX/WINDOWS SERVERS WORK**
 
 
-A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/ZoneMod)、[Nextmod](https://github.com/spoon-l4d2/NextMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、[Nextmod](https://github.com/spoon-l4d2/NextMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 - - - -
 ### Server Install ###
 * Clean Servers:
@@ -22,8 +22,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup your Server's base for configs, so you can finally start your server.
 * Launch parameters:
-  * console -game left4dead -tickrate 100  +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
-  > **Developer Comment:** linux package now supports 128-tick.(Windows doesn't, so don't ask! :D)
+  * console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
 	
 - - - -	
 ### Server Install Optional ###
@@ -66,11 +65,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * TickRateFixes now also fixes Slow Doors and Pistol Scripts, useful for use with other configs.
     * Make sure you're not loading l4dpistoldelay if you're using this Plugin.
     * Make sure you don't have any adjustments to prop_rotating and prop_rotating_checkpoint speeds in your cfg/stripper folder.
-    * The cvar controlling the door speed is "tick_door_speed" and is set to 2.0 by default, 128 Tick requires this to be set to 2.5 in your server_rates.cfg
-	  - *tickrate 128*: **tick_door_speed 2.5**
-	  - *tickrate 100*: **tick_door_speed 2.0**
-	  - *tickrate 60*: **tick_door_speed 1.5**
-	  - *tickrate 30*: **tick_door_speed 1.0**
+    * The cvar controlling the door speed is "tick_door_speed" and is set to 1.3 by default.
   * Specrates.smx is a useful plugin to reduce server load causes by spectators.
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
@@ -80,9 +75,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Adm%20Commands.png)
   * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Everyone%20Commands.png)
   * Sever Startup default Mode is "Pub VS", there are some limits in pub mode
-    * forces survivors and infected to spectate if they're AFK after certain time
-    * Team Switch is not allowed during the game
-    * Shoot teammate = Shoot yourself
+    * forces survivors and infected to spectate if they're AFK after certain time.
+    * team Switch is not allowed during the game. (To close this feature, set l4d_teamswitch_enabled 1)
+    * shoot teammate = shoot yourself.
+    * anti open saferoom door and prevent players from leaving safe area within some seconds.
     > **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
 
 - - - -
@@ -96,6 +92,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * No Boomer
   * Hardcore
   * [Classic](https://steamcommunity.com/groups/ibserver#announcements/detail/1688172020573940161) 
+  * 4v4 Pub
+  * 4v4 Pub Hunters only
 * 3v3
   * Hunters only
   * No Boomer
@@ -142,10 +140,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
-  * Fixed many map tricks and glitches
-  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/ZoneMod/tree/master/cfg/stripper/zonemod/maps) + [Nextmod](https://github.com/spoon-l4d2/NextMod/tree/master/cfg/stripper/nextmod/maps))
+  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod) + [Nextmod](https://github.com/spoon-l4d2/NextMod/tree/master/cfg/stripper/nextmod/maps))
   * Make distance score correspond to final rescue event progress
-  * Fixed l4d1 several bugs that happen in custom maps
   
 * **Dead Air:** 
   * Removed Plane + Crashing Plane SFX
@@ -163,7 +159,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
   * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod: 0.26**)
-  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod: 1.85**)
+  * Moveing Spread: 3.0->2.00 (Acemod: 1.65 - **Zonemod: 2.00**)
   * Ammo: 480->750 (Acemod: 800 - **Zonemod: 750**) 
   * Damage Drop-off: 0.84->0.84 (unchanged)
   * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod: 1.88**) 
@@ -245,7 +241,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
      * Pulled Survivors go through Common Infected
      * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
-     * Commons go through Witch? (prevent commons from pushing witch in l4d1)
+     * Commons go through Witch (prevent commons from pushing witch in l4d1)
   
 - - - -
 ### Gameplay / Balance Changes ###

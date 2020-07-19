@@ -1,0 +1,80 @@
+﻿v8.2.4
+
+------------------Delete------------------
+left4dead\scripts
+[weapon_hunting_rifle.txt]
+[weapon_pumpshotgun.txt]
+[weapon_smg.txt]
+* new plugin to replace weapon modify
+
+left4dead\
+[pure_server_whitelist.txt]
+* sv_pure 2 (and it will not load pure_server_whitelist.txt)
+
+------------------New------------------
+left4dead\addons\sourcemod\data\
+[l4d_info_editor_mission.cfg]
+* modify keyvalues from mission
+
+[l4d_info_editor_weapons.cfg]
+* modify weapon keyvalues
+	* Uzi:
+	* Increased spread while moving to **2.00**. (was **1.85**)
+
+left4dead\addons\sourcemod\gamedata
+[l4d_info_editor.txt]
+* l4d_info_editor.smx signature
+
+-left4dead\addons\sourcemod\plugins
+[l4d_info_editor.smx]
+* Modify gamemodes.txt and weapons.txt values by config instead of conflicting VPK files.
+
+[l4d_smoker_drag_damage_interval.smx]
+* control smoker tongue drag damage
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins 
+[l4dready_scrds.smx]
+* better code to detect player has left safe area
+
+[votes3.smx]
+* fixed "forcespectate player" team vote 
+
+[TickrateFixes.smx]
+//new TickrateFixes
+
+[l4d_bash_kills.smx]
+//fixed error
+
+-left4dead\addons\sourcemod\plugins\optional
+[antisaferoomdooropen.smx]
+* saferoom door anti open + anti rush start area in map 1
+
+	       ***txt***
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+* v8.2.4
+		   
+	       ***cfg***
+-left4dead\cfg
+[server.cfg]
+* v8.2.4
+* more improve cvars
+* sv_pure 2 (was **1**)
+
+[rotoblin_hardcore_4v4_map.cfg]
+[rotoblin_hunters_4v4_map.cfg]
+[rotoblin_nob_4v4_map.cfg]
+* Increased Panic Event Hordes on 4v4 to **60**. (was **50**) This affects alarm cars and map events 
+
+[server_shared_convars.cfg]
+* improve hunter/smoker damage
+	* z_pounce_damage 2
+	* z_pounce_damage_interval 0.2 // 10 dps (same as vanilla)
+	* tongue_drag_damage_amount 1
+	* tongue_choke_damage_amount 1
+	* tongue_drag_first_damage_interval 1.0 // [l4d_smoker_drag_damage_interval.smx]
+	* tongue_drag_first_damage 3.0 // [l4d_smoker_drag_damage_interval.smx]
+	* tongue_drag_damage_interval 0.33 // 3 dps (same as vanilla) [l4d_smoker_drag_damage_interval.smx]
+	* tongue_choke_damage_interval 0.2 // 5 dps (same as vanilla)
