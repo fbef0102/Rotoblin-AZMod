@@ -340,6 +340,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **Smoker:**
 	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
     * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
+	* First Drag Damage: 3, interval: 1 (same as vanilla)
+	* Drag Damage: 1, interval: 0.33 (3 dps, same as vanilla)
+	* Choke Damage: 1, interval: 0.2 (5 dps, same as vanilla)
 	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)
@@ -359,7 +362,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Hunters can't be shoved when pouncing
     * Allow Hunters being shoved when not pouncing. (Shove fov: **30**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
-    
+	* Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
+	
   * **Boomer:**
     * Boomer can be getting bashed to death
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
