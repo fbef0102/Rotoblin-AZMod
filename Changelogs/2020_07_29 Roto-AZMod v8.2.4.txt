@@ -101,3 +101,10 @@
 	* tongue_drag_first_damage 3.0 // [l4d_smoker_drag_damage_interval.smx]
 	* tongue_drag_damage_interval 0.33 // 3 dps (same as vanilla) [l4d_smoker_drag_damage_interval.smx]
 	* tongue_choke_damage_interval 0.2 // 5 dps (same as vanilla)
+
+-left4dead\addons\stripper\Roto-AZMod\maps
+[l4d_dbd_new_dawn]
+* fixed no pill cabs issue
+
+[l4d_vs_city17_04]
+* set pill cabs to have a max of 1 pills
