@@ -32,6 +32,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
 
+- - - -	
+### If you appreciate my work, you can [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
+
 - - - -
 ### Server Admins! ###
 **Warning: If you try to use the plugins which are included in this package in other configs, plugins may not work correctly
