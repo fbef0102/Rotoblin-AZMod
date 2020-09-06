@@ -53,10 +53,13 @@
 * fixed "forcespectate player" team vote 
 
 [TickrateFixes.smx]
-//new TickrateFixes
+* new TickrateFixes
 
 [l4d_bash_kills.smx]
-//fixed error
+* fixed error
+
+[comp_loader.smx]
+* fixed "comp_loader4" translation missing client name
 
 -left4dead\addons\sourcemod\plugins\optional
 [antisaferoomdooropen.smx]
