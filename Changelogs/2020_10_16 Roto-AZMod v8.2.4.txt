@@ -61,6 +61,14 @@
 [comp_loader.smx]
 * fixed "comp_loader4" translation missing client name
 
+[l4d_tank_witch_damage_announce_spawnAnnouncer.smx]
+* fixed second witch print spam
+
+[l4d_versus_same_UnprohibitBosses.smx]
+[l4d_witchspawnfix_whentank.smx]
+[l4dready_scrds.smx]
+* fixed Witch spawning during ready up
+
 -left4dead\addons\sourcemod\plugins\optional
 [antisaferoomdooropen.smx]
 * saferoom door anti open + anti rush start area in map 1
