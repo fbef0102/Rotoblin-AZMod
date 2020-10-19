@@ -12,16 +12,4 @@
 			}
 		}
 	}
-	"left4dead2"
-	{
-		"Signatures"
-		{
-			"CTerrorPlayer_OnVomitedUpon"
-			{
-				"library"	"server"
-				"linux"		"@_ZN13CTerrorPlayer13OnVomitedUponEPS_b"
-				"windows"	"\x55\x8B\xEC\x83\xEC\x2A\x53\x56\x57\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\x8B\x06\x8B"
-			}
-		}
-	}
 }

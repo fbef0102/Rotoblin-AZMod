@@ -26,19 +26,6 @@
 		}
 	}
 
-	"left4dead2"
-	{
-		"Offsets"
-		{
-			"Weapon_ShootPosition"
-			{
-				"windows"	"284"
-				"linux"		"285"
-				"mac"		"285"
-			}
-		}
-	}
-
 	"tf"
 	{
 		"Offsets"

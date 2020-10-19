@@ -20,31 +20,4 @@
 			}
 		}
 	}
-	
-	"left4dead2"
-	{
-		"Signatures"
-		{
-			"ZombieAbortControl"
-			{
-				"library"	"server"
-				"windows"	"\x83\xEC\x30\x56\x8B\xF1\xE8****\x83\xF8\x03\x0F\x85****\x8B\x06" //found by V10
-				"linux"		"@_ZN13CTerrorPlayer24PlayerZombieAbortControlEv"
-			}
-			
-			"TakeOverBot"
-			{
-				"library"    "server"
-				"linux"    "@_ZN13CTerrorPlayer11TakeOverBotEb"
-				"windows" "\x81*****\x53\x55\x56\x8D***\x57\x8B\xF1\x33\xDB"
-			}
-			
-			"SetHumanSpec"
-			{
-				"library"    "server"
-				"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
-				"windows" "\x53\x56\x8B\xF1\x33\xDB\x39*******\x5E\x32\xC0\x5B"
-			}
-		}
-	}
 }

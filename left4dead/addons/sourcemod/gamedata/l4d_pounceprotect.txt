@@ -11,15 +11,4 @@
 			}
 		}
 	}
-	"left4dead2"
-	{
-		"Offsets"
-		{
-			"CBaseAbility_OnOwnerTakeDamage"
-			{
-				"windows"	"221"
-				"linux"		"222"
-			}
-		}
-	}
 }

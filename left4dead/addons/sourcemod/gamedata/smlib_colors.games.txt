@@ -106,17 +106,4 @@
 			"green_code"			"5"
 		}
 	}
-
-	/* Left 4 Dead 2 */
-	"left4dead2"
-	{
-		"Keys"
-		{
-			"lightgreen_supported"	"true"
-			"gray_supported"		"true"
-
-			"orange_code"			"4"
-			"green_code"			"5"
-		}
-	}
 }
