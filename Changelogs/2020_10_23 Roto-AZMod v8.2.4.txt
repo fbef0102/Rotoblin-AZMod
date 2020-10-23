@@ -69,6 +69,14 @@
 [l4dready_scrds.smx]
 * fixed Witch spawning during ready up
 
+[l4dscores.smx]
+* add two convar
+//Heath bounus each pill. (0=off)
+l4d_score_healthbounus_pill "15"
+
+//Heath bounus each kit. (0=off)
+l4d_score_healthbounus_kit "25"
+
 -left4dead\addons\sourcemod\plugins\optional
 [antisaferoomdooropen.smx]
 * saferoom door anti open + anti rush start area in map 1
