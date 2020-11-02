@@ -26,7 +26,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 	
 - - - -	
 ### Server Install Optional ###
-* [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v2.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+* [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
 * [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX** or **WINDOWS with HLSM**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
