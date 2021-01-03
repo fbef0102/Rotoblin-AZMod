@@ -127,3 +127,6 @@ l4d_score_healthbounus_kit "25"
 
 [l4d_vs_city17_04]
 * set pill cabs to have a max of 1 pills
+
+[l4d_vs_farm04_barn]
+* block shortcut ladder to the big house 
