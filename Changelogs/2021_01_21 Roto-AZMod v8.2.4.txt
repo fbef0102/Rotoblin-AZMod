@@ -130,3 +130,7 @@ l4d_score_healthbounus_kit "25"
 
 [l4d_vs_farm04_barn]
 * block shortcut ladder to the big house 
+
+[l4d_vs_airport04_terminal.cfg]
+* cover more infected spawn
+* remove fking moveing door
