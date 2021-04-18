@@ -22,8 +22,6 @@
 
 [l4d_info_editor_weapons.cfg]
 * modify weapon keyvalues
-	* Uzi:
-	* Increased spread while moving to **2.00**. (was **1.85**)
 
 -left4dead\addons\sourcemod\gamedata
 [l4d_info_editor.txt]
@@ -104,11 +102,6 @@ l4d_score_healthbounus_kit "25"
 * v8.2.4
 * more improve cvars
 * sv_pure 2 (was **1**)
-
-[rotoblin_hardcore_4v4_map.cfg]
-[rotoblin_hunters_4v4_map.cfg]
-[rotoblin_nob_4v4_map.cfg]
-* Increased Panic Event Hordes on 4v4 to **60**. (was **50**) This affects alarm cars and map events 
 
 [server_shared_convars.cfg]
 * improve hunter/smoker damage

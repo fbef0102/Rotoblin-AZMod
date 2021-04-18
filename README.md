@@ -163,7 +163,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
   * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod: 0.26**)
-  * Moveing Spread: 3.0->2.00 (Acemod: 1.65 - **Zonemod: 2.00**)
+  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod: 1.85**)
   * Ammo: 480->750 (Acemod: 800 - Zonemod: 650)
   * Damage Drop-off: 0.84->0.84 (unchanged)
   * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod: 1.88**) 
