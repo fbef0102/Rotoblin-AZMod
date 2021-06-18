@@ -42,6 +42,12 @@
 				/* 56 8B F1 E8 ? ? ? ? E8 ? ? ? ? 84 C0 75	*/
 				/* previous function in vtable has a string */
 			}
+			"WarpToValidPositionIfStuck"
+			{
+				"library"	"server"
+				"linux"	"@_ZN13CTerrorPlayer26WarpToValidPositionIfStuckEv"
+				"windows" "\x55\x8B\xEC\x83\xE4\xC0\x81\xEC\xB0\x00\x00\x00\x53\x55\x56\x8B\xF1"
+			}
 		}
     }
 }

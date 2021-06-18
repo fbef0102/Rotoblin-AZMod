@@ -1,0 +1,65 @@
+﻿v8.2.5
+**Release All codes**
+
+------------------Delete------------------
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_wind.smx]
+* moved to basic plugin
+
+------------------New------------------
+-left4dead\addons\sourcemod\plugins
+[l4d_wind.smx]
+* Add 'Teleport player' item in admin menu under 'Player commands' category
+
+-left4dead\cfg\sourcemod
+[l4d_wind.cfg]
+* Autoexec cfg for l4d_wind.smx
+
+------------------Modify------------------
+	       ***plugin***
+-left4dead\addons\sourcemod\plugins
+[l4d_weapon_csgo_reload.smx]
+* Fixed meory leak + cfg error
+
+[l4d_sm_respawn.smx]
+[l4dcompstats.smx]
+[rotoblin.smx]
+* Fixed error
+
+[l4d_texture_manager_block]
+* Changing FOV value is allowed now ! (Due to l4d2 Update 2.2.1.3)
+
+	       ***txt***
+-left4dead\addons\sourcemod\gamedata
+[l4drespawn.txt]
+* update signature
+	
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+* v8.2.5
+		   
+	       ***cfg***
+-left4dead\cfg
+[server.cfg]
+* v8.2.5
+
+[server_Dark_Coop_plugins.cfg]
+[server_unload_optional_plugins.cfg]
+[server_witch_party_plugins.cfg]
+* delete "sm plugins load optional/l4d_wind.smx"
+
+[server_shared_convars.cfg]
+[server_witch_party_convar.cfg]
+* Smg reload Speed: 1.75s (was **1.88**)
+* Smg reload clip time: 1.31s (was **1.45**)
+* Smg Ammo: 800 (was **750**)
+
+-left4dead\cfg\sourcemod
+[l4d_QuadCpas.cfg]
+* If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
+  - **90%** (was 85%): 3 Hunters + 1 Smoker
+  - **10%** (was 15%): 4 Hunters
+  
+-left4dead\addons\sourcemod\data
+[l4d_info_editor_weapons.cfg]
+* Smg Moveing Spread: 2.45 (was **1.85**)

@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.2.4"
+		"en"			"Rotoblin-AZ Mod v8.2.5"
 	}
 	"Plugin_Information"
 	{

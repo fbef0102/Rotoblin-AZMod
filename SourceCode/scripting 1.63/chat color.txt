@@ -1,0 +1,17 @@
+\x04 olive
+\x01 white
+\x03 lightgreen
+\x05 green
+CPrintToChatAll
+{olive}
+{green}
+{blue}
+{red}
+{lightgreen}
+
+{blue} {red} {lightgreen} are team-colors, can't use at the same time
+There must be at least a player in survivor team to display {blue}
+There must be at least a player in infected team to display {red}
+
+morecolors
+https://www.doctormckay.com/morecolors.php
