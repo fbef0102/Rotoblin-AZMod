@@ -1,5 +1,5 @@
 Roto-AZ mod plugins work
-- Most of my codes are old, not the lastest sm 1.10 syntax, because this project started from 2017.
+* Most of my codes are old, not the lastest sm 1.10 syntax, because this project started from 2017.
 * rotoblin_edit: rotoblin core, using sourcemod compiler v1.41
 * scripting 1.63: using sourcemod compiler v1.63
 * scripting 1.9: using sourcemod compiler v1.9
