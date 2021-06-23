@@ -163,11 +163,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
   * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod: 0.26**)
-  * Moveing Spread: 3.0->1.85 (Acemod: 1.65 - **Zonemod: 1.85**)
-  * Ammo: 480->750 (Acemod: 800 - Zonemod: 650)
+  * Moveing Spread: 3.0->2.45 (Acemod: 1.65 - **Zonemod: 2.45**)
+  * Ammo: 480->800 (**Acemod: 800** - Zonemod: 650)
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.88 (Acemod: 1.75 - **Zonemod: 1.88**) 
-  * Damage: 20->22 (Acemod: 20 - **Zonemod: 22**)
+  * Reload Speed: 2.23->1.75 (Acemod: 1.75 - **Zonemod: 1.75**) 
+  * Damage: 20->22 (Acemod: 20 - Zonemod: 20)
   * Limit: 3 (Acemod: None - **Zonemod: 3**)
       
 * **Pumpshotgun**
@@ -373,13 +373,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
     * Recharge CD: 20s (Default: 30s)
     * Boom Horde limit
-	  - *(5v5)*: **30**
-	  - *(4v4)*: **24**
+	  - *(5v5)*: **35**
+	  - *(4v4)*: **30**
 	  - *(3v3)*: **21**
 	  - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-	  - *85%*: **3 Hunters + 1 Smoker**
-	  - *15%*: **4 Hunters**
+	  - *90%*: **3 Hunters + 1 Smoker**
+	  - *10%*: **4 Hunters**
 	* Explode after 3 times shove (original: 5)
 	  
   * **Charger/Spitter/Jockey:**
