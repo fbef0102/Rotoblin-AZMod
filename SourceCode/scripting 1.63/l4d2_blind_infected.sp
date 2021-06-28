@@ -177,7 +177,7 @@ public bool:TraceFilter(entity, contentsMask)
 	decl String:class[128];
 	GetEdictClassname(entity, class, sizeof(class)); // Ignore prop_physics since some can be seen through
 
-	return !StrEqual(class, "prop_physics", false);
+	return !(StrEqual(class, "prop_physics", false)||StrEqual(class,"prop_car_alarm")||StrEqual(class, "prop_physics_multiplayer"));
 }
 
 public IsItem(const String:entityname[])

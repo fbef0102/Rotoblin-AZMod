@@ -60,4 +60,9 @@
 		"next mission map" "l4d_vs_smalltown01_caves"
 		"next mission name" "Death Toll (5 Maps)"
 	}
+	"l4d_deathaboard05_light"
+	{
+		"next mission map" "l4d_vs_farm01_hilltop"
+		"next mission name" "Blood Harvest (5 Maps)"
+	}
 }

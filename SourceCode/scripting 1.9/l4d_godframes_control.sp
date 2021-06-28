@@ -378,7 +378,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		if(StrEqual(sClassname, "worldspawn") && attacker==0) //survivor falls off ledge
 			return Plugin_Continue;
 			
-		if ( StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm") ) //hittables
+		if ( StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm") || StrEqual(sClassname, "prop_physics_multiplayer")) //hittables
 		{
 			if (GetConVarBool(hHittable)) { return Plugin_Continue; }
 		}

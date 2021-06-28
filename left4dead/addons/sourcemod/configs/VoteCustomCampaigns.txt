@@ -30,4 +30,9 @@
 		"mapinfo"		"l4d_jsarena01_town"
 		"mapname"		"死亡舞台 The Arena of the Dead"
 	}
+	"7"
+	{
+		"mapinfo"		"l4d_deathaboard01_prison"
+		"mapname"		"幽靈輪船 Death Aboard"
+	}
 }

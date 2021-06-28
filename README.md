@@ -152,12 +152,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Removed Crashing Plane Screen Shake
   
 * **Support Custom maps:**
-  * [City 17](https://drive.google.com/file/d/18BOrQUifaT7_8z5xPsa4ugppIygPf9dD/view?usp=sharing)
-  * [Suicide Blitz](https://drive.google.com/file/d/17dWmDEv72Vb7zCgdWyDRg6RERaXCNpAi/view?usp=sharing)
-  * [Dead Flag Blues](https://drive.google.com/file/d/1cca3Pj99A7K8UnHHd6wgpeUD1jn87JuM/view?usp=sharing)
-  * [I Hate Mountains](https://drive.google.com/file/d/188UqXYB7BKFMMduIs7w5CbST2lMJ2-5S/view?usp=sharing)
-  * [Dead Before Dawn](https://drive.google.com/file/d/1_r9HJBdqN8ziejW7Y486TioJwPOIsC6i/view?usp=sharing)
-  * [The Arena of the Dead](https://drive.google.com/file/d/1dv8kkhzV0E2c2usfyANNzCDKs4cG4ARD/view?usp=sharing)
+  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/download/v8.2.5/Addons_Map.zip)**
+  * City 17
+  * Suicide Blitz
+  * Dead Flag Blues
+  * I Hate Mountains
+  * Dead Before Dawn
+  * The Arena of the Dead
+  * Death Aboard
 
 - - - -
 ### Weapon Adjustments ###

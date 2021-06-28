@@ -85,7 +85,7 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 	decl String:sClass[64];
 	GetEdictClassname(inflictor, sClass, sizeof(sClass));
 	//PrintToChatAll("%s dealt %f", sClass, damage);
-	if (StrEqual(sClass,"prop_physics") || StrEqual(sClass,"prop_car_alarm"))
+	if (StrEqual(sClass,"prop_physics") || StrEqual(sClass,"prop_car_alarm") || StrEqual(sClass, "prop_physics_multiplayer"))
 	{
 		if (bIgnoreOverkill[victim]) { return Plugin_Handled; }
 				

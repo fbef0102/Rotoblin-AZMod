@@ -1,5 +1,6 @@
 ﻿v8.2.5
 **Release All codes**
+**Support another custom map "Death Aboard"**
 
 ------------------Delete------------------
 -left4dead\addons\sourcemod\plugins\optional
@@ -15,6 +16,14 @@
 [l4d_wind.cfg]
 * Autoexec cfg for l4d_wind.smx
 
+-left4dead\addons\stripper\Roto-AZMod\maps
+[l4d_deathaboard01_prison.cfg]
+[l4d_deathaboard02_yard.cfg]
+[l4d_deathaboard03_docks.cfg]
+[l4d_deathaboard04_ship.cfg]
+[l4d_deathaboard05_light.cfg]
+* Add Death Aboard Map
+
 ------------------Modify------------------
 	       ***plugin***
 -left4dead\addons\sourcemod\plugins
@@ -29,7 +38,25 @@
 [l4d_texture_manager_block]
 * Changing FOV value is allowed now ! (Due to l4d2 Update 2.2.1.3)
 
+[l4d2_blind_infected.smx]
+[l4d_godframes_and_hittable_control.smx]
+[l4d_pig_infected_notify.smx]
+[l4d_tank_count.smx]
+[l4d_tank_props.smx]
+[l4d_versus_same_UnprohibitBosses.smx]
+[rotoblin.smx]
+[temphealthfix.smx]
+* Add another prop classname "prop_physics_multiplayer" for Death Aboard Map
+
 	       ***txt***
+-left4dead\addons\sourcemod\configs
+[VoteCustomCampaigns.txt]
+* Add Death Aboard Map
+
+-left4dead\addons\sourcemod\data
+[sm_l4dvs_mapchanger.txt]
+* Add Death Aboard Map
+
 -left4dead\addons\sourcemod\gamedata
 [l4drespawn.txt]
 * update signature
@@ -63,3 +90,6 @@
 -left4dead\addons\sourcemod\data
 [l4d_info_editor_weapons.cfg]
 * Smg Moveing Spread: 2.45 (was **1.85**)
+
+[l4d1_versus_modifier.cfg]
+* Add Death Aboard Map

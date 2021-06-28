@@ -113,7 +113,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 	
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	decl String:weapon[20];
+	decl String:weapon[32];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));//殺死人的武器名稱
 	decl String:victimname[8];
 	GetEventString(event, "victimname", victimname, sizeof(victimname));
@@ -131,7 +131,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			return;
 		else if(StrEqual(weapon,"trigger_hurt_g"))//跳樓 跳海 地圖火 都有可能
 			Format(kill_weapon, sizeof(kill_weapon), "%s","killed himself");
-		else if(StrEqual(weapon,"prop_physics")||StrEqual(weapon, "prop_car_alarm"))//玩車殺死自己
+		else if(StrEqual(weapon,"prop_physics")||StrEqual(weapon, "prop_car_alarm")||StrEqual(weapon, "prop_physics_multiplayer"))//玩車殺死自己
 			Format(kill_weapon, sizeof(kill_weapon), "%s","killed by toy");
 		else if(StrEqual(weapon,"pipe_bomb")||StrEqual(weapon,"prop_fuel_barr"))//自然的爆炸(土製炸彈 砲彈 瓦斯罐)
 			Format(kill_weapon, sizeof(kill_weapon), "%s","killed by boom");
@@ -188,7 +188,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			Format(Tank_weapon, sizeof(Tank_weapon), "One-Punch");
 		else if(StrEqual(weapon,"tank_rock"))
 			Format(Tank_weapon, sizeof(Tank_weapon), "Rock-Stone");
-		else if(StrEqual(weapon,"prop_physics"))
+		else if(StrEqual(weapon,"prop_physics") || StrEqual(weapon, "prop_physics_multiplayer"))
 			Format(Tank_weapon, sizeof(Tank_weapon), "Toy");
 		else if(StrEqual(weapon,"prop_car_alarm"))
 			Format(Tank_weapon, sizeof(Tank_weapon), "Alarm-Car");
@@ -225,7 +225,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 					Format(Tank_weapon, sizeof(Tank_weapon), "punches");
 				else if(StrEqual(weapon,"tank_rock"))
 					Format(Tank_weapon, sizeof(Tank_weapon), "smashes");
-				else if(StrEqual(weapon,"prop_physics"))
+				else if(StrEqual(weapon,"prop_physics")||StrEqual(weapon, "prop_physics_multiplayer"))
 					Format(Tank_weapon, sizeof(Tank_weapon), "plays toy to kill");
 				else if(StrEqual(weapon, "prop_car_alarm"))
 					Format(Tank_weapon, sizeof(Tank_weapon), "plays alarm car to kill");

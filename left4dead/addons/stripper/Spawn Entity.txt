@@ -1,0 +1,62 @@
+//ammo
+add:
+{
+	"solid" "6"
+	"origin" "1955 2900 17.0"
+	"angles" "0 -45 0"
+	"model" "models/props_unique/spawn_apartment/coffeeammo.mdl"
+	"count" "1"
+	"classname" "weapon_ammo_spawn"
+}
+{
+	"solid" "6"
+	"origin" "3152 2327 265"
+	"angles" "0 -45 0"
+	"model" "models/props/terror/ammo_stack.mdl"
+	"count" "1"
+	"classname" "weapon_ammo_spawn"
+}
+{
+	"solid" "6"
+	"origin" "-11848 -14822 -216"
+	"angles" "0 -179 0"
+	"model"	 "models/props/de_prodigy/ammo_can_02.mdl"
+	"count" "1"
+	"classname" "weapon_ammo_spawn"
+}
+//weapon
+add:
+{
+	"origin" "1920 2900 17.0"
+	"solid" "6"
+	"count" "5"
+	"angles" "0 210 90"
+	"classname" "weapon_pumpshotgun_spawn"
+}
+{
+	"origin" "1960 2860 17.0"
+	"solid" "6"
+	"count" "5"
+	"angles" "0 140 90"
+	"classname" "weapon_smg_spawn"
+}
+{
+	"origin" "3019 6116 160"
+	"solid" "6"
+	"count" "5"
+	"angles" "247.327911 71.521797 112.262748"
+	"classname" "weapon_hunting_rifle_spawn"
+}
+//kit
+{
+       "classname" "weapon_first_aid_kit_spawn"
+       "origin" "-360.000000 -889.000000 72.187500"
+       "angles" "0 0 0"
+}
+//pill
+{
+	"origin" "3118 6181 152"
+	"angles" "0 0 0"
+	"classname" "weapon_pain_pills_spawn"
+	"spawnflags" "0"
+}

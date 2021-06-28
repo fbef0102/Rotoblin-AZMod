@@ -326,7 +326,8 @@ bool:Is_Final_Stage()//非官方圖最後一關
 	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
 	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
 	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
-	StrEqual(mapbuf, "l4d_jsarena04_arena")
+	StrEqual(mapbuf, "l4d_jsarena04_arena")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
 	)
 		return true;
 	return false;

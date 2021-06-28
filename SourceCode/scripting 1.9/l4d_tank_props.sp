@@ -354,7 +354,7 @@ bool IsTankProp( int iEntity ) {
 	
 	char className[64];
 	GetEdictClassname(iEntity, className, sizeof(className));
-	if ( StrEqual(className, "prop_physics") ) {
+	if ( StrEqual(className, "prop_physics") || StrEqual(className, "prop_physics_multiplayer")) {
 		if ( GetEntProp(iEntity, Prop_Send, "m_hasTankGlow", 1) ) {
 			return true;
 		}

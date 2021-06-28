@@ -344,7 +344,7 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 	
 	/********l4d2_hittable_control*******/
 	//PrintToChatAll("%s dealt %f", sClassname, damage);
-	if (StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm"))
+	if (StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm")||StrEqual(sClassname, "prop_physics_multiplayer"))
 	{
 		if (bIgnoreOverkill[victim]) { return Plugin_Handled; }
 		if (GetClientTeam(victim) != 2)	{ return Plugin_Continue; }	
@@ -450,7 +450,7 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 			return Plugin_Continue;
 		
 		//hittables,witch,rock
-		if ( ((StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm"))&&GetConVarBool(hHittable)) || 
+		if ( ((StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm") || StrEqual(sClassname, "prop_physics_multiplayer"))&&GetConVarBool(hHittable)) || 
 			 (StrEqual(sClassname, "witch")&&GetConVarBool(hWitch)) )
 		{
 			if (lastSavedGodFrameBegin[victim] == 0.0											// case no god frames on record

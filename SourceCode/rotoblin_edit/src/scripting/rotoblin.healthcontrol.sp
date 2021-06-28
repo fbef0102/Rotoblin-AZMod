@@ -65,10 +65,9 @@ static			Handle:	g_hHealthStyle_Cvar			= INVALID_HANDLE;
 static					g_iDebugChannel					= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]		= "HealthControl";
 
-static          bool:   g_bHasMapStarted            = false;
-static          bool:   g_bHaveRunRoundStart        = false;
 
 new Float:SurvivorStart[3];
+new g_iPlayerSpawn, g_iRoundStart;
 // **********************************************
 //                   Forwards
 // **********************************************
@@ -122,6 +121,7 @@ public _HC_OnPluginEnable()
 	}
 
 	HookEvent("round_start", _HC_RoundStart_Event, EventHookMode_PostNoCopy);
+	HookEvent("player_spawn", _HC_PlayerSpawn_Event,	EventHookMode_PostNoCopy);
 	HookEvent("player_left_start_area", _HC_player_left_start_area, EventHookMode_PostNoCopy);
 	HookEvent("round_end", _HC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	HookPublicEvent(EVENT_ONMAPSTART, _HC_OnMapStart);
@@ -139,10 +139,12 @@ public _HC_OnPluginEnable()
  */
 public _HC_OnPluginDisable()
 {
+	ResetPlugin();
 	ResetConVar(FindConVar(CONVERT_PILLS_CVAR));
 	ResetConVar(FindConVar(CONVERT_PILLS_VS_CVAR));
 
 	UnhookEvent("round_start", _HC_RoundStart_Event, EventHookMode_Post);
+	UnhookEvent("player_spawn", _HC_PlayerSpawn_Event,	EventHookMode_PostNoCopy);
 	UnhookEvent("player_left_start_area", _HC_player_left_start_area, EventHookMode_PostNoCopy);
 	UnhookEvent("round_end", _HC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	UnhookPublicEvent(EVENT_ONMAPEND, _HC_OnMapEnd);
@@ -154,12 +156,6 @@ public _HC_OnPluginDisable()
 
 public _HC_OnMapStart()
 {
-    g_bHasMapStarted = true;
-
-    if (!g_bHaveRunRoundStart)
-    {
-        _HC_RoundStart_Event(INVALID_HANDLE, "", false);
-    }
 }
 
 /**
@@ -169,9 +165,7 @@ public _HC_OnMapStart()
  */
 public _HC_OnMapEnd()
 {
-	g_bHaveRunRoundStart = false;
-	g_bHasMapStarted = false;
-
+	ResetPlugin();
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 
 	DebugPrintToAllEx("Map is ending, unhook OnEntityCreated");
@@ -220,6 +214,18 @@ public Native_GiveSurAllPills(Handle:plugin, numParams)
 	}
 }
 
+public _HC_PlayerSpawn_Event(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
+	{
+		if(Is_Special_Map())
+			CreateTimer(1.5, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		else
+			CreateTimer(0.1, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+	}
+	g_iPlayerSpawn = 1;
+}
+
 /**
  * Called when round start event is fired.
  *
@@ -230,12 +236,19 @@ public Native_GiveSurAllPills(Handle:plugin, numParams)
  */
 public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (!g_bHasMapStarted)
+	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
 	{
-		return; // Map have not started yet, do not replace anything until - fix for SourceMod 1.4
+		if(Is_Special_Map())
+			CreateTimer(1.0, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		else
+			CreateTimer(0.1, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
-	g_bHaveRunRoundStart = true;
+	g_iRoundStart = 1;
+}
 
+public Action:TimerStart(Handle:timer)
+{
+	ResetPlugin();
 	if (g_iHealthStyle == REPLACE_NO_KITS)
 	{
 		DebugPrintToAllEx("Round start - Will not replace medkits");
@@ -261,6 +274,7 @@ public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
  */
 public _HC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	ResetPlugin();
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	DebugPrintToAllEx("Round end");
 }
@@ -359,6 +373,21 @@ static UpdateHealthStyle()
 	DebugPrintToAllEx("Updated global style variable; %i", int:g_iHealthStyle);
 }
 
+static bool:Is_Special_Map()
+{
+	decl String:mapbuf[32];
+	GetCurrentMap(mapbuf, sizeof(mapbuf));
+	if(StrEqual(mapbuf, "l4d_deathaboard01_prison")||
+	StrEqual(mapbuf, "l4d_deathaboard02_yard")||
+	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
+	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
+	)
+	{
+		return true;
+	}
+	return false;	
+}
 
 static bool:Is_Final_Stage()//非官方圖最後一關
 {
@@ -369,7 +398,8 @@ static bool:Is_Final_Stage()//非官方圖最後一關
 	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
 	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
 	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
-	StrEqual(mapbuf, "l4d_jsarena04_arena")
+	StrEqual(mapbuf, "l4d_jsarena04_arena")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
 	)
 	{
 		g_bIsFinale = true;
@@ -970,4 +1000,10 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 			}
 		}
 	}
+}
+
+ResetPlugin()
+{
+	g_iRoundStart = 0;
+	g_iPlayerSpawn = 0;
 }

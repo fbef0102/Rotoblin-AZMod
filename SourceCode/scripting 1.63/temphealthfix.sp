@@ -14,11 +14,11 @@ public OnPluginStart() HookEvent("player_incapacitated_start", Incap_Event);
 public Incap_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	decl String:weapon[16];
+	decl String:weapon[32];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
 	SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime());
 	SetEntPropFloat(client, Prop_Send, "m_healthBuffer", 0.0);
-	if (StrEqual(weapon, "prop_physics")||StrEqual(weapon, "prop_car_alarm"))
+	if (StrEqual(weapon, "prop_physics")||StrEqual(weapon, "prop_car_alarm")||StrEqual(weapon, "prop_physics_multiplayer"))
 		CreateTimer(0.1,COLD_DOWN,client);
 }
 public Action:COLD_DOWN(Handle:timer,any:client)
