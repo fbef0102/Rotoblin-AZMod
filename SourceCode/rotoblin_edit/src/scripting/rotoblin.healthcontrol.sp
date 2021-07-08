@@ -162,8 +162,7 @@ public _HC_OnMapStart()
 	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	
 	g_bSpecialMap = false;
-	if(StrEqual(mapbuf, "l4d_deathaboard01_prison")||
-	StrEqual(mapbuf, "l4d_deathaboard02_yard")||
+	if(StrEqual(mapbuf, "l4d_deathaboard02_yard")||
 	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
 	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
 	StrEqual(mapbuf, "l4d_deathaboard05_light")
