@@ -6,7 +6,7 @@
  *  Description:	Adds a limit to hunting rifles for the survivors.
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com
- *  Copyright (C) 2017-2019  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2021  Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  Rotoblin is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ static					g_iLimitRifle					= 1;
 static					g_iLimitPumpShotgun				= 1;
 static					g_iLimitSmg						= 1;
 
-static	const	Float:	TIP_TIMEOUT						= 8.0;
+static	const	Float:	TIP_TIMEOUT						= 2.0;
 static			bool:	g_bHaveTipped[MAXPLAYERS + 1] 	= {false};
 
 /*

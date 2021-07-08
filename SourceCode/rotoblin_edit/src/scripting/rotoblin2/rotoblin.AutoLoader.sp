@@ -8,7 +8,7 @@
  *  Description:	Rotoblin 2 autoloader.
  *
  *  Copyright (C) 2012-2015 raziEiL <war4291@mail.ru>
- *  Copyright (C) 2017-2019 Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2021 Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  This program is free software: you can redistribute it and/or modify

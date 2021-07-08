@@ -8,7 +8,7 @@
  *  Description:	Removes/replaces health items depending on settings
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2019  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2021 Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -57,6 +57,8 @@ static	const	Float:	REPLACE_DELAY					= 0.1; // Short delay on OnEntityCreated b
 static	const	Float:	KIT_FINALE_AREA					= 400.0;
 
 static			bool:	g_bIsFinale						= false;
+static 			bool:	g_bSpecialMap					= false;
+static			bool:	g_bHaveRunRoundStart			= false;
 static			Float:	g_vFinaleOrigin[3]				= {0.0};
 
 static HEALTH_STYLE: g_iHealthStyle					= REPLACE_ALL_KITS; // How we replace kits
@@ -67,7 +69,7 @@ static	const	String:	DEBUG_CHANNEL_NAME[]		= "HealthControl";
 
 
 new Float:SurvivorStart[3];
-new g_iPlayerSpawn, g_iRoundStart;
+new g_iPlayerSpawn, g_iRoundStart, g_iEntityCreated;
 // **********************************************
 //                   Forwards
 // **********************************************
@@ -156,6 +158,34 @@ public _HC_OnPluginDisable()
 
 public _HC_OnMapStart()
 {
+	decl String:mapbuf[32];
+	GetCurrentMap(mapbuf, sizeof(mapbuf));
+	
+	g_bSpecialMap = false;
+	if(StrEqual(mapbuf, "l4d_deathaboard01_prison")||
+	StrEqual(mapbuf, "l4d_deathaboard02_yard")||
+	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
+	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
+	)
+	{
+		g_bSpecialMap = true;
+	}
+	
+	g_bIsFinale = false;
+	if(StrEqual(mapbuf, "l4d_vs_city17_05")||
+	StrEqual(mapbuf, "l4d_vs_deadflagblues05_station")||
+	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
+	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
+	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
+	StrEqual(mapbuf, "l4d_jsarena04_arena")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
+	)
+	{
+		g_bIsFinale = true;
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -166,19 +196,11 @@ public _HC_OnMapStart()
 public _HC_OnMapEnd()
 {
 	ResetPlugin();
+	g_bHaveRunRoundStart = false;
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
-
 	DebugPrintToAllEx("Map is ending, unhook OnEntityCreated");
 }
 
-/**
- * Health style cvar changed.
- *
- * @param convar		Handle to the convar that was changed.
- * @param oldValue		String containing the value of the convar before it was changed.
- * @param newValue		String containing the new value of the convar.
- * @noreturn
- */
 public _HC_HealthStyle_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	DebugPrintToAllEx("Health style cvar was changed, update style var. Old value %s, new value %s", oldValue, newValue);
@@ -216,30 +238,22 @@ public Native_GiveSurAllPills(Handle:plugin, numParams)
 
 public _HC_PlayerSpawn_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
+	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1) 
 	{
-		if(Is_Special_Map())
-			CreateTimer(1.5, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		if(g_bSpecialMap) 
+			HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 		else
 			CreateTimer(0.1, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 	g_iPlayerSpawn = 1;
 }
 
-/**
- * Called when round start event is fired.
- *
- * @param event			INVALID_HANDLE, post no copy data.
- * @param name			String containing the name of the event.
- * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
- * @noreturn
- */
 public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
+	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0)
 	{
-		if(Is_Special_Map())
-			CreateTimer(1.0, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		if(g_bSpecialMap) 
+			HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 		else
 			CreateTimer(0.1, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -249,6 +263,7 @@ public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
 public Action:TimerStart(Handle:timer)
 {
 	ResetPlugin();
+	g_bHaveRunRoundStart = true;
 	if (g_iHealthStyle == REPLACE_NO_KITS)
 	{
 		DebugPrintToAllEx("Round start - Will not replace medkits");
@@ -259,22 +274,13 @@ public Action:TimerStart(Handle:timer)
 
 	DetermineIfMapIsFinale();
 	UpdateStartingHealthItems();
-	
-	// Hook on entity created for late spawned medkits
-	HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
+	if(!g_bSpecialMap) HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 }
 
-/**
- * Called when round end event is fired.
- *
- * @param event			INVALID_HANDLE, post no copy data.
- * @param name			String containing the name of the event.
- * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
- * @noreturn
- */
 public _HC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	ResetPlugin();
+	g_bHaveRunRoundStart = false;
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	DebugPrintToAllEx("Round end");
 }
@@ -288,7 +294,18 @@ public _HC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
  */
 public _HC_OnEntityCreated(entity, const String:classname[])
 {
-	// If we're running the mode where all extra pills and kits are removed, we need to jump in first
+	if(g_bSpecialMap && StrEqual(classname, FIRST_AID_KIT_CLASSNAME)) //Death Aboard地圖 醫療物品會晚一些時間才會生成
+	{
+		if( g_iPlayerSpawn == 1 && g_iRoundStart == 1 && g_iEntityCreated == 0) //玩家已復活 且 回合已經開始 但 還沒偵測醫療物品
+		{
+			CreateTimer(0.1, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		}
+		g_iEntityCreated = 1;
+		return;
+	}
+	
+	if(g_bHaveRunRoundStart == false) return;
+		
 	if (( g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)&& 
 		StrEqual(classname, PAIN_PILLS_CLASSNAME))
 	{						
@@ -373,40 +390,6 @@ static UpdateHealthStyle()
 	DebugPrintToAllEx("Updated global style variable; %i", int:g_iHealthStyle);
 }
 
-static bool:Is_Special_Map()
-{
-	decl String:mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
-	if(StrEqual(mapbuf, "l4d_deathaboard01_prison")||
-	StrEqual(mapbuf, "l4d_deathaboard02_yard")||
-	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
-	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
-	StrEqual(mapbuf, "l4d_deathaboard05_light")
-	)
-	{
-		return true;
-	}
-	return false;	
-}
-
-static bool:Is_Final_Stage()//非官方圖最後一關
-{
-	decl String:mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
-	if(StrEqual(mapbuf, "l4d_vs_city17_05")||
-	StrEqual(mapbuf, "l4d_vs_deadflagblues05_station")||
-	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
-	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
-	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
-	StrEqual(mapbuf, "l4d_jsarena04_arena")||
-	StrEqual(mapbuf, "l4d_deathaboard05_light")
-	)
-	{
-		g_bIsFinale = true;
-		return true;
-	}
-	return false;
-}
 /**
  * Replaces or removes items present at the start of the round.  Logic run is based on the chosen health style.
  * 
@@ -459,7 +442,7 @@ static UpdateStartingHealthItems()
 	decl String:mapbuf[32];
 	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
-	if(Is_Final_Stage())//非官方圖救援關四顆藥丸符合當前人類數量
+	if(g_bIsFinale)//非官方圖救援關四顆藥丸符合當前人類數量
 	{
 		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY||g_iHealthStyle == ZONEMOD_PILLS)
 			RemoveAllPills();
@@ -659,8 +642,6 @@ static GivePillsToSurvivors()
  */
 static DetermineIfMapIsFinale()
 {	
-	decl String:mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	if (GetFinaleOrigin(g_vFinaleOrigin))
 	{
 		g_bIsFinale = true;
@@ -1006,4 +987,5 @@ ResetPlugin()
 {
 	g_iRoundStart = 0;
 	g_iPlayerSpawn = 0;
+	g_iEntityCreated = 0;
 }
