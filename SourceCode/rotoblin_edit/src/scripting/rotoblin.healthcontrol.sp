@@ -262,7 +262,6 @@ public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
 public Action:TimerStart(Handle:timer)
 {
 	ResetPlugin();
-	g_bHaveRunRoundStart = true;
 	if (g_iHealthStyle == REPLACE_NO_KITS)
 	{
 		DebugPrintToAllEx("Round start - Will not replace medkits");
@@ -273,7 +272,9 @@ public Action:TimerStart(Handle:timer)
 
 	DetermineIfMapIsFinale();
 	UpdateStartingHealthItems();
-	if(!g_bSpecialMap) HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
+	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
+	HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
+	g_bHaveRunRoundStart = true;
 }
 
 public _HC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
@@ -327,7 +328,13 @@ public _HC_OnEntityCreated(entity, const String:classname[])
 
 public Action:_HC_RemoveItem_Delayed_Timer(Handle:timer, any:entRef)
 {
-	new entity = EntRefToEntIndex(entRef);		
+	new entity = EntRefToEntIndex(entRef);	
+	if (entity == INVALID_ENT_REFERENCE)
+		return;
+	
+	decl Float:entityPos[3];
+	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+	LogMessage("KITS here4 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
 	SafelyRemoveEdict(entity);
 	DebugPrintToAllEx("Removed item");
 }
@@ -342,21 +349,11 @@ public Action:_HC_RemoveItem_Delayed_Timer(Handle:timer, any:entRef)
 public Action:_HC_ReplaceKit_Delayed_Timer(Handle:timer, any:medkitEntRef)
 {
 	new entity = EntRefToEntIndex(medkitEntRef);
+	if (entity == INVALID_ENT_REFERENCE)
+	{
+		return;
+	}
 	
-	if (entity < 0 || entity > MAX_ENTITIES || !IsValidEntity(entity)) 
-	{
-		DebugPrintToAllEx("ERROR: When replacing medkit or pills, entity (index: %i) invalidated!", entity);
-		return;
-	}
-
-	// check just in case, by some miracle (or our own incompetence), the kit has swapped to some other entity type
-	decl String:classname[64];
-	GetEdictClassname(entity, classname, 64);
-	if (!StrEqual(classname, FIRST_AID_KIT_CLASSNAME)) 
-	{
-		DebugPrintToAllEx("ERROR: was trying to replace medkit, but ent %i 's classname is now %s", entity, classname);
-		return;
-	}
 	ReplaceKitWithPills(entity);	
 }
 
@@ -453,6 +450,9 @@ static UpdateStartingHealthItems()
 			
 			if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部醫療包變成藥丸
 			{
+				decl Float:entityPos[3];
+				GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+				LogMessage("KITS here3 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
 				if(k==1&&g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) {ReplaceEntity(entity, FIRST_AID_KIT_CLASSNAME, MODEL_FIRST_AID_KIT, 1);return;}
 				if(pillsleft<=0)
 					RemoveEdict(entity);
