@@ -332,9 +332,9 @@ public Action:_HC_RemoveItem_Delayed_Timer(Handle:timer, any:entRef)
 	if (entity == INVALID_ENT_REFERENCE)
 		return;
 	
-	decl Float:entityPos[3];
-	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-	LogMessage("KITS here4 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
+	//decl Float:entityPos[3];
+	//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+	//LogMessage("KITS here4 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
 	SafelyRemoveEdict(entity);
 	DebugPrintToAllEx("Removed item");
 }
@@ -450,9 +450,9 @@ static UpdateStartingHealthItems()
 			
 			if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部醫療包變成藥丸
 			{
-				decl Float:entityPos[3];
-				GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-				LogMessage("KITS here3 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
+				//decl Float:entityPos[3];
+				//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+				//LogMessage("KITS here3 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
 				if(k==1&&g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) {ReplaceEntity(entity, FIRST_AID_KIT_CLASSNAME, MODEL_FIRST_AID_KIT, 1);return;}
 				if(pillsleft<=0)
 					RemoveEdict(entity);
