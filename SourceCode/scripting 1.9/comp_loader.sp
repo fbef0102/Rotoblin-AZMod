@@ -1931,45 +1931,67 @@ public Action:Map_Changer(client, args)
 			return Plugin_Handled;
 		}
 		
-		new mapInfoMaxLen =1024;
+		new mapInfoMaxLen =2048;
 		decl String:mapInfo[mapInfoMaxLen];
 		decl String:mapInfo2[mapInfoMaxLen];
 		#if CUSTOM_CONFIGS
 		decl String:mapInfo3[mapInfoMaxLen];
+		decl String:mapInfo4[mapInfoMaxLen];
 		#endif
 		decl String:mapInfo9[mapInfoMaxLen];
 		//if(isAdmin == true) Format(mapInfo, mapInfoMaxLen, "| command                     | force changemap(admin)                      |\n");
 		//else Format(mapInfo, mapInfoMaxLen, "| command                     | request to changemap                        |\n");
-		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo);
+		Format(mapInfo, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
 		Format(mapInfo, mapInfoMaxLen, "%s| !changemap da               | Change the Campaign to Dead Air             |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap dead air         |                                             |\n",mapInfo);		
+		Format(mapInfo, mapInfoMaxLen, "%s| !changemap deadair          |                                             |\n",mapInfo);		
 		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo);
 		Format(mapInfo, mapInfoMaxLen, "%s| !changemap dt               | Change the Campaign to Death Toll           |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap death toll       |                                             |\n",mapInfo);		
+		Format(mapInfo, mapInfoMaxLen, "%s| !changemap deathtoll        |                                             |\n",mapInfo);		
 		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo);
 		Format(mapInfo, mapInfoMaxLen, "%s| !changemap bh               | Change the Campaign to Blood Harvest        |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap blood harvest    |                                             |\n",mapInfo);		
-		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|",mapInfo);
-		Format(mapInfo2, mapInfoMaxLen, "| !changemap nm               | Change the Campaign to No Mercy             |\n");
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap no mercy         |                                             |\n",mapInfo2);		
+		Format(mapInfo, mapInfoMaxLen, "%s| !changemap bloodharvest     |                                             |",mapInfo);		
+		Format(mapInfo2, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
+		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap nm               | Change the Campaign to No Mercy             |\n",mapInfo2);
+		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap nomercy          |                                             |\n",mapInfo2);		
 		Format(mapInfo2, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo2);
 		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap cc               | Change the Campaign to Crash Course         |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap crash course     |                                             |\n",mapInfo2);		
+		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap crashcourse      |                                             |\n",mapInfo2);		
 		Format(mapInfo2, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo2);
 		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap ts               |                                             |\n",mapInfo2);
 		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap sa               | Change the Campaign to The Sacrifice        |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap the sacrifice    |                                             |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|",mapInfo2);
+		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap thesacrifice     |                                             |",mapInfo2);
 		#if CUSTOM_CONFIGS
-		Format(mapInfo3, mapInfoMaxLen, "| !changemap c17              | Change the Campaign to City 17              |\n");
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap city 17          |                                             |\n",mapInfo3);		
+		Format(mapInfo3, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap c17              | Change the Campaign to City 17              |\n",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap city17           |                                             |\n",mapInfo3);		
 		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
 		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap sb               | Change the Campaign to Suicide Blitz        |\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap suicide blitz    |                                             |\n",mapInfo3);	
-		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap suicideblitz     |                                             |\n",mapInfo3);	
+		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap ihm              |                                             |\n",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap mountain         | Change the Campaign to I hate mountain      |\n",mapInfo3);		
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap ihatemountain    |                                             |\n",mapInfo3);		
+		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap dfb              |                                             |\n",mapInfo3);
+		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap blue             | Change the Campaign to Dead Flag Blues      |",mapInfo3);	
+		Format(mapInfo4, mapInfoMaxLen, "| !changemap deadflagblues    |                                             |\n");	
+		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dbd              |                                             |\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dawn             | Change the Campaign to Dead Before Dawn     |\n",mapInfo4);		
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap deadbeforedawn   |                                             |\n",mapInfo4);		
+		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap aotd             |                                             |\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap arena            | Change the Campaign to The Arena of the Dead|\n",mapInfo4);	
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap thearenaofthedead|                                             |\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dab              |                                             |\n",mapInfo4);
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap aboard           | Change the Campaign to Death Aboard         |\n",mapInfo4);	
+		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap deathaboard      |                                             |",mapInfo4);
+		
 		#endif		
-		if(isAdmin == true) Format(mapInfo9, mapInfoMaxLen, "| !changemap cancel           | cancel all requests                         |\n");
-		else Format(mapInfo9, mapInfoMaxLen, "| !changemap cancel           | cancel the request                          |\n");
+		Format(mapInfo9, mapInfoMaxLen,    "|-----------------------------|---------------------------------------------|\n");
+		if(isAdmin == true) Format(mapInfo9, mapInfoMaxLen, "%s| !changemap cancel           | cancel all requests                         |\n", mapInfo9);
+		else Format(mapInfo9, mapInfoMaxLen, "%s| !changemap cancel           | cancel the request                          |\n", mapInfo9);
 		Format(mapInfo9, mapInfoMaxLen,    "%s|-----------------------------|---------------------------------------------|", mapInfo9);	
 		
 		if (client == 0)
@@ -1983,6 +2005,7 @@ public Action:Map_Changer(client, args)
 			PrintToConsole(client, mapInfo2);
 			#if CUSTOM_CONFIGS
 			PrintToConsole(client, mapInfo3);
+			PrintToConsole(client, mapInfo4);
 			#endif
 			PrintToConsole(client, mapInfo9);
 		}
@@ -2011,36 +2034,52 @@ public Action:Map_Changer(client, args)
 		#if CUSTOM_CONFIGS
 		new AdminValueIsC17 = 0;
 		new AdminValueIsSB = 0;
+		new AdminValueIsIHateMountain = 0;
+		new AdminValueIsDeadFlagBlues = 0;
+		new AdminValueIsDeadBeforeDawn = 0;
+		new AdminValueIsTheArenaoftheDead = 0;
+		new AdminValueIsDeathAboard = 0;
 		#endif
 		new AdminValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
 				
 		if(StrEqual(Admin_Map, "nm", false)) AdminValueIsNM = 1;
-		if((StrContains(Admin_Map, "mercy", false) != -1)) AdminValueIsNM = 1;
-		if(StrEqual(Admin_Map, "dt", false)) AdminValueIsDT = 1;
-		if((StrContains(Admin_Map, "death", false) != -1)) AdminValueIsDT = 1;
-		if((StrContains(Admin_Map, "toll", false) != -1)) AdminValueIsDT = 1;
-		if(StrEqual(Admin_Map, "bh", false)) AdminValueIsBH = 1;
-		if((StrContains(Admin_Map, "blood", false) != -1)) AdminValueIsBH = 1;
-		if((StrContains(Admin_Map, "harvest", false) != -1)) AdminValueIsBH = 1;
-		if(StrEqual(Admin_Map, "da", false)) AdminValueIsDA = 1;
-		if((StrContains(Admin_Map, "dead", false) != -1)) AdminValueIsDA = 1;
-		if((StrContains(Admin_Map, "air", false) != -1)) AdminValueIsDA = 1;
-		if(StrEqual(Admin_Map, "sa", false)) AdminValueIsSA = 1;
-		if(StrEqual(Admin_Map, "ts", false)) AdminValueIsSA = 1;
-		if((StrContains(Admin_Map, "sacr", false) != -1)) AdminValueIsSA = 1;
-		if(StrEqual(Admin_Map, "cc", false)) AdminValueIsCC = 1;
-		if((StrContains(Admin_Map, "crash", false) != -1)) AdminValueIsCC = 1;
+		else if((StrEqual(Admin_Map, "nomercy", false))) AdminValueIsNM = 1;
+		else if(StrEqual(Admin_Map, "dt", false)) AdminValueIsDT = 1;
+		else if((StrEqual(Admin_Map, "deathtoll", false))) AdminValueIsDT = 1;
+		else if(StrEqual(Admin_Map, "bh", false)) AdminValueIsBH = 1;
+		else if((StrEqual(Admin_Map, "bloodharvest", false))) AdminValueIsBH = 1;
+		else if(StrEqual(Admin_Map, "da", false)) AdminValueIsDA = 1;
+		else if((StrEqual(Admin_Map, "deadair", false))) AdminValueIsDA = 1;
+		else if(StrEqual(Admin_Map, "sa", false)) AdminValueIsSA = 1;
+		else if(StrEqual(Admin_Map, "ts", false)) AdminValueIsSA = 1;
+		else if(StrEqual(Admin_Map, "thesacrifice", false)) AdminValueIsSA = 1;
+		else if(StrEqual(Admin_Map, "cc", false)) AdminValueIsCC = 1;
+		else if((StrEqual(Admin_Map, "crashcourse", false))) AdminValueIsCC = 1;
 		#if CUSTOM_CONFIGS
 		if(StrEqual(Admin_Map, "c17", false)) AdminValueIsC17 = 1;
-		if((StrContains(Admin_Map, "city", false) != -1)) AdminValueIsC17 = 1;	
-		if(StrEqual(Admin_Map, "sb", false)) AdminValueIsSB = 1;
-		if((StrContains(Admin_Map, "suicide", false) != -1)) AdminValueIsSB = 1;
-		if((StrContains(Admin_Map, "blitz", false) != -1)) AdminValueIsSB = 1;
+		else if((StrEqual(Admin_Map, "city17", false))) AdminValueIsC17 = 1;	
+		else if(StrEqual(Admin_Map, "sb", false)) AdminValueIsSB = 1;
+		else if((StrEqual(Admin_Map, "suicideblitz", false))) AdminValueIsSB = 1;
+		else if((StrEqual(Admin_Map, "ihm", false))) AdminValueIsIHateMountain = 1;
+		else if((StrEqual(Admin_Map, "mountain", false))) AdminValueIsIHateMountain = 1;
+		else if((StrEqual(Admin_Map, "ihatemountain", false))) AdminValueIsIHateMountain = 1;
+		else if((StrEqual(Admin_Map, "dfb", false))) AdminValueIsDeadFlagBlues = 1;
+		else if((StrEqual(Admin_Map, "blue", false))) AdminValueIsDeadFlagBlues = 1;
+		else if((StrEqual(Admin_Map, "deadflagblues", false))) AdminValueIsDeadFlagBlues = 1;
+		else if((StrEqual(Admin_Map, "dbd", false))) AdminValueIsDeadBeforeDawn = 1;
+		else if((StrEqual(Admin_Map, "dawn", false))) AdminValueIsDeadBeforeDawn = 1;
+		else if((StrEqual(Admin_Map, "deadbeforedawn", false))) AdminValueIsDeadBeforeDawn = 1;
+		else if((StrEqual(Admin_Map, "aotd", false))) AdminValueIsTheArenaoftheDead = 1;
+		else if((StrEqual(Admin_Map, "arena", false))) AdminValueIsTheArenaoftheDead = 1;
+		else if((StrEqual(Admin_Map, "thearenaofthedead", false))) AdminValueIsTheArenaoftheDead = 1;
+		else if((StrEqual(Admin_Map, "dab", false))) AdminValueIsDeathAboard = 1;
+		else if((StrEqual(Admin_Map, "aboard", false))) AdminValueIsDeathAboard = 1;
+		else if((StrEqual(Admin_Map, "deathaboard", false))) AdminValueIsDeathAboard = 1;
 		#endif
 
 		AdminValueSumOfMaps = AdminValueIsNM + AdminValueIsDT + AdminValueIsBH + AdminValueIsDA + AdminValueIsSA + AdminValueIsCC;
 		#if CUSTOM_CONFIGS
-		AdminValueSumOfMaps += AdminValueIsSB + AdminValueIsC17;//calculate the sum of all the config value integers
+		AdminValueSumOfMaps += AdminValueIsC17 + AdminValueIsSB + AdminValueIsIHateMountain + AdminValueIsDeadFlagBlues + AdminValueIsDeadBeforeDawn + AdminValueIsTheArenaoftheDead + AdminValueIsDeathAboard;//calculate the sum of all the config value integers
 		#endif
 		if(AdminValueSumOfMaps == 1)
 		{	
@@ -2055,7 +2094,7 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;	
 			}
-			if(AdminValueIsDT == 1)
+			else if(AdminValueIsDT == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
@@ -2066,7 +2105,7 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
 			}
-			if(AdminValueIsBH == 1)
+			else if(AdminValueIsBH == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
@@ -2077,7 +2116,7 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
 			}
-			if(AdminValueIsDA == 1)
+			else if(AdminValueIsDA == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
@@ -2088,7 +2127,7 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;	
 			}
-			if(AdminValueIsSA == 1)
+			else if(AdminValueIsSA == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
@@ -2099,7 +2138,7 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;	
 			}
-			if(AdminValueIsCC == 1)
+			else if(AdminValueIsCC == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
@@ -2122,13 +2161,68 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
 			}
-			if(AdminValueIsSB == 1)
+			else if(AdminValueIsSB == 1)
 			{
 				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
 				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
 				adminMapActive = true;
 				AdminMapToExecuteName = "l4d_vs_stadium1_apartment";
 				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Suicide Blitz");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsIHateMountain == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_ihm01_forest";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","I hate mountain");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsDeadFlagBlues == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_vs_deadflagblues01_city";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Flag Blues");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsDeadBeforeDawn == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_dbd_citylights";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Before Dawn");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsTheArenaoftheDead == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_jsarena01_town";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Arena of the Dead");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsDeathAboard == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_deathaboard01_prison";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Aboard");
 				CampaignchangeDelayed();
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
@@ -2182,38 +2276,54 @@ public Action:Map_Changer(client, args)
 				#if CUSTOM_CONFIGS
 				new ValueIsC17 = 0;
 				new ValueIsSB = 0;
+				new ValueIsIHateMountain = 0;
+				new ValueIsDeadFlagBlues = 0;
+				new ValueIsDeadBeforeDawn = 0;
+				new ValueIsTheArenaoftheDead = 0;
+				new ValueIsDeathAboard = 0;
 				#endif
 				
 				new ValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
 						
 				if(StrEqual(PlayerMap, "nm", false)) ValueIsNM = 1;
-				if((StrContains(PlayerMap, "mercy", false) != -1)) ValueIsNM = 1;
-				if(StrEqual(PlayerMap, "dt", false)) ValueIsDT = 1;
-				if((StrContains(PlayerMap, "death", false) != -1)) ValueIsDT = 1;
-				if((StrContains(PlayerMap, "toll", false) != -1)) ValueIsDT = 1;
-				if(StrEqual(PlayerMap, "bh", false)) ValueIsBH = 1;
-				if((StrContains(PlayerMap, "blood", false) != -1)) ValueIsBH = 1;
-				if((StrContains(PlayerMap, "harvest", false) != -1)) ValueIsBH = 1;
-				if(StrEqual(PlayerMap, "da", false)) ValueIsDA = 1;
-				if((StrContains(PlayerMap, "dead", false) != -1)) ValueIsDA = 1;
-				if((StrContains(PlayerMap, "air", false) != -1)) ValueIsDA = 1;
-				if(StrEqual(PlayerMap, "sa", false)) ValueIsSA = 1;
-				if(StrEqual(PlayerMap, "ts", false)) ValueIsTS = 1;
-				if((StrContains(PlayerMap, "sacr", false) != -1)) ValueIsSA = 1;
-				if(StrEqual(PlayerMap, "cc", false)) ValueIsCC = 1;
-				if((StrContains(PlayerMap, "crash", false) != -1)) ValueIsCC = 1;
+				else if((StrEqual(PlayerMap, "nomercy", false))) ValueIsNM = 1;
+				else if(StrEqual(PlayerMap, "dt", false)) ValueIsDT = 1;
+				else if((StrEqual(PlayerMap, "deathtoll", false))) ValueIsDT = 1;
+				else if(StrEqual(PlayerMap, "bh", false)) ValueIsBH = 1;
+				else if((StrEqual(PlayerMap, "bloodharvest", false))) ValueIsBH = 1;
+				else if(StrEqual(PlayerMap, "da", false)) ValueIsDA = 1;
+				else if((StrEqual(PlayerMap, "deadair", false))) ValueIsDA = 1;
+				else if(StrEqual(PlayerMap, "sa", false)) ValueIsSA = 1;
+				else if(StrEqual(PlayerMap, "ts", false)) ValueIsTS = 1;
+				else if((StrEqual(PlayerMap, "sacrifice", false))) ValueIsSA = 1;
+				else if(StrEqual(PlayerMap, "cc", false)) ValueIsCC = 1;
+				else if((StrEqual(PlayerMap, "crashcourse", false))) ValueIsCC = 1;
 				#if CUSTOM_CONFIGS
 				if(StrEqual(PlayerMap, "c17", false)) ValueIsC17 = 1;
-				if((StrContains(PlayerMap, "city", false) != -1)) ValueIsC17 = 1;	
-				if(StrEqual(PlayerMap, "sb", false)) ValueIsSB = 1;
-				if((StrContains(PlayerMap, "suicide", false) != -1)) ValueIsSB = 1;
-				if((StrContains(PlayerMap, "blitz", false) != -1)) ValueIsSB = 1;
+				else if((StrEqual(PlayerMap, "city17", false))) ValueIsC17 = 1;	
+				else if(StrEqual(PlayerMap, "sb", false)) ValueIsSB = 1;
+				else if((StrEqual(PlayerMap, "suicideblitz", false))) ValueIsSB = 1;
+				else if((StrEqual(PlayerMap, "ihm", false))) ValueIsIHateMountain = 1;
+				else if((StrEqual(PlayerMap, "mountain", false))) ValueIsIHateMountain = 1;
+				else if((StrEqual(PlayerMap, "ihatemountain", false))) ValueIsIHateMountain = 1;
+				else if((StrEqual(PlayerMap, "dfb", false))) ValueIsDeadFlagBlues = 1;
+				else if((StrEqual(PlayerMap, "blue", false))) ValueIsDeadFlagBlues = 1;
+				else if((StrEqual(PlayerMap, "deadflagblues", false))) ValueIsDeadFlagBlues = 1;
+				else if((StrEqual(PlayerMap, "dbd", false))) ValueIsDeadBeforeDawn = 1;
+				else if((StrEqual(PlayerMap, "dawn", false))) ValueIsDeadBeforeDawn = 1;
+				else if((StrEqual(PlayerMap, "deadbeforedawn", false))) ValueIsDeadBeforeDawn = 1;
+				else if((StrEqual(PlayerMap, "aotd", false))) ValueIsTheArenaoftheDead = 1;
+				else if((StrEqual(PlayerMap, "arena", false))) ValueIsTheArenaoftheDead = 1;
+				else if((StrEqual(PlayerMap, "thearenaofthedead", false))) ValueIsTheArenaoftheDead = 1;
+				else if((StrEqual(PlayerMap, "dab", false))) ValueIsDeathAboard = 1;
+				else if((StrEqual(PlayerMap, "aboard", false))) ValueIsDeathAboard = 1;
+				else if((StrEqual(PlayerMap, "deathaboard", false))) ValueIsDeathAboard = 1;
 				#endif
 
 				
 				ValueSumOfMaps = ValueIsNM + ValueIsDT + ValueIsBH + ValueIsDA + ValueIsSA	+ ValueIsCC + ValueIsTS;
 				#if CUSTOM_CONFIGS
-				ValueSumOfMaps += ValueIsSB + ValueIsC17;//calculate the sum of all the config value integers
+				ValueSumOfMaps += ValueIsC17 + ValueIsSB + ValueIsIHateMountain + ValueIsDeadFlagBlues + ValueIsDeadBeforeDawn + ValueIsTheArenaoftheDead + ValueIsDeathAboard;//calculate the sum of all the config value integers
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2249,32 +2359,32 @@ public Action:Map_Changer(client, args)
 						PlayerMap = "No Mercy";
 						PlayerMapChat = "NM";
 					}
-					if(ValueIsDT == 1)
+					else if(ValueIsDT == 1)
 					{
 						PlayerMap = "Death Toll";
 						PlayerMapChat = "DT";
 					}
-					if(ValueIsBH == 1)
+					else if(ValueIsBH == 1)
 					{
 						PlayerMap = "Blood Harvest";
 						PlayerMapChat = "BH";
 					}
-					if(ValueIsDA == 1)
+					else if(ValueIsDA == 1)
 					{
 						PlayerMap = "Dead Air";
 						PlayerMapChat = "DA";
 					}
-					if(ValueIsSA == 1)
+					else if(ValueIsSA == 1)
 					{
 						PlayerMap = "The Sacrifice";
 						PlayerMapChat = "SA";
 					}
-					if(ValueIsTS == 1)
+					else if(ValueIsTS == 1)
 					{
 						PlayerMap = "The Sacrifice";
 						PlayerMapChat = "TS";
 					}
-					if(ValueIsCC == 1)
+					else if(ValueIsCC == 1)
 					{
 						PlayerMap = "Crash Course";
 						PlayerMapChat = "CC";
@@ -2285,10 +2395,35 @@ public Action:Map_Changer(client, args)
 						PlayerMap = "City 17";
 						PlayerMapChat = "C17";
 					}
-					if(ValueIsSB == 1)
+					else if(ValueIsSB == 1)
 					{
 						PlayerMap = "Suicide Blitz";
 						PlayerMapChat = "SB";
+					}
+					else if(ValueIsIHateMountain == 1)
+					{
+						PlayerMap = "I hate mountain";
+						PlayerMapChat = "IHM";
+					}
+					else if(ValueIsDeadFlagBlues == 1)
+					{
+						PlayerMap = "Dead Flag Blues";
+						PlayerMapChat = "DFB";
+					}
+					else if(ValueIsDeadBeforeDawn == 1)
+					{
+						PlayerMap = "Dead Before Dawn";
+						PlayerMapChat = "DBD";
+					}
+					else if(ValueIsTheArenaoftheDead == 1)
+					{
+						PlayerMap = "The Arena of the Dead";
+						PlayerMapChat = "AOTD";
+					}
+					else if(ValueIsDeathAboard == 1)
+					{
+						PlayerMap = "Death Aboard";
+						PlayerMapChat = "DAB";
 					}
 					#endif
 				}
@@ -2330,31 +2465,31 @@ public Action:Map_Changer(client, args)
 								Timer_Map_Change();					
 								return Plugin_Handled;															
 							}
-							if(StrEqual(PlayerMap, "Death Toll", false))
+							else if(StrEqual(PlayerMap, "Death Toll", false))
 							{
 								MapToExecuteName = "l4d_vs_smalltown01_caves";
 								Timer_Map_Change();					
 								return Plugin_Handled;														
 							}
-							if(StrEqual(PlayerMap, "Blood Harvest", false))
+							else if(StrEqual(PlayerMap, "Blood Harvest", false))
 							{
 								MapToExecuteName = "l4d_vs_farm01_hilltop";
 								Timer_Map_Change();					
 								return Plugin_Handled;														
 							}
-							if(StrEqual(PlayerMap, "Dead Air", false))
+							else if(StrEqual(PlayerMap, "Dead Air", false))
 							{
 								MapToExecuteName = "l4d_vs_airport01_greenhouse";
 								Timer_Map_Change();					
 								return Plugin_Handled;														
 							}
-							if(StrEqual(PlayerMap, "The Sacrifice", false))
+							else if(StrEqual(PlayerMap, "The Sacrifice", false))
 							{
 								MapToExecuteName = "l4d_river01_docks";
 								Timer_Map_Change();				
 								return Plugin_Handled;														
 							}
-							if(StrEqual(PlayerMap, "Crash Course", false))
+							else if(StrEqual(PlayerMap, "Crash Course", false))
 							{
 								MapToExecuteName = "l4d_garage01_alleys";
 								Timer_Map_Change();			
@@ -2367,9 +2502,39 @@ public Action:Map_Changer(client, args)
 								Timer_Map_Change();			
 								return Plugin_Handled;														
 							}
-							if(StrEqual(PlayerMap, "Suicide Blitz", false))
+							else if(StrEqual(PlayerMap, "Suicide Blitz", false))
 							{
 								MapToExecuteName = "l4d_vs_stadium1_apartments";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "I hate mountain", false))
+							{
+								MapToExecuteName = "l4d_ihm01_forest";
+								Timer_Map_Change();			
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Dead Flag Blues", false))
+							{
+								MapToExecuteName = "l4d_vs_deadflagblues01_city";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Dead Before Dawn", false))
+							{
+								MapToExecuteName = "l4d_dbd_citylights";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "The Arena of the Dead", false))
+							{
+								MapToExecuteName = "l4d_jsarena01_town";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Death Aboard", false))
+							{
+								MapToExecuteName = "l4d_deathaboard01_prison";
 								Timer_Map_Change();	
 								return Plugin_Handled;														
 							}

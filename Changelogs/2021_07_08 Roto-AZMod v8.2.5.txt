@@ -48,6 +48,16 @@
 [temphealthfix.smx]
 * Add another prop classname "prop_physics_multiplayer" for Death Aboard Map
 
+[comp_loader.smx]
+* Support Custom maps change
+  - **City 17 (!cm c17)
+  - **Suicide Blitz (!cm sb)
+  - **Dead Flag Blues (!cm dfb)
+  - **I Hate Mountains (!cm ihm)
+  - **Dead Before Dawn (!cm dbd)
+  - **The Arena of the Dead (!cm aotd)
+  - **Death Aboard (!cm dab)
+
 	       ***txt***
 -left4dead\addons\sourcemod\configs
 [VoteCustomCampaigns.txt]

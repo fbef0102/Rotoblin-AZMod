@@ -153,13 +153,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 * **Support Custom maps:**
   > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/download/v8.2.5/Addons_Map.zip)**
-  * City 17
-  * Suicide Blitz
-  * Dead Flag Blues
-  * I Hate Mountains
-  * Dead Before Dawn
-  * The Arena of the Dead
-  * Death Aboard
+  * City 17 (!cm c17)
+  * Suicide Blitz (!cm sb)
+  * Dead Flag Blues (!cm dfb)
+  * I Hate Mountains (!cm ihm)
+  * Dead Before Dawn (!cm dbd)
+  * The Arena of the Dead (!cm aotd)
+  * Death Aboard (!cm dab)
 
 - - - -
 ### Weapon Adjustments ###
