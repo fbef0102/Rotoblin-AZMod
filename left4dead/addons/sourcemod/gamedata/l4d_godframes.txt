@@ -1,0 +1,14 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"InvulnerabilityTimer"
+			{
+				"windows"	"7092"
+				"linux"		"7112"
+			}
+		}
+	}
+}

@@ -9,13 +9,14 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <left4downtown>
-#include <l4d_direct>
-#define L4D2UTIL_STOCKS_ONLY
-#include <l4d2util>
 
 #define CLASSNAME_LENGTH 64
-
+#define GAMEDATA	"l4d_godframes"
+#define CTIMER_TIMESTAMP_OFFSET view_as<Address>(8)
+enum CountdownTimer
+{
+	CTimer_Null = 0 /**< Invalid Timer when lookup fails */
+};
 
 //cvars
 new Handle: hHittable = INVALID_HANDLE;
@@ -31,18 +32,11 @@ new Handle: hFFFlags = INVALID_HANDLE;
 
 //fake godframes
 new Float:fFakeGodframeEnd[MAXPLAYERS + 1];
-static bool:client_lastlife[MAXPLAYERS + 1];
 new iLastSI[MAXPLAYERS + 1];
 
 //god frame be gone
-static const Float:DAMAGE_CHECK_DELAY						=  0.1;
-static const Float:HEAL_CHECKSTOP_RATIO						=  1.2;
-static bool:justHealed[MAXPLAYERS+1]						= false;
-static const String:CVAR_TEMP_HEALTH_DECAY[]				= "pain_pills_decay_rate";
-static const Float:GOD_FRAME_CHECK_DURATION					=  3.0;
 static Float:lastSavedGodFrameBegin[MAXPLAYERS+1]			=  0.0;
 //static const		TEMP_HEALTH_ERROR_MARGIN				=    1;
-static Handle:cvarTempHealthDecay							= INVALID_HANDLE;
 
 /********l4d2_hittable_control*******/
 new bool:	bIsBridge;			//for parish bridge cars
@@ -63,7 +57,7 @@ new Handle: hBaggageStandingDamage		= INVALID_HANDLE;
 new Handle: hStandardIncapDamage		= INVALID_HANDLE;
 new Handle: hTankSelfDamage				= INVALID_HANDLE;
 new Handle: hOverHitInterval			= INVALID_HANDLE;
-native IsInReady();
+int InvulnerabilityTimer;
 
 public Plugin:myinfo =
 {
@@ -73,133 +67,135 @@ public Plugin:myinfo =
 	description = "控制人類無敵狀態的時間並顯示顏色. Allows for customisation of hittable damage values."
 };
 
+new bool:lateLoad;
+
+public APLRes:AskPluginLoad2(Handle:plugin, bool:late, String:error[], errMax) 
+{
+	lateLoad = late;
+	return APLRes_Success;    
+}
+
 public OnPluginStart()
 {
 	/********l4d2_hittable_control*******/
-	//zone 1.8 cfg set
+	//zone cfg set
 	hBridgeCarDamage		= CreateConVar( "hc_bridge_car_damage",			"25.0",
 											"Damage of cars in the parish bridge finale. Overrides standard incap damage on incapacitated players.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hLogStandingDamage		= CreateConVar( "hc_sflog_standing_damage",		"100.0",
 											"Damage of hittable swamp fever logs to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hBHLogStandingDamage	= CreateConVar( "hc_bhlog_standing_damage",		"100.0",
 											"Damage of hittable blood harvest logs to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hCarStandingDamage		= CreateConVar( "hc_car_standing_damage",		"100.0",
 											"Damage of hittable non-parish-bridge cars to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hBumperCarStandingDamage= CreateConVar( "hc_bumpercar_standing_damage",	"100.0",
 											"Damage of hittable bumper cars to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hHandtruckStandingDamage= CreateConVar( "hc_handtruck_standing_damage",	"8.0",
 											"Damage of hittable handtrucks (aka dollies) to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hGeneratortrailerStandingDamage= CreateConVar( "hc_generatortrailer_standing_damage",	"100.0",
 											"Damage of hittable generatortrailer (in NM4) to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 	
 	hForkliftStandingDamage= CreateConVar(  "hc_forklift_standing_damage",	"100.0",
 											"Damage of hittable forklifts to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hDumpsterStandingDamage	= CreateConVar( "hc_dumpster_standing_damage",	"100.0",
 											"Damage of hittable dumpsters to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hHaybaleStandingDamage	= CreateConVar( "hc_haybale_standing_damage",	"100.0",
 											"Damage of hittable haybales to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hBaggageStandingDamage	= CreateConVar( "hc_baggage_standing_damage",	"100.0",
 											"Damage of hittable baggage carts to non-incapped survivors.",
-											FCVAR_PLUGIN, true, 0.0, true, 300.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 300.0 );
 											
 	hStandardIncapDamage	= CreateConVar( "hc_incap_standard_damage",		"-2",
 											"Damage of all hittables to incapped players. -1 will have incap damage default to valve's standard incoherent damages. -2 will have incap damage default to each hittable's corresponding standing damage.",
-											FCVAR_PLUGIN, true, -2.0, true, 300.0 );
+											FCVAR_NOTIFY, true, -2.0, true, 300.0 );
 											
 	hTankSelfDamage			= CreateConVar( "hc_disable_self_damage",		"1",
 											"If set 1, tank will not damage itself with hittables.",
-											FCVAR_PLUGIN, true, 0.0, true, 1.0 );
+											FCVAR_NOTIFY, true, 0.0, true, 1.0 );
 											
 	hOverHitInterval		= CreateConVar( "hc_overhit_time",				"1.4",
 											"The amount of time to wait before allowing consecutive hits from the same hittable to register. Recommended values: 0.0-0.5: instant kill; 0.5-0.7: sizeable overhit; 0.7-1.0: standard overhit; 1.0-1.2: reduced overhit; 1.2+: no overhit unless the car rolls back on top. Set to tank's punch interval (default 1.5) to fully remove all possibility of overhit.",
-											FCVAR_PLUGIN, true, 0.0, false );
+											FCVAR_NOTIFY, true, 0.0, false );
 
 	/********godframes_control*******/
+	LoadGameData();
+	ValidateOffset(InvulnerabilityTimer, "InvulnerabilityTimer");
+
 	hGodframeGlows = CreateConVar("gfc_godframe_glows", "1",
 									"Changes the rendering of survivors while godframed (red/transparent).",
-									FCVAR_PLUGIN, true, 0.0, true, 1.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 1.0 );
 	
 	hHittable = CreateConVar(	"gfc_hittable_override", "1",
 									"Allow hittables to always ignore godframes.",
-									FCVAR_PLUGIN, true, 0.0, true, 1.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 1.0 );
 	hWitch = CreateConVar( 		"gfc_witch_override", "1",
 									"Allow witches to always ignore godframes.",
-									FCVAR_PLUGIN, true, 0.0, true, 1.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 1.0 );
 	
 
 	hFF = CreateConVar( 		"gfc_ff_min_time", "0.8",
 									"Additional godframe time before FF damage is allowed.",
-									FCVAR_PLUGIN, true, 0.0, true, 5.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 5.0 );
 								
 	hCommon = CreateConVar( 	"gfc_common_extra_time", "1.8",
 									"Additional godframe time before common damage is allowed.",
-									FCVAR_PLUGIN, true, 0.0, true, 3.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//官方預設2秒
 	hHunter = CreateConVar( 	"gfc_hunter_duration", "1.8",
 									"How long should godframes after a pounce last?",
-									FCVAR_PLUGIN, true, 0.0, true, 3.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//官方預設2秒
 	hSmoker = CreateConVar( 	"gfc_smoker_duration", "0.0",
 									"How long should godframes after a pull or choke last?",
-									FCVAR_PLUGIN, true, 0.0, true, 3.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//官方預設2秒			
 	hrevive = CreateConVar( 	"gfc_revive_duration", "0.0",
 									"How long should godframes after received from incap(not from ledge)?",
-									FCVAR_PLUGIN, true, 0.0, true, 3.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//zone:charger+hunter only
 	hCommonFlags= CreateConVar( "gfc_common_zc_flags", "2",
 									"Which classes will be affected by extra common protection time. 1 - Hunter. 2 - Smoker. 4 - Receive.",
-									FCVAR_PLUGIN, true, 0.0, true, 7.0 );
+									FCVAR_NOTIFY, true, 0.0, true, 7.0 );
 	hFFFlags= CreateConVar( "gfc_FF_zc_flags", "2",
 									"Which classes will be affected by extra FF protection time. 1 - Hunter. 2 - Smoker. 4 - Receive.",
-									FCVAR_PLUGIN, true, 0.0, true, 7.0 );								
+									FCVAR_NOTIFY, true, 0.0, true, 7.0 );								
 
 	HookEvent("tongue_release", PostSurvivorRelease);
 	HookEvent("pounce_end", PostSurvivorRelease);
 	HookEvent("player_death", event_player_death, EventHookMode_Pre);
 	HookEvent("revive_success", Event_revive_success);//救起倒地的or 懸掛的
-	HookEvent("heal_success", Event_heal_success);//治療包治療成功
 	HookEvent("round_start", event_RoundStart, EventHookMode_PostNoCopy);//每回合開始就發生的event
-	HookEvent("player_incapacitated", 	_GF_IncapEvent); // being incapped 'heals' you from 1 to 300 hard health
-	HookEvent("player_spawn",		Event_PlayerSpawn,	EventHookMode_PostNoCopy);
-	HookEvent("player_bot_replace", OnBotSwap);
-	HookEvent("bot_player_replace", OnBotSwap);
-	cvarTempHealthDecay =	FindConVar(CVAR_TEMP_HEALTH_DECAY);
+
+	if (lateLoad) 
+	{
+		for (new i = 1; i <= MaxClients; i++) 
+		{
+			if (IsClientInGame(i)) 
+			{
+				OnClientPutInServer(i);
+			}
+		}
+	}
 }
-public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));//復活的那位
-	client_lastlife[client] = false;
-}
-public _GF_IncapEvent(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new subject = GetClientOfUserId(GetEventInt(event, "subject"));
-	justHealed[subject] = true;
-	CreateTimer(DAMAGE_CHECK_DELAY * HEAL_CHECKSTOP_RATIO, _GF_timer_ResetHealBool, subject);
-}
-public Action:_GF_timer_ResetHealBool(Handle:timer, any:subject)
-{
-	justHealed[subject] = false;
-}
+
 public Action:event_player_death(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));//死掉那位
@@ -213,66 +209,14 @@ public event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		fFakeGodframeEnd[i] = 0.0;
 		lastSavedGodFrameBegin[i] = 0.0;
-		client_lastlife[i] = false;
 	}
-}
-
-public Action:OnBotSwap(Handle:event, const String:name[], bool:dontBroadcast) 
-{
-	if(IsInReady()) return Plugin_Continue;
-	
-	new bot = GetClientOfUserId(GetEventInt(event, "bot"));
-	new player = GetClientOfUserId(GetEventInt(event, "player"));
-	if (IsClientIndex(bot) && IsClientIndex(player)) 
-	{
-		if (StrEqual(name, "player_bot_replace")) 
-		{
-			
-			client_lastlife[bot] = client_lastlife[player];
-			client_lastlife[player] = false;
-			justHealed[bot] = justHealed[player];
-			justHealed[player] = false;
-			
-		}
-		else 
-		{
-			client_lastlife[player] = client_lastlife[bot];
-			client_lastlife[bot] = false;
-			justHealed[player] = justHealed[bot];
-			justHealed[bot] = false;
-		}
-	}
-	return Plugin_Continue;
-}
-
-public Event_heal_success(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	if(IsInReady()) return;
-	
-	new subject = GetClientOfUserId(GetEventInt(event, "subject"));//被治療的那位
-	if (subject<=0||!IsClientAndInGame(subject)) { return; } //just in case
-	
-	client_lastlife[subject] = false;
 }
 
 public Event_revive_success(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(IsInReady()) return;
-	
 	new subject = GetClientOfUserId(GetEventInt(event, "subject"));//被救的那位
 	if (subject<=0||!IsClientAndInGame(subject)) { return; } //just in case
-	if (GetEventBool(event,"ledge_hang"))
-	{
-		return;
-	}
-	if(GetEventBool(event, "lastlife"))
-	{
-		client_lastlife[subject] = true;
-	}
-	else
-	{
-		client_lastlife[subject] = false;
-	}
+
 	lastSavedGodFrameBegin[subject] = GetEngineTime();
 	fFakeGodframeEnd[subject] = GetGameTime() + GetConVarFloat(hrevive);
 	iLastSI[subject] = 4;
@@ -323,8 +267,9 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 	
 	/********godframes_control*******/
 	if(GetClientTeam(victim) != 2 || !IsClientAndInGame(victim)) { return Plugin_Continue; }
-	//new CountdownTimer:cTimerGod = L4DDirect_GetInvulnerabilityTimer(victim);
-	//if (cTimerGod != CTimer_Null) { CTimer_Invalidate(cTimerGod); }
+	new CountdownTimer:cTimerGod = L4DDirect_GetInvulnerabilityTimer(victim);
+	if (cTimerGod != CTimer_Null) { CTimer_Invalidate(cTimerGod); }
+
 	decl String:sClassname[CLASSNAME_LENGTH];
 	GetEntityClassname(inflictor, sClassname, CLASSNAME_LENGTH);
 	//decl String:sdamagetype[64] ;
@@ -427,94 +372,34 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 		
 		if(IsClientAndInGame(attacker) && GetClientTeam(attacker) == 3 && GetEntProp(attacker, Prop_Send, "m_zombieClass") == 5)
 			SetTankFrustration(attacker, 100);
+
+		return Plugin_Changed;
 	}
-	new hardhealth = GetHardHealth(victim);
-	if(hardhealth>1) client_lastlife[victim] = false;
+
 	/********godframes_control*******/
 	if (fTimeLeft<=0)//自己設置的無敵時間已過 1. Smoker拉的 2. 剛倒地起來的 3. Hunter解脫
 	{	
-		if (lastSavedGodFrameBegin[victim] == 0.0											// case no god frames on record
-		|| GetEngineTime() - lastSavedGodFrameBegin[victim] > GOD_FRAME_CHECK_DURATION)		// 被攻擊時已超過官方預設無敵時間
-		{
-			return Plugin_Changed;
-		}
-	
-		//在官方預設無敵時間兩秒內
-		CheckForGodMode(victim,damage); //利用插件手動給玩家扣血
-	
-		return Plugin_Continue;
+		iLastSI[victim] = 0;
 	}
 	if (fTimeLeft > 0) //means fake god frames are in effect
 	{
 		if(StrEqual(sClassname, "worldspawn") && attacker==0)//墬樓 官方預設godframe 時間內墜樓照樣有傷害
 			return Plugin_Continue;
 		
-		//hittables,witch,rock
-		if ( ((StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm") || StrEqual(sClassname, "prop_physics_multiplayer"))&&GetConVarBool(hHittable)) || 
-			 (StrEqual(sClassname, "witch")&&GetConVarBool(hWitch)) )
+		//hittables, witch
+		if ( ((StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm") || StrEqual(sClassname, "prop_physics_multiplayer")) && GetConVarBool(hHittable)) || 
+			 (StrEqual(sClassname, "witch") && GetConVarBool(hWitch)) )
 		{
-			if (lastSavedGodFrameBegin[victim] == 0.0											// case no god frames on record
-			|| GetEngineTime() - lastSavedGodFrameBegin[victim] > GOD_FRAME_CHECK_DURATION)		// 被攻擊時已超過官方預設無敵時間
-			{
-				return Plugin_Changed;
-			}
-		
-			//在官方預設無敵時間兩秒內
-			CheckForGodMode(victim,damage); //利用插件手動給玩家扣血
-		
 			return Plugin_Continue;
 		}
+
 		//其餘傷害
 		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
 }
-/*
-public Action:Reincap_Timer(Handle:timer, any:client)
-{
-	SetEntProp(client, Prop_Send, "m_isIncapacitated", 1);
-	SetEntityHealth(client, 300);
-}
-*/
-public Action:_GF_timer_CheckForGodMode(Handle:timer, Handle:data)
-{
-	ResetPack(data);
-	new victim = ReadPackCell(data);
-	new targethardhealth = ReadPackCell(data);
-	new Float:targettemphealth = ReadPackFloat(data);
-	CloseHandle(data);
-	
-	if (justHealed[victim] || !IsClientInGame(victim)) return;
-	if (IsIncapacitated(victim)) return;
-	new hardhealth = GetHardHealth(victim);
-	new Float:temphealth = GetAccurateTempHealth(victim);
-	
-	if (hardhealth > targethardhealth||temphealth > targettemphealth)
-	{
-		//PrintToChatAll("HAAAX! God Frames detected, hard health of %N is %d, supposed to be %d", victim, hardhealth, targethardhealth);
-		//PrintToChatAll("HAAAX! God Frames detected, temp health of %N is %f, supposed to be %f", victim, temphealth, targettemphealth);
-		if(targethardhealth==0&&targettemphealth==0.0)
-		{
-			//PrintToChatAll("incap or die");
-			if( client_lastlife[victim] == true || IsIncapacitated(victim))//dead
-				ForcePlayerSuicide(victim);
-			else//incap
-			{
-				SetEntProp(victim, Prop_Send, "m_isIncapacitated", 0);
-				SetEntityHealth(victim, 1);
-				SetEntProp(victim, Prop_Send, "m_isIncapacitated", 1);
-				SetEntityHealth(victim, 300);
-			}
-		}
-		else
-		{
-			SetEntityHealth(victim, targethardhealth);
-			SetEntPropFloat(victim, Prop_Send, "m_healthBuffer", targettemphealth);
-		}
-	}
 
-}
 stock IsClientAndInGame(client)
 {
 	if (0 < client && client < MaxClients)
@@ -563,18 +448,6 @@ public OnMapStart() {
 		ResetGlow(i);
 	}
 }
-static GetHardHealth(client)
-{
-	return GetEntProp(client, Prop_Send, "m_iHealth");
-}
-static Float:GetAccurateTempHealth(client)
-{
-	new Float:fHealth = GetEntPropFloat(client, Prop_Send, "m_healthBuffer");
-	fHealth -= (GetGameTime() - GetEntPropFloat(client, Prop_Send, "m_healthBufferTime")) * GetConVarFloat(cvarTempHealthDecay);
-	fHealth = (fHealth < 0.0 )? 0.0 : fHealth;
-	
-	return fHealth;
-}
 
 /********l4d2_hittable_control*******/
 public Action:Timed_ClearInvulnerability(Handle:thisTimer, any:victim)
@@ -582,44 +455,64 @@ public Action:Timed_ClearInvulnerability(Handle:thisTimer, any:victim)
 	bIgnoreOverkill[victim] = false;
 }
 
-CheckForGodMode(victim,Float:damage)
+public any L4DDirect_GetInvulnerabilityTimer(int client)
 {
-	new hardhealth = GetHardHealth(victim);
-	new supposeddamage = RoundToNearest(damage);
+	ValidateAddress(InvulnerabilityTimer, "InvulnerabilityTimer");
 
-	new resulthardhealth = hardhealth - supposeddamage;			// damage formula: subtract damage from hard health
-	new Float:resulttemphealth = GetAccurateTempHealth(victim);
+	if( client < 1 || client > MaxClients )
+		return CTimer_Null;
 
-	if (resulthardhealth < 1)									// if negative hard health would result
-	{
-		if(hardhealth==1)//虛血之類的
-		{
-			resulthardhealth = 1;
-			resulttemphealth -= supposeddamage;
-		}
-		else
-		{
-			supposeddamage = resulthardhealth * -1;					// the negative hard health equals whatever should transition to temp health
-			resulthardhealth = 1;									// set expected hard health 1 for now
-	
-			resulttemphealth -= supposeddamage;						// try to pull the damage from temp health
-		}
-		if (resulttemphealth < 0)								// if that results in negative too
-		{
-			resulthardhealth = 0;
-			resulttemphealth = 0.0;								// mark the victim as 'to be killed'
-		}
-	}
+	Address pEntity = GetEntityAddress(client);
+	if( pEntity == Address_Null )
+		return CTimer_Null;
 
-	new Handle:data = CreateDataPack();
-	WritePackCell(data, victim);
-	WritePackCell(data, resulthardhealth);
-	WritePackFloat(data, resulttemphealth);
-
-	CreateTimer(DAMAGE_CHECK_DELAY, _GF_timer_CheckForGodMode, data);
+	return view_as<CountdownTimer>(pEntity + view_as<Address>(InvulnerabilityTimer));
 }
 
-bool:IsClientIndex(client)
+void CTimer_Invalidate(CountdownTimer timer)
 {
-	return (client > 0 && client <= MaxClients);
+	Stock_CTimer_SetTimestamp(timer, -1.0);
+}
+
+void Stock_CTimer_SetTimestamp(CountdownTimer timer, float timestamp)
+{
+	StoreToAddress(view_as<Address>(timer) + CTIMER_TIMESTAMP_OFFSET, view_as<int>(timestamp), NumberType_Int32);
+}
+
+void LoadGameData()
+{
+	char sPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sPath, sizeof(sPath), "gamedata/%s.txt", GAMEDATA);
+	if( FileExists(sPath) == false ) SetFailState("\n==========\nMissing required file: \"%s\".\nRead installation instructions again.\n==========", sPath);
+
+	Handle hGameData = LoadGameConfigFile(GAMEDATA);
+	if( hGameData == null ) SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
+
+	InvulnerabilityTimer = GameConfGetOffset(hGameData, "InvulnerabilityTimer");
+	ValidateOffset(InvulnerabilityTimer, "InvulnerabilityTimer");
+
+	delete hGameData;
+}
+
+void ValidateAddress(any addr, const char[] name, bool check = false)
+{
+	if( addr == Address_Null )
+	{
+		if( check )		LogError("Failed to find \"%s\" address.", name);
+		else			ThrowNativeError(SP_ERROR_INVALID_ADDRESS, "%s not available.", name);
+	}
+}
+
+void ValidateOffset(int test, const char[] name, bool check = true)
+{
+	if( test == -1 )
+	{
+		if( check )		LogError("Failed to find \"%s\" offset.", name);
+		else			ThrowNativeError(SP_ERROR_INVALID_ADDRESS, "%s not available.", name);
+	}
+}
+
+stock SetTankFrustration(tank_index, iFrustration)
+{
+	SetEntProp(tank_index, Prop_Send, "m_frustration", 100 - iFrustration);
 }
