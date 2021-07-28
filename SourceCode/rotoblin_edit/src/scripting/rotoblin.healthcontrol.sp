@@ -126,7 +126,6 @@ public _HC_OnPluginEnable()
 	HookEvent("player_spawn", _HC_PlayerSpawn_Event,	EventHookMode_PostNoCopy);
 	HookEvent("player_left_start_area", _HC_player_left_start_area, EventHookMode_PostNoCopy);
 	HookEvent("round_end", _HC_RoundEnd_Event, EventHookMode_PostNoCopy);
-	HookPublicEvent(EVENT_ONMAPSTART, _HC_OnMapStart);
 	HookPublicEvent(EVENT_ONMAPEND, _HC_OnMapEnd);
 
 	UpdateHealthStyle();
@@ -154,37 +153,6 @@ public _HC_OnPluginDisable()
 	UnhookConVarChange(g_hHealthStyle_Cvar, _HC_HealthStyle_CvarChange);
 
 	DebugPrintToAllEx("Module is now unloaded");
-}
-
-public _HC_OnMapStart()
-{
-	decl String:mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
-	
-	g_bSpecialMap = false;
-	if(StrEqual(mapbuf, "l4d_deathaboard02_yard")||
-	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
-	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
-	StrEqual(mapbuf, "l4d_deathaboard05_light")
-	)
-	{
-		g_bSpecialMap = true;
-	}
-	
-	g_bIsFinale = false;
-	if(StrEqual(mapbuf, "l4d_vs_city17_05")||
-	StrEqual(mapbuf, "l4d_vs_deadflagblues05_station")||
-	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
-	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
-	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
-	StrEqual(mapbuf, "l4d_jsarena04_arena")||
-	StrEqual(mapbuf, "l4d_deathaboard05_light")
-	)
-	{
-		g_bIsFinale = true;
-		return true;
-	}
-	return false;
 }
 
 /**
@@ -239,6 +207,7 @@ public _HC_PlayerSpawn_Event(Handle:event, const String:name[], bool:dontBroadca
 {
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1) 
 	{
+		DetermineIfMapIsFinale();
 		if(g_bSpecialMap) 
 			HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 		else
@@ -249,8 +218,10 @@ public _HC_PlayerSpawn_Event(Handle:event, const String:name[], bool:dontBroadca
 
 public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0)
 	{
+		DetermineIfMapIsFinale();
 		if(g_bSpecialMap) 
 			HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 		else
@@ -270,7 +241,6 @@ public Action:TimerStart(Handle:timer)
 	
 	DebugPrintToAllEx("Round start - Running health control");
 
-	DetermineIfMapIsFinale();
 	UpdateStartingHealthItems();
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
@@ -650,6 +620,31 @@ static DetermineIfMapIsFinale()
 	{
 		g_bIsFinale = false;
 		DebugPrintToAllEx("Map is not the finale");
+	}
+	
+	decl String:mapbuf[32];
+	GetCurrentMap(mapbuf, sizeof(mapbuf));
+	
+	g_bSpecialMap = false;
+	if(StrEqual(mapbuf, "l4d_deathaboard02_yard")||
+	StrEqual(mapbuf, "l4d_deathaboard03_docks")||
+	StrEqual(mapbuf, "l4d_deathaboard04_ship")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
+	)
+	{
+		g_bSpecialMap = true;
+	}
+	
+	if(StrEqual(mapbuf, "l4d_vs_city17_05")||
+	StrEqual(mapbuf, "l4d_vs_deadflagblues05_station")||
+	StrEqual(mapbuf, "l4d_ihm05_lakeside")||
+	StrEqual(mapbuf, "l4d_vs_stadium5_stadium")||
+	StrEqual(mapbuf, "l4d_dbd_new_dawn")||
+	StrEqual(mapbuf, "l4d_jsarena04_arena")||
+	StrEqual(mapbuf, "l4d_deathaboard05_light")
+	)
+	{
+		g_bIsFinale = true;
 	}
 }
 
