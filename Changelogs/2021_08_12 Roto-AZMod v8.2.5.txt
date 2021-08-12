@@ -52,6 +52,9 @@
 [temphealthfix.smx]
 * Add another prop classname "prop_physics_multiplayer" for Death Aboard Map
 
+[l4d_tank_props.smx]
+* Add prop_dynamic_override glow for "generatortrailer" model
+
 [comp_loader.smx]
 * Support Custom maps change
   - **City 17 (!cm c17)

@@ -224,21 +224,30 @@ void CreateTankPropGlow(int entity)
 {
 	char sModelName[64];
 	GetEntPropString(entity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
-	
+	//PrintToChatAll("m_ModelName: %s", sModelName);
+		
 	float vPos[3];
 	float vAng[3];
 		
 	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
 	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
 	
-	i_Ent[entity] = CreateEntityByName("prop_glowing_object");
-	
-	DispatchKeyValue(i_Ent[entity], "model", sModelName);
-	DispatchKeyValue(i_Ent[entity], "StartGlowing", "1");
-	//DispatchKeyValue(i_Ent[entity], "StartDisabled", "1");
-	DispatchKeyValue(i_Ent[entity], "targetname", "propglow");
-	
-	DispatchKeyValue(i_Ent[entity], "GlowForTeam", "3");
+	if (StrEqual(sModelName, "models/props_vehicles/generatortrailer01.mdl"))
+	{
+		i_Ent[entity] = CreateEntityByName("prop_dynamic_override");
+		DispatchKeyValue(i_Ent[entity], "model", sModelName);
+		DispatchKeyValue(i_Ent[entity], "targetname", "propglow");
+	}
+	else
+	{
+		i_Ent[entity] = CreateEntityByName("prop_glowing_object");
+		DispatchKeyValue(i_Ent[entity], "model", sModelName);
+		DispatchKeyValue(i_Ent[entity], "StartGlowing", "1");
+		DispatchKeyValue(i_Ent[entity], "targetname", "propglow");
+		
+		DispatchKeyValue(i_Ent[entity], "GlowForTeam", "3");
+	}
+
 
 	/* GlowForTeam =  -1:ALL  , 0:NONE , 1:SPECTATOR  , 2:SURVIVOR , 3:INFECTED */
 	
@@ -287,14 +296,22 @@ void CreateTankPropGlowSpectator(int entity)
 	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
 	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
 	
-	i_EntSpec[entity] = CreateEntityByName("prop_glowing_object");
-	
-	DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
-	DispatchKeyValue(i_EntSpec[entity], "StartGlowing", "1");
-	DispatchKeyValue(i_EntSpec[entity], "StartDisabled", "1");
-	DispatchKeyValue(i_EntSpec[entity], "targetname", "propglow");
-	
-	DispatchKeyValue(i_EntSpec[entity], "GlowForTeam", "1");
+	if (StrEqual(sModelName, "models/props_vehicles/generatortrailer01.mdl"))
+	{
+		i_EntSpec[entity] = CreateEntityByName("prop_dynamic_override");
+		DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
+		DispatchKeyValue(i_EntSpec[entity], "targetname", "propglow");
+	}
+	else
+	{
+		i_EntSpec[entity] = CreateEntityByName("prop_glowing_object");
+		DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
+		DispatchKeyValue(i_EntSpec[entity], "StartGlowing", "1");
+		DispatchKeyValue(i_EntSpec[entity], "StartDisabled", "1");
+		DispatchKeyValue(i_EntSpec[entity], "targetname", "propglow");
+		
+		DispatchKeyValue(i_EntSpec[entity], "GlowForTeam", "1");
+	}
 	
 	DispatchKeyValue(i_EntSpec[entity], "fadescale", "1");
 	DispatchKeyValue(i_EntSpec[entity], "fademindist", "3000");
