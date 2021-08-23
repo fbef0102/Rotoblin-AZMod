@@ -1,0 +1,29 @@
+﻿v8.2.6
+------------------Delete------------------
+None
+
+------------------New------------------
+-left4dead\addons\sourcemod\plugins
+[l4d_backjump_fix.smx]
+* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
+
+[l4d_checkpoint_rock_patch.smx]
+* Patch memory bytes to fix an issue where tank rock is harder to land on survivors in saferoom area.
+
+-left4dead\addons\sourcemod\gamedata
+[l4d2_si_ability.txt]
+* gamedata for l4d_backjump_fix.smx
+
+[l4d_checkpoint_rock_patch.txt]
+* gamedata for l4d_checkpoint_rock_patch.smx
+
+------------------Modify------------------
+	       ***txt***
+-left4dead\addons\sourcemod\translations
+[Roto2-AZ_mod.phrases.txt]
+* v8.2.6
+		   
+	       ***cfg***
+-left4dead\cfg
+[server.cfg]
+* v8.2.6

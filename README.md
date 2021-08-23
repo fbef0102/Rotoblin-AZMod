@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.2.5
+v8.2.6
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
@@ -329,6 +329,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Slay AI Tank in 1v1, 2v2 and 3v3  
     * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
 	* Ignites the rock thrown by the Tank when he is on fire.
+	* Fixed an issue where tank rock is harder to land on survivors in saferoom area.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -369,6 +370,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Allow Hunters being shoved when not pouncing. (Shove fov: **30**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
 	* Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
+	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
