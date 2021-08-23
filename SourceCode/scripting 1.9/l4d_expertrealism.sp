@@ -30,8 +30,8 @@ public void OnPluginStart()
 {
 	// Trick
 	sv_glowenable = CreateConVar("sv_glowenable", "1", "Turns on and off the terror glow highlight effects (Hidden Value Cvar)", FCVAR_REPLICATED, true, 0.0, true,1.0);
-	hGlow = CreateConVar("l4d_survivor_glowenable", "1", "If 1, Enable Server Glows for survivor team.", FCVAR_NOTIFY,true,0.0,true,1.0);
-	hHideHud = CreateConVar("l4d_survivor_hidehud", "0", "HUD hidden flag for survivor team. (1=weapon selection, 2=flashlight, 4=all, 8=health, 16=player dead, 32=needssuit, 64=misc, 128=chat, 256=crosshair, 512=vehicle crosshair, 1024=in vehicle)", FCVAR_NOTIFY,true,0.0);
+	hGlow = CreateConVar("l4d_survivor_glowenable", "0", "If 1, Enable Server Glows for survivor team.", FCVAR_NOTIFY,true,0.0,true,1.0);
+	hHideHud = CreateConVar("l4d_survivor_hidehud", "64", "HUD hidden flag for survivor team. (1=weapon selection, 2=flashlight, 4=all, 8=health, 16=player dead, 32=needssuit, 64=misc, 128=chat, 256=crosshair, 512=vehicle crosshair, 1024=in vehicle)", FCVAR_NOTIFY,true,0.0);
 	
 	// Optional
 	RegAdminCmd( "sm_glowoff", Command_GlowOff, ADMFLAG_BAN, "Hide one client glow");
@@ -49,7 +49,7 @@ public void OnPluginStart()
 	HookEvent("round_start", evtRoundStart);
 	HookEvent("round_end", evtRoundEnd);
 
-	//AutoExecConfig(true, "l4d_expertrealism");
+	AutoExecConfig(true, "l4d_expertrealism");
 	
 	if( g_bLateLoad )
 	{

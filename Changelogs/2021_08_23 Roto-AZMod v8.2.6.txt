@@ -10,6 +10,10 @@ None
 [l4d_checkpoint_rock_patch.smx]
 * Patch memory bytes to fix an issue where tank rock is harder to land on survivors in saferoom area.
 
+-left4dead\addons\sourcemod\plugins\optional
+[l4d_expertrealism.smx]
+* No Glow, No Hud (Dark Coop)
+
 -left4dead\addons\sourcemod\gamedata
 [l4d2_si_ability.txt]
 * gamedata for l4d_backjump_fix.smx
@@ -27,3 +31,13 @@ None
 -left4dead\cfg
 [server.cfg]
 * v8.2.6
+
+[server_Dark_Coop_plugins.cfg]
+* load l4d_expertrealism.smx
+
+[server_unload_optional_plugins.cfg]
+* unload l4d_expertrealism.smx
+
+-left4dead\cfg\sourcemod
+[l4d_expertrealism.cfg]
+* cfg for l4d_expertrealism.smx
