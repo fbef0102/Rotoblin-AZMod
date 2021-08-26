@@ -7,8 +7,7 @@
 
 
 
-(type !lang in game to see what is your langugage)
-(It depends on which language does player set for steam platform)
+(type !lang in game to see what your langugage is)
 ------------------------------------------------
-Want to translate this config into your language? Hate to see English?
-add me and I will help translate your country language in next Roto-AZ mod update.
+Want to translate this config into your language?
+add me and I will help translate language in next Roto-AZ mod update.

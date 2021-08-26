@@ -1,0 +1,12 @@
+Custom maps support list:
+1.CITY17
+2.Suicide Blitz
+3.I Hate Mountains
+4.Dead Flag Blues
+5.Dead Before Dawn
+6.The Arena of the Dead
+7.Death Aboard
+
+
+https://github.com/fbef0102/Rotoblin-AZMod/releases
+click "Addons_Map.zip" to download

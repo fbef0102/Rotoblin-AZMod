@@ -3,8 +3,8 @@ v8.2.6
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
 * [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
-* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/developer.cfg)
-> **Developer Comment:** Report any bug? Ask any question? Our English bad, add us via steam.
+* [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
+* [Source Code](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/SourceCode)
 
 **LINUX/WINDOWS SERVERS WORK**
 
@@ -20,18 +20,18 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
   > **Developer Comment:** recommended system **win 10** for windows and **ubuntu** for linux
   * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
-  * At this step, you already setup your Server's base for configs, so you can finally start your server.
+  * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
   * console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
 	
 - - - -	
 ### Server Install Optional ###
 * [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
-* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX** or **WINDOWS with HLSM**
+* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
-* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
-* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/raw/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
-
+* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
+* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
+* [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/GagMuteBanEx/plugins/GagMuteBanEx.smx) enhances and improves ban/gag/mute for admin.
 - - - -	
 ### If you appreciate my work, you can [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
 
