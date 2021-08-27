@@ -152,7 +152,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Removed Crashing Plane Screen Shake
   
 * **Support Custom maps:**
-  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/download/v8.2.5/Addons_Map.zip)**
+  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)**
   * City 17 (!cm c17)
   * Suicide Blitz (!cm sb)
   * Dead Flag Blues (!cm dfb)
