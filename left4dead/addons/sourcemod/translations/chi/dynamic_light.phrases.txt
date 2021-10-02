@@ -1,0 +1,15 @@
+﻿"Phrases"
+{
+	"DynamicLight_Toggle"
+	{
+		"chi"			"双击手电筒按键 (F) 切换动态光源."
+	}
+	"DynamicLight_TurnedOn"
+	{
+		"chi"			"动态光源开启. 双击手电筒按键 (F) 切换."
+	}
+	"DynamicLight_TurnedOff"
+	{
+		"chi"			"动态光源关闭. 双击手电筒按键 (F) 切换."
+	}
+}

@@ -628,10 +628,6 @@
 	{
 		"es"	"No tienes que estar enojado ..."
 	}
-	"skeeted a tank rock."
-	{
-		"es"	"Has Skeeteado la roca"
-	}
 	"l4dcompstats1"
 	{
 		"es"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green}{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
@@ -1102,7 +1098,7 @@
 	///////////////l4d_versus_despawn_health.smx///////////////
 	"l4d_versus_despawn_health1"
 	{
-		"es"	"No puedes recuperar {red}HP{default}, Tiempo de espera de  {lightgreen}20s{default} "
+		"es"	"No puedes recuperar {red}HP{default}, Tiempo de espera de  {green}20s{default} "
 	}
 	"l4d_versus_despawn_health2"
 	{
@@ -1394,12 +1390,11 @@
 	}
 	"votes3_8"
 	{
-		"es"	"{1} plugin listo"
+		"es"	"kick Vote is Prohibited"
 	}
-	//{1} in "votes3_8" and "votes3_9" are different type
-	"votes3_9" 
+	"votes3_9"
 	{
-		"es"	"{1} plugin listo"
+		"es"	"forcespectate player vote is Prohibited"
 	}
 	"votes3_10" 
 	{
@@ -1428,6 +1423,22 @@
 	"votes3_16"
 	{
 		"es"	"{blue}{1}{default} ha sido forcespectated!"
+	}
+	"votes3_17"
+	{
+		"es"	"Disable"
+	}
+	"votes3_18"
+	{
+		"es"	"Target is not in game, choose again!"
+	}
+	"votes3_19"
+	{
+		"es"	"Target has kick immue, choose again!"
+	}
+	"votes3_20"
+	{
+		"es"	"{olive}%N{default} tries to kick you, but you have kick immue."
 	}
 	///////////////cannounce.smx///////////////
 	"cannounce1"
@@ -1522,7 +1533,7 @@
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"No Instant Spawn"
 	{
-		"es"	"Pasate al {green}Tank {default}a {red}BOT{default}, {lightgreen}No hay spawn instantaneo{default}!! Espera"
+		"es"	"Pasate al {green}Tank {default}a {red}BOT{default}, {olive}No hay spawn instantaneo{default}!! Espera"
 	}
 	"Give Tank To AI"
 	{
@@ -1614,6 +1625,10 @@
 	"l4d_tankhud2"
 	{
 		"es"		"{default}Como un {green}Tank{default}, no vas a ver el {lightgreen} Tank Hud{default}."
+	}
+	"l4d_tankhud3"
+	{
+		"es"		"{green}AI Tank{default} was stuck and has been slain by server."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
@@ -1973,31 +1988,6 @@
 	{
 		"es"		"Infetados Especiales"
 	}
-	//////////////vocal_block.smx//////////////
-	"vocal_block1"
-	{
-		"es"		"¡No puedes convocar un Votekick contra este jugador!"
-	}
-	"vocal_block2"
-	{
-		"es"		"{1} ha intentado echarte del servidor!"
-	}
-	"vocal_block2"
-	{
-		"es"		"Has alcanzado la cantidad máxima de dialogos"
-	}
-	"vocal_block3"
-	{
-		"es"		"Tu debes esperar {green}{1} {default}S para poder decir un dialogo"
-	}
-	"vocal_block4"
-	{
-		"es"		"{1} Fue expulsado por hablar mal"
-	}
-	"vocal_block4"
-	{
-		"es"		"{1} Fue baneado {2} Min por hablar mal"
-	}
 	//////////////votemanager2.smx//////////////
 	"Invalid vote type"
 	{
@@ -2216,13 +2206,40 @@
 	{
 		"es"		"{1} second(s) left to be allowed to leave start area!"
 	}
-	//////////////l4d_flashlight.smx//////////////
-	"Flashlight Intro"
+	//////////////l4d_storm.smx//////////////
+	"l4d_storm1"
 	{
-		"es"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"es"	"You Cured The Infection!!!"
 	}
-	"Flashlight Usage"
+	"l4d_storm2"
 	{
-		"es"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"es" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
+	}
+	"l4d_storm3"
+	{
+		"es" 	"You Cured The Partial Infection"
+	}
+	"l4d_storm4"
+	{
+		"es" 	"Press FORWARD to crawl while incapped"
+	}
+	//////////////l4d_rock_lagcomp.smx//////////////
+	"skeeted a tank rock."
+	{
+		"es"	"Has Skeeteado {green}la roca{default}!"
+	}
+	//////////////l4d_vocalize_antiflood.smx//////////////
+	"l4d_vocalize_antiflood"
+	{
+		"es"		"Has alcanzado la cantidad máxima de dialogos"
+	}
+	//////////////l4d_slowdown_control.smx//////////////
+	"l4d_slowdown_control_1"
+	{
+		"es"		"{olive}Water Slowdown{default} has been reduced while Tank is in play."
+	}	
+	"l4d_slowdown_control_2"
+	{
+		"es"		"{olive}Water Slowdown{default} has been restored to normal."
 	}
 }

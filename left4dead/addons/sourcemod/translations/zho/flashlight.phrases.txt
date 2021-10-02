@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"Flashlight Intro"
+	{
+		"zho"		"開啟發光效果: 聊天視窗輸入{green}!light{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"zho"		"使用方式: 聊天視窗輸入{green}!light <顏色名稱或R G B>{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+	}
+}

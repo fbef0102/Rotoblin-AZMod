@@ -1,0 +1,702 @@
+Competitive L4D1 Configuration
+-Based on L4D2 Acemod、L4D2 Zonemod、L4D1 rotoblin2 
+
+Author:
+-Taiwan 哈利 - 撰寫一代對抗比賽腳本與插件, Write L4D1 Rotoblin scripts and plugins
+
+-China 乘風 - 引擎, 模塊, 盜版破解, 安裝補丁, 調整, 校正, 輔助插件修改, 網路參數, 部分漢化
+
+-Taiwan JJ - 部分漢化 + 三方載圖
+//如果有任何問題, 歡迎加steam好友並傳送訊息
+//If you have any questions, please contact me via steam, thank you!
+
+--------引擎主要--------
+[01] sourcemod 1.10-git6510
+[02] metamod  1.11-git1145
+[03] stripper 1.2.2-git129
+[04] l4dtoolz 1.1.0.1
+[05] DHooks 2.2.0-detours17
+[06] Tickrate Enabler 1.4
+[07] VoiceHook 3.0
+[08] Socket 3.0.1
+[09] geoipcity 1.1.2
+[10] sourcescramble 0.7.0
+[11] CollisionHooks 0.2 (linux only)
+
+--------地圖修改--------
+1. 所有VS地圖均已解除屋頂限制
+2. 在地圖上新增許多物體障礙物與武器
+//參考二代Zonemode、一代rotoblin2
+3. 地圖藥丸
+ -沒有醫療箱
+ -救援區域: 四顆
+ -路上: 隨機出現不固定數量
+4. spawn jukebox in all value maps
+5. Block "this is restricted area" room where infected ghost can not even spawn
+
+--------武器調整--------
+[01] Uzi機槍
+1.{　0.32->0.26	   }每發子彈的彈道
+2.{　3.0->2.45　 }邊移動邊開槍的準度
+3.{　480->800　 }後備子彈
+4.{　0.84->0.84　}傷害距離遞減 (沒變)
+5.{    2.23->1.75   }裝彈速度
+6.{    20->22	   }傷害
+7.{　3　	}隊伍可拿數量
+
+[02] pumpshotgun散彈槍
+1.{　128->96　}後備子彈
+2.{　2.5->1.5　}空中準度
+3.{　No limits　}隊伍可拿數量
+
+[03] Hunting_Rifle狙擊槍 
+1.{   1->1.25 }彈夾完全空的裝彈時間
+2.{   1    }彈夾裝彈時間 (沒變)
+3.{   1    }撿起武器所需時間 (沒變)
+4.{   1 -> 1.8  }切換武器所需時間 (沒變)
+5.{　1->0.2　}射速
+6.{   90->120	} 一槍對Tank的傷害
+7.{　胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
+8.{　1　　}隊伍可拿數量
+
+--------插件使用--------
+[01] pounceannounce 
+//告訴所有人誰高撲了誰 多少傷害與距離
+
+[02] pill_passer 
+//可以按 R 鍵傳藥丸
+
+[03] tankdoorfix 
+//修正tank有時候沒辦法打破門
+
+[04] pounce_maxdamage 
+//可設定高撲最大傷害
+
+[05] l4d_slowdown_control.sp 
+//控制特感與Tank的槍緩以及倖存者水緩的速度
+
+[06] fix_ghostsound 
+//Mute some SI sounds for Survivors.
+
+[07] l4d_tank_witch_damage_announce_spawnAnnouncer 
+//人類對 witch/tank造成傷害的百分比
+//announcement when Tank/Witch has spawned
+
+[08] l4d_fire_glow 
+[09] l4d_infected_glow 
+//特感, 殭屍, tank, witch, 汽油著火時發出更真實的火花
+
+[10] l4dcompstats 
+//hunter skeet、boomer shut down、witch 傷害remaining 提示
+//MVP-特感殺手、MVP-清屍狂人、MVP-Skeet、MVP-黑槍之王 (!mvp)
+
+[11] l4d_tank_control 
+//為求公平性,每個人M1~M4平均當tank一次
+//歷經數百年來的搶坦之亂終於結束
+//事先決定tank是誰當,擁有兩次控制權,不可換人 (尊重並指導新手玩家)
+//全部都當過tank那自動由官方預設隨機選(自由搶坦)
+//最後一關第二隻tank以後自動由官方預設隨機選
+
+[12] l4d_versus_despawn_health 
+//特感回靈魂狀態會回復失去血量的一半HP (20秒冷卻時間避免濫用)
+
+[13] l4d2_spec_stays_spec 
+//觀戰者下一關強制當觀戰者
+
+[14] l4d_boss_percent 
+//tank sapwn percent,witch spawn percent(!boss)
+
+[15] l4d_current_survivor_progress 
+//survivor進度(survivors 最前面的人類所生成的殭屍spawn進度,!cur)
+
+[16] l4d_versus_specListener
+//旁觀者可以聽到倖存者與特感的teamchat,亦可聽到他們MIC的對話(!hear)
+
+[17] l4d_versus_spechud
+//Provides different HUDs for spectators
+
+[18] l4d_panic_notify 
+//誰觸發了屍潮事件(包括打車.開機關)
+
+[19] l4d_nobhaps 
+//玩家不能連跳(連跳不會超過速度上限)
+
+[20] l4d_tank_shove_slowdown_fix 
+//加入這個插件,倖存者用槍托推Tank不會造成其減速
+
+[21] l4d_bash_kills 
+//hunter.smoker特感玩家不會被推死(Boomer除外)
+
+[22] l4d_pounceprotect
+//Hunter在做高撲時不會因為受到傷害失去彈牆能力而掉下來
+
+[23] l4d_passing_Tank_no_instant_respawn 
+//傳給AI Tank的玩家不會馬上回靈魂特感狀態(必須等spawn timer)
+
+[24] l4d_stumble_block_button 
+//當妳被震到, 所有按鈕與滑鼠鍵均不能使用(還是可以移動視角)
+
+[25] l4d_thirdpersonshoulderblock 
+//阻擋玩家使用第三人稱偷看視角
+
+[26] l4d_texture_manager_block 
+//踢出使用Material Hack的玩家
+
+[27] cannounce 
+//Replacement of standard player connected message, allows for custom join messages.
+
+[28] fix_specbotkick
+//修正倖存者的玩家換隊之後, bot會自動踢除的問題
+
+[29] l4d_ledge_HealthExpolitFixes 
+//各種hang on a ledge bug fix　( 圖片示範 [forums.alliedmods.net])
+
+[30] l4d_pig_infected_notify 
+//各種豬隊友提示 (誰boomer炸Tank,Tank打死自己人,tank誤殺了witch)
+
+[31] l4d_DynamicHostname 
+//目前在玩甚麼模式會顯示在伺服器名稱後面
+
+[32] kills 
+//擊殺+被控統計(!kills)
+
+[33] l4d_tankhud
+//tankhud for spectators and Inf team except for Tank(!tankhud)
+
+[34] l4d_tank_hittable_refill
+//Refill Tank's frustration whenever a hittable hits a Survivor
+
+[35] l4d_tank_attack_control
+//Tank pounch and throw rock control
+
+[36] l4d_versus_GhostWarp
+//Infected ghost player can warp to any survivor (use mouse2 or command)
+//!warpto <#|name> (1|Francis, 2|Bill, 3|Zoey, 4|Louis)
+
+[37] l4d2_blind_infected
+//Hides all weapons and iteams from the infected team or dead survivor until they are (possibly) visible to one of the alive survivors to prevent SI scouting the map
+
+[38] l4d_vesus_nerf_huntingrifle
+//削弱狙擊槍各種設定,改成二代AWP,Scout拉勾模式, 射一槍,拉一下
+
+[39] l4d_huntingrifle_damagemodify 　(乘風撰寫)
+//對Hunter有加成傷害, 胸部直接秒 *2.8、腹肌 *1.8, Tank dmg 135
+
+[40] l4d_versus_same_UnprohibitBosses
+//強制每一關生出相同位置的tank與witch
+
+[41] l4d_ladderblock
+//禁止玩家卡樓梯block正在爬上來的特感與人類玩家(tank也包含在內)
+
+[42] l4d_team_unscramble
+//強制玩家在換關/換圖後放到原本的隊伍
+
+[43] l4dscores
+//管理分數、換圖之後的隊伍, 顯示隊伍分數(!score)與詳細的分數細節(!health)
+
+[44] l4dffannounce
+//who the fking idiot TK you
+
+[45] lerptracker
+//show player change lerp, 玩家lerp值必須介於0.0~67.0之間
+
+[46] l4d_reservedslots
+//保留伺服器空位給管理員進出
+
+[47] comp_loader
+//Config Loader(!load,!mode,!match), Map Changer(!cm)
+
+
+[48] admin_hp
+//adm give Survivors HP (!hp)
+
+[49] votes3　
+//投票各種項目(!votes)
+
+[50] l4dready
+//所有玩家都得準備才能開始遊戲, 新版ready hud
+
+[51] l4d_Harry_Roto2-AZ_mod_info
+//顯示此 Rotoblin-AZ Mod 的各種資訊 (!info,!Harry)
+
+[52] temphealthfix
+//確保Tank使倖存者倒地後的血量為正確數值(300)
+
+[53] l4d_godframes_and_hittable_control
+//倖存者無敵狀態下呈現紅透明色(倒地救起,Smoker解脫,Hunter解脫)
+//控制無敵狀態下承受的各種傷害
+//控制各種車子的傷害
+
+[54] l4d_tank_props
+//Tank打過的玩具在Tank還活著時候不會消失
+//Tank打過的玩具在Tank還活著時候會發光
+//Tank打過的玩具在Tank還活著時候新增殘影微透明顏色模型解決所有人看不到車子的問題
+
+[55] l4d_witchglow
+//witch 會發亮給特感隊伍知道
+
+[56] l4d_no_hunter_deadstops
+//輔助hunter飛撲的時候不能被推 (!sm_cvar versus_shove_hunter_fov_pouncing 0)
+
+[57] specrates
+//旁觀設置30tick 減少帶寬占用 降低對server的負荷
+
+[58] sceneprocessor
+//語音插件輔助
+
+[59] l4d_heardspecialsfix
+//多一點聽到Smoker與Boomer的語音
+
+[60] TickrateFixes
+//解決tick高的時候存在的少數問題 (Hook Pistols + 重力 + 門速)
+
+[61] l4d_storm
+//L4D1 黑暗Environment 
+(sm_cvar l4d_storm_allow,!snow,!rains,!fog,!maplight,!faz,!sun,!lightning,!background,!wind)
+
+[62] l4d_jukebox_spawner
+//spawn jukebox in all value maps (!jukestop)
+
+[63] 1v1
+//support 1V1
+
+
+[64] l4d_superversus
+//support mutiplayers versus mode,5v5 possible
+
+[65] advertisements
+//廣告插件
+
+[66] fix_engine
+//#1 Ladder speed glitch (不修正)
+//#2 No fall damage bug
+//#3 Health boost glitch
+
+[67] l4d_versus_5v5_hud
+//Provides 5v5 HUDs for infected
+
+[68] l4d2_witch_crown_fix
+//Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
+
+[69] l4d2_witch_restore
+//沒被嚇到的Witch is restored at the same spot if she gets killed by a Tank
+
+[70] l4d_bw_rock_hit
+//Stops rocks from passing through soon-to-be-dead Survivors
+
+[71] l4d_tankpunchstuckfix
+//Fixes the problem where tank-punches get a survivor stuck in the roof
+
+[72] checkpoint-rage-control
+//Tank will still lose rage while survivors are in saferoom
+
+[73] l4d_stuckzombiemeleefix
+//處死推不了卡住的殭屍的問題
+
+[74] l4d_ai_damagefix
+//skeeting mechanic is completely disabled for Hunter AI, so Makes AI SI take (and do) damage like human SI.
+
+[75] nodeathcamskip
+//Blocks players skipping their death cam
+
+[76] l4dvs_witch_spawn_fix
+//Fix the problem that versus director won't spawn Witch during Tank alive
+
+[77] witch_target_patch
+//Fixes witch going after wrong clone survivor
+
+[78] l4d_NoEscapeTank
+//No Tank Spawn as the rescue vehicle is coming except The sacrifice final
+
+[79] sm_l4d_mapchanger
+//最後一關自動換圖
+[80] games
+//擲骰子(!roll), 終極密碼(!code), Mix Team(!mix), 擲硬幣(!coin)
+
+[81] si_class_announce
+//Report what SI classes are up when the round starts
+
+[82] blocktrolls
+//Prevents calling votes while others are loading
+
+[83] Enhanced_Throwables
+//Addes dynamic lights to handheld throwables
+
+[84] l4d_antibaiter
+//Survivors Must move forward, no time to stay put long, or the director will force panic event
+
+[85] caster_assister
+//Allows spectators to control their own specspeed and move vertically
+
+[86] l4d_nobackjumps
+//禁止Hunter walkkicking
+
+[87] huntercrouchsound
+//修正玩家在水管、通風口等狹小的低天花板空間中呈現蹲姿狀態(玩家沒有按蹲下鍵)卻沒有發出Hunter低吼聲音
+
+[88] hunter_growl_sound_fix
+//修正Hunter玩家MIC說話的時候Hunter會發出低吼聲即使Hunter仍然站著不動
+
+[89] votemanager2
+//官方投票需要管理員權限
+
+[90] l4d_tank_count
+//坦克存活計秒器, 拳頭/石頭/玩具 擊中計數器
+
+[91] ratemonitor
+//顯示玩家的 Cmdrate/Updaterate/Rate (!rates)
+
+[92] l4d_drop_secondary
+//玩家死亡掉落第二武器(手槍) + ready模式中死亡不會掉落武器
+
+[93] l4d2_si_ffblock
+//Disables friendly fire between infected players except Tank/Witch
+
+[94] l4dinfectedbots
+//pub混野中新增特感bot
+
+[95] 1vHunters
+//支援多Hunters混戰模式
+
+[96] l4d2_smg_reload_tweak
+//smg reload faster with faster reload animation
+
+[97] botpopstop
+//Removes pills from bots if they try to use them and restores them when a human takes over.
+
+[98] l4d_PillsHere
+//Gives pills to survivors who doesn't have pill
+
+[99] all4dead
+//This mod allows administrators to influence what the AI director does without sv_cheats 1.
+
+[100] l4d_multiwitch
+//A plugin that spawns unlimited witches off of a timer.
+
+[101] server_loader
+//executes server_startup.cfg file on server startup
+
+[102] l4d_disable_shadows
+//Disables all shadows from the map, Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
+
+[103] l4d_NoRescueFirstTank
+//移除救援後的第一隻坦克
+//rescue second tank spawn same position for both team
+
+[104] AI_HardSI
+//智能AI
+
+[105] finalefix
+//Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
+
+[106] l4d_QuadCaps
+//If Boomer dies last, then next Special Infected Spawn: 100% Quad Incaps
+//The Starting SI remain random (yet equal on both sides)
+
+[107] savechat
+//紀錄玩家聊天與說話紀錄 in left4dead\addons\sourcemod\logs\chat
+
+[108] l4d_slot_vote
+//Allow players to change server slots by using vote.
+
+[109] bequiet
+//Please be Quiet!
+
+[110] l4d_teamshuffle
+//team shuffle (!shuffle)
+
+[111] hunter_callout_blocker
+//生還者不會再喊出'Hunter'語音！（例如：森林裡的獵人處於你視野裡，不會喊出）
+
+
+[112] l4d_vocalize_antiflood
+//阻擋一直惡意亂叫濫用遊戲角色語音
+
+[113] gametype_description
+//允許在伺服器瀏覽表中更改顯示的遊戲類型
+
+[114] l4d_rock_lagcomp
+//自製坦克石頭hitbox + 武器對石頭傷害修改 有助於高ping戰士打掉石頭
+//誰打掉了石頭
+
+[115] l4d_vomit_pounce_fix
+//修正胖子有時候噴到正在被Hunter撲到的玩家
+
+[116] SpeakingList
+//alltalk off 之時只給旁觀玩家顯示誰正在使用麥克風說話
+//alltalk on 之時全體玩家顯示誰正在使用麥克風說話
+
+[117] l4d_spectator_prefix
+//玩家旁觀時更改名子前啜, 好讓外面人看到伺服器資訊誰在玩,誰沒在玩
+
+[118] AntiBreach
+//防止低能特感玩家利用安全門bug復活衝破進去安全室
+
+[119] witch_allow_in_safezone
+//Witch能追人類到安全室內
+
+[120] l4d_ssi_teleport_fix
+//AI 特感傳送到距離人類最近的特感身上
+
+[121] l4d2_si_ladder_booster
+//AI 特感爬梯子加速
+
+[122] l4d_sm_respawn
+//sm_respawn 復活玩家
+
+[123] firebulletsfix
+//Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving.
+
+[124] l4d_bossvote
+//Allow players to change server slots by using vote.
+
+[125] command_buffer
+//ConVars 太多啦
+
+[126] l4d_weapon_csgo_reload
+//reload like  CSGO weapon
+
+[127] anti-friendly_fire
+//射隊友 = 射你自己
+
+[128] L4DVSAutoSpectateOnAFK
+//自動旁觀AFK玩家並且踢掉
+[129] sv_steamgroup_fixer
+//修正 sv_steamgroup 指令無法顯示正確群組
+
+[130] l4d_wind
+//增加電腦玩家
+
+[131] l4d_dynamic_light
+//手電筒發亮特效
+
+[132] l4d2_noghostcheat
+//防止玩家看到鬼
+
+[133] [L4D] Rock Glow
+//坦克石頭發光(只有特感與旁觀隊伍能看見)
+
+[134] l4d_target_patch
+//特感能夠識別目標並轉移（不會重複追同一隻、不攻擊已倒地的玩家）
+
+[135] l4d_collision_adjustments (linux only)
+//碰撞模型穿透
+//坦克石頭穿透小殭屍(還是會殺死)
+//被舌頭拉走的玩家穿透小殭屍
+//坦克石頭穿透倒地的玩家(如果即將倒地不會穿透)
+//小殭屍穿透witch(避免witch堵路)
+
+[136] l4d_pause_message
+//如果伺服器不支援暫停功能，控制台停止刷版顯示誰暫停 誰解除暫停
+
+[137] l4d_tank_rock_ignition
+//Tank著火，丟出來的石頭也會著火
+
+[138] witch_prevent_target_loss
+//Witch不會失去目標
+
+[139] antisaferoomdooropen
+//防止玩家不等人直接開門衝出去
+
+[140] l4d_flashlight
+//給旁觀者更好的觀看體驗
+
+[141] l4d_info_editor
+//Modify gamemodes.txt and weapons.txt values by config instead of conflicting Game files.
+
+[142] l4d_smoker_drag_damage_interval
+//調整Smoker舌頭拖曳的傷害與時間
+
+[143] l4d_backjump_fix
+//Hunter能在自製的物件牆壁上踢牆
+
+[144] l4d_checkpoint_rock_patch
+//修正Tank石頭的Hitbox在安全室會變小 (我哪知道 去問Valve)
+
+[145] l4d_expertrealism
+//寫實模式 (看不到隊友輪廓與血量狀態)
+
+[146] left4dhooks
+//Left 4 Downtown + L4D Direct
+
+[147] rotoblin-az
+//核心插件
+
+[148] l4d_mix
+//team mix (!mix)
+
+[149] l4d_useful_upgrades
+//黑暗戰役輔助 雷射裝置/消音槍/夜視鏡
+
+[150] l4d2_boomer_shenanigans
+//Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
+
+[151] l4d2_car_alarm_hittable_fix
+//Tank打過的警報車不會被人類觸發警報
+
+[152] l4d_weapon_prop_give_fix
+//使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
+
+[153] l4d_unswap_empty_primary
+//撿到空彈夾的主武器不會自動切換到手槍
+
+[154] physics_object_pushfix
+//人類與特感不會再推擠物件
+
+[155] l4d_pipebomb_ignore
+//即使玩家丟出土製炸彈，Bot依然能開槍行動
+
+[156] l4d_climb
+//蜘蛛人爬牆插件
+
+[157] l4d_remove_item_collision
+//所有物品與武器不會有碰撞屬性
+
+[158] noteam_nudging
+//倖存者玩家的身體不會再互推對方（Bot還是會）
+
+[159] l4d_pickup
+//右鍵傳藥丸+撿起手槍不會再自動切換
+
+[160] canbecomeghost
+//去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
+
+--------vpk支援--------
+[01] Crash Course Unprohibit Bosses.vpk
+//解決Crash Course兩關無法出Tank的問題
+
+[02] _l4d modified talker.vpk
+Download
+//improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
+
+--------反作弊.反腳本.反破壞, 反屁孩--------
+//SMAC 0.8.6.0組成, 禁止任何玩家使用腳本或是作弊來破壞遊戲平衡
+Download
+[01] smac　(主控制)
+[02] smac_aimbot 　(反自瞄)
+[03] smac_autotrigger 　(反BunnyHop,反自動開火)
+[04] smac_client (反重複連線, 反踢出連線逾時15秒, 反name change spam,name too short/long)
+[05] smac_spinhack　(反准心與子彈不對)
+[06] smac_speedhack 　(反加速)
+[07] smac_eyetest 　(反視角擴展, 反按鈕攥改)
+[08] smac_commands (反客戶端指令spam)
+[09] smac_rcon. (反駭客遠端登入破壞伺服器並攥改密碼)
+[10] smac_cvars (偵測作弊指令)
+
+--------分數計算--------
+( AD + HB + PILLS ) x Alive x Map  
+AD = 平均距離, 介於 0-100%
+HB = 生命加值, Floor(實血/2) + RoundToNearest(虛血/4)
+PILLS = 藥分, 保留藥丸每顆+15
+Alive = 倖存者存活數
+Map = 地圖難度修改
+
+--------非官方地圖--------
+[01] City 17
+[02] Suicide Blitz 
+[03] Dead Flag Blues 
+[04] I Hate Mountains
+[05] Dead Before Dawn
+[06] The Arena of the Dead
+[07] Death Aboard
+
+--------指令備忘錄--------
+[ADM]
+-!sm_cvar versus_shove_hunter_fov	"45"	//90 = Default, 0 to disable not-pouncing deadstops
+-!sm_cvar versus_shove_hunter_fov_pouncing "30" //45 = Default, 0 to disable pouncing deadstops
+-!rcon quit //restart server
+-!snow ,!rains, !fog, !maplight <a-z>, !faz ,!sun, !lightning, !background, !wind // (only in dark coop)
+-!addban //sm_addban <time> <steamid> [reason]
+-!ban //sm_ban <#userid|name> <minutes|0> [reason]
+-!banip //sm_banip <ip|#userid|name> <time> [reason]
+-!give //adm gives the whole team pills
+-!giveto <name> //adm gives the survivor player who doesn't have pill
+-!settankplayer <name> //adm force this player will become the tank
+-!kickspec //forcekick all non-adm spectators
+-!slots <#> //forcechange server slots
+-!admin //adm menu
+-!respawn <name> //respawn survivor
+-!wind //add a human bot (dark coop、witch party、5v5)
+-!hp	//adm give survivor team full health
+-!cm 	//forcechange map
+-!load	//forceload match
+-!sm_execcfg <filename> //exec cfg file
+-!forceshuffle //force team shuffle (during ready-up)
+-!forcemix //force mix (during ready-up)
+-!forcestart //Round starts when ready stage
+-!forcepause //Server pause by adm
+-!forceunpause //Server unpause by adm
+-!swapto <name> <team(1,2, or 3)> //swap player to team
+-!swapmenu //bring up a swap players menu
+-!swapscores //swap the score between the first and second team
+-!setscore <team(2,3)> <score> //set campaign score (during ready-up)
+-!resetscores //clear all campaign score (during ready-up)
+-!restartmap //restart current level
+
+
+[Everyone]
+-!s,!afk,!away,!spectate 	//switch team to spectate
+-!sur 			//switch team to survivor
+-!inf 			//switch team to infected
+-!cur(!current)		//survivors current
+-!boss(!tank,!witch)	//boss percent
+-!pause			//pause game
+-!votes			//vote menu(kick、change map、alltalk、custom maps、hp)
+-!tankhud		//tank hud
+-!spechud		//spec hud
+-!respec <name>	 //used by infected, force client spectator to respectate
+-!ps,!printscores,-!scores,!score	//print all round scores
+-!health(!bonus)		//print this round score
+-!hear			//listen mode
+-!kills			//survivor status
+-!mvp			//survivor mvp status
+-!warpto <#|name> (1|Francis, 2|Bill, 3|Zoey, 4|Louis) //warp to survivors when infected ghost
+-!info(!Harry)		//Rotoblin-AZ Mod information menu
+-!jukestop 		//stop jukebox music
+-!roll <#> 		//game
+-!code <1~100000> 	//game
+-!coin			//game
+-!random		//random choose a team for you (spectator)
+-!lerps			 //show players' lerp
+-!lerpss 			//show spectators' lerp
+-!rates 			//show players' rates
+-!ht 			//Hunter Bot limit (witch party、multi Hunters)
+-!timer 			//Bot Spawn Timer (witch party、multi Hunters)
+-!slots 			//change server slots
+-!kickspec 		//kick all non-adm spectators
+-!mix 			//vote to start a mix
+-!shuffle			 //vote to start a shuffle
+-!speaklist		//mic speak list
+-!voteboss		 //L4D Boss Percents Vote (first round & ready-up)
+-!top5 			//Top 5 Skeeter
+-!skeets 		//Show Your Skeet Rank
+-!rank 			//Show Your Skeets
+-!pounce5 		//Top 5 Pouncer
+-!pounces		//Show Your Pounce Stats
+-!lang			//which language would you see in this mod
+-!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //secret trophy on your head (during ready-up)
+-!load(!mode,!match)	//load a match
+//5v5, 5v5hu, 5v5nb, 5v5 classic
+//4v4, 4v4 classic, 4v4hu, 4v4nb
+//3v3, 3v3hu, 3v3nb
+//2v2, 2v2hu, 2v2nb
+//1v1, 1v2, 1v3, 1v4, 1v5
+//2v3, 2v4, 2v5
+//3v4, 3v5
+//4v5
+//witch party
+//dark coop
+-!cm 			//change map
+//nm (No Mercy)
+//dt (Death Toll)
+//da (Dead Air)
+//bh (Blood Harvest)
+//ts (The Sacrifice)
+//cc (Crash Course)
+//c17 (City 17)
+//sb (Suicide Blitz)
+//ihm (I hate mountain)
+//dfb (Dead Flag Blues)
+//dbd (Dead Before Dawn)
+//dab (Death Aboard)
+//aotd (The Arena of the Dead)

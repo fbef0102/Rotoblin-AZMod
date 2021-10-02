@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"Flashlight Intro"
+	{
+		"es"		"Comando para conmutar colores: {green}!light{default}. Colores: red, green, blue, purple, orange, yellow, white. O 3 valores entre 0-255. EJ: {green}!light red{default} o {green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"es"		"Modo: {green}!light <color name|R G B>{default}. Colores: red, green, blue, purple, orange, yellow, white. O 3 valores entre 0-255. EG: {green}!light red{default} o {green}!light 255 0 0{default}"
+	}
+}

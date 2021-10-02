@@ -10,30 +10,116 @@
 {
 	"Changemap"
 	{
-		"Blood Harvest"
+		"No Mercy Coop"
 		{
-			"cmd" "sm_rcon changelevel l4d_vs_farm01_hilltop"
+			"cmd" "sm_rcon changelevel l4d_hospital01_apartment"
 		}
-		"Death Toll"
-		{
-			"cmd" "sm_rcon changelevel l4d_vs_smalltown01_caves"
-		}
-		"Dead Air"
-		{
-			"cmd" "sm_rcon changelevel l4d_vs_airport01_greenhouse"
-		}
-		"No Mercy"
+		"No Mercy VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_hospital01_apartment"
 		}
-		"Sacrifice"
+		"Death Toll Coop"
 		{
-			"cmd" "sm_rcon changelevel l4d_river01_docks"
+			"cmd" "sm_rcon changelevel l4d_smalltown01_caves"
+		}
+		"Death Toll VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_smalltown01_caves"
+		}
+		"Dead Air Coop"
+		{
+			"cmd" "sm_rcon changelevel l4d_airport01_greenhouse"
+		}
+		"Dead Air VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_airport01_greenhouse"
+		}
+		"Blood Harvest Coop"
+		{
+			"cmd" "sm_rcon changelevel l4d_farm01_hilltop"
+		}
+		"Blood Harvest VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_farm01_hilltop"
 		}
 		"Crash Course"
 		{
 			"cmd" "sm_rcon changelevel l4d_garage01_alleys"
 		}
-
+		"Sacrifice"
+		{
+			"cmd" "sm_rcon changelevel l4d_river01_docks"
+		}
+		"City17 Coop"
+		{
+			"cmd" "sm_rcon changelevel l4d_city17_01"
+		}
+		"City17 VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_city17_01"
+		}
+		"Suicide Blitz Coop"
+		{
+			"cmd" "sm_rcon changelevel l4d_stadium1_apartment"
+		}
+		"Suicide Blitz VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_stadium1_apartment"
+		}
+		"Dead Flag Blue Coop"
+		{
+			"cmd" "sm_rcon changelevel l4d_deadflagblues01_city"
+		}
+		"Dead Flag Blue VS"
+		{
+			"cmd" "sm_rcon changelevel l4d_vs_deadflagblues01_city"
+		}
+		"The Arena of the Dead"
+		{
+			"cmd" "sm_rcon changelevel l4d_jsarena01_town"
+		}
+		"I Hate Mountains"
+		{
+			"cmd" "sm_rcon changelevel l4d_ihm01_forest"
+		}
+		"Dead Before Dawn"
+		{
+			"cmd" "sm_rcon changelevel l4d_dbd_citylights"
+		}
+		"Death Aboard"
+		{
+			"cmd" "sm_rcon changelevel l4d_deathaboard01_prison"
+		}
+	}
+	"Changemode"
+	{
+		"5v5 Hardcore"
+		{
+			"cmd" "sm_rcon exec rotoblin_hardcore_5v5"
+		}
+		"4v4 Hardcore"
+		{
+			"cmd" "sm_rcon exec rotoblin_hardcore_4v4"
+		}
+		"3v3 Hunters Only"
+		{
+			"cmd" "sm_rcon exec rotoblin_hunters_3v3"
+		}
+		"2v2 Hunters Only"
+		{
+			"cmd" "sm_rcon exec rotoblin_hunters_2v2"
+		}
+		"1v1 Hunter Only"
+		{
+			"cmd" "sm_rcon exec rotoblin_hunters_1v1"
+		}
+		"Witch Party"
+		{
+			"cmd" "sm_rcon exec rotoblin_witch_party"
+		}
+		"Dark Coop"
+		{
+			"cmd" "sm_rcon exec rotoblin_Dark_Coop"
+		}
 	}
 }

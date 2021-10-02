@@ -1,0 +1,48 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"CDirector::AuditActivePipeBombs"
+			{
+				"signature"		"CDirector::AuditActivePipeBombs"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"ignore"
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Signatures"
+		{
+			/* CDirector::AuditActivePipeBombs(CDirector *this) */
+			"CDirector::AuditActivePipeBombs"
+			{
+				"library"		"server"
+				"linux"			"@_ZN8Director20AuditActivePipeBombsEv"
+				"windows"		"\x56\x57\x8B\x2A\x8D\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\xD8\x2A\x2A\xDF\x2A\xF6\x2A\x2A\x0F\x85"
+				/* 56 57 8B ? 8D ? ? ? ? ? 8B ? E8 ? ? ? ? D8 ? ? DF ? F6 ? ? 0F 85 */
+				/* Search: "pipe_bomb_projectile". Visually match compared to Linux function. */
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			/* CDirector::AuditActivePipeBombs(CDirector *this) */
+			"CDirector::AuditActivePipeBombs"
+			{
+				"library"		"server"
+				"linux"			"@_ZN9CDirector20AuditActivePipeBombsEv"
+				"windows"		"\x55\x8B\x2A\x51\x53\x56\x8B\x2A\x57\x8D\x2A\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\xD9\x2A\xD9\x2A\xDF\x2A\xDD\x2A\x0F"
+				/* 55 8B ? 51 53 56 8B ? 57 8D ? ? ? ? ? 8D ? ? ? ? ? E8 ? ? ? ? D9 ? D9 ? DF ? DD ? 0F */
+				/* Search: "pipe_bomb_projectile". Visually match compared to Linux function. */
+			}
+		}
+	}
+}

@@ -3,7 +3,7 @@
 	//Every Language
 	"Language"
 	{
-		"chi"			"你在这伺服器会看到的语言: 简体中文, 翻译者：Target"
+		"chi"			"你在这服务器会看到的语言: 简体中文, 翻译者：Target"
 	}
 	"Plugin_Information"
 	{
@@ -478,6 +478,15 @@
 	{
 		"chi"		"对换指定玩家的队伍"
 	}
+	"PanelHide"
+	{
+		"chi"		"[{olive}Readyup{default}] 准备界面已 {red}关闭{default}"
+	}
+	
+	"PanelShow"
+	{
+		"chi"		"[{olive}Readyup{default}] 准备界面已 {red}开启{default}"
+	}
 	///////////////comp_loader.smx///////////////
 	"request timed out."
 	{
@@ -628,10 +637,6 @@
 	{
 		"chi"	"你不必生气（傻逼）"
 	}
-	"skeeted a tank rock."
-	{
-		"chi"	"打掉了Tank石头"
-	}
 	"l4dcompstats1"
 	{
 		"chi"	"特感杀手: {blue}{1}{default} ({olive}{2}{default} 伤害 [{green}{3}%%{default}], {olive}{4}{default} 击杀 [{green}{5}%%{default}])"
@@ -654,11 +659,11 @@
 	}
 	"l4dcompstats6"
 	{
-		"chi"	"{red}Witch{default} 还剩 {green}{1}{default} 血量。"
+		"chi"	"{red}妹子{default} 还剩 {green}{1}{default} 血量。"
 	}
 	"l4dcompstats7"
 	{
-		"chi"	"{blue}{1}{default} 被 {green}Witch{default} 杀了。"
+		"chi"	"{blue}{1}{default} 被 {green}妹子{default} 杀了。"
 	}
 	"l4dcompstats8"
 	{
@@ -830,7 +835,7 @@
 	}
 	"Tank Kill Witch"
 	{
-		"chi"	"Tank {default}使用 {olive}{1}{default} 终结了 {red}Witch{default}."
+		"chi"	"坦克 {default}使用 {olive}{1}{default} 终结了 {red}妹子{default}."
 	}
 	"punches"
 	{
@@ -850,47 +855,47 @@
 	}
 	"Tank kill teammate"
 	{
-		"chi"	"{green}Tank {olive}{1}{default} {2}队友。"
+		"chi"	"{green}坦克 {olive}{1}{default} {2}队友。"
 	}
 	"l4d_pig_infected1"
 	{
-		"chi"	"{olive}{1}{default} 用门击晕 {green}Tank{default}。"
+		"chi"	"{olive}{1}{default} 用门击晕 {green}坦克{default}。"
 	}
 	"l4d_pig_infected2"
 	{
-		"chi"	"{red}Witch{default} 使出 {olive}天马流星拳 {default}打死队友。"
+		"chi"	"{red}妹子{default} 使出 {olive}天马流星拳 {default}打死队友。"
 	}
 	"l4d_pig_infected3"
 	{
-		"chi"	"{red}Witch{default} 使出 {olive}北斗神拳 {default}打死AI队友。"
+		"chi"	"{red}妹子{default} 使出 {olive}北斗神拳 {default}打死AI队友。"
 	}
 	"l4d_pig_infected4"
 	{
-		"chi"	"{red}Witch{default} {olive}狗带{default}了。"
+		"chi"	"{red}妹子{default} {olive}狗带{default}了。"
 	}
 	"l4d_pig_infected5"
 	{
-		"chi"	"{olive}{1}{default} 杀死 {red}{2}{default} 肥宅炸晕 {green}Tank{default}。"
+		"chi"	"{olive}{1}{default} 杀死 {red}{2}{default} 肥宅炸晕 {green}坦克{default}。"
 	}
 	"l4d_pig_infected6"
 	{
-		"chi"	"{olive}{1}{default} 杀死 {red}AI{default} 肥宅炸晕 {green}Tank{default}。"
+		"chi"	"{olive}{1}{default} 杀死 {red}AI{default} 肥宅炸晕 {green}坦克{default}。"
 	}
 	"l4d_pig_infected7"
 	{
-		"chi"	"{green}Tank {olive}{1} {red}{2}{default} 的肥宅炸晕自己。"
+		"chi"	"{green}坦克 {olive}{1} {red}{2}{default} 的肥宅炸晕自己。"
 	}
 	"l4d_pig_infected8"
 	{
-		"chi"	"{green}Tank {olive}{1} {red}AI{default} 的肥宅炸晕自己。"
+		"chi"	"{green}坦克 {olive}{1} {red}AI{default} 的肥宅炸晕自己。"
 	}
 	"l4d_pig_infected9"
 	{
-		"chi"	"{green}Tank {olive}{1} {red}{2}{default} 的肥宅。"
+		"chi"	"{green}坦克 {olive}{1} {red}{2}{default} 的肥宅。"
 	}
 	"l4d_pig_infected10"
 	{
-		"chi"	"{green}Tank {olive}{1} {red}AI{default} 肥宅。"
+		"chi"	"{green}坦克 {olive}{1} {red}AI{default} 肥宅。"
 	}
 	"l4d_pig_infected11"
 	{
@@ -902,7 +907,7 @@
 	}
 	"l4d_pig_infected13"
 	{
-		"chi"	"{default}猪队友 {red}{1}{default} 的肥宅炸晕 {green}Tank{default}。"
+		"chi"	"{default}猪队友 {red}{1}{default} 的肥宅炸晕 {green}坦克{default}。"
 	}
 	"l4d_pig_infected14"
 	{
@@ -919,7 +924,7 @@
 	}
 	"Tank Punch survivor fly away and die"
 	{
-		"chi"	"Tank {default}一拳再见本垒打 {olive}{1}{default}."
+		"chi"	"坦克 {default}一拳再见本垒打 {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
@@ -944,12 +949,12 @@
 	///////////////checkpoint-rage-control.smx///////////////
 	"Survivors are in saferoom, Tank still loses rage!!!"
 	{
-		"chi"	"{olive}生还者{default} 即使处于安全区域, {green}Tank{default} 依然会掉控制权!!!"
+		"chi"	"{olive}生还者{default} 即使处于安全区域, {green}坦克{default} 依然会掉控制权!!!"
 	}
 	///////////////caster_assister.smx///////////////
 	"Your movement speed would be out of bounds, permission denied."
 	{
-		"chi"	"你的移动速度已超出上线，权限被拒绝。"
+		"chi"	"你的移动速度已超出上限，权限被拒绝。"
 	}
 	///////////////l4d_antibaiter.smx///////////////
 	"Survivors must move forward"
@@ -968,7 +973,7 @@
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
-		"chi"	"{green}Only One Tank {default}after {olive}Final Rescue"
+		"chi"	"{olive}救援开始 {default}后只有 {green}一只坦克!"
 	}
 	///////////////l4d_tank_attack_control.smx///////////////
 	"l4d_tank_attack_control_Rock"
@@ -978,7 +983,7 @@
 	///////////////l4d_tank_control.smx///////////////
 	"player will be the tank"
 	{
-		"chi"	"{green}[我是坦] {red}{1}{default} 将成为 {green}Tank{default}!"
+		"chi"	"{green}[我是坦] {red}{1}{default} 将成为 {green}坦克{default}!"
 	}
 	"force this player will become the tank"
 	{
@@ -998,15 +1003,15 @@
 	}
 	"l4d_tank_control2"
 	{
-		"chi"	"{green}[我是坦]{default} 管理员强制 {red}{1}{default} 成为下一个 {green}Tank{default}!"
+		"chi"	"{green}[我是坦]{default} 管理员强制 {red}{1}{default} 成为下一个 {green}坦克{default}!"
 	}
 	"l4d_tank_control3"
 	{
-		"chi"	"{green}[抢坦之乱]{default} 所有人已经当过 {green}Tank{default}，{olive}现在开始自由抢Tank{default}!"
+		"chi"	"{green}[抢坦之乱]{default} 所有人已经当过 {green}坦克{default}，{olive}现在开始自由抢坦克{default}!"
 	}
 	"l4d_tank_control4"
 	{
-		"chi"	"{green}[我是坦] {red}特感队伍{default} 没有人，无法选玩家成为 {green}Tank{default}."
+		"chi"	"{green}[我是坦] {red}特感队伍{default} 没有人，无法选玩家成为 {green}坦克{default}."
 	}
 	"l4d_tank_control5"
 	{
@@ -1019,15 +1024,15 @@
 	///////////////l4d_tank_count.smx///////////////
 	"First Tank"
 	{
-		"chi"	"第一只Tank"
+		"chi"	"第一只坦克"
 	}
 	"Second Tank"
 	{
-		"chi"	"第二只Tank"
+		"chi"	"第二只坦克"
 	}
 	"Third Tank"
 	{
-		"chi"	"第三只Tank"
+		"chi"	"第三只坦克"
 	}
 	"AI Tank"
 	{
@@ -1040,31 +1045,31 @@
 	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
 	"Tank (player) health remaining"
 	{
-		"chi"	"Tank {default}({red}{1}{default}) 还剩 {red}{2}{default} 血量"
+		"chi"	"坦克 {default}({red}{1}{default}) 还剩 {red}{2}{default} 血量"
 	}
 	"Tank health remaining"
 	{
-		"chi"	"Tank还剩 {red}{1}{default} 血量"
+		"chi"	"坦克还剩 {red}{1}{default} 血量"
 	}
 	"Tank has spawned!"
 	{
-		"chi"	"{green}Tank{default} 已刷新"
+		"chi"	"{green}坦克{default} 已刷新"
 	}
 	"Tank got lost and lost control."
 	{
-		"chi"	"迷路失去控制权了."
+		"chi"	"坦克玩家失去控制权了."
 	}
 	"Witch has spawned!"
 	{
-		"chi"	"{green}Witch{default} 已刷新"
+		"chi"	"{green}妹子{default} 已刷新"
 	}
 	"Damage dealt to Tank"
 	{
-		"chi"	"Tank集火表 ({red}{1}{olive}):"
+		"chi"	"坦克集火表 ({red}{1}{olive}):"
 	}
 	"Damage dealt to Witch"
 	{
-		"chi"	"{red}Witch{olive} 集火表:"
+		"chi"	"{red}妹子{olive} 集火表:"
 	}
 	"Other damage"
 	{
@@ -1076,33 +1081,33 @@
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer2"
 	{
-		"chi"	"造成 {olive}{1}{default} 伤害给 {green}Tank"
+		"chi"	"造成 {olive}{1}{default} 伤害给 {green}坦克"
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer3"
 	{
-		"chi"	"{blue}{1}{default} 一枪 {olive}爆✩杀 {green}Witch{default}."
+		"chi"	"{blue}{1}{default} 一枪 {olive}爆✩杀 {green}妹子{default}."
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer4"
 	{
-		"chi"	"{blue}{1}{default} 引秒 {olive}爆☆杀 {green}Witch{default}."
+		"chi"	"{blue}{1}{default} 引秒 {olive}爆☆杀 {green}妹子{default}."
 	}	
 	"l4d_tank_witch_damage_announce_spawnAnnouncer5"
 	{
-		"chi"	"Tank集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+		"chi"	"坦克集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer6"
 	{
-		"chi"	"Witch集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+		"chi"	"妹子集火表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
 	}
 	///////////////l4d_tankpunchstuckfix.smx///////////////
 	"l4d_tankpunchstuckfix"
 	{
-		"chi"	"<{olive}Tank一拳卡住{default}> 已发现 {blue}{1}{default} 吃拳之后卡住. 转移到有效的位置上"
+		"chi"	"<{olive}坦克攻击卡住{default}> 已发现 {blue}{1}{default} 吃拳之后卡住. 转移到有效的位置上"
 	}
 	///////////////l4d_versus_despawn_health.smx///////////////
 	"l4d_versus_despawn_health1"
 	{
-		"chi"	"你无法恢复 {red}HP{default}，冷却时间 {lightgreen}20{default} 秒未到!"
+		"chi"	"你无法恢复 {red}HP{default}，冷却时间 {green}20{default} 秒未到!"
 	}
 	"l4d_versus_despawn_health2"
 	{
@@ -1137,11 +1142,11 @@
 	///////////////L4DVSAutoSpectateOnAFK.smx///////////////
 	"L4DVSAutoSpectateOnAFK1"
 	{
-		"chi"	"按M键或是输入 !sur/!inf 加入队伍..."
+		"chi"	"按M键或输入 !sur/!inf 加入队伍..."
 	}
 	"L4DVSAutoSpectateOnAFK2"
 	{
-		"chi"	"[挂机检测] 检测到挂机行为! 你再不移动，{1}秒后移至旁观。"
+		"chi"	"[挂机检测] 检测到挂机行为! 你再不行动，{1}秒后移至旁观。"
 	}
 	"L4DVSAutoSpectateOnAFK3"
 	{
@@ -1252,11 +1257,11 @@
 	}	
 	"ratemonitor8"
 	{
-		"chi"	"{lightgreen}{1}{default} 因修改网络收发设置被移至旁观。"
+		"chi"	"{lightgreen}{1}{default} 因擅自修改网络收发设置被移至旁观。"
 	}
 	"ratemonitor9"
 	{
-		"chi"	"{default}请改回你的网络收发设置: {green}{1}{default}/{green}{2}{default}/{olive}{3}"
+		"chi"	"{default}请改回你原先的网络收发设置: {green}{1}{default}/{green}{2}{default}/{olive}{3}"
 	}
 	"ratemonitor10"
 	{
@@ -1264,12 +1269,12 @@
 	}
 	"ratemonitor11"
 	{
-		"chi"	"{lightgreen}{1}{default} 因修改网络收发设置被踢出服务器。"
+		"chi"	"{lightgreen}{1}{default} 因擅自修改网络收发设置被踢出服务器。"
 	}
 	///////////////sm_l4d_mapchanger.smx///////////////
 	"sm_l4d_mapchanger1"
 	{
-		"chi"	"下张地图: {blue}{1}{default}."
+		"chi"	"下一张地图: {blue}{1}{default}."
 	}
 	///////////////votes3.smx///////////////
 	"Vote Menu"
@@ -1394,12 +1399,11 @@
 	}
 	"votes3_8"
 	{
-		"chi"	"{1}准备插件"
+		"chi"	"禁用踢人投票"
 	}
-	//{1} in "votes3_8" and "votes3_9" are different type
-	"votes3_9" 
+	"votes3_9"
 	{
-		"chi"	"{1}准备插件"
+		"chi"	"禁用强制玩家旁观投票"
 	}
 	"votes3_10" 
 	{
@@ -1429,6 +1433,22 @@
 	{
 		"chi"	"{blue}{1}{default} 被投票强制旁观!"
 	}
+	"votes3_17"
+	{
+		"chi"	"关闭中"
+	}
+	"votes3_18"
+	{
+		"chi"	"目标玩家已不存在"
+	}
+	"votes3_19"
+	{
+		"chi"	"目标玩家免疫被踢，请重新选择"
+	}
+	"votes3_20"
+	{
+		"chi"	"{olive}%N{default} 尝试投票踢你, 但是你有免疫权限."
+	}
 	///////////////cannounce.smx///////////////
 	"cannounce1"
 	{
@@ -1453,7 +1473,7 @@
 	}
 	"l4d_bossvote3"
 	{
-		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 游戏设定将会是 {olive}Tank: 70%% {default}和 {olive}Witch: 50%"
+		"chi"	"{blue}[{default}Boss改路程插件{blue}]{default} 游戏设定将会是 {olive}坦克: 70%% {default}和 {olive}妹子: 50%"
 	}
 	"l4d_bossvote4"
 	{
@@ -1461,7 +1481,7 @@
 	}
 	"l4d_bossvote5"
 	{
-		"chi"	"改变Boss路程 Tank: {1}%%, Witch: {2}%%"
+		"chi"	"改变Boss路程 坦克: {1}%%, 妹子: {2}%%"
 	}
 	"l4d_bossvote6"
 	{
@@ -1522,11 +1542,11 @@
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"No Instant Spawn"
 	{
-		"chi"	"失去 {green}Tank{default} 控制权给{red}AI{default}, {lightgreen}不得马上回灵魂状态{default}!! 强制自杀"
+		"chi"	"失去 {green}坦克{default} 控制权给{red}AI{default}, {olive}不得马上回灵魂状态{default}!! 强制自杀"
 	}
 	"Give Tank To AI"
 	{
-		"chi"	"Skyline已上线, {red}{1}{default}: 交给你了{olive}孤军{default}!"
+		"chi"	"{red}{1}{default} 转移给AI坦克了!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"
@@ -1539,7 +1559,7 @@
 	}
 	"l4d_PillsHere3"
 	{
-		"chi"	"你给了 {1} 一颗药丸."
+		"chi"	"你给了 {1} 一瓶药."
 	}
 	"l4d_PillsHere4"
 	{
@@ -1548,7 +1568,7 @@
 	///////////////l4d_slot_vote.smx//////////////
 	"Server slots count locked!"
 	{
-		"chi"		"服务器人数上限已锁!"
+		"chi"		"服务器人数上限已锁定!"
 	}
 	"Server slots count unlocked!"
 	{
@@ -1613,7 +1633,11 @@
 	}
 	"l4d_tankhud2"
 	{
-		"chi"		"{default}[{green}界面插件{default}] 身为一个 {green}Tank{default}, 你不会看见 {lightgreen}Tank Hud{default}."
+		"chi"		"{default}[{green}界面插件{default}] 身为一个 {green}坦克{default}, 你不会看见 {lightgreen}Tank Hud{default}."
+	}
+	"l4d_tankhud3"
+	{
+		"chi"		"{green}AI 坦克{default} 卡住了并且已被处死."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
@@ -1632,7 +1656,7 @@
 	///////////////l4d_teamshuffle.smx//////////////
 	"Team shuffle"
 	{
-		"chi"		"队伍大洗牌"
+		"chi"		"队伍洗牌"
 	}
 	"You are not in-game!"
 	{
@@ -1640,7 +1664,7 @@
 	}
 	"Shuffle is already in progress!"
 	{
-		"chi"		"正在{1}! 你这星际2玩家!"
+		"chi"		"正在{1}!无法进行操作"
 	}
 	"has forced the team shuffle"
 	{
@@ -1656,7 +1680,7 @@
 	}
 	"The Survivors must agree by typing command"
 	{
-		"chi"		"{blue}幸存者队伍{default} 必须输入 {green}{1}{default} 才能同意生效."
+		"chi"		"{blue}生还者队伍{default} 必须输入 {green}{1}{default} 才能同意生效."
 	}
 	"l4d_teamshuffle1"
 	{
@@ -1672,7 +1696,7 @@
 	}	
 	"l4d_teamshuffle4"
 	{
-		"chi"		"{blue}生还者队伍{default} 已同意 {green}{1}{default}. 于 {green}3{default} 秒后洗牌."
+		"chi"		"{blue}生还者队伍{default} 已同意 {green}{1}{default}. 队伍于 {green}3{default} 秒后洗牌."
 	}	
 	"l4d_teamshuffle5"
 	{
@@ -1680,7 +1704,7 @@
 	}
 	"l4d_teamshuffle6"
 	{
-		"chi"		"{red}特感队伍{default} 已同意 {green}{1}{default}. 于 {green}3{default} 秒后洗牌."
+		"chi"		"{red}特感队伍{default} 已同意 {green}{1}{default}. 队伍于 {green}3{default} 秒后洗牌."
 	}
 	"l4d_teamshuffle7"
 	{
@@ -1737,7 +1761,7 @@
 	}
 	"l4d_Modo_mix_mm7"
 	{
-		"chi"		"没想到吧! 第一位队长已离开了服务器，停止队长选人混搭制"
+		"chi"		"第一位队长已离开了服务器，停止队长选人混搭制"
 	}
 	"l4d_Modo_mix_mm8"
 	{
@@ -1745,7 +1769,7 @@
 	}
 	"l4d_Modo_mix_mm9"
 	{
-		"chi"		"没想到吧! 第二位队长已离开了服务器，停止队长选人混搭制"
+		"chi"		"第二位队长已离开了服务器，停止队长选人混搭制"
 	}
 	"l4d_Modo_mix_mm10"
 	{
@@ -1785,7 +1809,7 @@
 	///////////////l4d2_nobackjumps.smx//////////////
 	"No backjumps"
 	{
-		"chi"		"不能 {lightgreen}直接弹墙{default}, 请使用左键进行飞扑"
+		"chi"		"不能 {lightgreen}直接弹墙{default}, 请正常蓄力"
 	}
 	///////////////l4dinfectedbots.smx//////////////
 	"Hunter Infected Bot Limit."
@@ -1794,7 +1818,7 @@
 	}
 	"You are not survivor, dumbass!"
 	{
-		"chi"		"你不是生还者，想干什么？"
+		"chi"		"你不是生还者。"
 	}
 	"why you need so many hunter bots?"
 	{
@@ -1802,7 +1826,7 @@
 	}
 	"why no hunter bots?"
 	{
-		"chi"		"不想要AI Hunter玩家就别玩?"
+		"chi"		"没有AI Hunter无法进行"
 	}
 	"Infected Bot Spawn Timer."
 	{
@@ -1911,7 +1935,7 @@
 	}
 	"wiped out"
 	{
-		"chi"		"{default}[{green}灭团{default}]"
+		"chi"		"{default}[{green}团灭{default}]"
 	}
 	"You don't have access to set score."
 	{
@@ -1973,31 +1997,6 @@
 	{
 		"chi"		"第一波特感配置"
 	}
-	//////////////vocal_block.smx//////////////
-	"vocal_block1"
-	{
-		"chi"		"你无法投票踢掉这位玩家!"
-	}
-	"vocal_block2"
-	{
-		"chi"		"{1} 正在尝试将你踢出服务器!"
-	}
-	"vocal_block2"
-	{
-		"chi"		"你已达到角色语音限制"
-	}
-	"vocal_block3"
-	{
-		"chi"		"你必须等待 {green}{1} {default}秒才能使用角色语音"
-	}
-	"vocal_block4"
-	{
-		"chi"		"{1} 由于滥用角色语音而被踢出游戏"
-	}
-	"vocal_block4"
-	{
-		"chi"		"{1} 由于滥用角色语音而被封禁 {2} 分鐘"
-	}
 	//////////////votemanager2.smx//////////////
 	"Invalid vote type"
 	{
@@ -2025,7 +2024,7 @@
 	}
 	"votemanager26"
 	{
-		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家是Tank"
+		"chi"		"{1} 尝试发起投票踢出 {2} 但是目标玩家是坦克"
 	}
 	"votemanager27"
 	{
@@ -2111,7 +2110,7 @@
 	}
 	"rotoblin6"
 	{
-		"chi"		"{blue}{1}{default} 呼叫暂停!"
+		"chi"		"{1}{default} 呼叫暂停!"
 	}
 	"rotoblin7"
 	{
@@ -2216,13 +2215,40 @@
 	{
 		"chi"		"还有 {1} 秒才能离开安全区域！"
 	}
-	//////////////l4d_flashlight.smx//////////////
-	"Flashlight Intro"
+	//////////////l4d_storm.smx//////////////
+	"l4d_storm1"
 	{
-		"chi"		"启动发光效果: 聊天窗口输入{green}!light{default}. 颜色: red, green, blue, purple, orange, yellow, white. 或是 3 个 0-255 RGB之值. 比如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+		"chi" 	"你治疗了感染!!!"
 	}
-	"Flashlight Usage"
+	"l4d_storm2"
 	{
-		"chi"		"使用方式: 聊天窗口输入{green}!light <颜色名称或R G B>{default}. 颜色: red, green, blue, purple, orange, yellow, white. 或是 3 个 0-255 RGB之值. 比如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+		"chi" 	"你已被感染，层数：%d \n必须使用医疗物品治疗"
+	}
+	"l4d_storm3"
+	{
+		"chi" 	"你治疗了局部感染！！！"
+	}
+	"l4d_storm4"
+	{
+		"chi" 	"按'向前键'爬行"
+	}
+	//////////////l4d_rock_lagcomp.smx//////////////
+	"skeeted a tank rock."
+	{
+		"chi"	"打碎了 {green}坦克的石头{default}!"
+	}
+	//////////////l4d_vocalize_antiflood.smx//////////////
+	"l4d_vocalize_antiflood"
+	{
+		"chi"		"你已达到角色语音限制"
+	}
+	//////////////l4d_slowdown_control.smx//////////////
+	"l4d_slowdown_control_1"
+	{
+		"chi"		"坦克局 {olive}水中减速{default} 已去除."
+	}	
+	"l4d_slowdown_control_2"
+	{
+		"chi"		"{olive}水中减速{default} 已恢复正常."
 	}
 }

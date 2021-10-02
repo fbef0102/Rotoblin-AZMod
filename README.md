@@ -1,15 +1,14 @@
 # Rotoblin-AZMod
-v8.2.6
+v8.3.0
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
-* [繁體中文說明版(Google Chinese Description)](https://docs.google.com/document/d/1zcMSAVZeMTIrwW8bgyl2Y97bRqAiKBOXP8CxZmfSBwI/edit)
-* [简体中文说明版(baidu Simplified Chinese Description)](https://pan.baidu.com/s/1v4X80Hx6F8vxZMUp8dgi8g)
+* [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
 * [Source Code](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/SourceCode)
 
 **LINUX/WINDOWS SERVERS WORK**
 
 
-A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、[Nextmod](https://github.com/spoon-l4d2/NextMod)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、L4D2 [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, 50 max pounce damage, and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 - - - -
 ### Server Install ###
 * Clean Servers:
@@ -17,19 +16,18 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * Make sure your server is stopped.
   * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
 * Requirements:
-  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Left 4 Downtown, Tickrate, and other extensions
-  > **Developer Comment:** recommended system **win 10** for windows and **ubuntu** for linux
+  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod v1.10 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
   * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
-  * console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
+  * -console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
 	
 - - - -	
 ### Server Install Optional ###
-* [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v3.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+* [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
 * [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
-* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/top/plugins/top.smx) records players' skeets, and save to server-side Database.
+* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/skeet_database/plugins/skeet_database.smx) records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/GagMuteBanEx/plugins/GagMuteBanEx.smx) enhances and improves ban/gag/mute for admin.
 - - - -	
@@ -80,7 +78,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Everyone%20Commands.png)
   * Sever Startup default Mode is "Pub VS", there are some limits in pub mode
     * forces survivors and infected to spectate if they're AFK after certain time.
-    * team Switch is not allowed during the game. (To close this feature, set l4d_teamswitch_enabled 1)
+    * team Switch is not allowed after game starts for at least 60 seconds. (To close this feature, set l4d_teamswitch_during_game_seconds_block 0)
     * shoot teammate = shoot yourself.
     * anti open saferoom door and prevent players from leaving safe area within some seconds.
     > **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
@@ -135,17 +133,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Map Changes(!cm) ###
 
 * **General:**
-  * Spawn jukebox
   * Remove restricted invisible wall Infected couldn't go through
-  * Kill all ambience sounds in order to let survivor focus on S.I./common
+  * Remove environmental sounds and DSP + Remove microphone / speaker effects
   * Extra Pills
-    * No pill cabinets
-    * On the road: few pills (pain_pill_density: 1)
+    * Only 1 pill in cabinets
+    * On the road: few pills (Pill density: 1)
     * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
-  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps) + [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod) + [Nextmod](https://github.com/spoon-l4d2/NextMod/tree/master/cfg/stripper/nextmod/maps))
+  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
+  * Pistol density: 3
   
 * **Dead Air:** 
   * Removed Plane + Crashing Plane SFX
@@ -164,23 +162,27 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.26 (Acemod: 0.20 - **Zonemod: 0.26**)
-  * Moveing Spread: 3.0->2.45 (Acemod: 1.65 - **Zonemod: 2.45**)
-  * Ammo: 480->800 (**Acemod: 800** - Zonemod: 650)
+  * Still Spread: 0.32->0.26
+  * Moveing Spread: 3.0->2.45
+  * Ammo: 480->800
   * Damage Drop-off: 0.84->0.84 (unchanged)
-  * Reload Speed: 2.23->1.75 (Acemod: 1.75 - **Zonemod: 1.75**) 
-  * Damage: 20->22 (Acemod: 20 - Zonemod: 20)
-  * Limit: 3 (Acemod: None - **Zonemod: 3**)
+  * Reload Speed: 2.23->1.75
+  * Damage: 20->22
+  * Limit: 3
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
-  * Ammo: 128->96 (**Acemod: 96** - Zonemod: 72) 
+  * Ammo: 128->96
   * Limit: None
       
 * **Hunting Rifle**
-  * Rate of fire: 1->0.19
-  * Tank dmg: 90->135
-  * Hunter dmg: Chest, neck *2.8 - abdominal muscles *1.8
+  * Empty Reload Time: 1->1.25
+  * Normal Reload Time: 1 (unchanged)
+  * Pickup Time: 1 (unchanged)
+  * Swtich Time: 1 -> 1.8
+  * Rate of fire: 1->0.2
+  * Tank dmg: 90->125
+  * Hunter dmg: Chest 250, Stomach 168
   * Limit: 1
   > **Developer Comment:** As we've noticed in L4D1, the Uzis were completely nothing and shotguns were taking over everything. In the release of Roto-AZMod, I want to make the Uzi more attractiv, which result into the Uzi having more advantages. And there can be a sniper in a team, this Hunting Rifle is nerfed a lot as you can see rate of fire is very slow. Peope can choose thier desired weapons. Each performs one's own best part in a team.
 
@@ -195,8 +197,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
 - - - -
-### Bug / Exploit Fixes ###
-* Crash Course Unprohibit Bosses.vpk force versus director to spawn tank and witch on "crash cource" each stage
+### Bug / Exploit Fixes ###\
+* Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
+* Allows bots to shoot while a PipeBomb projectile is active on the map.
 * Fixed the bug in which doors do not break although the tank is punching at them.
 * Survivors cannot hear ghost footsteps and spawn sound.
 * Stops Shoves slowing the Tank and Charger Down
@@ -264,7 +267,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **9s**
 	  - *(2v2)*: **7s**
 	  - *(1v1)*: **1s**
-    * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get kicked unless it's a Boomer or has someone capped.
+    * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
     * Allows infected to warp to survivors (MOUSE2 or Command: **sm_warpto [#|name]**)
@@ -297,7 +300,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Damage dealt to tank is announced after tank dies, when the survivors wipe, or when the round ends, whichever comes first.
     * Tank won't stuck when punches incapped survivor
     * Stops rocks from passing through soon-to-be-dead Survivors
-    * Tanks speed decreased to 205 (survivors speed: 220, default: 210 - zonemod: 205)
+    * Tanks speed decreased to 205 (survivors speed: 220, vanilla: 210)
 	* When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
 	<img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
 	
@@ -330,6 +333,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
 	* Ignites the rock thrown by the Tank when he is on fire.
 	* Fixed an issue where tank rock is harder to land on survivors in saferoom area.
+	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
+	* Make AI Tank be more stupid and allow suicide if stuck, think twice if you wanna pass tank to AI.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -346,7 +351,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	
   * **Smoker:**
 	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
-    * Smoker's ability will now recharge within **13** seconds after a successful hit (default: **15**)
+    * Smoker's ability will now recharge within **13** seconds after a successful hit (vanilla: **15**)
 	* First Drag Damage: 3, interval: 1 (same as vanilla)
 	* Drag Damage: 1, interval: 0.33 (3 dps, same as vanilla)
 	* Choke Damage: 1, interval: 0.2 (5 dps, same as vanilla)
@@ -366,16 +371,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **✘**
 	  - *(2v2)*: **✘**
 	  - *(1v1)*: **✘**
+    * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
+    * claw Damage: 4 (vanilla: 6)
     * Hunters can't be shoved when pouncing
-    * Allow Hunters being shoved when not pouncing. (Shove fov: **30**)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **90**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
-	* Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
 	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
-    * Recharge CD: 20s (Default: 30s)
+    * Recharge CD: 20s (vanilla: 30s)
     * Boom Horde limit
 	  - *(5v5)*: **35**
 	  - *(4v4)*: **30**
@@ -385,6 +391,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *90%*: **3 Hunters + 1 Smoker**
 	  - *10%*: **4 Hunters**
 	* Explode after 3 times shove (original: 5)
+	* Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
@@ -413,14 +420,15 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **sm_voteboss <tank> <witch>** Boss Percents Vote
     
 * Survivors(!sur):
-  * Still Water Slowdown with or without Tank Fights.
+  * Water Slowdown outside of Tank fights.
+  * No Water Slowdown during Tank fights.
   * Maximum amount of Friendly Fire per Shotgun: **10** (unchanged)
   * Allow ladder speed glitch(keyboard shortcuts AS,AW,DS,DW depends on your view.), but can't shoot when climb on the ladder
   * Survivor who is Incapacitated will not hurt other teammate with pistol
   * Survivor players will drop their secondary weapon when they die
-  * If one of survivors didn't come out saferoom completely, infected players can use endless instant spawn glitch (one of l4d1 original feature)
+  * Fixed if one of survivors didn't leave out saferoom completely, infected players can use endless instant spawn. (one of l4d1 original feature)
   * While selected, pills can be passed with +reload to avoid accidental drops and canceling reload animations.
-  * Survivors now get fatigued after **2** Shoves. (default: **5** Zonemod: **3**)
+  * Survivors now get fatigued after **2** Shoves. (vanilla: **5**)
   * Stops Survivors from saying 'Hunter!'
    > **Developer Comment:** sometimets survivors didn't see the silence hunter but their mouth keep saying 'Hunter!'
   * Removes pills from bots if they try to use them and restores them when a human takes over.
@@ -429,11 +437,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show who triggers the horde event like start final rescue, shoot alarm car, etc.
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
-  * Survivors bleed out Temp Health every **2.7s** (default: **2.7** Zonemod: **4.5**)
+  * Survivors bleed out Temp Health every **4.0s (1/2.5)** (vanilla: **0.37s (1/2.7)**)
   * Give ammo when the weapon limit is reached
   * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
   * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
-
+  * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
+  * Prevents small push effect between survior players, bots still get pushed.
+  
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
   * Smoker: **0s**
@@ -483,10 +493,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fully colorized, Rank prints, console info.. Functional!
 * Auto change maps when second round ends on final stage
 * Addes dynamic lights to handheld throwables
-* Allows changing of displayed game type in server browser
-<img src="https://github.com/fbef0102/L4D1-Competitive-Plugins/blob/master/gametype_description/l4d1%20game%20type%20name.png" alt="l4d1_game_type_name.png" width="750" height="400">
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 * Simply block pause commands when the server doesn't even support pausing.
+* Fix props not spawning as prop_physics when using 'give' command
+* Changes the collision from all weapons or carryables to collide only with the world and static stuff
+* Survivors can climb the wall during ready up.
+* Allows changing of displayed game type in server browser
+<img src="https://i.imgur.com/hbJd1Hs.png" alt="FGkLDMp.png" width="950" height = "500">
 
 - - - -
 ### Others ###

@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"Flashlight Intro"
+	{
+		"en"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"en"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+	}
+}

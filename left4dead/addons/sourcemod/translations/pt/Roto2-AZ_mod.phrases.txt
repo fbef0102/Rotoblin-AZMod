@@ -635,10 +635,6 @@
 	{
 		"pt"	"Ja aconteu comigo, eu superei..."
 	}
-	"skeeted a tank rock."
-	{
-		"pt"	"skeetou a pedra do tank."
-	}
 	"l4dcompstats1"
 	{		
         "pt"	"SI: {blue}{1}{default} ({olive}{2}{default} dmg [{green}{3}%%{default}], {olive}{4}{default} kills [{green}{5}%%{default}])"
@@ -1111,7 +1107,7 @@
 	///////////////l4d_versus_despawn_health.smx///////////////
 	"l4d_versus_despawn_health1"
 	{
-		"pt"	"Você não pode recuperar {red}HP{default}, Espere {lightgreen}20s{default} ainda não!"
+		"pt"	"Você não pode recuperar {red}HP{default}, Espere {green}20s{default} ainda não!"
 	}
 	"l4d_versus_despawn_health2"
 	{
@@ -1403,12 +1399,11 @@
 	}
 	"votes3_8"
 	{
-		"pt"	"{1} ready plugin"
+		"pt"	"forcespectate player vote is Prohibited"
 	}
-	//{1} in "votes3_8" and "votes3_9" are different type
-	"votes3_9" 
+	"votes3_9"
 	{
-		"pt"	"{1} ready plugin"
+		"pt"	"禁用强制玩家旁观投票"
 	}
 	"votes3_10" 
 	{
@@ -1437,6 +1432,22 @@
 	"votes3_16"
 	{
 		"pt"	"{blue}{1}{default} foi forçado a assistir!"
+	}
+	"votes3_17"
+	{
+		"pt"	"Disable"
+	}
+	"votes3_18"
+	{
+		"pt"	"Target is not in game, choose again!"
+	}
+	"votes3_19"
+	{
+		"pt"	"Target has kick immue, choose again!"
+	}
+	"votes3_20"
+	{
+		"pt"	"{olive}%N{default} tries to kick you, but you have kick immue."
 	}
 	///////////////cannounce.smx///////////////
 	"cannounce1"
@@ -1531,7 +1542,7 @@
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"No Instant Spawn"
 	{
-		"pt"	"Passando {green}Tank {default}para {red}AI{default}, {lightgreen}Sem instante spawn{default}!! Forçar suicidio"
+		"pt"	"Passando {green}Tank {default}para {red}AI{default}, {olive}Sem instante spawn{default}!! Forçar suicidio"
 	}
 	"Give Tank To AI"
 	{
@@ -1623,6 +1634,10 @@
 	"l4d_tankhud2"
 	{
 		"pt"		"{default}Como um {green}Tank{default}, você não verá o {lightgreen} Tank Hud{default}."
+	}
+	"l4d_tankhud3"
+	{
+		"pt"		"{green}AI Tank{default} was stuck and has been slain by server."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
@@ -1982,31 +1997,6 @@
 	{
 		"pt"		"Especial Infectado"
 	}
-	//////////////vocal_block.smx//////////////
-	"vocal_block1"
-	{
-		"pt"		"Você não pode expulsar esse jogador!"
-	}
-	"vocal_block2"
-	{
-		"pt"		"{1} fez uma tentativa de expulsá-lo do servidor!"
-	}
-	"vocal_block2"
-	{
-		"pt"		"Você atingiu a quantidade máxima de spam de vocalização"
-	}
-	"vocal_block3"
-	{
-		"pt"		"Você deve esperar {green}{1} {default}Segundos antes de iniciar outro Vocalize"
-	}
-	"vocal_block4"
-	{
-		"pt"		"{1} foi expulso por vocalize abuse"
-	}
-	"vocal_block4"
-	{
-		"pt"		"{1} foi banido por {2} Minutos por vocalize abuse"
-	}
 	//////////////votemanager2.smx//////////////
 	"Invalid vote type"
 	{
@@ -2225,13 +2215,40 @@
 	{
 		"pt"		"{1} second(s) left to be allowed to leave start area!"
 	}
-	//////////////l4d_flashlight.smx//////////////
-	"Flashlight Intro"
+	//////////////l4d_storm.smx//////////////
+	"l4d_storm1"
 	{
-		"pt"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"pt"	"You Cured The Infection!!!"
 	}
-	"Flashlight Usage"
+	"l4d_storm2"
 	{
-		"pt"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
+		"pt" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
+	}
+	"l4d_storm3"
+	{
+		"pt" 	"You Cured The Partial Infection"
+	}
+	"l4d_storm4"
+	{
+		"pt" 	"Press FORWARD to crawl while incapped"
+	}
+	//////////////l4d_rock_lagcomp.smx//////////////
+	"skeeted a tank rock."
+	{
+		"pt"	"skeetou a {green}pedra do tank{default}!"
+	}
+	//////////////l4d_vocalize_antiflood.smx//////////////
+	"l4d_vocalize_antiflood"
+	{
+		"pt"		"Você atingiu a quantidade máxima de spam de vocalização"
+	}
+	//////////////l4d_slowdown_control.smx//////////////
+	"l4d_slowdown_control_1"
+	{
+		"pt"		"{olive}Water Slowdown{default} has been reduced while Tank is in play."
+	}	
+	"l4d_slowdown_control_2"
+	{
+		"pt"		"{olive}Water Slowdown{default} has been restored to normal."
 	}
 }

@@ -26,8 +26,8 @@
 			}
 			"TrySwing_Count"
 			{
-				"windows"		"20"
-				"linux"			"23"
+				"windows"		"22"
+				"linux"			"26"
 			}
 		}
 

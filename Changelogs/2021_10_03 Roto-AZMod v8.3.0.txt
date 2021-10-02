@@ -1,0 +1,110 @@
+﻿v8.3.0
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.10-git6510 + MetaMod 1.11-git1145)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+* Crash Course Unprohibit Bosses.vpk
+* left4dead\addons\sourcemod\data\cannounce_settings.txt
+* left4dead\addons\sourcemod\data\cannounce_messages.txt
+* left4downtown extension
+* l4d1_witch_allow_in_safezone.smx
+* l4d2_ai_damagefix.smx
+* l4d2_nobackjumps.smx
+* l4d_witch_target_fix.smx
+* l4d2_shadow_removal.smx
+* l4d_blackandwhite.smx
+* l4d_Modo_mix_mm.smx
+* l4d_smg_pumpshotgun_ammo_set.smx
+* l4d_versus_specListener3.0.smx
+* l4d_witchspawnfix_whentank.smx
+* l4dready_scrds.smx
+* l4d2_ssi_teleport_fix.smx
+* l4d_huntingrifle_damagemodify_v1.01.smx
+* rotoblin.smx
+* vocal_block.smx
+* SourceCode\scripting 1.9
+* SourceCode\scripting 1.63
+
+------------------New------------------
+* Developer&Commands\繁體說明書.txt
+* left4dead\addons\sourcemod\configs\adminmenu_maplist.ini
+* l4d2_boomer_shenanigans.smx
+* l4d2_car_alarm_hittable_fix.smx
+* l4d_climb.smx
+* l4d_disable_shadows.smx
+* l4d_mix.smx
+* l4d_nobackjumps.smx
+* l4d_pickup.smx
+* l4d_pipebomb_ignore.smx
+* l4d_remove_item_collision.smx
+* l4d_reservedslots.smx
+* l4d_slowdown_control.smx
+* l4d_unswap_empty_primary.smx
+* l4d_versus_specListener.smx
+* l4d_vocalize_antiflood.smx
+* l4d_weapon_prop_give_fix.smx
+* l4dready.smx
+* l4dvs_witch_spawn_fix.smx
+* left4dhooks.smx
+* noteam_nudging.smx
+* l4d_huntingrifle_damagemodify.smx
+* l4d_ssi_teleport_fix.smx
+* Witch_Target_patch.smx
+* rotoblin-az.smx
+* witch_allow_in_safezone.smx
+* SourceCode\scripting-az
+
+------------------Change------------------
+* Admin Tips:
+  * Sever Startup default Mode is "Pub VS", there are some limits in pub mode
+    * team Switch is not allowed after game starts for at least 60 seconds. (To close this feature, set l4d_teamswitch_during_game_seconds_block 0)
+	
+ ### Map Changes ###
+	* Remove environmental sounds and DSP + Remove microphone / speaker effects
+	* Only 1 pill in cabinets
+	* On the road: few pills (Pill density: 1)
+	* Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
+	* Pistol density: 3
+
+### Weapon Adjustments ###
+* **Hunting Rifle**
+	* Empty Reload Time: 1->1.25
+	* Normal Reload Time: 1 (unchanged)
+	* Pickup Time: 1 (unchanged)
+	* Swtich Time: 1 -> 1.8
+	* Rate of fire: 1->0.2
+	* Tank dmg: 90->125
+	* Hunter dmg: Chest 250, Stomach 168
+	
+### Bug / Exploit Fixes ###
+	* Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
+	* Allows bots to shoot while a PipeBomb projectile is active on the map.
+	
+### Gameplay / Balance Changes ###
+* Special Infected:
+  * **General:**
+	* When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
+ 
+   * **Tanks:**
+ 	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
+	* Make AI Tank be more stupid and allow suicide if stuck, think twice if you wanna pass tank to AI.
+ 
+  * **Boomer:**
+	* Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
+ 
+  * **Hunter:**
+    * claw Damage: 4 (vanilla: 6)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **90**)
+	
+* Survivors:
+	* Water Slowdown outside of Tank fights.
+	* No Water Slowdown during Tank fights.
+	* Fixed if one of survivors didn't leave out saferoom completely, infected players can use endless instant spawn. (one of l4d1 original feature)
+	* Survivors bleed out Temp Health every **4.0s (1/2.5)** (vanilla: **0.37s (1/2.7)**)
+	* Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
+	* Prevents small push effect between survior players, bots still get pushed.
+	
+### Miscellaneous ###
+	* Fix props not spawning as prop_physics when using 'give' command
+	* Changes the collision from all weapons or carryables to collide only with the world and static stuff
+	* Survivors can climb the wall during ready up.

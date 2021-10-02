@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.2.6"
+		"en"			"Rotoblin-AZ Mod v8.3.0"
 	}
 	"Plugin_Information"
 	{
@@ -40,12 +40,12 @@
 	"Witch"
 	{
 		"en"			"Witch"
-		"zho"			"妹子"
+		"zho"			"Witch"
 	}
 	"Tank"
 	{
 		"en"			"Tank"
-		"zho"			"坦克"
+		"zho"			"Tank"
 	}
 	"Spawn"
 	{
@@ -55,12 +55,12 @@
 	"Tank_Spawn"
 	{
 		"en"			"Tank Spawn"
-		"zho"			"坦克路程"
+		"zho"			"Tank路程"
 	}
 	"Witch_Spawn"
 	{
 		"en"			"Witch Spawn"
-		"zho"			"妹子路程"
+		"zho"			"Witch路程"
 	}
 	"Boss_Percent"
 	{
@@ -70,7 +70,7 @@
 	"Tank_Health"
 	{
 		"en"			"Tank Health"
-		"zho"			"坦克血量"
+		"zho"			"Tank血量"
 	}
 	"Max_Pounce_Damage"
 	{
@@ -170,7 +170,7 @@
 	"Tankhud"
 	{
 		"en"			"Tankhud"
-		"zho"			"坦克介面"
+		"zho"			"Tank介面"
 	}
 	"Spechud"
 	{
@@ -265,7 +265,7 @@
 	"Vote_Boss_Percent"
 	{
 		"en"			"Vote For Boss Percent"
-		"zho"			"投票決定坦克與妹子路程"
+		"zho"			"投票決定Tank與Witch路程"
 	}
 	"Top_5_Skeeter"
 	{
@@ -620,6 +620,17 @@
 		"en"		"swap player1's and player2's teams"
 		"zho"		"轉換指定玩家的隊伍"
 	}
+	"PanelHide"
+	{
+		"en"		"[{olive}Readyup{default}] Panel is now {red}off{default}"
+		"zho"		"[{olive}Readyup{default}] 準備介面已 {red}關閉{default}"
+	}
+	
+	"PanelShow"
+	{
+		"en"		"[{olive}Readyup{default}] Panel is now {blue}on{default}"
+		"zho"		"[{olive}Readyup{default}] 準備介面已 {red}開啟{default}"
+	}
 	///////////////comp_loader.smx///////////////
 	"request timed out."
 	{
@@ -828,11 +839,6 @@
 		"en"	"You don't have to be mad..."
 		"zho"	"你不必生氣...哈哈哈~"
 	}
-	"skeeted a tank rock."
-	{
-		"en"	"skeeted a tank rock."
-		"zho"	"打掉了坦克石頭!"
-	}
 	"l4dcompstats1"
 	{
 		"#format"	"{1:s},{2:i},{3:i},{4:i},{5:i}"
@@ -867,7 +873,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"	"{red}Witch{default} had {green}{1}{default} health remaining."
-		"zho"	"{red}妹子{default} 還剩 {green}{1}{default} 血量."
+		"zho"	"{red}Witch{default} 還剩 {green}{1}{default} 血量."
 	}
 	"l4dcompstats7"
 	{
@@ -1094,7 +1100,7 @@
 	{
 		"#format"	"{1:t}"
 		"en"	"{green}Tank is {olive}{1}{default}."
-		"zho"	"{green}坦克 {olive}{1}{default}了."
+		"zho"	"{green}Tank {olive}{1}{default}了."
 	}
 	"Player is killed by something"
 	{
@@ -1106,7 +1112,7 @@
 	{
 		"#format"	"{1:t}"
 		"en"	"Tank {default}uses {olive}{1}{default} to terminate {red}Witch{default}."
-		"zho"	"坦克 {default}使用 {olive}{1}{default} 終結了 {red}妹子{default}."
+		"zho"	"Tank {default}使用 {olive}{1}{default} 終結了 {red}Witch{default}."
 	}
 	"punches"
 	{
@@ -1132,13 +1138,13 @@
 	{
 		"#format"	"{1:t},{2:s}"
 		"en"	"{green}Tank {olive}{1}{default} {2}teammate."
-		"zho"	"{green}坦克 {olive}{1}{default} {2}隊友."
+		"zho"	"{green}Tank {olive}{1}{default} {2}隊友."
 	}
 	"l4d_pig_infected1"
 	{
 		"#format"	"{1:s}"
 		"en"	"{olive}{1}{default} used door to stumble {green}Tank{default}."
-		"zho"	"{olive}{1}{default} 用門暈眩 {green}坦克{default}."
+		"zho"	"{olive}{1}{default} 用門暈眩 {green}Tank{default}."
 	}
 	"l4d_pig_infected2"
 	{
@@ -1153,43 +1159,43 @@
 	"l4d_pig_infected4"
 	{
 		"en"	"{red}Witch{default} {olive}gone{default}."
-		"zho"	"{red}妹子{default} {olive}歸天{default}了."
+		"zho"	"{red}Witch{default} {olive}歸天{default}了."
 	}
 	"l4d_pig_infected5"
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"	"{olive}{1}{default} kills {red}{2}{default}'s Boomer to stumble {green}Tank{default}."
-		"zho"	"{olive}{1}{default} 殺死 {red}{2}{default} 肥宅炸暈 {green}坦克{default}."
+		"zho"	"{olive}{1}{default} 殺死 {red}{2}{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected6"
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"	"{olive}{1}{default} kills {red}AI{default} Boomer to stumble {green}Tank{default}."
-		"zho"	"{olive}{1}{default} 殺死 {red}AI{default} 肥宅炸暈 {green}坦克{default}."
+		"zho"	"{olive}{1}{default} 殺死 {red}AI{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected7"
 	{
 		"#format"	"{1:t},{2:s}"
 		"en"	"{green}Tank {olive}{1} {red}{2}{default}'s Boomer to stumble himself."
-		"zho"	"{green}坦克 {olive}{1} {red}{2}{default} 肥宅炸暈自己."
+		"zho"	"{green}Tank {olive}{1} {red}{2}{default} 肥宅炸暈自己."
 	}
 	"l4d_pig_infected8"
 	{
 		"#format"	"{1:t}"
 		"en"	"{green}Tank {olive}{1} {red}AI{default} Boomer to stumble {default}himself."
-		"zho"	"{green}坦克 {olive}{1} {red}AI{default} 肥宅炸暈自己."
+		"zho"	"{green}Tank {olive}{1} {red}AI{default} 肥宅炸暈自己."
 	}
 	"l4d_pig_infected9"
 	{
 		"#format"	"{1:t},{2:s}"
 		"en"	"{green}Tank {olive}{1} {red}{2}{default}'s Boomer."
-		"zho"	"{green}坦克 {olive}{1} {red}{2}{default} 肥宅"
+		"zho"	"{green}Tank {olive}{1} {red}{2}{default} 肥宅"
 	}
 	"l4d_pig_infected10"
 	{
 		"#format"	"{1:t}"
 		"en"	"{green}Tank {olive}{1} {red}AI{default} Boomer"
-		"zho"	"{green}坦克 {olive}{1} {red}AI{default} 肥宅"
+		"zho"	"{green}Tank {olive}{1} {red}AI{default} 肥宅"
 	}
 	"l4d_pig_infected11"
 	{
@@ -1206,12 +1212,12 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"{red}{1}{default}'s Boomer stumbles {green}Tank{default}."
-		"zho"	"{default}豬隊友 {red}{1}{default} 肥宅炸暈 {green}坦克{default}."
+		"zho"	"{default}豬隊友 {red}{1}{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected14"
 	{
 		"en"	"{red}AI{default} Boomer stumbles {green}Tank{default}."
-		"zho"	"{red}AI{default} 肥宅炸暈 {green}坦克{default}."
+		"zho"	"{red}AI{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	///////////////l4dffannounce.smx///////////////
 	"fell from top floor."
@@ -1230,7 +1236,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"Tank{default}: Hasta la vista, baby {olive}{1}{default}."
-		"zho"	"坦克{default} 一拳再見全壘打 {olive}{1}{default}."
+		"zho"	"Tank{default} 一拳再見全壘打 {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
@@ -1265,7 +1271,7 @@
 	"Survivors are in saferoom, Tank still loses rage!!!"
 	{
 		"en"	"{olive}Survivors{default} are in saferoom, {green}Tank{default} still loses rage!!!"
-		"zho"	"{olive}倖存者{default} 處於安全區域, {green}坦克{default} 依然掉控制權!!!"
+		"zho"	"{olive}倖存者{default} 處於安全區域, {green}Tank{default} 依然掉控制權!!!"
 	}
 	///////////////caster_assister.smx///////////////
 	"Your movement speed would be out of bounds, permission denied."
@@ -1309,12 +1315,12 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"{green}[IamTank] {red}{1}{default} will become the {green}tank{default}!"
-		"zho"	"{green}[我是坦] {red}{1}{default} 會成為 {green}坦克{default}!"
+		"zho"	"{green}[我是坦] {red}{1}{default} 會成為 {green}Tank{default}!"
 	}
 	"force this player will become the tank"
 	{
 		"en"	"force this player will become the tank"
-		"zho"	"強制指定玩家下次必須當坦克"
+		"zho"	"強制指定玩家下次必須當Tank"
 	}
 	"target is not in infected team"
 	{
@@ -1325,34 +1331,34 @@
 	"Tank Control has been clear and reset!"
 	{
 		"en"	"Tank Control has been clear and reset!"
-		"zho"	"已清除並且重新開始輪流當坦克"
+		"zho"	"已清除並且重新開始輪流當Tank"
 	}
 	"l4d_tank_control1"
 	{
 		"en"	"plugin is disabled, set convar \"tank_control_disable 1\" first!"
-		"zho"	"強制當坦克插件目前關閉，請先設定 \"tank_control_disable 1\""
+		"zho"	"強制當Tank插件目前關閉，請先設定 \"tank_control_disable 1\""
 	}
 	"l4d_tank_control2"
 	{
 		"#format"	"{1:s}"
 		"en"	"{green}[IamTank]{default} Adm forces {red}{1}{default} will become the {green}tank{default}!"
-		"zho"	"{green}[我是坦]{default} 管理員強制 {red}{1}{default} 當下次 {green}坦克{default}!"
+		"zho"	"{green}[我是坦]{default} 管理員強制 {red}{1}{default} 當下次 {green}Tank{default}!"
 	}
 	"l4d_tank_control3"
 	{
 		"en"	"{green}[IamTank]{default} Everyone has been {green}tank{default} at once，{olive}random now{default}!"
-		"zho"	"{green}[搶坦之亂]{default} 每人已當過 {green}坦克{default}，{olive}自由搶坦{default}!"
+		"zho"	"{green}[搶坦之亂]{default} 每人已當過 {green}Tank{default}，{olive}自由搶坦{default}!"
 	}
 	"l4d_tank_control4"
 	{
 		"en"	"{green}[IamTank]{default} There are no {red}Infected players {default}at this moment."
-		"zho"	"{green}[我是坦] {red}特感隊伍{default} 沒有人，無法選玩家當 {green}坦克{default}."
+		"zho"	"{green}[我是坦] {red}特感隊伍{default} 沒有人，無法選玩家當 {green}Tank{default}."
 	}
 	"l4d_tank_control5"
 	{
 		"#format"	"{1:s}"
 		"en"	"{green}[IamTank] {default}({olive}{1}{default}) {green}Tank Rage Meter Refilled."
-		"zho"	"{green}[我是坦] {default}({olive}{1}{default}) {green}坦克怒氣值已填滿."
+		"zho"	"{green}[我是坦] {default}({olive}{1}{default}) {green}Tank怒氣值已填滿."
 	}
 	"l4d_tank_control6"
 	{
@@ -1363,22 +1369,22 @@
 	"First Tank"
 	{
 		"en"	"First Tank"
-		"zho"	"第一隻坦克"
+		"zho"	"第一隻Tank"
 	}
 	"Second Tank"
 	{
 		"en"	"Second Tank"
-		"zho"	"第二隻坦克"
+		"zho"	"第二隻Tank"
 	}
 	"Third Tank"
 	{
 		"en"	"Third Tank"
-		"zho"	"第三隻坦克"
+		"zho"	"第三隻Tank"
 	}
 	"AI Tank"
 	{
 		"en"	"AI Tank"
-		"zho"	"AI 坦克"
+		"zho"	"AI Tank"
 	}
 	"l4d_tank_count1"
 	{
@@ -1391,18 +1397,18 @@
 	{
 		"#format"	"{1:s},{2:i}"
 		"en"	"Tank {default}({red}{1}{default}) had {red}{2}{default} health remaining"
-		"zho"	"坦克 {default}({red}{1}{default}) 還剩 {red}{2}{default} 血量"
+		"zho"	"Tank {default}({red}{1}{default}) 還剩 {red}{2}{default} 血量"
 	}
 	"Tank health remaining"
 	{
 		"#format"	"{1:i}"
 		"en"	"Tank had {red}{1}{default} health remaining"
-		"zho"	"坦克還剩 {red}{1}{default} 血量"
+		"zho"	"Tank還剩 {red}{1}{default} 血量"
 	}
 	"Tank has spawned!"
 	{
 		"en"	"{green}Tank{default} has spawned!"
-		"zho"	"{green}坦克{default} 已經復活了!"
+		"zho"	"{green}Tank{default} 已經復活了!"
 	}
 	"Tank got lost and lost control."
 	{
@@ -1412,18 +1418,18 @@
 	"Witch has spawned!"
 	{
 		"en"	"{green}Witch{default} has spawned!"
-		"zho"	"{green}妹子{default} 已經復活了!"
+		"zho"	"{green}Witch{default} 已經復活了!"
 	}
 	"Damage dealt to Tank"
 	{
 		"#format"	"{1:s}"
 		"en"	"Damage dealt to Tank ({red}{1}{olive}):"
-		"zho"	"坦克輸出表 ({red}{1}{olive}):"
+		"zho"	"Tank輸出表 ({red}{1}{olive}):"
 	}
 	"Damage dealt to Witch"
 	{
 		"en"	"Damage dealt to {red}Witch{olive}:"
-		"zho"	"{red}妹子{olive} 輸出表:"
+		"zho"	"{red}Witch{olive} 輸出表:"
 	}
 	"Other damage"
 	{
@@ -1440,7 +1446,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"	"dealt {olive}{1}{default} damage to {green}Tank"
-		"zho"	"造成 {olive}{1}{default} 傷害給 {green}坦克"
+		"zho"	"造成 {olive}{1}{default} 傷害給 {green}Tank"
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer3"
 	{
@@ -1458,26 +1464,26 @@
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
 		"en"	"Damage dealt to Tank ({red}{1}{default}):\nYou: {olive}{2}{default} ({green}{3}%%{default})"
-		"zho"	"坦克輸出表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+		"zho"	"Tank輸出表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer6"
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
 		"en"	"Damage dealt to Witch ({red}{1}{default}):\nYou: {olive}{2}{default} ({green}{3}%%{default})"
-		"zho"	"妹子輸出表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
+		"zho"	"Witch輸出表 ({red}{1}{default}):\n你: {olive}{2}{default} ({green}{3}%%{default})"
 	}
 	///////////////l4d_tankpunchstuckfix.smx///////////////
 	"l4d_tankpunchstuckfix"
 	{
 		"#format"	"{1:s}"
 		"en"	"<{olive}TankPunchStuck{default}> Found {blue}{1}{default} stuck after a punch. Warped him to a valid position."
-		"zho"	"<{olive}坦克拳卡住{default}> 發現 {blue}{1}{default} 吃拳之後卡住. 轉移到有效的位置上"
+		"zho"	"<{olive}Tank拳卡住{default}> 發現 {blue}{1}{default} 吃拳之後卡住. 轉移到有效的位置上"
 	}
 	///////////////l4d_versus_despawn_health.smx///////////////
 	"l4d_versus_despawn_health1"
 	{
-		"en"	"You can't regain {red}HP{default}, Cool Down {lightgreen}20s{default} not yet!"
-		"zho"	"你無法回復 {red}HP{default}，冷卻時間 {lightgreen}20{default} 秒未到!"
+		"en"	"You can't regain {red}HP{default}, Cool Down {green}20s{default} not yet!"
+		"zho"	"你無法回復 {red}HP{default}，冷卻時間 {green}20{default} 秒未到!"
 	}
 	"l4d_versus_despawn_health2"
 	{
@@ -1868,16 +1874,13 @@
 	}
 	"votes3_8"
 	{
-		"#format"	"{1:s}"
-		"en"	"{1} ready plugin"
-		"zho"	"{1}準備插件"
+		"en"	"kick Vote is Prohibited"
+		"zho"	"禁用踢人投票"
 	}
-	//{1} in "votes3_8" and "votes3_9" are different type
-	"votes3_9" 
+	"votes3_9"
 	{
-		"#format"	"{1:t}"
-		"en"	"{1} ready plugin"
-		"zho"	"{1}準備插件"
+		"en"	"forcespectate player vote is Prohibited"
+		"zho"	"禁用強制玩家旁觀投票"
 	}
 	"votes3_10" 
 	{
@@ -1919,6 +1922,26 @@
 		"en"	"{blue}{1}{default} has been forcespectated!"
 		"zho"	"{blue}{1}{default} 被投票強制旁觀!"
 	}
+	"votes3_17"
+	{
+		"en"	"Disable"
+		"zho"	"關閉中"
+	}
+	"votes3_18"
+	{
+		"en"	"Target is not in game, choose again!"
+		"zho"	"目標玩家已不存在"
+	}
+	"votes3_19"
+	{
+		"en"	"Target has kick immue, choose again!"
+		"zho"	"目標玩家免疫被踢，請重新選擇"
+	}
+	"votes3_20"
+	{
+		"en"	"{olive}%N{default} tries to kick you, but you have kick immue."
+		"zho"	"{olive}%N{default} 嘗試投票踢你, 但是你有免疫權限."
+	}
 	///////////////cannounce.smx///////////////
 	"cannounce1"
 	{
@@ -1943,7 +1966,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"{blue}[{default}BossVote{blue}]{default} Usage: {green}{1}{olive} <tank> <witch>"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 使用方式: {green}{1}{olive} <坦克> <妹子>"
+		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 使用方式: {green}{1}{olive} <Tank> <Witch>"
 	}
 	"l4d_bossvote2"
 	{
@@ -1954,7 +1977,7 @@
 	"l4d_bossvote3"
 	{
 		"en"	"{blue}[{default}BossVote{blue}]{default} Your setting will be {olive}Tank: 70%%, {default}and {olive}Witch: 50%%"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 遊戲設定將會是 {olive}坦克: 70%% {default}和 {olive}妹子: 50%%"
+		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 遊戲設定將會是 {olive}Tank: 70%% {default}和 {olive}Witch: 50%%"
 	}
 	"l4d_bossvote4"
 	{
@@ -1965,7 +1988,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"	"Change Tank: {1}%%, Witch: {2}%%"
-		"zho"	"改變Boss路程，坦克: {1}%%, 妹子: {2}%%"
+		"zho"	"改變Boss路程，Tank: {1}%%, Witch: {2}%%"
 	}
 	"l4d_bossvote6"
 	{
@@ -2041,14 +2064,14 @@
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"No Instant Spawn"
 	{
-		"en"	"Passing {green}Tank {default}to {red}AI{default}, {lightgreen}No Instant Spawn{default}!! Force suicide"
-		"zho"	"失去 {green}Tank{default} 控制權給{red}AI{default}, {lightgreen}不得馬上回靈魂{default}!! 強制自殺"
+		"en"	"Passing {green}Tank {default}to {red}AI{default}, {olive}No Instant Spawn{default}!! Force suicide"
+		"zho"	"失去 {green}Tank{default} 控制權給{red}AI{default}, {olive}不得馬上回靈魂{default}!! 強制自殺"
 	}
 	"Give Tank To AI"
 	{
 		"#format"	"{1:s}"
 		"en"	"{red}{1}{default} is given to AI Tank!"
-		"zho"	"{red}{1}{default} 轉移給AI坦克了!"
+		"zho"	"{red}{1}{default} 轉移給AI Tank了!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"
@@ -2159,12 +2182,17 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{default}[{green}介面插件{default}]{lightgreen} Tank Hud {default}is now {olive}{1}{default}."
-		"zho"		"{default}[{green}介面插件{default}]{lightgreen} 坦克介面 {default}目前 {olive}{1}{default}."
+		"zho"		"{default}[{green}介面插件{default}]{lightgreen} Tank介面 {default}目前 {olive}{1}{default}."
 	}
 	"l4d_tankhud2"
 	{
 		"en"		"{default}As a {green}Tank{default}, you won't see {lightgreen} Tank Hud{default}."
-		"zho"		"{default}[{green}介面插件{default}] 身為一個 {green}坦克{default}, 你不會看見 {lightgreen}坦克介面{default}."
+		"zho"		"{default}[{green}介面插件{default}] 身為一個 {green}Tank{default}, 你不會看見 {lightgreen}Tank介面{default}."
+	}
+	"l4d_tankhud3"
+	{
+		"en"		"{green}AI Tank{default} was stuck and has been slain by server."
+		"zho"		"{green}AI Tank{default} 卡住了並且已被處死."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
@@ -2649,41 +2677,6 @@
 		"en"		"Special Infected"
 		"zho"		"第一波特感"
 	}
-	//////////////vocal_block.smx//////////////
-	"vocal_block1"
-	{
-		"en"		"You Cannot Call a Votekick Against this Player!"
-		"zho"		"你不能投票踢掉這位玩家!"
-	}
-	"vocal_block2"
-	{
-		"#format"	"{1:s}"
-		"en"		"{1} has made an attempt to kick you from the server!"
-		"zho"		"{1} 正在嘗試將你踢出伺服器!"
-	}
-	"vocal_block2"
-	{
-		"en"		"You Have Reached the Max Amount of Vocalize Spams"
-		"zho"		"你已達到角色語音上限"
-	}
-	"vocal_block3"
-	{
-		"#format"	"{1:i}"
-		"en"		"You must wait {green}{1} {default}Seconds before starting another Vocalize"
-		"zho"		"你必須等待 {green}{1} {default}秒才能使用角色語音"
-	}
-	"vocal_block4"
-	{
-		"#format"	"{1:s}"
-		"en"		"{1} was Kicked for Vocalize Abuse"
-		"zho"		"{1} 濫用角色語音而被踢出"
-	}
-	"vocal_block4"
-	{
-		"#format"	"{1:s},{2:i}"
-		"en"		"{1} was Banned {2} Minutes for Vocalize Abuse"
-		"zho"		"{1} 濫用角色語音而被封鎖 {2} 分鐘"
-	}
 	//////////////votemanager2.smx//////////////
 	"Invalid vote type"
 	{
@@ -2723,7 +2716,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{1} tried to start a Kick Vote against {2} but tanks cannot be kicked."
-		"zho"		"{1} 嘗試發起投票踢出 {2} 但是目標玩家是坦克"
+		"zho"		"{1} 嘗試發起投票踢出 {2} 但是目標玩家是Tank"
 	}
 	"votemanager27"
 	{
@@ -2960,7 +2953,7 @@
 	"l4d_NoRescueFirstTank"
 	{
 		"en"		"{default}No Rescue First {green}Tank {default}spawn, {lightgreen}continue final rescue progress{default}!"
-		"zho"		"{default}沒有救援後第一隻 {green}坦克, {lightgreen}將繼續終關救援進展{default}!"
+		"zho"		"{default}沒有救援後第一隻 {green}Tank, {lightgreen}將繼續終關救援進展{default}!"
 	}
 	//////////////l4d_bash_kills.smx//////////////
 	"shove boomer and boomer dead"
@@ -2982,15 +2975,48 @@
 		"en"		"{1} second(s) left to be allowed to leave start area!"
 		"zho"		"剩餘 {1} 秒才能離開安全區域!"
 	}
-	//////////////l4d_flashlight.smx//////////////
-	"Flashlight Intro"
+	//////////////l4d_storm.smx//////////////
+	"l4d_storm1"
 	{
-		"en"		"Toggle chat command: {green}!light{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
-		"zho"		"開啟發光效果: 聊天視窗輸入{green}!light{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+		"en"	"You Cured The Infection!!!"
+		"zho" 	"你治癒了感染!!!"
 	}
-	"Flashlight Usage"
+	"l4d_storm2"
 	{
-		"en"		"Usage: {green}!light <color name|R G B>{default}. Colors: red, green, blue, purple, orange, yellow, white. Or 3 values 0-255. EG: {green}!light red{default} or {green}!light 255 0 0{default}"
-		"zho"		"使用方式: 聊天視窗輸入{green}!light <顏色名稱或R G B>{default}. 顏色: red, green, blue, purple, orange, yellow, white. 或是 3 個 0-255 RGB之值. 譬如: {green}!light red{default} 或是 {green}!light 255 0 0{default}"
+		"en" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
+		"zho" 	"你被感染, 層數：%d \n必須使用醫療物品治癒"
+	}
+	"l4d_storm3"
+	{
+		"en" 	"You Cured The Partial Infection"
+		"zho" 	"你治癒了局部感染！！！"
+	}
+	"l4d_storm4"
+	{
+		"en" 	"Press FORWARD to crawl while incapped"
+		"zho" 	"按'向前鍵'爬行"
+	}
+	//////////////l4d_rock_lagcomp.smx//////////////
+	"skeeted a tank rock."
+	{
+		"en"	"skeeted a {green}tank rock{default}!"
+		"zho"	"打掉了 {green}Tank的石頭{default}!"
+	}
+	//////////////l4d_vocalize_antiflood.smx//////////////
+	"l4d_vocalize_antiflood"
+	{
+		"en"		"You Have Reached the Max Amount of Vocalize Spams"
+		"zho"		"你已達到角色語音上限"
+	}	
+	//////////////l4d_slowdown_control.smx//////////////
+	"l4d_slowdown_control_1"
+	{
+		"en"		"{olive}Water Slowdown{default} has been reduced while Tank is in play."
+		"zho"		"Tank局 {olive}水緩{default} 已去除."
+	}	
+	"l4d_slowdown_control_2"
+	{
+		"en"		"{olive}Water Slowdown{default} has been restored to normal."
+		"zho"		"{olive}水緩{default} 已恢復正常."
 	}
 }

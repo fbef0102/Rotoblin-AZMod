@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"Flashlight Intro"
+	{
+		"chi" "开启发光效果: 聊天视窗输入{green}!light{default}. 颜色: red, green, blue, purple, orange, yellow, white. 或是3 个0-255 RGB之值. 譬如: { green}!light red{default} 或是{green}!light 255 0 0{default}"
+	}
+	"Flashlight Usage"
+	{
+		"chi" "使用方式: 聊天视窗输入{green}!light <颜色名称或RGB>{default}. 颜色: red, green, blue, purple, orange, yellow, white. 或是3 个0-255 RGB之值. 譬如: {green}!light red{default} 或是{green}!light 255 0 0{default}"
+	}
+}
