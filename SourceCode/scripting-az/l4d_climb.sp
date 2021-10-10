@@ -494,8 +494,15 @@ public void PreThink(int client)
 	{
 		if (IsValidEntityAndNotWorld(Clone[client]))
 		{
-			SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 0), 0); // body_pitch
-			SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 1), 1); // body_yaw
+			if(HasEntProp(Clone[client], Prop_Send, "m_flPoseParameter"))
+			{
+				SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 0), 0); // body_pitch
+				SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 1), 1); // body_yaw
+			}
+			else
+			{
+				Stop(client);
+			}
 		}
 		// Modified lines taken from https://forums.alliedmods.net/showthread.php?t=299560 which in turn 
 		// had the original line contributed by DeathChaos25

@@ -184,7 +184,7 @@ static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
 	}
 	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //tank will not spawn after 80% in this map
 	{
-		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN],0.8);//tank will not spawn when after 55% in this map
+		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.8);
 	}
 	
 	return newfFlow;
@@ -197,11 +197,11 @@ static Float:SpecialMapWitchFlow(const Float:fFlow,iCampaign)
 	GetCurrentMap(sMap, 64);
 	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
 	{
-		newfFlow = GetRandomFloat(0.50,0.65);//tank will not spawn when after 55% in this map
+		newfFlow = GetRandomFloat(0.50, 0.65);
 	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //witch will not spawn after 80% in this map
+	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //witch will not spawn after 75% in this map
 	{
-		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN],0.8);
+		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
 	}
 	
 	return newfFlow;

@@ -42,7 +42,7 @@ public OnPluginStart()
 	LoadSDK();
 	hCvarEnable = CreateConVar("simple_antibhop_enable", "1", "Enable or disable the Simple Anti-Bhop plugin");
 #if defined(L4DBUILD)
-	hCvarSIExcept = CreateConVar("bhop_except_si_flags", "0", "Bitfield for exempting SI in anti-bhop functionality. From least significant: 1=Smoker, 2=Boomer, 4=Hunter, 8=Tank, 15=All");
+	hCvarSIExcept = CreateConVar("bhop_except_si_flags", "4", "Bitfield for exempting SI in anti-bhop functionality. From least significant: 1=Smoker, 2=Boomer, 4=Hunter, 8=Tank, 15=All");
 	hCvarSurvivorExcept = CreateConVar("bhop_allow_survivor", "0", "Allow Survivors to bhop while plugin is enabled");
 #endif
 }

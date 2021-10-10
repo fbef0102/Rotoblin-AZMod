@@ -120,7 +120,6 @@ public OnPluginStart()
 	RegConsoleCmd(	"sm_jukestop",		CmdJukeStop, 	"Stops the jukeox playing.");
 
 	HookConVarChange(g_hCvarAllow,		ConVarChanged_Allow);
-	AutoExecConfig(true,			"l4d1_jukebox");
 }
 Handle:OpenConfig(bool:create = true)
 {

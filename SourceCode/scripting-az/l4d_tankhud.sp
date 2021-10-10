@@ -205,12 +205,7 @@ bool:FillTankInfo(Handle:TankHud)
 
 	// Draw health
 	new health = GetClientHealth(tankclient);
-	if((health <= 0 || health > z_tank_health.IntValue)&& !IsIncapacitated(tankclient) && IsPlayerAlive(tankclient) && IsFakeClient(tankclient)) //tank stuck and game force him die but tank is ot actually dead due to a bug
-	{
-		ForcePlayerSuicide(tankclient);
-		CPrintToChatAll("[{olive}TS{default}] %t", "l4d_tankhud3");
-	}
-	else if (health <= 0 || IsIncapacitated(tankclient) || !IsPlayerAlive(tankclient))
+	if (health <= 0 || IsIncapacitated(tankclient) || !IsPlayerAlive(tankclient))
 	{  
 		info = "Health  : Dead";
 	}

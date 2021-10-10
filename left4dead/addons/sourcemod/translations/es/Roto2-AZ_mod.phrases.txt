@@ -1626,10 +1626,6 @@
 	{
 		"es"		"{default}Como un {green}Tank{default}, no vas a ver el {lightgreen} Tank Hud{default}."
 	}
-	"l4d_tankhud3"
-	{
-		"es"		"{green}AI Tank{default} was stuck and has been slain by server."
-	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
 	{

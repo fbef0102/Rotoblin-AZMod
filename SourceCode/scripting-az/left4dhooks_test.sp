@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.60"
+#define PLUGIN_VERSION		"1.61"
 
 /*=======================================================================================
 	Plugin Info:
@@ -31,6 +31,32 @@
 
 ========================================================================================
 	Change Log:
+
+1.61 (05-Oct-2021)
+	- Added natives "L4D_GetTempHealth" and "L4D_SetTempHealth" to handle Survivors temporary health buffer.
+	- Added natives "L4D_PlayMusic" to play a specified music string to a client. Thanks to "DeathChaos25" and "Shadowysn" for "Dynamic Soundtrack Sets" plugin.
+	- Added natives "L4D_StopMusic" to stop playing a specified music string to a client. Thanks to "DeathChaos25" and "Shadowysn" for "Dynamic Soundtrack Sets" plugin.
+	- Moved the animation ACT_* enums from "include/left4dhooks.inc" to "include/left4dhooks_anim.inc". Suggested by "Accelerator". No plugin changes required.
+
+	- Thanks to "Psyk0tik" for requesting the following forwards and natives and their signatures found here: https://github.com/Psykotikism/L4D1-2_Signatures
+
+	- Added natives:
+		- "L4D2_HasConfigurableDifficultySetting" - Returns if there is a configurable difficulty setting.
+		- "L4D2_IsGenericCooperativeMode" - Returns if the current game mode is Coop/Realism mode.
+		- "L4D_IsCoopMode" - Returns if the current game mode is Coop mode.
+		- "L4D2_IsRealismMode" - Returns if the current game mode is Realism mode.
+		- "L4D2_IsScavengeMode" - Returns if the current game mode is Scavenge mode.
+		- "L4D_IsSurvivalMode" - Returns if the current game mode is Survival mode.
+		- "L4D_IsVersusMode" - Returns if the current game mode is Versus mode.
+
+	- Added forwards:
+		- "L4D_OnFalling" - Called when a player is falling.
+		- "L4D_OnFatalFalling" - Called when a player is falling in a fatal zone.
+		- "L4D2_OnPlayerFling" - Called when a player is flung to the ground.
+		- "L4D_OnEnterStasis" - Called when a Tank enters stasis mode in Versus mode.
+		- "L4D_OnLeaveStasis" - Called when a Tank leaves stasis mode in Versus mode.
+
+	- GameData files, include file and plugins updated.
 
 1.60 (29-Sep-2021)
 	- Added native "L4D2_GrenadeLauncherPrj" to create an activated Grenade Launcher projectile which detonates on impact. L4D2 only.
@@ -233,9 +259,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 
 	if( g_bLeft4Dead2 )
-		g_iForwardsMax = 49;
+		g_iForwardsMax = 54;
 	else
-		g_iForwardsMax = 39;
+		g_iForwardsMax = 43;
 
 	return APLRes_Success;
 }
@@ -459,6 +485,18 @@ public Action sm_l4dd(int client, int args)
 	// =========================
 	/*
 	// WORKS
+	if( g_bLeft4Dead2 )
+	{
+		PrintToServer("L4D2_HasConfigurableDifficultySetting %d", L4D2_HasConfigurableDifficultySetting());
+		PrintToServer("L4D2_IsGenericCooperativeMode %d", L4D2_IsGenericCooperativeMode());
+		PrintToServer("L4D2_IsRealismMode %d", L4D2_IsRealismMode());
+		PrintToServer("L4D2_IsScavengeMode %d", L4D2_IsScavengeMode());
+	}
+	PrintToServer("L4D_IsCoopMode %d", L4D_IsCoopMode());
+	PrintToServer("L4D_IsSurvivalMode %d", L4D_IsSurvivalMode());
+	PrintToServer("L4D_IsVersusMode %d", L4D_IsVersusMode());
+
+	// WORKS
 	// int iCurrentMode = L4D_GetGameModeType();
 	// PrintToServer("GameMode %d", iCurrentMode);
 
@@ -644,6 +682,25 @@ public Action sm_l4dd(int client, int args)
 
 	PrintToServer("L4D_Deafen %d",							L4D_Deafen(client)); // WORKING
 
+	// WORKS
+	float health = L4D_GetTempHealth(client);
+	PrintToServer("L4D_GetTempHealth %N %f", client, health);
+	health += 10.0;
+	L4D_SetTempHealth(client, health);
+
+
+
+	// WORKS
+	// Starts and stops incapacitated music
+	// L4D_PlayMusic(client, "Event.Down", 0, 0.0, false, false);
+	// L4D_StopMusic(client, "Event.Down");
+
+	// Starts and stops the Portal Jukebox song
+	// L4D_PlayMusic(client, "Jukebox.still_alive", 0, 0.0, false, false);
+	// L4D_StopMusic(client, "Jukebox.still_alive");
+
+
+
 	PrintToServer("L4D_OnITExpired %d",						L4D_OnITExpired(client)); // WORKING
 
 
@@ -724,8 +781,9 @@ public Action sm_l4dd(int client, int args)
 		projectile = L4D2_VomitJarPrj(client, vPos, vAng);
 		PrintToServer("L4D2_VomitJarPrj %d", projectile);
 
-		projectile = L4D2_GrenadeLauncher(client, vPos, vAng);
-		PrintToServer("L4D2_GrenadeLauncher %d", projectile);
+		projectile = L4D2_GrenadeLauncherPrj(client, vPos, vAng);
+		SetEntProp(projectile, Prop_Data, "m_iHammerID", 2467737); // Avoid conflict with "Flare Gun" plugin.
+		PrintToServer("L4D2_GrenadeLauncherPrj %d", projectile);
 	}
 
 
@@ -1323,8 +1381,8 @@ public Action L4D_OnSpawnSpecial(int &zombieClass, const float vector[3], const 
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSpawnSpecial\" %d. (%f %f %f). (%f %f %f)", zombieClass, vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
@@ -1340,8 +1398,8 @@ public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSpawnTank\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
@@ -1353,8 +1411,8 @@ public Action L4D_OnSpawnWitch(const float vector[3], const float qangle[3])
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSpawnWitch\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
@@ -1366,8 +1424,8 @@ public Action L4D2_OnSpawnWitchBride(const float vector[3], const float qangle[3
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnSpawnWitchBride\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
@@ -1379,8 +1437,8 @@ public Action L4D_OnMobRushStart()
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnMobRushStart\"");
 	}
@@ -1392,8 +1450,8 @@ public Action L4D_OnSpawnITMob(int &amount)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSpawnITMob\" %d", amount);
 	}
@@ -1411,8 +1469,8 @@ public Action L4D_OnSpawnMob(int &amount)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSpawnMob\" %d", amount);
 	}
@@ -1430,8 +1488,8 @@ public Action L4D_OnEnterGhostStatePre(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnEnterGhostStatePre\" %d", client);
 	}
@@ -1445,8 +1503,8 @@ public void L4D_OnEnterGhostState(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnEnterGhostState\" %d", client);
 	}
@@ -1457,8 +1515,8 @@ public Action L4D_OnIsTeamFull(int team, bool &full)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_IsTeamFull\" %d %d", team, full);
 	}
@@ -1482,8 +1540,8 @@ public Action L4D_OnClearTeamScores(bool newCampaign)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnClearTeamScores\" %d", newCampaign);
 	}
@@ -1497,8 +1555,8 @@ public Action L4D_OnSetCampaignScores(int &scoreA, int &scoreB)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnSetCampaignScores\" %d. %d", scoreA, scoreB);
 	}
@@ -1517,8 +1575,8 @@ public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnFirstSurvivorLeftSafeArea\" %d", client);
 	}
@@ -1532,8 +1590,8 @@ public Action L4D_OnGetCrouchTopSpeed(int target, float &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetCrouchTopSpeed\" %d. %f", target, retVal);
 	}
@@ -1548,8 +1606,8 @@ public Action L4D_OnGetRunTopSpeed(int target, float &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetRunTopSpeed\" %d. %f", target, retVal);
 	}
@@ -1564,8 +1622,8 @@ public Action L4D_OnGetWalkTopSpeed(int target, float &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetWalkTopSpeed\" %d. %f", target, retVal);
 	}
@@ -1580,8 +1638,8 @@ public Action L4D_OnGetMissionVSBossSpawning(float &spawn_pos_min, float &spawn_
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetMissionVSBossSpawning\" %f. %f. %f. %f", spawn_pos_min, spawn_pos_max, tank_chance, witch_chance);
 	}
@@ -1599,8 +1657,8 @@ public void L4D_OnReplaceTank(int tank, int newtank)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnReplaceTank\" %d %d", tank, newtank);
 	}
@@ -1611,8 +1669,8 @@ public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStasis)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnTryOfferingTankBot\" %d. %d", tank_index, enterStasis);
 	}
@@ -1626,8 +1684,8 @@ public Action L4D_OnCThrowActivate(int ability)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnCThrowActivate\" %d", ability);
 	}
@@ -1641,8 +1699,8 @@ public Action L4D2_OnSelectTankAttackPre(int client, int &sequence)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnSelectTankAttack\" %d. %d", client, sequence);
 	}
@@ -1657,8 +1715,8 @@ public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnSelectTankAttack\" %d. %d", client, sequence);
 	}
@@ -1673,8 +1731,8 @@ public Action L4D2_OnSendInRescueVehicle()
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnSendInRescueVehicle\"");
 	}
@@ -1688,8 +1746,8 @@ public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnEndVersusModeRound\" %d", countSurvivors);
 	}
@@ -1703,8 +1761,8 @@ public void L4D2_OnEndVersusModeRound_Post()
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnEndVersusModeRound_Post\"");
 	}
@@ -1715,8 +1773,8 @@ public Action L4D_OnRecalculateVersusScore(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnRecalculateVersusScore\"");
 	}
@@ -1730,8 +1788,8 @@ public Action L4D_OnLedgeGrabbed(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnLedgeGrabbed\" %d", client);
 	}
@@ -1745,8 +1803,8 @@ public void L4D2_OnRevived(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnRevived\" %d", client);
 	}
@@ -1757,8 +1815,8 @@ public Action L4D2_OnStagger(int target, int source)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnStagger\" %d %d", target, source);
 	}
@@ -1772,8 +1830,8 @@ public Action L4D_OnShovedBySurvivor(int client, int victim, const float vector[
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnShovedBySurvivor\" %d %d. (%f %f %f)", client, victim, vector[0], vector[1], vector[2]);
 	}
@@ -1787,8 +1845,8 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vect
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnEntityShoved\" %d %d %d (%f %f %f) IsHighPounce=%d", client, entity, weapon, vector[0], vector[1], vector[2], bIsHighPounce);
 	}
@@ -1802,8 +1860,8 @@ public Action L4D2_OnPounceOrLeapStumble(int victim, int attacker)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnPounceOrLeapStumble\" %d %d", victim, attacker);
 	}
@@ -1817,8 +1875,8 @@ public Action L4D2_OnSpitSpread(int spitter, int projectile, float &x, float &y,
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnSpitSpread\" %d %d (%f %f %f)", spitter, projectile, x, y, z);
 	}
@@ -1838,8 +1896,8 @@ public Action L4D2_OnUseHealingItems(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnUseHealingItems\" %d", client);
 	}
@@ -1853,8 +1911,8 @@ public Action L4D2_OnFindScavengeItem(int client, int &item)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnFindScavengeItem\" %d %d", client, item);
 	}
@@ -1875,8 +1933,8 @@ public Action L4D_OnVomitedUpon(int victim, int &attacker, bool &boomerExplosion
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnVomitedUpon\" %d > %d (%d)", victim, attacker, boomerExplosion);
 	}
@@ -1892,8 +1950,8 @@ public Action L4D2_OnHitByVomitJar(int victim, int &attacker)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnHitByVomitJar\" %d > %d)", victim, attacker);
 	}
@@ -1910,8 +1968,8 @@ public Action L4D_OnMaterializeFromGhostPre(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnMaterializeFromGhostPre\" %d (%N)", client, client);
 	}
@@ -1925,8 +1983,8 @@ public Action L4D_OnMaterializeFromGhost(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnMaterializeFromGhost\" %d (%N)", client, client);
 	}
@@ -1937,8 +1995,8 @@ public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnChooseVictim\" %d > %d", specialInfected, curTarget);
 	}
@@ -1956,8 +2014,8 @@ public Action L4D_OnGetScriptValueInt(const char[] key, int &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetScriptValueInt\" %s. %d", key, retVal);
 	}
@@ -1976,8 +2034,8 @@ public Action L4D_OnGetScriptValueFloat(const char[] key, float &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetScriptValueFloat\" %s. %f", key, retVal);
 	}
@@ -1999,8 +2057,8 @@ public Action L4D_OnGetScriptValueString(const char[] key, const char[] defaultV
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		// ForwardCalled("\"L4D_OnGetScriptValueString\" [%s]. [%s]. [%s].", key, defaultVal, retVal); // Because printing random chars can break console printing text or possibly cause a crash?
 		ForwardCalled("\"L4D_OnGetScriptValueString\"");
@@ -2020,8 +2078,8 @@ public Action L4D_OnHasConfigurableDifficulty(int &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnHasConfigurableDifficulty\" %d", retVal);
 	}
@@ -2036,8 +2094,8 @@ public Action L4D_OnGetSurvivorSet(int &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetSurvivorSet\" %d", retVal);
 	}
@@ -2052,8 +2110,8 @@ public Action L4D_OnFastGetSurvivorSet(int &retVal)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnFastGetSurvivorSet\" %d", retVal);
 	}
@@ -2068,8 +2126,8 @@ public Action L4D_OnStartMeleeSwing(int client, bool boolean)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnStartMeleeSwing\" %d. %d", client, boolean);
 	}
@@ -2083,8 +2141,8 @@ public Action L4D2_OnChangeFinaleStage(int &finaleType, const char[] arg)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnChangeFinaleStage\" %d. %s", finaleType, arg);
 	}
@@ -2102,8 +2160,8 @@ public Action L4D2_OnClientDisableAddons(const char[] SteamID)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnClientDisableAddons\" %s", SteamID);
 	}
@@ -2113,18 +2171,85 @@ public Action L4D2_OnClientDisableAddons(const char[] SteamID)
 	// return Plugin_Handled; // Allow addons.
 }
 
-
 public Action L4D_OnGameModeChange(int gamemode)
 {
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGameModeChange\" %d", gamemode);
 	}
 }
+
+public Action L4D2_OnPlayerFling(int client, int attacker, float vecDir[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnPlayerFling\" %d (%N) flung %d (%N). vecDir: (%0.1f %0.1f %0.1f)", attacker, attacker, client, client, vecDir[0], vecDir[1], vecDir[2]);
+	}
+
+	// WORKS - Block being flung
+	// return Plugin_Handled;
+}
+
+public Action L4D_OnFatalFalling(int client, int camera)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnFatalFalling\" %d %N (cam: %d)", client, client, camera);
+	}
+
+	// WORKS - Block block death fall camera
+	// return Plugin_Handled;
+}
+
+public void L4D_OnFalling(int client)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnFalling\" %d %N", client, client);
+	}
+}
+
+public void L4D_OnEnterStasis(int tank)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnEnterStasis\" %d %N", tank, tank);
+	}
+}
+
+public void L4D_OnLeaveStasis(int tank)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnLeaveStasis\" %d %N", tank, tank);
+	}
+}
+
+
 
 /*
 // Can trigger with: "z_spawn_old hunter auto" in console.
@@ -2134,8 +2259,8 @@ public Action L4D_OnGetRandomPZSpawnPosition(int &client, int &zombieClass, int 
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnGetRandomPZSpawnPosition\" Client(%d). Class(%d). Attempts(%d). (%f %f %f)", client, zombieClass, attempts, vecPos[0], vecPos[1], vecPos[2]);
 	}
@@ -2152,8 +2277,8 @@ public Action L4D_OnInfectedShoved(int infected, int entity)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D_OnInfectedShoved\" %d. %d", infected, entity);
 	}
@@ -2164,8 +2289,8 @@ public void L4D2_OnWaterMove(int client)
 	static int called;
 	if( called < MAX_CALLS )
 	{
+		if( called == 0 ) g_iForwards++;
 		called++;
-		g_iForwards++;
 
 		ForwardCalled("\"L4D2_OnWaterMove\" %d", client);
 	}

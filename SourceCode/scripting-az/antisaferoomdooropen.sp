@@ -85,8 +85,6 @@ public void OnPluginStart()
 	g_hSafeAreaLeftTime.AddChangeHook(ConVarChanged_Cvars);
 
 	IsAllowed();
-	
-	AutoExecConfig(true,				"antisaferoomdooropen");
 }
 	
 public void OnPluginEnd()

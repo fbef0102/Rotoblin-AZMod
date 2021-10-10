@@ -125,7 +125,6 @@ public OnPluginStart()
 	VotensForceSpectateED = CreateConVar("l4d_vote_ForceSpectateED", "1", "If 1, Enable ForceSpectate Player Vote.", FCVAR_NOTIFY);
 	g_hCvarPlayerLimit = CreateConVar("sm_vote_player_limit", "2", "Minimum # of players in game to start the vote", FCVAR_NOTIFY);
 	g_hKickImmueAccess = CreateConVar("l4d_vote_Kick_immue_access_flag", "z", "Players with these flags have kick immune. (Empty = Everyone, -1: Nobody)", FCVAR_NOTIFY);
-	AutoExecConfig(true, "votes3");
 
 	g_hKickImmueAccess.AddChangeHook(ConVarChanged_Cvars);
 

@@ -2022,16 +2022,11 @@ public Action:DisposeOfCowards(Handle:timer, any:coward)
 {
 	if (IsClientInGame(coward) && IsFakeClient(coward) && GetClientTeam(coward) == TEAM_INFECTED && !IsPlayerTank(coward) && PlayerIsAlive(coward))
 	{
-		// Check to see if the infected thats about to be slain sees the survivors. If so, kill the timer and make a new one.
-		new threats = GetEntProp(coward, Prop_Send, "m_hasVisibleThreats");
-		
-		if (threats)
+		// Check to see if the infected can be seen by the survivors. If so, kill the timer and make a new one.
+		if (CanBeSeenByHumanSurvivors(coward) || L4D_GetSurvivorVictim(coward) != -1)
 		{
 			FightOrDieTimer[coward] = INVALID_HANDLE;
 			FightOrDieTimer[coward] = CreateTimer(GetConVarFloat(h_idletime_b4slay), DisposeOfCowards, coward);
-			#if DEBUGCLIENTS
-			PrintToChatAll("%N saw survivors after timer is up, creating new timer", coward);
-			#endif
 			return;
 		}
 		else
@@ -4427,6 +4422,104 @@ public bool:IsInteger(String:buffer[])
     }
 
     return true;    
+}
+
+int L4D_GetSurvivorVictim(int client)
+{
+	int victim;
+
+    /* Hunter */
+	victim = GetEntPropEnt(client, Prop_Send, "m_pounceVictim");
+	if (victim > 0)
+	{
+		return victim;
+ 	}
+
+    /* Smoker */
+ 	victim = GetEntPropEnt(client, Prop_Send, "m_tongueVictim");
+	if (victim > 0)
+	{
+		return victim;	
+	}
+
+	return -1;
+}
+
+static bool IsVisibleTo(int player1, int player2)
+{
+	// check FOV first
+	// if his origin is not within a 60 degree cone in front of us, no need to raytracing.
+	float pos1_eye[3], pos2_eye[3], eye_angle[3], vec_diff[3], vec_forward[3];
+	GetClientEyePosition(player1, pos1_eye);
+	GetClientEyeAngles(player1, eye_angle);
+	GetClientEyePosition(player2, pos2_eye);
+	MakeVectorFromPoints(pos1_eye, pos2_eye, vec_diff);
+	NormalizeVector(vec_diff, vec_diff);
+	GetAngleVectors(eye_angle, vec_forward, NULL_VECTOR, NULL_VECTOR);
+	if (GetVectorDotProduct(vec_forward, vec_diff) < 0.5) // cos 60
+	{
+		return false;
+	}
+
+	// in FOV
+	Handle hTrace;
+	bool ret = false;
+	float pos2_feet[3], pos2_chest[3];
+	GetClientAbsOrigin(player2, pos2_feet);
+	pos2_chest[0] = pos2_feet[0];
+	pos2_chest[1] = pos2_feet[1];
+	pos2_chest[2] = pos2_feet[2] + 45.0;
+
+	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_eye, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
+	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
+	{
+		CloseHandle(hTrace);
+		return true;
+	}
+	CloseHandle(hTrace);
+
+	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_feet, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
+	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
+	{
+		CloseHandle(hTrace);
+		return true;
+	}
+	CloseHandle(hTrace);
+
+	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_chest, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
+	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
+	{
+		CloseHandle(hTrace);
+		return true;
+	}
+	CloseHandle(hTrace);
+
+	return ret;
+}
+
+static bool TraceFilter(int entity, int mask, int self)
+{
+	return entity != self;
+}
+
+bool CanBeSeenByHumanSurvivors(int infected)
+{
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (IsAliveHumanSurvivor(client) && IsVisibleTo(client, infected))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool IsAliveHumanSurvivor(int client)
+{
+    return IsClientInGame(client)
+    	&& !IsFakeClient(client)
+        && GetClientTeam(client) == TEAM_SURVIVORS
+        && IsPlayerAlive(client);
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -196,8 +196,6 @@ public OnPluginStart()
 	g_hKitScores = 	CreateConVar("l4d_score_healthbounus_kit", "25", "Heath bounus each kit. (0=off)", FCVAR_SPONLY|FCVAR_NOTIFY);
 	g_iKitScores = GetConVarInt(g_hKitScores);
 	HookConVarChange(g_hKitScores, ConVarChange_Cvars)
-	
-	AutoExecConfig(true, "l4dscores");
 	/*
 	 * ADT Handles
 	 */

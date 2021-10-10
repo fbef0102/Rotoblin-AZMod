@@ -1,0 +1,34 @@
+﻿v8.3.1
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.10-git6510 + MetaMod 1.11-git1145)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+
+------------------New------------------
+* l4d_unlimited_grenades_fix.smx
+
+* Custom maps stripper rework
+	* City 17
+	* Suicide Blitz
+	* Dead Flag Blues
+	* I Hate Mountains
+	* The Arena of the Dead
+	* Death Aboard
+	
+------------------Change------------------
+### Bug / Exploit Fixes ###
+* Fixes an exploit where unlimited grenades could be created.
+
+### Map Changes ###
+  * Ammo density: 2.0
+  * Extra Pills
+    * Only 1 pill in cabinets
+    * On the road: few pills (Pill density: 0.75)
+    * Final rescue area: 4 pills
+	
+### Gameplay / Balance Changes ###
+* Special Infected:
+  * **Hunter:**
+    * claw Damage: 6 (was 4, vanilla: 6)
+	* Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
+	* m2 godframes after a hunter lands on the ground: 0.25s

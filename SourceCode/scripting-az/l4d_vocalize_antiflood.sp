@@ -54,7 +54,7 @@ public void OnPluginStart()
 	
 	hConVar1 = CreateConVar("l4d_vocalize_antiflood_player_token_time", "60", "Time interval to decrease a player token. (second)", FCVAR_NOTIFY, true, 1.0);
 	hConVar2 = CreateConVar("l4d_vocalize_antiflood_word_token_time", "5", "Time interval to decrease a word token. (second)", FCVAR_NOTIFY, true, 1.0);
-	hConVar3 = CreateConVar("l4d_vocalize_antiflood_player_token_limit", "3", "Max Player Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
+	hConVar3 = CreateConVar("l4d_vocalize_antiflood_player_token_limit", "2", "Max Player Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
 	hConVar4 = CreateConVar("l4d_vocalize_antiflood_world_token_limit", "-1", "Max World Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
 	hConVar5 = CreateConVar("l4d_vocalize_antiflood_notify", "1", "If 1, notify antiflood message to player.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hImmueAccess = CreateConVar("l4d_vocalize_antiflood_immue_flag", "-1", "Players with these flags have immune to token limit. (Empty=Everyone, -1=Nobody)", FCVAR_NOTIFY);
@@ -66,8 +66,6 @@ public void OnPluginStart()
 	HookConVarChange(hConVar4, ConVarChanged_Cvars);
 	HookConVarChange(hConVar5, ConVarChanged_Cvars);
 	HookConVarChange(g_hImmueAccess, ConVarChanged_Cvars);	
-	
-	AutoExecConfig(true, "l4d_vocalize_antiflood");
 }
 	
 void GetCvars()

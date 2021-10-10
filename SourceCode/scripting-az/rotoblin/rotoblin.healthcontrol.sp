@@ -54,12 +54,9 @@ static 	const 	String: MODEL_FIRST_AID_KIT[]			= "w_models/weapons/w_eq_medkit.m
 
 static	const	Float:	REPLACE_DELAY					= 0.1; // Short delay on OnEntityCreated before replacing
 
-static	const	Float:	KIT_FINALE_AREA					= 400.0;
-
 static			bool:	g_bIsFinale						= false;
 static 			bool:	g_bSpecialMap					= false;
 static			bool:	g_bHaveRunRoundStart			= false;
-static			Float:	g_vFinaleOrigin[3]				= {0.0};
 
 static HEALTH_STYLE: g_iHealthStyle					= REPLACE_ALL_KITS; // How we replace kits
 static			Handle:	g_hHealthStyle_Cvar			= INVALID_HANDLE;
@@ -282,13 +279,13 @@ public _HC_OnEntityCreated(entity, const String:classname[])
 		new entRef = EntIndexToEntRef(entity);
 		CreateTimer(REPLACE_DELAY, _HC_RemoveItem_Delayed_Timer, entRef);
 	} 	
-	else if(( g_iHealthStyle == ZONEMOD_PILLS)&& 
+	/*else if(( g_iHealthStyle == ZONEMOD_PILLS)&& 
 		StrEqual(classname, PAIN_PILLS_CLASSNAME) && g_bIsFinale)
 	{
 		new entRef = EntIndexToEntRef(entity);
 		CreateTimer(REPLACE_DELAY, _HC_RemoveItem_Delayed_Timer, entRef);
-	}
-	else if(StrEqual(classname, FIRST_AID_KIT_CLASSNAME) && ShouldReplaceKitWithPills(entity)) 
+	}*/
+	else if(StrEqual(classname, FIRST_AID_KIT_CLASSNAME) && ShouldReplaceKitWithPills()) 
 	{		
 		new entRef = EntIndexToEntRef(entity);
 		CreateTimer(REPLACE_DELAY, _HC_ReplaceKit_Delayed_Timer, entRef); // Replace medkit
@@ -402,15 +399,12 @@ static UpdateStartingHealthItems()
 		ReplaceSafeRoomMedkits(SaferoomKits);
 	}
 	
-	//非官方圖最後一關
 	new k =0;
 	entity = -1;
-	decl String:mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
-	if(g_bIsFinale)//非官方圖救援關四顆藥丸符合當前人類數量
+	if(g_bIsFinale)//救援關四顆藥丸符合當前人類數量
 	{
-		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY||g_iHealthStyle == ZONEMOD_PILLS)
+		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY /*||g_iHealthStyle == ZONEMOD_PILLS*/ )
 			RemoveAllPills();
 
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
@@ -439,53 +433,28 @@ static UpdateStartingHealthItems()
 	}
 	
 	
-	//救援關醫療包變成藥丸,非救援關 移除所有kits
-	while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
+	//非救援關 移除所有kits
+	if(g_iHealthStyle != REPLACE_ALL_BUT_FINALE_KITS)
 	{
-		if(!IsValidEntity(entity))
-			continue;
-		
-		//decl Float:entityPos[3];
-		//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-		//LogMessage("KITS here2 %d: %f %f %f: %d,%d,%d,%d",entity,entityPos[0],entityPos[1],entityPos[2],SaferoomKits[0],SaferoomKits[1],SaferoomKits[2],SaferoomKits[3]);
-		if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部醫療包變成藥丸
+		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
-			if(g_bIsFinale)
+			if(!IsValidEntity(entity))
+				continue;
+			
+			//decl Float:entityPos[3];
+			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+			//LogMessage("KITS here2 %d: %f %f %f: %d,%d,%d,%d",entity,entityPos[0],entityPos[1],entityPos[2],SaferoomKits[0],SaferoomKits[1],SaferoomKits[2],SaferoomKits[3]);
+			if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部非起始安全室的醫療包移除
 			{
-				if(k==1&&g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) {ReplaceEntity(entity, FIRST_AID_KIT_CLASSNAME, MODEL_FIRST_AID_KIT, 1);return;}
-				ReplaceKitWithPills(entity);
-				k++;
-			}
-			else if(g_iHealthStyle != REPLACE_ALL_BUT_FINALE_KITS)
 				SafelyRemoveEdict(entity);
+			}
 		}
 	}
 				
-	if(g_iHealthStyle == REPLACE_ALL_KITS || g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) return;
-	
-	// Then, if we're using the hardcore setting, remove all pills from the map excluding the finale sets
+	// Then, if we're using the hardcore setting, remove all pills from the map
 	if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
 	{		
-		if(g_bIsFinale)
-		{
-			// We want to remove all the pills excluding the finale pills
-			decl finale_pills[4];
-			if(TryGetFinalePillEntities(finale_pills))
-			{
-				RemoveAllPillsExcluding(finale_pills);//把救援關的四顆藥丸符合當前人類數量
-			}
-		}		
-		else
-		{
-			RemoveAllPills();
-		}
-		DebugPrintToAllEx("Finished removing pills.");
-	}
-	
-	decl finale_kits[4];
-	if(g_iHealthStyle == ZONEMOD_PILLS&&TryGetFinalePillEntities(finale_kits))//把救援關的四顆藥丸符合當前人類數量
-	{
-		RemoveAllPillsExcluding(finale_kits);
+		RemoveAllPills();
 	}
 }
 
@@ -515,67 +484,6 @@ static RemoveAllPills()
 		}
 	}
 	
-	DebugPrintToAllEx("Removed %i sets of pills", removedCount);
-}
-
-/**
- * Removes all sets of pills from the map, excluding the 4 sets contained in the supplied array
- *
- * @param pills the pills to exclude from removal
- * @noreturn
- */
-static RemoveAllPillsExcluding(pills[4])
-{	
-	DebugPrintToAllEx("Removing all pills excluding finale pills.");
-		
-	new removedCount = 0;
-	new entity = -1;
-	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
-	while ((entity = FindEntityByClassnameEx(entity, PAIN_PILLS_CLASSNAME)) != -1)
-	{		
-		if(!IsValidEntity(entity))
-		{
-			continue;
-		}
-			
-		new bool:shouldRemove = true;
-		DebugPrintToAllEx("Testing ent %i (pills) to see whether we should remove it.", entity);
-				
-		for(new j = 0; j < 4; j++)
-		{			
-			if(entity == pills[j])//rescue pills
-			{
-				DebugPrintToAllEx("Pills (ent: %i) won't be removed.", entity);
-				shouldRemove = false;
-				if(pillsleft<=0)
-					shouldRemove = true;
-				pillsleft--;
-				//LogMessage("%d %d",pillsleft,shouldRemove);
-			}				
-		}		
-		
-		if(shouldRemove)
-		{
-			//LogMessage("remove");
-			if(SafelyRemoveEdict(entity))
-			{
-				removedCount++;
-				DebugPrintToAllEx("Removed (non-finale) pills (ent: %i)", entity);
-			}
-			else
-			{
-				DebugPrintToAllEx("Failed to remove (non-finale) pills (ent: %i)", entity);
-			}
-		}
-	}
-	for(new i=0;pillsleft>=1;i++,pillsleft--)
-	{
-		ReplaceKitWithPills(pills[i]);
-		ReplaceKitWithPills(pills[i]);
-		//ReplaceEntity(pills[i], FIRST_AID_KIT_CLASSNAME, MODEL_FIRST_AID_KIT, 1);
-		if(i==3) i=0;
-	}
-
 	DebugPrintToAllEx("Removed %i sets of pills", removedCount);
 }
 
@@ -611,15 +519,13 @@ static GivePillsToSurvivors()
  */
 static DetermineIfMapIsFinale()
 {	
-	if (GetFinaleOrigin(g_vFinaleOrigin) || L4D_IsMissionFinalMap())
+	if (L4D_IsMissionFinalMap())
 	{
 		g_bIsFinale = true;
-		DebugPrintToAllEx("Map is finale. Finale origin %f %f %f", g_vFinaleOrigin[0], g_vFinaleOrigin[1], g_vFinaleOrigin[2]);
 	}
 	else
 	{
 		g_bIsFinale = false;
-		DebugPrintToAllEx("Map is not the finale");
 	}
 	
 	decl String:mapbuf[32];
@@ -641,11 +547,10 @@ static DetermineIfMapIsFinale()
  * @param entity 	medkit entity to be considered for replacement
  * @return			whether the kit should be replaced with pills
  */
-static bool:ShouldReplaceKitWithPills(entity)
+bool ShouldReplaceKitWithPills()
 {
 	if ((g_bIsFinale && 
-		g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS && 
-		EntityIsInsideFinaleArea(entity))||
+		g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS)||
 		g_iHealthStyle == REPLACE_NO_KITS||
 		g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS)
 	{
@@ -672,142 +577,6 @@ static ReplaceKitWithPills(entity)
 	DebugPrintToAllEx("Medkit (entity %i) replaced with pills (entity %i)", entity, result);	
 }
 
-/**
- * Determines whether an entity is within a given radius of the finale trigger
-  *
- * @param entity the entity
- * @return whether the entity is inside the finale radius.
- */
-static bool:EntityIsInsideFinaleArea(entity)
-{	
-	decl Float:origin[3];
-	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", origin);
-	if (GetVectorDistance(g_vFinaleOrigin, origin) <= KIT_FINALE_AREA) 
-	{
-		DebugPrintToAllEx("Entity (entity %i) is within finale area", entity);
-		return true; 
-	}
-	
-	return false;	
-}
-
-/**
- * Attempts to find the 4 sets of pills closest to the finale trigger.  
- *
- * Note: We can't just check for the pills being inside a radius around the finale trigger
- * like for the medkits as, unlike medkits, extra pills can be spawned within the finale radius.
- *
- * @param outFinalePills the array into which, if found, the finale pill entities will be placed.  If the pills could not be found, the array members will be set to -1
- * @return whether the pills were found or not.  Check the return value before doing anything with the results.
- */
-static bool:TryGetFinalePillEntities(outFinalePills[4])
-{	
-	if(!g_bIsFinale)	
-	{
-		return false;			
-	}
-	
-	// run through all the pill spawns and find the 4 pill spawns that are closest to the survivors	
-	new Float:closestDistances[4] = { 9999999999.0, 9999999999.0, 9999999999.0, 9999999999.0 };	
-	outFinalePills[0] = -1;
-	outFinalePills[1] = -1;
-	outFinalePills[2] = -1;
-	outFinalePills[3] = -1;
-	
-	new entity = -1;	
-	decl Float:entityPos[3];
-	
-	while ((entity = FindEntityByClassnameEx(entity, PAIN_PILLS_CLASSNAME)) != -1)
-	{		
-		if(!IsValidEntity(entity))
-			continue;
-			
-		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);
-		
-		new Float:distance = GetVectorDistance(entityPos, g_vFinaleOrigin);
-		
-		// basically, what we want to do is move left, shifting the elements we encounter
-		// until we encounter one that is smaller than our inserted distance, then insert the new element		
-		if(closestDistances[3] > distance)
-		{
-			new i = 3;
-			while(i > 0 && closestDistances[i] > distance)
-			{	
-				closestDistances[i] = closestDistances[i - 1];
-				outFinalePills[i] = outFinalePills[i - 1];				
-				
-				i--;
-			}	
-			
-			// we have the index and the rest of the array has been bumped down by now; insert our new data
-			closestDistances[i] = distance;	
-			outFinalePills[i] = entity;
-		}		
-	}	
-	
-	DebugPrintToAllEx("Distances of pills from finale (we're keeping these ones):");
-	for(new j = 0; j < 4; j++)
-	{
-		DebugPrintToAllEx("ent id: %i, distance: %f", outFinalePills[j], closestDistances[j] );
-	}
-	
-	return true;
-}
-/*
-static bool:TryGetFinaleKitsEntities(outFinalePills[4])
-{	
-	if(!g_bIsFinale)	
-	{
-		return false;			
-	}
-	
-	// run through all the pill spawns and find the 4 pill spawns that are closest to the survivors	
-	new Float:closestDistances[4] = { 9999999999.0, 9999999999.0, 9999999999.0, 9999999999.0 };	
-	outFinalePills[0] = -1;
-	outFinalePills[1] = -1;
-	outFinalePills[2] = -1;
-	outFinalePills[3] = -1;
-	
-	new entity = -1;	
-	decl Float:entityPos[3];
-	
-	while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
-	{		
-		if(!IsValidEntity(entity))
-			continue;
-			
-		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);
-		
-		new Float:distance = GetVectorDistance(entityPos, g_vFinaleOrigin);
-		
-		// basically, what we want to do is move left, shifting the elements we encounter
-		// until we encounter one that is smaller than our inserted distance, then insert the new element		
-		if(closestDistances[3] > distance)
-		{
-			new i = 3;
-			while(i > 0 && closestDistances[i] > distance)
-			{	
-				closestDistances[i] = closestDistances[i - 1];
-				outFinalePills[i] = outFinalePills[i - 1];				
-				
-				i--;
-			}	
-			
-			// we have the index and the rest of the array has been bumped down by now; insert our new data
-			closestDistances[i] = distance;	
-			outFinalePills[i] = entity;
-		}		
-	}	
-	
-	DebugPrintToAllEx("Distances of pills from finale (we're keeping these ones):");
-	for(new j = 0; j < 4; j++)
-	{
-		DebugPrintToAllEx("ent id: %i, distance: %f", outFinalePills[j], closestDistances[j] );
-	}
-	
-	return true;
-}
-*/
 /**
  * Wrapper for printing a debug message without having to define channel index
  * everytime.
@@ -965,7 +734,7 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 	}
 }
 
-ResetPlugin()
+void ResetPlugin()
 {
 	g_iRoundStart = 0;
 	g_iPlayerSpawn = 0;

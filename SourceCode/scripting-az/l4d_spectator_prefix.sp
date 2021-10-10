@@ -48,8 +48,6 @@ public void OnPluginStart()
 	g_hCvarModesOff.AddChangeHook(ConVarChanged_Allow);
 	g_hCvarModesTog.AddChangeHook(ConVarChanged_Allow);
 	g_hPrefixType.AddChangeHook(ConVarChanged_PrefixType);
-
-	AutoExecConfig(true, "l4d_spectator_prefix");
 }
 
 public void OnPluginEnd()

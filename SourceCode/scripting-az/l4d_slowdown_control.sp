@@ -54,7 +54,8 @@ float
 
 bool
 	tankInPlay = false,
-	g_bBarge = false;
+	g_bBarge = false,
+	g_bIsFirstTank = false;
 
 public Plugin myinfo =
 {
@@ -135,7 +136,7 @@ public Action TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!tankInPlay) {
 		tankInPlay = true;
-		if (fSurvWaterSpeedDuringTank > 0.0) {
+		if (fSurvWaterSpeedDuringTank > 0.0 && g_bIsFirstTank) {
 			CPrintToChatAll("%t", "l4d_slowdown_control_1");
 		}
 	}
@@ -154,14 +155,16 @@ public Action Timer_CheckTank(Handle timer)
 	int tankclient = FindTankClient();
 	if (!tankclient || !IsPlayerAlive(tankclient)) {
 		tankInPlay = false;
-		if (fSurvWaterSpeedDuringTank > 0.0) {
+		if (fSurvWaterSpeedDuringTank > 0.0 && g_bIsFirstTank) {
 			CPrintToChatAll("%t", "l4d_slowdown_control_2");
+			g_bIsFirstTank = false;
 		}
 	}
 }
 
 public Action RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
+	g_bIsFirstTank = true;
 	tankInPlay = false;
 }
 

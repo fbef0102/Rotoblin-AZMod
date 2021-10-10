@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.3.0"
+		"en"			"Rotoblin-AZ Mod v8.3.1"
 	}
 	"Plugin_Information"
 	{
@@ -2188,11 +2188,6 @@
 	{
 		"en"		"{default}As a {green}Tank{default}, you won't see {lightgreen} Tank Hud{default}."
 		"zho"		"{default}[{green}介面插件{default}] 身為一個 {green}Tank{default}, 你不會看見 {lightgreen}Tank介面{default}."
-	}
-	"l4d_tankhud3"
-	{
-		"en"		"{green}AI Tank{default} was stuck and has been slain by server."
-		"zho"		"{green}AI Tank{default} 卡住了並且已被處死."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"

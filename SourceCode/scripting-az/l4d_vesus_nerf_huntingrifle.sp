@@ -44,7 +44,6 @@ public OnPluginStart()
 	ConVar_Huntrifle_SwtichTime = CreateConVar( "l4dbeta_huntingrifle_swtichtime", "1.8", "[-1 = DISABLED] <Time to Block the Swtich Layer Sequence>",  FCVAR_NOTIFY );
 	ConVar_Huntrifle_FireLayer = CreateConVar( "l4d_huntingrifle_firelayer", "19", "[-1 = DISABLED] <The Fire Layer Sequence>", FCVAR_NOTIFY );
 	hRateOfFireCvar	= CreateConVar("l4d_huntingrifle_fire_rate", "0.20", "[1.0 = Value Default] In percentage, rate of fire (min 0.05; max 1.50).",  FCVAR_NOTIFY);
-	AutoExecConfig(true, "l4d_vesus_nerf_huntingrifle");
 	
 	SetFireSpeed();
 	HookConVarChange(hRateOfFireCvar, ConVarChange_Slow);

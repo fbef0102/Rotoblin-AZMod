@@ -63,9 +63,6 @@ public void OnPluginStart()
 	HookEvent("mission_lost", evtRoundEnd); //戰役滅團重來該關卡的時候 (之後有觸發round_end)
 	HookEvent("finale_vehicle_leaving", evtRoundEnd); //救援載具離開之時  (沒有觸發round_end)
 	
-
-	AutoExecConfig(true, "l4d_expertrealism");
-	
 	if( g_bLateLoad )
 	{
 		for( int i = 1; i <= MaxClients; i++)

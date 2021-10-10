@@ -79,11 +79,11 @@ public void OnPluginStart()
 	g_hDiscardRange  	= CreateConVar("ssitp_tp1_range", 			"600",	"Infected player will be teleported if his distance is outside this range.", FCVAR_NOTIFY, true, 1.0);
 	g_hTeleRangeMax 	= CreateConVar("ssitp_tp2_range_max", 		"800", 	"Teleport to the player max range, value must <= 'ssitp_tp1_discard_range'.", FCVAR_NOTIFY, true, 1.0);
 	g_hTeleRangeMin 	= CreateConVar("ssitp_tp2_range_min", 		"150", 	"Teleport to the player min range", FCVAR_NOTIFY, true, 0.0);
-	g_hCheckinterval 	= CreateConVar("ssitp_check_interval", 		"1.0",	"Time interval to check si.", FCVAR_NOTIFY, true, 1.0);
+	g_hCheckinterval 	= CreateConVar("ssitp_check_interval", 		"2.5",	"Time interval to check si.", FCVAR_NOTIFY, true, 1.0);
 	g_hTeleLimit		= CreateConVar("ssitp_tp1_limit",   		"2", 	"Limit per teleport.", FCVAR_NOTIFY, true, 1.0);
 	g_hBoomer2Tank 		= CreateConVar("ssitp_boomer2tank", 		"0", 	"Teleport boomer to tank?", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hGodTime			= CreateConVar("ssitp_tp1_god_time",		"0.6",	"Prevent SI from taking damage for this seconds after being teleported. (0=Disable)", FCVAR_NOTIFY, true, 0.0);
-	g_hTeleCoolDownTime	= CreateConVar("ssitp_tp1_cooltime",		"2.0",	"Cold Down Time in seconds an infected can not be teleported again.", FCVAR_NOTIFY, true, 0.0);
+	g_hTeleCoolDownTime	= CreateConVar("ssitp_tp1_cooltime",		"5.0",	"Cold Down Time in seconds an infected can not be teleported again.", FCVAR_NOTIFY, true, 0.0);
 	g_hTeleVisibleThreats= CreateConVar("ssitp_tp2_visiblethreats",	"0",	"If 1, infected players can be teleported to the player thats about to be seen by the survivors.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
@@ -101,8 +101,6 @@ public void OnPluginStart()
 	g_hDiscardRange.AddChangeHook(ConVarChanged_Cvars);
 	g_hTeleCoolDownTime.AddChangeHook(ConVarChanged_Cvars);
 	g_hTeleVisibleThreats.AddChangeHook(ConVarChanged_Cvars);
-
-	AutoExecConfig(true, "l4d_ssi_teleport_fix");
 }
 
 public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)

@@ -83,8 +83,6 @@ public OnPluginStart()
 	
 	HookConVarChange(hCvar3HT1SProbability, ConVarChange_hCvar3HT1SProbability);
 	
-	AutoExecConfig(true, "l4d_QuadCpas");
-	
 	PluginDisable = false;
 }
 

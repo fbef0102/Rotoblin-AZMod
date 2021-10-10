@@ -25,14 +25,17 @@ Author:
 
 --------地圖修改--------
 1. 所有VS地圖均已解除屋頂限制
-2. 在地圖上新增許多物體障礙物與武器
-//參考二代Zonemode、一代rotoblin2
+2. 消除一些背景音或環境音樂，讓倖存者能專注特感
 3. 地圖藥丸
- -沒有醫療箱
+ -醫療箱有一顆藥丸
  -救援區域: 四顆
- -路上: 隨機出現不固定數量
-4. spawn jukebox in all value maps
-5. Block "this is restricted area" room where infected ghost can not even spawn
+ -路上: 隨機出現不固定數量 (密度: 0.75)
+4. 清除或穿透一些小型物件，使玩家能移動順暢
+5. 封鎖一些 "this is restricted area" 區域因為特感不能復活
+6. 在地圖上新增許多障礙物、武器、梯子 //參考二代Zonemode、一代rotoblin2
+7. 最終關卡路程符合救援進度
+8. 路上手槍生成密度: 3.0
+9. 子彈堆生成密度: 2.0
 
 --------武器調整--------
 [01] Uzi機槍
@@ -40,8 +43,8 @@ Author:
 2.{　3.0->2.45　 }邊移動邊開槍的準度
 3.{　480->800　 }後備子彈
 4.{　0.84->0.84　}傷害距離遞減 (沒變)
-5.{    2.23->1.75   }裝彈速度
-6.{    20->22	   }傷害
+5.{  2.23->1.75   }裝彈速度
+6.{  20->22	   }傷害
 7.{　3　	}隊伍可拿數量
 
 [02] pumpshotgun散彈槍
@@ -54,10 +57,10 @@ Author:
 2.{   1    }彈夾裝彈時間 (沒變)
 3.{   1    }撿起武器所需時間 (沒變)
 4.{   1 -> 1.8  }切換武器所需時間 (沒變)
-5.{　1->0.2　}射速
+5.{	　1->0.2　}射速
 6.{   90->120	} 一槍對Tank的傷害
-7.{　胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
-8.{　1　　}隊伍可拿數量
+7.{	　胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
+8.{	　1　　}隊伍可拿數量
 
 --------插件使用--------
 [01] pounceannounce 
@@ -206,7 +209,6 @@ Author:
 [47] comp_loader
 //Config Loader(!load,!mode,!match), Map Changer(!cm)
 
-
 [48] admin_hp
 //adm give Survivors HP (!hp)
 
@@ -259,7 +261,6 @@ Author:
 
 [63] 1v1
 //support 1V1
-
 
 [64] l4d_superversus
 //support mutiplayers versus mode,5v5 possible
@@ -561,27 +562,24 @@ Author:
 [160] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
 
---------vpk支援--------
-[01] Crash Course Unprohibit Bosses.vpk
-//解決Crash Course兩關無法出Tank的問題
+[161] l4d_unlimited_grenades_fix
+//修正無限手榴彈的bug (土製炸彈、膽汁、火焰瓶)
 
-[02] _l4d modified talker.vpk
-Download
+--------vpk支援--------
+[01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
 
 --------反作弊.反腳本.反破壞, 反屁孩--------
-//SMAC 0.8.6.0組成, 禁止任何玩家使用腳本或是作弊來破壞遊戲平衡
-Download
+//SMAC 0.8.7.3組成, 禁止任何玩家使用腳本或是作弊來破壞遊戲平衡
 [01] smac　(主控制)
 [02] smac_aimbot 　(反自瞄)
 [03] smac_autotrigger 　(反BunnyHop,反自動開火)
 [04] smac_client (反重複連線, 反踢出連線逾時15秒, 反name change spam,name too short/long)
 [05] smac_spinhack　(反准心與子彈不對)
 [06] smac_speedhack 　(反加速)
-[07] smac_eyetest 　(反視角擴展, 反按鈕攥改)
-[08] smac_commands (反客戶端指令spam)
-[09] smac_rcon. (反駭客遠端登入破壞伺服器並攥改密碼)
-[10] smac_cvars (偵測作弊指令)
+[07] smac_commands (反客戶端指令spam)
+[08] smac_rcon. (反駭客遠端登入破壞伺服器並攥改密碼)
+[09] smac_cvars (偵測作弊指令)
 
 --------分數計算--------
 ( AD + HB + PILLS ) x Alive x Map  

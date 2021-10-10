@@ -30,7 +30,6 @@ public OnPluginStart()
 	g_hHunterChestMultiplier = CreateConVar("l4d_huntingrifle_hunter_chest_multi", "2.8", "Multiplier Hunting Rifle Dmg to Hunter chest. (Default=1.0)", FCVAR_NOTIFY);
 	g_hHunterStomachMultiplier = CreateConVar("l4d_huntingrifle_hunter_Stomach_multi", "1.5", "Multiplier Hunting Rifle Dmg to Hunter chest. (Default=1.0)", FCVAR_NOTIFY);
 	g_hTankDamage = CreateConVar("l4d_huntingrifle_tank_dmg", "125", "Hunting Rifle Dmg to Tank. (Default=90)", FCVAR_NOTIFY);
-	AutoExecConfig(true, "l4d_huntingrifle_damagemodify");
 
 	GetCvars();
 	g_hHunterChestMultiplier.AddChangeHook(ConVarChange_Cvars);

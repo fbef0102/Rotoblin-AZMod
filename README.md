@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.0
+v8.3.1
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
@@ -137,13 +137,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove environmental sounds and DSP + Remove microphone / speaker effects
   * Extra Pills
     * Only 1 pill in cabinets
-    * On the road: few pills (Pill density: 1)
-    * Final rescue stage: No any extra pills on the road, only pills on Final Rescue area
+    * On the road: few pills (Pill density: 0.75)
+    * Final rescue area: 4 pills
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
-  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
+  * Added Many obstacles, barriers, and ladders (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
-  * Pistol density: 3
+  * Pistol density: 3.0
+  * Ammo density: 2.0
   
 * **Dead Air:** 
   * Removed Plane + Crashing Plane SFX
@@ -246,6 +247,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
 * Prevents players' data in ghost mode from being sent to Survivors
+* Fixes an exploit where unlimited grenades could be created.
 * Mother fucker no collisions to fix a handful of silly collision bugs in l4d1 (only works in **Linux**)
      * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
      * Pulled Survivors go through Common Infected
@@ -334,7 +336,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Ignites the rock thrown by the Tank when he is on fire.
 	* Fixed an issue where tank rock is harder to land on survivors in saferoom area.
 	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
-	* Make AI Tank be more stupid and allow suicide if stuck, think twice if you wanna pass tank to AI.
+	* Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -372,11 +374,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(2v2)*: **✘**
 	  - *(1v1)*: **✘**
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
-    * claw Damage: 4 (vanilla: 6)
-    * Hunters can't be shoved when pouncing
+    * claw Damage: 6 (vanilla: 6)
+    * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
     * Allow Hunters being shoved when not pouncing. (Shove fov: **90**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
 	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
+	* m2 godframes after a hunter lands on the ground: 0.25s
 	
   * **Boomer:**
     * Boomer can be getting bashed to death

@@ -43,7 +43,6 @@ public OnPluginStart()
 
 	new Handle:hCvarWarnEnabled = CreateConVar("engine_warning", "0", "Display a warning message saying that player using expolit: 1=enable, 0=disable.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	new Handle:hCvarEngineFlags = CreateConVar("engine_fix_flags", "12", "Enables what kind of exploit should be fixed/blocked. Flags (add together): 0=disable, 2=ladder speed glitch, 4=no fall damage bug, 8=health boost glitch.", FCVAR_NOTIFY, true, 0.0, true, 14.0);
-	//AutoExecConfig(true, "Fix_Engine");
 
 	g_fCvarDecayRate = GetConVarFloat(hCvarDecayRate);
 	g_bCvarWarnEnabled = GetConVarBool(hCvarWarnEnabled);
@@ -55,8 +54,6 @@ public OnPluginStart()
 	HookConVarChange(hCvarDecayRate, OnConvarChange_DecayRate);
 	HookConVarChange(hCvarWarnEnabled, OnConvarChange_WarnEnabled);
 	HookConVarChange(hCvarEngineFlags, OnConvarChange_EngineFlags);
-	
-	AutoExecConfig(true,					"fix_engine");
 
 #if debug
 	RegConsoleCmd("debug", CmdDebug);

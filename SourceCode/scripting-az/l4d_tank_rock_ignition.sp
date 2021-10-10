@@ -145,9 +145,9 @@ public void OnPluginStart()
     g_hCvar_IgnoreFireDamage   = CreateConVar("l4d_tank_rock_ignore_fire_damage", "1", "Rocks ignore fire damage, otherwise, it loses HP over time when on fire.\n0 = OFF, 1 = ON.", CVAR_FLAGS, true, 0.0, true, 1.0);
     g_hCvar_BurnOnAir          = CreateConVar("l4d_tank_rock_ignition_burn_on_air", "1", "Allow igniting the rock in the air after it has been thrown.\nThis option will ignite the rock if it is hit by incendiary ammunition or if it go through the fire.\n0 = OFF, 1 = ON.", CVAR_FLAGS, true, 0.0, true, 1.0);
     g_hCvar_ModelType          = CreateConVar("l4d_tank_rock_ignition_model_type", "3", "Which models can be ignited.\n0 = NONE, 1 = ROCK, 2 = TRUNK, 4 = UNKNOWN.\nAdd numbers greater than 0 for multiple options.\nExample: \"3\", enables for \"ROCK\" (1) and \"TRUNK\" (2).", CVAR_FLAGS, true, 1.0, true, 7.0);
-    g_hCvar_DmgMultiplier      = CreateConVar("l4d_tank_rock_ignition_dmg_multiplier", "10.0", "Damage bonus % multiplier for Tank rocks on fire.\nExample: \"10\" gives +10% damage from an ignited rock.\n0 = OFF.", CVAR_FLAGS, true, -100.0);
+    g_hCvar_DmgMultiplier      = CreateConVar("l4d_tank_rock_ignition_dmg_multiplier", "0.0", "Damage bonus % multiplier for Tank rocks on fire.\nExample: \"10\" gives +10% damage from an ignited rock.\n0 = OFF.", CVAR_FLAGS, true, -100.0);
     g_hCvar_FireDuration       = CreateConVar("l4d_tank_rock_ignition_fire_duration", "60.0", "How long (in seconds) the rock will be set on fire.\n0 = OFF.", CVAR_FLAGS, true, 0.0);
-    g_hCvar_VictimFireDuration = CreateConVar("l4d_tank_rock_ignition_victim_fire_duration", "2.0", "How long (in seconds) the victim will be set on fire after being hit by a rock.\n0 = OFF.", CVAR_FLAGS, true, 0.0);
+    g_hCvar_VictimFireDuration = CreateConVar("l4d_tank_rock_ignition_victim_fire_duration", "0.0", "How long (in seconds) the victim will be set on fire after being hit by a rock.\n0 = OFF.", CVAR_FLAGS, true, 0.0);
 
     // Hook plugin ConVars change
     g_hCvar_Enabled.AddChangeHook(Event_ConVarChanged);
@@ -160,7 +160,7 @@ public void OnPluginStart()
     g_hCvar_VictimFireDuration.AddChangeHook(Event_ConVarChanged);
 
     // Load plugin configs from .cfg
-    AutoExecConfig(true, CONFIG_FILENAME);
+    //AutoExecConfig(true, CONFIG_FILENAME);
 
     // Admin Commands
     RegAdminCmd("sm_print_cvars_l4d_tank_rock_ignition", CmdPrintCvars, ADMFLAG_ROOT, "Prints the plugin related cvars and their respective values to the console.");

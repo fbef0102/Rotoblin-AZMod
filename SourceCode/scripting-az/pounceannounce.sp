@@ -58,8 +58,6 @@ public OnPluginStart()
 	HookConVarChange(hMinPounceDistance, Convar_Min);
 	ConVar_min = GetConVarInt(hMinPounceDistance);
 	
-	AutoExecConfig(true,"pounceannounce");
-	
 	HookEvent("lunge_pounce",Event_PlayerPounced);
 	HookEvent("ability_use",Event_AbilityUse);
 }

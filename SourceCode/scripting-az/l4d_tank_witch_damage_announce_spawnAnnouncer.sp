@@ -101,7 +101,6 @@ public OnPluginStart()
 	
 	g_hTrine = CreateTrie();
 	
-	AutoExecConfig(true, "l4d_tank_witch_damage_announce");
 	control_time=1;
 }
 

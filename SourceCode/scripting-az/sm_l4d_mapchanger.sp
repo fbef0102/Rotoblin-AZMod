@@ -67,7 +67,8 @@ public OnPluginStart()
 	ChDelayCOOP = CreateConVar("sm_l4d_fmc_chdelaycoop", "0.0", "Delay before coop mission change (float in sec).");
 	TimerRoundEndBlockVS = CreateConVar("sm_l4d_fmc_re_timer_block", "0.5", "Time in which current event round_end is not considered (float in sec).");
 	cvarAnnounce = CreateConVar("sm_l4d_fmc_announce", "1", "Enables next mission to advertise to players.");
-	
+	//AutoExecConfig(true, "sm_l4d_mapchanger");
+
 	//For custom crec
 	RegServerCmd("sm_l4d_fmc_crec_add", Command_CrecAdd, "Add custom value sm_l4d_fmc_crec and sm_l4d_fmc_re_timer_block for the specified map. Max 50.");
 	RegServerCmd("sm_l4d_fmc_crec_clear", Command_CrecClear, "Clear all custom value sm_l4d_fmc_crec and sm_l4d_fmc_re_timer_block.");
@@ -80,7 +81,6 @@ public OnPluginStart()
 public OnMapStart()
 {
 	// Execute the config file
-	AutoExecConfig(true, "sm_l4d_mapchanger");
 
 	RoundEndCounter = 0;
 	RoundEndBlock = 0;
