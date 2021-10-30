@@ -1,0 +1,38 @@
+﻿v8.3.2
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.10-git6510 + MetaMod 1.11-git1145)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+* l4d_vomit_pounce_fix.smx
+* scripting-az\rotoblin\rotoblin.main.sp
+
+------------------New------------------
+* New Plugin
+* l4d2_block_rocketjump.smx
+* l4d_tongue_float_fix.smx
+* l4d_vomit_trace_patch.smx
+
+* Custom maps stripper rework
+	* Dead Before Dawn
+		* Players will move 40% faster while being forced to crouch through the vent.
+			* Requires l4d_slowdown_control.
+
+------------------Change------------------
+### Map Changes ###
+* **Nav Remake:**
+  * No Mercy Map 1
+	
+### Bug / Exploit Fixes ###
+  * Blocking a rocket jump exploit (with pipebomb/molotov/tank rock/common head).
+  * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).
+	
+### Gameplay / Balance Changes ###
+* Special Infected:
+  * **Tanks:**
+	* Tank burn life time: 125s (vanilla: **75**)
+	
+  * **Smoker:**
+	* Fix tongue instant choking survivors.
+	
+* Survivors:
+  * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On

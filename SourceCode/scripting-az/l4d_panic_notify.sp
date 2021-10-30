@@ -195,7 +195,7 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 						CPrintToChat(i,"{green}[TS] %T","l4d_panic_notify5",i); 
 				return;
 			}
-			else if(IsFinalMap())
+			else if(L4D_IsMissionFinalMap())
 			{
 				#if DEBUG
 					CPrintToChatAll("{green}[TS] {lightgreen}a horde event"); 
@@ -207,7 +207,7 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 
 public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(IsFinalMap()){
+	if(L4D_IsMissionFinalMap()){
 		resuce_start = true;
 		CPrintToChatAll("{green}[TS] %t","l4d_panic_notify6"); 
 	}

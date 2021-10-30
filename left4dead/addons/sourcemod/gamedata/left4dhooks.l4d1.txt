@@ -12,6 +12,91 @@
 		// ====================================================================================================
 		"Functions"
 		{
+			/**
+			 * CTankClaw::DoSwing()
+			 **/
+			"CTankClaw::DoSwing"
+			{
+				"signature"	"CTankClaw::DoSwing"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+			}
+
+			/**
+			 * CTankClaw::GroundPound()
+			 **/
+			"CTankClaw::GroundPound"
+			{
+				"signature"	"CTankClaw::GroundPound"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+			}
+
+			/**
+			 * CTankClaw::OnPlayerHit(CTerrorPlayer*, bool)
+			 **/
+			"CTankClaw::OnPlayerHit"
+			{
+				"signature"	"CTankClaw::OnPlayerHit"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"player"
+					{
+						"type"		"cbaseentity"
+					}
+					"incap"
+					{
+						"type"		"bool"
+					}
+				}
+			}
+
+			/**
+			 * CTankRock::Detonate()
+			 **/
+			"CTankRock::Detonate"
+			{
+				"signature"	"CTankRock::Detonate"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+			}
+
+			/**
+			 * CTankRock::OnRelease(Vector const&, QAngle const&, Vector const&, Vector const&)
+			 **/
+			"CTankRock::OnRelease"
+			{
+				"signature"	"CTankRock::OnRelease"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"vec"
+					{
+						"type"		"vectorptr"
+					}
+					"ang"
+					{
+						"type"		"vectorptr"
+					}
+					"vec2"
+					{
+						"type"		"vectorptr"
+					}
+					"vec3"
+					{
+						"type"		"vectorptr"
+					}
+				}
+			}
+
 			"CDeathFallCamera::Enable"
 			{
 				"signature"		"CDeathFallCamera::Enable"
@@ -673,6 +758,54 @@
 				}
 			}
 
+			/**
+			 * CPipeBombProjectile::Create(Vector const&, QAngle const&, Vector const&, Vector const&, CBaseCombatCharacter *, float)
+			 **/
+			"CPipeBombProjectile_Create"
+			{
+				"signature"		"CPipeBombProjectile_Create"
+				"callconv"		"cdecl"
+				"return"		"cbaseentity"
+				"arguments"
+				{
+					"origin"
+					{
+						"type"		"vectorptr"
+					}
+					"angles"
+					{
+						"type"		"vectorptr"
+					}
+					"velocity"
+					{
+						"type"		"vectorptr"
+					}
+					"rotation"
+					{
+						"type"		"vectorptr"
+					}
+					"owner"
+					{
+						"type"		"cbaseentity"
+					}
+					"duration"
+					{
+						"type"		"float"
+					}
+				}
+			}
+
+			/**
+			 * CTerrorPlayer::Extinguish()
+			 **/
+			"CTerrorPlayer::Extinguish"
+			{
+				"signature"		"CTerrorPlayer::Extinguish"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
+			}
+
 			"OnVomitedUpon"
 			{
 				"signature"		"CTerrorPlayer_OnVomitedUpon"
@@ -753,6 +886,25 @@
 					}
 				}
 			}
+
+			"CBreakableProp::Break"
+			{
+				"signature"		"CBreakableProp::Break"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"entity"
+					{
+						"type"	"cbaseentity"
+					}
+					"a3"
+					{
+						"type"	"int"
+					}
+				}
+			}
 		}
 
 
@@ -827,7 +979,7 @@
 				}
 				"linux"
 				{
-					"signature" "_ZL20m_WeaponInfoDatabase"
+					"signature" "WeaponInfoDatabase"
 				}
 			}
 
@@ -1016,6 +1168,111 @@
 
 
 
+			// l4d2weapons.inc offsets - Offsets can be found in: "CTerrorWeaponInfo::Parse" and "CCSWeaponInfo::Parse" and "FileWeaponInfo_t::Parse"
+			// L4D2IntWeapon
+			"L4D2IntWeapon_Damage"
+			{
+				"windows"	"2268"
+				"linux"		"2268"
+			}
+			"L4D2IntWeapon_Bullets"
+			{
+				"windows"	"2280"
+				"linux"		"2280"
+			}
+			"L4D2IntWeapon_ClipSize"
+			{
+				"windows"	"352"
+				"linux"		"352"
+			}
+
+			// L4D2FloatWeapon
+			"L4D2FloatWeapon_MaxPlayerSpeed"
+			{
+				"windows"	"1872"
+				"linux"		"1872"
+			}
+			"L4D2FloatWeapon_SpreadPerShot"
+			{
+				"windows"	"2356"
+				"linux"		"2356"
+			}
+			"L4D2FloatWeapon_MaxSpread"
+			{
+				"windows"	"2360"
+				"linux"		"2360"
+			}
+			"L4D2FloatWeapon_SpreadDecay"
+			{
+				"windows"	"2364"
+				"linux"		"2364"
+			}
+			"L4D2FloatWeapon_MinDuckingSpread"
+			{
+				"windows"	"2368"
+				"linux"		"2368"
+			}
+			"L4D2FloatWeapon_MinStandingSpread"
+			{
+				"windows"	"2372"
+				"linux"		"2372"
+			}
+			"L4D2FloatWeapon_MinInAirSpread"
+			{
+				"windows"	"2376"
+				"linux"		"2376"
+			}
+			"L4D2FloatWeapon_MaxMovementSpread"
+			{
+				"windows"	"2380"
+				"linux"		"2380"
+			}
+			"L4D2FloatWeapon_PenetrationNumLayers"
+			{
+				"windows"	"2412"
+				"linux"		"2412"
+			}
+			"L4D2FloatWeapon_PenetrationPower"
+			{
+				"windows"	"2416"
+				"linux"		"2416"
+			}
+			"L4D2FloatWeapon_PenetrationMaxDist"
+			{
+				"windows"	"2420"
+				"linux"		"2420"
+			}
+			"L4D2FloatWeapon_CharPenetrationMaxDist"
+			{
+				"windows"	"2424"
+				"linux"		"2424"
+			}
+			"L4D2FloatWeapon_Range"
+			{
+				"windows"	"2272"
+				"linux"		"2272"
+			}
+			"L4D2FloatWeapon_RangeModifier"
+			{
+				"windows"	"2276"
+				"linux"		"2276"
+			}
+			"L4D2FloatWeapon_CycleTime"
+			{
+				"windows"	"2284"
+				"linux"		"2284"
+			}
+			"L4D2FloatWeapon_ScatterPitch"
+			{
+				"windows"	"2384"
+				"linux"		"2384"
+			}
+			"L4D2FloatWeapon_ScatterYaw"
+			{
+				"windows"	"2388"
+				"linux"		"2388"
+			}
+
 
 
 			// UNUSED
@@ -1064,6 +1321,13 @@
 				"windows"		"\x53\x8B\x2A\x2A\x2A\x85\x2A\x75\x2A\x33\x2A\x5B\xC3\x80\x2A\x2A\x2A\x2A\x2A\x00"
 				/* 53 8B ? ? ? 85 ? 75 ? 33 ? 5B C3 80 ? ? ? ? ? 00 */ // Found by SilverShot.
 				/* Search "weapon_reparse_server" - 2 calls later */
+			}
+
+			/* Find the WeaponInfo Database dictionary */
+			"WeaponInfoDatabase"
+			{
+				"library"	"server"
+				"linux"		"@_ZL20m_WeaponInfoDatabase"
 			}
 
 			/* We can find the WeaponInfoDatabase address in this sub on Windows
@@ -1168,8 +1432,8 @@
 			{
 				"library"	"server"
 				"linux"		"@_ZN19CPipeBombProjectile6CreateERK6VectorRK6QAngleS2_S2_P20CBaseCombatCharacterf"
-				"windows"	"\x8B\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x53\x8B\x2A\x2A\x2A\x56\x57\x50\x51\x53\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x83\xEC\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\xDD\x2A\x2A\x2A\xD9\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\xDD\x2A\x2A\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B"
-				/* 8B ? ? ? 8B ? ? ? 53 8B ? ? ? 56 57 50 51 53 68 ? ? ? ? E8 ? ? ? ? 8B ? ? ? ? ? ? 83 EC ? ? ? ? ? 8B ? ? ? ? DD ? ? ? D9 ? DD ? ? ? D9 ? ? DD ? ? ? D9 ? ? DD ? ? ? D9 ? DD ? ? 68 ? ? ? ? E8 ? ? ? ? 8B */ // Found by SilverShot.
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x53\x8B\x2A\x2A\x2A\x56\x57\x50\x51\x53\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x83\xEC\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\xDD\x2A\x2A\x2A\xD9\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\x2A\xDD\x2A\x2A\x2A\xD9\x2A\xDD\x2A\x2A\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B"
+				/* ? ? ? ? ? ? ? ? 53 8B ? ? ? 56 57 50 51 53 68 ? ? ? ? E8 ? ? ? ? 8B ? ? ? ? ? ? 83 EC ? ? ? ? ? 8B ? ? ? ? DD ? ? ? D9 ? DD ? ? ? D9 ? ? DD ? ? ? D9 ? ? DD ? ? ? D9 ? DD ? ? 68 ? ? ? ? E8 ? ? ? ? 8B */ // Found by SilverShot.
 			}
 
 			/*
@@ -1187,6 +1451,25 @@
 				"library"		"server"
 				"windows"		"Molotov projectile"
 				/* Search for the literal string to then reverse bytes and search for that address. */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTerrorPlayer::Extinguish()
+			 *
+			 * How to find on Windows:
+			 * 1. Find the function's offsets with asherkin's VTable dump.
+			 * 2. In IDA Pro, go to the ".rdata" section of the Windows binary.
+			 * 3. Search for "CTerrorPlayer::`vftable'" to jump to the "CTerrorPlayer" vtable.
+			 * 4. Compare your dump's offsets with asherkin's dump's offsets to find the target function.
+			 * 5. Look for the target function in the Windows binary.
+			 **/
+			"CTerrorPlayer::Extinguish"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer10ExtinguishEv"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x8B\xB7\x2A\x2A\x2A\x2A\x68"
+				/* ? ? ? ? ? ? 8B ? 8B B7 ? ? ? ? 68 */
 			}
 
 			/*
@@ -1259,6 +1542,102 @@
 				"windows"	"\x51\x8D\x2A\x2A\x50\xC6\x2A\x2A\x2A\x2A\xC6"
 				/* 51 8D ? ? 50 C6 ? ? ? ? C6 */
 				/* Search "tank_frustrated", below "HasAnySurvivorLeftSafeArea" call */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTankClaw::DoSwing()
+			 *
+			 * How to find on Windows:
+			 * 1a. Search for the "rhand" string.
+			 * 2a. The string can only be found in this function.
+			 * 1b. Search for the "ValveBiped.Bip01_R_Hand" string.
+			 * 2b. One of the functions that references that string should be this function.
+			 **/
+			"CTankClaw::DoSwing"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankClaw7DoSwingEv"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85\x2A\x74\x2A\x8D\x2A\x2A\x2A\x50\x8D\x2A\x2A\x2A\x51\x68"
+						/* ? ? ? ? ? ? ? E8 ? ? ? ? 8B ? 85 ? 74 ? 8D ? ? ? 50 8D ? ? ? 51 68 */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTankClaw::GroundPound()
+			 *
+			 * How to find on Windows:
+			 * 1. Locate the "CTankClaw::SweepFist" function.
+			 * 2. Click on the second to last function call to go to "CTerrorWeapon::MarkAsHit".
+			 * 3. This function calls "CTerrorWeapon::MarkAsHit" twice.
+			 * 4. To pinpoint the right function, look for the one that sets multiple variables to "0".
+			 **/
+			"CTankClaw::GroundPound"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankClaw11GroundPoundEv"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x81\xEC\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85"
+						/* ? ? ? ? ? ? 81 EC ? ? ? ? 53 56 57 8B ? E8 ? ? ? ? 8B ? 85 */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTankClaw::OnPlayerHit(CTerrorPlayer*, bool)
+			 *
+			 * How to find on Windows:
+			 * 1a. Search for the "PlayerGroundPoundedByTank" string.
+			 * 2a. The string can only be found in this function.
+			 *
+			 * 1b. Find the function's offsets with asherkin's VTable dump.
+			 * 2b. In IDA Pro, go to the ".rdata" section of the Windows binary.
+			 * 3b. Search for "CTankClaw::`vftable'" to jump to the "CTankClaw" vtable.
+			 * 4b. Compare your dump's offsets with asherkin's dump's offsets to find the target function.
+			 * 5b. Look for the target function in the Windows binary.
+			 **/
+			"CTankClaw::OnPlayerHit"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankClaw11OnPlayerHitEP13CTerrorPlayerb"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x55\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\xB4"
+						/* ? ? ? ? ? ? 53 55 56 57 8B ? E8 ? ? ? ? 8B B4 */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTankRock::Detonate()
+			 *
+			 * How to find on Windows:
+			 * 1a. Search for the "tank_rock_throw_impact_stump" string.
+			 * 2a. The string can only be found in this function.
+			 *
+			 * 1b. Find the function's offsets with asherkin's VTable dump.
+			 * 2b. In IDA Pro, go to the ".rdata" section of the Windows binary.
+			 * 3b. Search for "CTankRock::`vftable'" to jump to the "CTankRock" vtable.
+			 * 4b. Compare your dump's offsets with asherkin's dump's offsets to find the target function.
+			 * 5b. Look for the target function in the Windows binary.
+			 **/
+			"CTankRock::Detonate"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankRock8DetonateEv"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x80\xBE\x2A\x2A\x2A\x2A\x2A\x57\x0F\x84\x2A\x2A\x2A\x2A\xD9"
+						/* ? ? ? ? ? ? 8B ? 80 BE ? ? ? ? ? 57 0F 84 ? ? ? ? D9 */
+			}
+
+			/**
+			 * Thanks to "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures/blob/main/gamedata/l4d_signatures.txt
+			 * CTankRock::OnRelease(Vector const&, QAngle const&, Vector const&, Vector const&)
+			 *
+			 * How to find on Windows:
+			 * 1. Search for the "HulkZombie.Throw.FlyLoop" string.
+			 * 2. One of the functions that references that string should be this function.
+			 **/
+			"CTankRock::OnRelease"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankRock9OnReleaseERK6VectorRK6QAngleS2_S2_.constprop.121"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xC7\x86\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x57"
+						/* ? ? ? ? ? ? ? ? ? ? ? C7 86 ? ? ? ? ? ? ? ? E8 ? ? ? ? 8B ? ? ? 57 */
 			}
 
 			/**
@@ -1816,6 +2195,16 @@
 				"linux"		"@_ZNK11SurvivorBot16FindScavengeItemEf"
 				"windows"	"\x81\x2A\x2A\x2A\x2A\x2A\x55\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x57"
 				/* 81 ? ? ? ? ? 55 8B ? 8B ? ? ? ? ? 8D ? ? ? 57 */
+			}
+
+			/* CBreakableProp::Break(CBreakableProp *this, CBaseEntity *a2, const CTakeDamageInfo *a3) */
+			"CBreakableProp::Break"
+			{
+				"library"		"server"
+				"linux"			"@_ZN14CBreakableProp5BreakEP11CBaseEntityRK15CTakeDamageInfo"
+				"windows"		"\x81\x2A\x2A\x2A\x2A\x2A\x53\x55\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\x57\x8D"
+				/* 81 ? ? ? ? ? 53 55 56 8B ? 8B ? 8B ? ? 57 8D */
+				/* Search: "Fire prop detonated %.0f,%.0f,%.0f.  Breaker:%s. Attacker:%s.\n" */
 			}
 
 			"ChooseVictim"

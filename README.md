@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.1
+v8.3.2
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
@@ -141,14 +141,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Final rescue area: 4 pills
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
-  * Added Many obstacles, barriers, and ladders (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
+  * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
   * Pistol density: 3.0
   * Ammo density: 2.0
-  
-* **Dead Air:** 
-  * Removed Plane + Crashing Plane SFX
-  * Removed Crashing Plane Screen Shake
   
 * **Support Custom maps:**
   > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)**
@@ -159,6 +155,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Dead Before Dawn (!cm dbd)
   * The Arena of the Dead (!cm aotd)
   * Death Aboard (!cm dab)
+  
+* **Nav Remake:**
+  * No Mercy Map 1
 
 - - - -
 ### Weapon Adjustments ###
@@ -198,7 +197,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
 - - - -
-### Bug / Exploit Fixes ###\
+### Bug / Exploit Fixes ###
+* Blocking a rocket jump exploit (with pipebomb/molotov/tank rock/common head).
 * Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
 * Allows bots to shoot while a PipeBomb projectile is active on the map.
 * Fixed the bug in which doors do not break although the tank is punching at them.
@@ -244,7 +244,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * Spawns for the first hit are announced once round starts.
 * Blocks all button presses during stumbles
 * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
-* Fixed that player whom hunter pounces on will not be biled by a boomer([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
+* Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
 * Prevents players' data in ghost mode from being sent to Survivors
 * Fixes an exploit where unlimited grenades could be created.
@@ -313,7 +313,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Show tank hud for Infected team
     * Players cannot shove tanks.
     * Passing control to AI tank will no longer be rewarded with an instant respawn
-    * Tanks can use Secondary Attack, Use, and Reload to rocks.
+    * Tanks can use Secondary Attack, Use, and Reload Buttons to throw rocks.
 	  - *(MOUSE2)*: **One handed overhand**
 	  - *(E)*: **Underhand**
 	  - *(R)*: **Two handed overhand**
@@ -337,6 +337,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fixed an issue where tank rock is harder to land on survivors in saferoom area.
 	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
 	* Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
+	* Tank burn life time: 125s (vanilla: **75**)
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -357,6 +358,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* First Drag Damage: 3, interval: 1 (same as vanilla)
 	* Drag Damage: 1, interval: 0.33 (3 dps, same as vanilla)
 	* Choke Damage: 1, interval: 0.2 (5 dps, same as vanilla)
+	* Fix tongue instant choking survivors.
 	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)
@@ -446,6 +448,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
   * Prevents small push effect between survior players, bots still get pushed.
+  * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**

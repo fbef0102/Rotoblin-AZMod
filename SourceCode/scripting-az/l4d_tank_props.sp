@@ -238,11 +238,7 @@ void CreateTankPropGlow(int entity)
 	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
 	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
 
-	if (strcmp(sModelName, "models/props_industrial/brickpallets.mdl", false) == 0)
-	{
-		return;
-	}
-	else if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
+	if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
 	{
 		i_Ent[entity] = CreateEntityByName("prop_dynamic_override");
 		DispatchKeyValue(i_Ent[entity], "model", sModelName);
@@ -305,11 +301,8 @@ void CreateTankPropGlowSpectator(int entity)
 		
 	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
 	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
-	if (strcmp(sModelName, "models/props_industrial/brickpallets.mdl", false) == 0)
-	{
-		return;
-	} 
-	else if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
+
+	if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
 	{
 		i_EntSpec[entity] = CreateEntityByName("prop_dynamic_override");
 		DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
@@ -378,22 +371,27 @@ public Action FadeTankProps( Handle timer ) {
 }
 
 bool IsTankProp( int iEntity ) {
-	if ( !IsValidEdict(iEntity) ) {
+	if (!IsValidEdict(iEntity)) {
 		return false;
 	}
 	
-	char className[64];
-	GetEdictClassname(iEntity, className, sizeof(className));
-	if ( StrEqual(className, "prop_physics") || HasEntProp(iEntity, Prop_Send, "m_hasTankGlow") ) {
-		if ( GetEntProp(iEntity, Prop_Send, "m_hasTankGlow", 1) ) {
-			return true;
-		}
-	}
-	else if ( StrEqual(className, "prop_car_alarm") ) {
-		return true;
+	// CPhysicsProp only
+	if (!HasEntProp(iEntity, Prop_Send, "m_hasTankGlow")) {
+		return false;
 	}
 	
-	return false;
+	bool bHasTankGlow = (GetEntProp(iEntity, Prop_Send, "m_hasTankGlow", 1) == 1);
+	if (!bHasTankGlow) {
+		return false;
+	}
+
+	static char sModel[PLATFORM_MAX_PATH];
+	GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+	if (strcmp("models/props_industrial/brickpallets.mdl", sModel) == 0) {
+		return false;
+	}
+	
+	return true;
 }
 
 void HookTankProps() {

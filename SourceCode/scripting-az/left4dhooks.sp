@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.62"
+#define PLUGIN_VERSION		"1.67"
 
 #define DEBUG				0
 // #define DEBUG			1	// Prints addresses + detour info (only use for debugging, slows server down)
@@ -41,6 +41,92 @@
 
 ========================================================================================
 	Change Log:
+
+1.67 (25-Oct-2021)
+	- Fixed the create projectile natives from failing still when passing 0 entity index. Thanks to "BHaType" for reporting.
+	- Fixed L4D1 Linux forward "TryOfferingTankBot" sometimes throwing errors. Thanks to "HarryPotter" for reporting.
+	- Fixed L4D1 setting "L4D2FWA_PenetrationNumLayers" - float values will be rounded to ceiling. Thanks to "epzminion" for finding and "Psyk0tik" for reporting.
+	- Fixed target filters "@isb" and "@isp" being flipped.
+
+1.66 (21-Oct-2021)
+	- Fixed L4D1 Linux not finding the "g_pWeaponInfoDatabase" signature. Thanks to "Ja-Forces" for reporting.
+	- L4D1 GameData updated.
+
+1.65 (20-Oct-2021)
+	- Changed forward "L4D2_CGasCan_EventKilled" params to show the inflictor and attacker.
+	- Thanks to "ProjectSky" for reminding me.
+
+	- Plugins and include file updated.
+
+1.64 (20-Oct-2021)
+	- Added 1 new forward to L4D1 and L4D2:
+		- "L4D_CBreakableProp_Break" - When a physics prop is broken.
+
+	- Added 3 new forwards to L4D2:
+		- "L4D2_CGasCan_EventKilled" - When a GasCan is destroyed.
+		- "L4D2_CGasCan_ActionComplete" - When a Survivor has finished pouring gas.
+		- "L4D2_CInsectSwarm_CanHarm" - When Spitter Acid is checking if a player or entity can be damaged.
+
+	- Added 1 new native to L4D1 and L4D2:
+		- "L4D_GetWeaponID" - to get the Weapon ID by classname
+
+	- Added and unlocked all the weapon attribute modification natives to L4D1:
+	- Thanks to "Psyk0tik" for the suggestion and information about offsets.
+		- "L4D2_IsValidWeapon"
+		- "L4D2_GetFloatWeaponAttribute" and "L4D2_SetFloatWeaponAttribute"
+		- "L4D2_GetIntWeaponAttribute" and "L4D2_SetIntWeaponAttribute"
+		- "L4D2IntWeaponAttributes" enums - ("L4D2IWA_Bullets", "L4D2IWA_Damage", "L4D2IWA_ClipSize")
+		- "L4D2FloatWeaponAttributes" enums - ("L4D2FWA_MaxPlayerSpeed", "L4D2FWA_SpreadPerShot", "L4D2FWA_MaxSpread", "L4D2FWA_Range", etc)
+
+	- Added new target filters:
+		"@deads" - Dead Survivors (all, bots)
+		"@deadsi" - Dead Special Infected (all, bots)
+		"@deadsp" - Dead Survivors players (no bots)
+		"@deadsip" - Dead Special Infected players (no bots)
+		"@deadsb" - Dead Survivors bots (no players)
+		"@deadsib" - Dead Special Infected bots (no players)
+		"@sp" - Survivors players (no bots)
+		"@sip" - Special Infected players (no bots)
+		"@isb" - Incapped Survivor Only Bots
+		"@isp" - Incapped Survivor Only Players
+
+	- Changed target filter names:
+		"@incappedsurvivorbot" to "@rincappedsurvivorbot"
+		"@isb" to "@risb"
+		"@survivorbot" to "@rsurvivorbot"
+		"@sb" to "@rsb"
+		"@infectedbot" to "@rinfectedbot"
+		"@ib" to "@rib"
+		"@tankbot" to "@rtankbot"
+		"@tb" to "@rtb"
+
+	- Added "FINALE_*" enums to the include file for use with the "L4D2_ChangeFinaleStage" and "L4D2_GetCurrentFinaleStage" natives and "L4D2_OnChangeFinaleStage" forward.
+	- Thanks to "Dragokas" for suggesting.
+
+	- GameData files, include file and plugins updated.
+
+1.63 (15-Oct-2021)
+	- Changed all projectile natives to allow passing 0 (world) instead of a client index. Thanks to "BHaType" for reporting.
+	- Changed forward "L4D_OnGameModeChange" from "Action" type to "Void". Thanks to "Psyk0tik" for reporting.
+	- Fixed commands "sm_l4dd_detours" and "sm_l4dhooks_detours" not showing all forwards when they have pre and post hooks.
+
+	- Added 11 new forwards to L4D1 and L4D2. Thanks to "Psyk0tik" for the suggestions, signatures and detour functions.
+		- "L4D_TankClaw_DoSwing_Pre" - When a tank is swinging to punch.
+		- "L4D_TankClaw_DoSwing_Post" - When a tank is swinging to punch.
+		- "L4D_TankClaw_GroundPound_Pre" - When an tank punches the ground.
+		- "L4D_TankClaw_GroundPound_Post" - When an tank punches the ground.
+		- "L4D_TankClaw_OnPlayerHit_Pre" - When a tank swings and punches a player.
+		- "L4D_TankClaw_OnPlayerHit_Post" - When a tank swings and punches a player.
+		- "L4D_TankRock_OnDetonate" - When a tank rock hits something.
+		- "L4D_TankRock_OnRelease" - When a tank rock is thrown.
+		- "L4D_PlayerExtinguish" - When a player is about to be extinguished.
+		- "L4D_PipeBombProjectile_Pre" - When a PipeBomb projectile is being created.
+		- "L4D_PipeBombProjectile_Post" - After a PipeBomb projectile is created.
+
+	- Added 1 new forward to L4D2. Thanks to "Lux" for the suggestion, signature and detour functions.
+		- "L4D2_MeleeGetDamageForVictim" - When calculating melee damage to inflict on something.
+
+	- GameData files, include file and plugins updated.
 
 1.62 (08-Oct-2021)
 	- L4D1 Linux: Update thanks to "Forgetest" for writing.
@@ -611,6 +697,8 @@ float g_fProf;
 #define NATIVE_UNSUPPORTED1					"\n==========\nThis Native is only supported in L4D1.\nPlease fix the code to avoid calling this native from L4D2.\n=========="
 #define NATIVE_UNSUPPORTED2					"\n==========\nThis Native is only supported in L4D2.\nPlease fix the code to avoid calling this native from L4D1.\n=========="
 
+
+
 // Tank animations
 #define L4D2_ACT_HULK_THROW					761
 #define L4D2_ACT_TANK_OVERHEAD_THROW		762
@@ -640,9 +728,14 @@ float g_fProf;
 #define L4D1_SEQ_THROW_FROM_HIP				48
 #define L4D1_SEQ_THROW_2HAND_OVER			49
 
+
+
 // Dissolver
 #define SPRITE_GLOW							"sprites/blueglow1.vmt"
 
+
+
+// Precache models for spawning
 static const char g_sModels1[][] =
 {
 	"models/infected/witch.mdl",
@@ -663,13 +756,15 @@ static const char g_sModels2[][] =
 
 
 // Dynamic Detours:
-#define MAX_FWD_LEN							32		// Maximum string length of forward names, used for ArrayList.
+#define MAX_FWD_LEN							48		// Maximum string length of forward and signature names, used for ArrayList.
 
 // ToDo: When using extra-api.ext (or hopefully one day native SM forwards), g_aDetoursHooked will store the number of plugins using each forward
 // so we can disable when the value is 0 and not have to check all plugins just to determine if still required.
 ArrayList g_aDetoursHooked;					// Identifies if the detour hook is enabled or disabled
 ArrayList g_aDetourHandles;					// Stores detour handles to enable/disable as required
+ArrayList g_aGameDataSigs;					// Stores Signature names
 ArrayList g_aForwardNames;					// Stores Forward names
+ArrayList g_aUseLastIndex;					// Use last index
 ArrayList g_aForwardIndex;					// Stores Detour indexes
 ArrayList g_aForceDetours;					// Determines if a detour should be forced on without any forward using it
 int g_iCurrentIndex;						// Index for each detour while created
@@ -711,6 +806,14 @@ GlobalForward g_hForward_GetScriptValueString;
 GlobalForward g_hForward_IsTeamFull;
 GlobalForward g_hForward_EnterGhostState;
 GlobalForward g_hForward_EnterGhostStatePre;
+GlobalForward g_hForward_CTankClaw_DoSwing_Pre;
+GlobalForward g_hForward_CTankClaw_DoSwing_Post;
+GlobalForward g_hForward_CTankClaw_GroundPound_Pre;
+GlobalForward g_hForward_CTankClaw_GroundPound_Post;
+GlobalForward g_hForward_CTankClaw_OnPlayerHit_Pre;
+GlobalForward g_hForward_CTankClaw_OnPlayerHit_Post;
+GlobalForward g_hForward_CTankRock_Detonate;
+GlobalForward g_hForward_CTankRock_OnRelease;
 GlobalForward g_hForward_TryOfferingTankBot;
 GlobalForward g_hForward_MobRushStart;
 GlobalForward g_hForward_SpawnITMob;
@@ -725,6 +828,7 @@ GlobalForward g_hForward_FastGetSurvivorSet;
 GlobalForward g_hForward_GetMissionVSBossSpawning;
 GlobalForward g_hForward_CThrowActivate;
 GlobalForward g_hForward_StartMeleeSwing;
+GlobalForward g_hForward_GetDamageForVictim;
 GlobalForward g_hForward_SendInRescueVehicle;
 GlobalForward g_hForward_ChangeFinaleStage;
 GlobalForward g_hForward_EndVersusModeRound;
@@ -741,6 +845,13 @@ GlobalForward g_hForward_OnMaterializeFromGhostPre;
 GlobalForward g_hForward_OnMaterializeFromGhost;
 GlobalForward g_hForward_OnVomitedUpon;
 GlobalForward g_hForward_OnHitByVomitJar;
+GlobalForward g_hForward_CBreakableProp;
+GlobalForward g_hForward_CGasCanEvent_Killed;	
+GlobalForward g_hForward_CGasCanOnActionComplete;
+GlobalForward g_hForward_CInsectSwarm_CanHarm;
+GlobalForward g_hForward_PipeBombProjectile_Pre;
+GlobalForward g_hForward_PipeBombProjectile_Post;
+GlobalForward g_hForward_PlayerExtinguish;
 GlobalForward g_hForward_InfernoSpread;
 GlobalForward g_hForward_CTerrorWeapon_OnHit;
 GlobalForward g_hForward_OnPlayerStagger;
@@ -933,17 +1044,17 @@ Address g_pWeaponInfoDatabase;
 int g_iCurrentMode;
 int g_iMaxChapters;
 int g_iClassTank;
-bool g_bCheckpoint[MAXPLAYERS+1];
-bool g_bRoundEnded;
-bool g_bMapStarted;
-bool g_bLeft4Dead2;
 bool g_bLinuxOS;
+bool g_bLeft4Dead2;
+bool g_bMapStarted;
+bool g_bRoundEnded;
+bool g_bCheckpoint[MAXPLAYERS+1];
 ConVar g_hCvarVScriptBuffer;
 ConVar g_hCvarAddonsEclipse;
 ConVar g_hCvarRescueDeadTime;
-ConVar g_hDecayDecay;
-ConVar g_hPillsHealth;
-ConVar g_hMPGameMode;
+ConVar g_hCvarPillsDecay;
+ConVar g_hCvarPillsHealth;
+ConVar g_hCvarMPGameMode;
 
 #if DEBUG
 bool g_bLateLoad;
@@ -1019,6 +1130,14 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hForward_GetWalkTopSpeed					= new GlobalForward("L4D_OnGetWalkTopSpeed",					ET_Event, Param_Cell, Param_FloatByRef);
 	g_hForward_GetMissionVSBossSpawning			= new GlobalForward("L4D_OnGetMissionVSBossSpawning",			ET_Event, Param_FloatByRef, Param_FloatByRef, Param_FloatByRef, Param_FloatByRef);
 	g_hForward_OnReplaceTank					= new GlobalForward("L4D_OnReplaceTank",						ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_DoSwing_Pre			= new GlobalForward("L4D_TankClaw_DoSwing_Pre",					ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_DoSwing_Post			= new GlobalForward("L4D_TankClaw_DoSwing_Post",				ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_GroundPound_Pre		= new GlobalForward("L4D_TankClaw_GroundPound_Pre",				ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_GroundPound_Post		= new GlobalForward("L4D_TankClaw_GroundPound_Post",			ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_OnPlayerHit_Pre		= new GlobalForward("L4D_TankClaw_OnPlayerHit_Pre",				ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_hForward_CTankClaw_OnPlayerHit_Post		= new GlobalForward("L4D_TankClaw_OnPlayerHit_Post",			ET_Event, Param_Cell, Param_Cell, Param_Cell);
+	g_hForward_CTankRock_Detonate				= new GlobalForward("L4D_TankRock_OnDetonate",					ET_Event, Param_Cell, Param_Cell);
+	g_hForward_CTankRock_OnRelease				= new GlobalForward("L4D_TankRock_OnRelease",					ET_Event, Param_Cell, Param_Cell, Param_Array, Param_Array, Param_Array, Param_Array);
 	g_hForward_TryOfferingTankBot				= new GlobalForward("L4D_OnTryOfferingTankBot",					ET_Event, Param_Cell, Param_CellByRef);
 	g_hForward_CThrowActivate					= new GlobalForward("L4D_OnCThrowActivate",						ET_Event, Param_Cell);
 	g_hForward_SelectTankAttackPre				= new GlobalForward("L4D2_OnSelectTankAttackPre",				ET_Event, Param_Cell, Param_CellByRef);
@@ -1044,12 +1163,19 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hForward_OnMaterializeFromGhostPre		= new GlobalForward("L4D_OnMaterializeFromGhostPre",			ET_Event, Param_Cell);
 	g_hForward_OnMaterializeFromGhost			= new GlobalForward("L4D_OnMaterializeFromGhost",				ET_Event, Param_Cell);
 	g_hForward_OnVomitedUpon					= new GlobalForward("L4D_OnVomitedUpon",						ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef);
-		// g_hForward_InfectedShoved					= new GlobalForward("L4D_OnInfectedShoved",						ET_Event, Param_Cell, Param_Cell);
-		// g_hForward_OnWaterMove						= new GlobalForward("L4D2_OnWaterMove",							ET_Event, Param_Cell);
+	g_hForward_PipeBombProjectile_Pre			= new GlobalForward("L4D_PipeBombProjectile_Pre",				ET_Event, Param_Cell, Param_Array, Param_Array, Param_Array, Param_Array);
+	g_hForward_PipeBombProjectile_Post			= new GlobalForward("L4D_PipeBombProjectile_Post",				ET_Event, Param_Cell, Param_Cell, Param_Array, Param_Array, Param_Array, Param_Array);
+	g_hForward_PlayerExtinguish					= new GlobalForward("L4D_PlayerExtinguish",						ET_Event, Param_Cell);
+	g_hForward_CBreakableProp					= new GlobalForward("L4D_CBreakableProp_Break",					ET_Event, Param_Cell, Param_Cell);
+	// g_hForward_InfectedShoved					= new GlobalForward("L4D_OnInfectedShoved",						ET_Event, Param_Cell, Param_Cell);
+	// g_hForward_OnWaterMove						= new GlobalForward("L4D2_OnWaterMove",							ET_Event, Param_Cell);
 	// g_hForward_GetRandomPZSpawnPos				= new GlobalForward("L4D_OnGetRandomPZSpawnPosition",			ET_Event, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_Array);
 
 	if( g_bLeft4Dead2 )
 	{
+		g_hForward_CGasCanEvent_Killed			= new GlobalForward("L4D2_CGasCan_EventKilled",					ET_Event, Param_Cell, Param_Cell, Param_Cell);
+		g_hForward_CGasCanOnActionComplete		= new GlobalForward("L4D2_CGasCan_ActionComplete",				ET_Event, Param_Cell, Param_Cell, Param_Cell);
+		g_hForward_CInsectSwarm_CanHarm			= new GlobalForward("L4D2_CInsectSwarm_CanHarm",				ET_Event, Param_Cell, Param_Cell, Param_Cell);
 		g_hForward_OnHitByVomitJar				= new GlobalForward("L4D2_OnHitByVomitJar",						ET_Event, Param_Cell, Param_CellByRef);
 		g_hForward_SpawnWitchBride				= new GlobalForward("L4D2_OnSpawnWitchBride",					ET_Event, Param_Array, Param_Array);
 		g_hForward_GetScriptValueInt			= new GlobalForward("L4D_OnGetScriptValueInt",					ET_Event, Param_String, Param_CellByRef);
@@ -1059,6 +1185,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		g_hForward_GetSurvivorSet				= new GlobalForward("L4D_OnGetSurvivorSet",						ET_Event, Param_CellByRef);
 		g_hForward_FastGetSurvivorSet			= new GlobalForward("L4D_OnFastGetSurvivorSet",					ET_Event, Param_CellByRef);
 		g_hForward_StartMeleeSwing				= new GlobalForward("L4D_OnStartMeleeSwing",					ET_Event, Param_Cell, Param_Cell);
+		g_hForward_GetDamageForVictim			= new GlobalForward("L4D2_MeleeGetDamageForVictim",				ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_FloatByRef);
 		g_hForward_ChangeFinaleStage			= new GlobalForward("L4D2_OnChangeFinaleStage",					ET_Event, Param_CellByRef, Param_String);
 		g_hForward_AddonsDisabler				= new GlobalForward("L4D2_OnClientDisableAddons",				ET_Event, Param_String);
 	}
@@ -1067,8 +1194,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 	// ====================================================================================================
 	//									NATIVES
-	// L4D1 = 18 [left4downtown] + 47 [l4d_direct] + 15 [l4d2addresses] + 36 [silvers - mine!] + 4 [anim] = 113
-	// L4D2 = 53 [left4downtown] + 61 [l4d_direct] + 26 [l4d2addresses] + 69 [silvers - mine!] + 4 [anim] = 202
+	// L4D1 = 24 [left4downtown] + 47 [l4d_direct] + 15 [l4d2addresses] + 37 [silvers - mine!] + 4 [anim] = 119
+	// L4D2 = 53 [left4downtown] + 61 [l4d_direct] + 26 [l4d2addresses] + 70 [silvers - mine!] + 4 [anim] = 203
 	// ====================================================================================================
 	// ANIMATION HOOK
 	CreateNative("AnimHookEnable",		 							Native_AnimHookEnable);
@@ -1111,7 +1238,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("L4D_MolotovPrj",		 							Native_MolotovPrj);
 	CreateNative("L4D2_VomitJarPrj",		 						Native_VomitJarPrj);
 	CreateNative("L4D2_GrenadeLauncherPrj",		 					Native_GrenadeLauncher);
-
 	CreateNative("L4D_SetHumanSpec",								Native_SetHumanSpec);
 	CreateNative("L4D_TakeOverBot",									Native_TakeOverBot);
 	CreateNative("L4D_CanBecomeGhost",								Native_CanBecomeGhost);
@@ -1181,6 +1307,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("L4D2_SpawnWitchBride",							Native_SpawnWitchBride);
 
 	// l4d2weapons.inc
+	CreateNative("L4D_GetWeaponID",									Native_GetWeaponID);
 	CreateNative("L4D2_IsValidWeapon",								Native_IsValidWeapon);
 	CreateNative("L4D2_GetIntWeaponAttribute",						Native_GetIntWeaponAttribute);
 	CreateNative("L4D2_GetFloatWeaponAttribute",					Native_GetFloatWeaponAttribute);
@@ -1365,18 +1492,25 @@ public void OnPluginStart()
 
 	if( !g_bLeft4Dead2 )
 	{
-		// UNUSED, UNKNOWN OFFSETS FOR WEAPON DATA
-		// g_aWeaponIDs.SetValue("weapon_none",						0);
-		// g_aWeaponIDs.SetValue("weapon_pistol",						1);
-		// g_aWeaponIDs.SetValue("weapon_smg",							2);
-		// g_aWeaponIDs.SetValue("weapon_pumpshotgun",					3);
-		// g_aWeaponIDs.SetValue("weapon_autoshotgun",					4);
-		// g_aWeaponIDs.SetValue("weapon_rifle",						5);
-		// g_aWeaponIDs.SetValue("weapon_hunting_rifle",				6);
-		// g_aWeaponIDs.SetValue("weapon_first_aid_kit",				8);
-		// g_aWeaponIDs.SetValue("weapon_molotov",						9);
-		// g_aWeaponIDs.SetValue("weapon_pipe_bomb",					10);
-		// g_aWeaponIDs.SetValue("weapon_pain_pills",					12);
+		g_aWeaponIDs.SetValue("weapon_none",						0);
+		g_aWeaponIDs.SetValue("weapon_pistol",						1);
+		g_aWeaponIDs.SetValue("weapon_smg",							2);
+		g_aWeaponIDs.SetValue("weapon_pumpshotgun",					3);
+		g_aWeaponIDs.SetValue("weapon_autoshotgun",					4);
+		g_aWeaponIDs.SetValue("weapon_rifle",						5);
+		g_aWeaponIDs.SetValue("weapon_hunting_rifle",				6);
+		g_aWeaponIDs.SetValue("weapon_first_aid_kit",				8);
+		g_aWeaponIDs.SetValue("weapon_molotov",						9);
+		g_aWeaponIDs.SetValue("weapon_pipe_bomb",					10);
+		g_aWeaponIDs.SetValue("weapon_pain_pills",					12);
+		g_aWeaponIDs.SetValue("weapon_gascan",						14);
+		g_aWeaponIDs.SetValue("weapon_propanetank",					15);
+		g_aWeaponIDs.SetValue("weapon_oxygentank",					16);
+		g_aWeaponIDs.SetValue("weapon_tank_claw",					17);
+		g_aWeaponIDs.SetValue("weapon_hunter_claw",					18);
+		g_aWeaponIDs.SetValue("weapon_boomer_claw",					19);
+		g_aWeaponIDs.SetValue("weapon_smoker_claw",					20);
+		g_aWeaponIDs.SetValue("weapon_ammo_spawn",					29);
 	} else {
 		g_aWeaponIDs.SetValue("weapon_none",						0);
 		g_aWeaponIDs.SetValue("weapon_pistol",						1);
@@ -1423,6 +1557,7 @@ public void OnPluginStart()
 		g_aWeaponIDs.SetValue("weapon_smoker_claw",					42);
 		g_aWeaponIDs.SetValue("weapon_spitter_claw",				43);
 		g_aWeaponIDs.SetValue("weapon_jockey_claw",					44);
+		g_aWeaponIDs.SetValue("weapon_ammo_spawn",					54);
 
 		g_aMeleePtrs = new ArrayList(2);
 		g_aMeleeIDs = new StringMap();
@@ -1467,14 +1602,25 @@ public void OnPluginStart()
 	AddMultiTargetFilter("@ri",							FilterRandomC,	"Random Infected", false);
 	AddMultiTargetFilter("@randomtank",					FilterRandomD,	"Random Tank", false);
 	AddMultiTargetFilter("@rt",							FilterRandomD,	"Random Tank", false);
-	AddMultiTargetFilter("@incappedsurvivorbot",		FilterRandomE,	"Random Incapped Survivor Bot", false);
-	AddMultiTargetFilter("@isb",						FilterRandomE,	"Random Incapped Survivor Bot", false);
-	AddMultiTargetFilter("@survivorbot",				FilterRandomF,	"Random Survivor Bot", false);
-	AddMultiTargetFilter("@sb",							FilterRandomF,	"Random Survivor Bot", false);
-	AddMultiTargetFilter("@infectedbot",				FilterRandomG,	"Random Infected Bot", false);
-	AddMultiTargetFilter("@ib",							FilterRandomG,	"Random Infected Bot", false);
-	AddMultiTargetFilter("@tankbot",					FilterRandomH,	"Random Tank Bot", false);
-	AddMultiTargetFilter("@tb",							FilterRandomH,	"Random Tank Bot", false);
+	AddMultiTargetFilter("@rincappedsurvivorbot",		FilterRandomE,	"Random Incapped Survivor Bot", false);
+	AddMultiTargetFilter("@risb",						FilterRandomE,	"Random Incapped Survivor Bot", false);
+	AddMultiTargetFilter("@rsurvivorbot",				FilterRandomF,	"Random Survivor Bot", false);
+	AddMultiTargetFilter("@rsb",						FilterRandomF,	"Random Survivor Bot", false);
+	AddMultiTargetFilter("@rinfectedbot",				FilterRandomG,	"Random Infected Bot", false);
+	AddMultiTargetFilter("@rib",						FilterRandomG,	"Random Infected Bot", false);
+	AddMultiTargetFilter("@rtankbot",					FilterRandomH,	"Random Tank Bot", false);
+	AddMultiTargetFilter("@rtb",						FilterRandomH,	"Random Tank Bot", false);
+
+	AddMultiTargetFilter("@deads",						FilterDeadA,	"Dead Survivors (all, bots)", false);
+	AddMultiTargetFilter("@deadsi",						FilterDeadB,	"Dead Special Infected (all, bots)", false);
+	AddMultiTargetFilter("@deadsp",						FilterDeadC,	"Dead Survivors players (no bots)", false);
+	AddMultiTargetFilter("@deadsip",					FilterDeadD,	"Dead Special Infected players (no bots)", false);
+	AddMultiTargetFilter("@deadsb",						FilterDeadE,	"Dead Survivors bots (no players)", false);
+	AddMultiTargetFilter("@deadsib",					FilterDeadF,	"Dead Special Infected bots (no players)", false);
+	AddMultiTargetFilter("@sp",							FilterPlayA,	"Survivors players (no bots)", false);
+	AddMultiTargetFilter("@sip",						FilterPlayB,	"Special Infected players (no bots)", false);
+	AddMultiTargetFilter("@isb",						FilterIncapA,	"Incapped Survivor Only Bots", false);
+	AddMultiTargetFilter("@isp",						FilterIncapB,	"Incapped Survivor Only Players", false);
 
 	AddMultiTargetFilter("@nick",						FilterNick,		"Nick", false);
 	AddMultiTargetFilter("@rochelle",					FilterRochelle,	"Rochelle", false);
@@ -1522,13 +1668,13 @@ public void OnPluginStart()
 		AutoExecConfig(true, "left4dhooks");
 		g_hCvarAddonsEclipse.AddChangeHook(ConVarChanged_Cvars);
 
-		g_hPillsHealth = FindConVar("pain_pills_health_value");
+		g_hCvarPillsHealth = FindConVar("pain_pills_health_value");
 	}
 
-	g_hDecayDecay = FindConVar("pain_pills_decay_rate");
+	g_hCvarPillsDecay = FindConVar("pain_pills_decay_rate");
 	g_hCvarRescueDeadTime = FindConVar("rescue_min_dead_time");
-	g_hMPGameMode = FindConVar("mp_gamemode");
-	g_hMPGameMode.AddChangeHook(ConVarChanged_Mode);
+	g_hCvarMPGameMode = FindConVar("mp_gamemode");
+	g_hCvarMPGameMode.AddChangeHook(ConVarChanged_Mode);
 
 
 
@@ -1617,6 +1763,7 @@ public int Native_AnimHookEnable(Handle plugin, int numParams)
 	if( GetNativeFunction(2) != INVALID_FUNCTION ) g_hAnimationCallbackPre.AddFunction(plugin, GetNativeFunction(2));
 	if( GetNativeFunction(3) != INVALID_FUNCTION ) g_hAnimationCallback.AddFunction(plugin, GetNativeFunction(3));
 	g_iHookedClients.Push(GetClientUserId(client));
+
 	return true;
 }
 
@@ -1638,6 +1785,7 @@ public int Native_AnimHookDisable(Handle plugin, int numParams)
 		g_iHookedClients.Erase(index);
 		return true;
 	}
+
 	return false;
 }
 
@@ -1752,7 +1900,7 @@ void GetGameMode()
 		else if( strcmp(sMode,		"versus") == 0 )	g_iCurrentMode = GAMEMODE_VERSUS;
 		else if( strcmp(sMode,		"scavenge") == 0 )	g_iCurrentMode = GAMEMODE_SCAVENGE;
 	} else {
-		g_hMPGameMode.GetString(sMode, sizeof(sMode));
+		g_hCvarMPGameMode.GetString(sMode, sizeof(sMode));
 
 		if( strcmp(sMode,			"coop") == 0 )		g_iCurrentMode = GAMEMODE_COOP;
 		else if( strcmp(sMode,		"survival") == 0 )	g_iCurrentMode = GAMEMODE_SURVIVAL;
@@ -1846,7 +1994,11 @@ public bool FilterIncapped(const char[] pattern, Handle clients)
 	return true;
 }
 
+
+
+// =========================
 // Specific survivors
+// =========================
 void MatchSurvivor(Handle clients, int survivorCharacter)
 {
 	int type;
@@ -1945,7 +2097,11 @@ public bool FilterLouis(const char[] pattern, Handle clients)
 	return true;
 }
 
+
+
+// =========================
 // Filter all Infected
+// =========================
 public bool FilterInfected(const char[] pattern, Handle clients)
 {
 	for( int i = 1; i <= MaxClients; i++ )
@@ -1964,167 +2120,192 @@ public bool FilterInfected(const char[] pattern, Handle clients)
 }
 
 
-// Filter - Random Incapped Survivors
+
+// =========================
+// Filter - Random Clients
+// =========================
+void MatchRandomClient(Handle clients, int index)
+{
+	ArrayList aList = new ArrayList();
+
+	for( int i = 1; i <= MaxClients; i++ )
+	{
+		switch( index )
+		{
+			case 1:			if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )									aList.Push(i);	// Random Incapped Survivors
+			case 2:			if( IsClientInGame(i) && GetClientTeam(i) == 2 )																											aList.Push(i);	// Random Survivors
+			case 3:			if( IsClientInGame(i) && GetClientTeam(i) == 3 )																											aList.Push(i);	// Random Infected
+			case 4:			if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == g_iClassTank )							aList.Push(i);	// Random Tank
+			case 5:			if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )					aList.Push(i);	// Random Incapped Survivor Bot
+			case 6:			if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && IsFakeClient(i) )																		aList.Push(i);	// Random Survivor Bot
+			case 7:			if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && IsFakeClient(i) )																		aList.Push(i);	// Random Infected Bot
+			case 8:			if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == g_iClassTank )		aList.Push(i);	// Random Tank Bot
+		}
+	}
+
+	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
+
+	delete aList;
+}
+
 public bool FilterRandomA(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 1);
 	return true;
 }
 
-// Filter - Random Survivors
 public bool FilterRandomB(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 2 )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 2);
 	return true;
 }
 
-// Filter - Random Infected
 public bool FilterRandomC(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 3 )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 3);
 	return true;
 }
 
-// Filter - Random Tank
 public bool FilterRandomD(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == g_iClassTank )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 4);
 	return true;
 }
 
-// Filter - Random Incapped Survivor Bot
 public bool FilterRandomE(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 5);
 	return true;
 }
 
-// Filter - Random Survivor Bot
 public bool FilterRandomF(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && IsFakeClient(i) )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 6);
 	return true;
 }
 
-// Filter - Random Infected Bot
 public bool FilterRandomG(const char[] pattern, Handle clients)
 {
-	ArrayList aList = new ArrayList();
-
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && IsFakeClient(i) )
-		{
-			aList.Push(i);
-		}
-	}
-
-	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
-
-	delete aList;
-
+	MatchRandomClient(clients, 7);
 	return true;
 }
 
-// Filter - Random Tank Bot
 public bool FilterRandomH(const char[] pattern, Handle clients)
+{
+	MatchRandomClient(clients, 8);
+	return true;
+}
+
+
+
+// =========================
+// Various matches
+// =========================
+void MatchVariousClients(Handle clients, int index)
 {
 	ArrayList aList = new ArrayList();
 
 	for( int i = 1; i <= MaxClients; i++ )
 	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == g_iClassTank )
+		if( IsClientInGame(i) )
 		{
-			aList.Push(i);
+			switch( index )
+			{
+				case 1:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 2 )															aList.Push(i);	// "Dead Survivors (all, bots)"
+				case 2:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 3 )															aList.Push(i);	// "Dead Special Infected (all, bots)"
+				case 3:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 2 && !IsFakeClient(i) )										aList.Push(i);	// "Dead Survivors players (no bots)"
+				case 4:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 3 && !IsFakeClient(i) )										aList.Push(i);	// "Dead Special Infected players (no bots)"
+				case 5:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 2 && IsFakeClient(i) )											aList.Push(i);	// "Dead Survivors bots (no players)"
+				case 6:			if( !IsPlayerAlive(i) && GetClientTeam(i) == 3 && IsFakeClient(i) )											aList.Push(i);	// "Dead Special Infected bots (no players)"
+				case 7:			if( GetClientTeam(i) == 2 && !IsFakeClient(i) )																aList.Push(i);	// "Survivors players (no bots)"
+				case 8:			if( GetClientTeam(i) == 3 && !IsFakeClient(i) )																aList.Push(i);	// "Special Infected players (no bots)"
+				case 9:			if( GetClientTeam(i) == 2 && IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )			aList.Push(i);	// "Incapped Survivor Only Bots"
+				case 10:		if( GetClientTeam(i) == 2 && !IsFakeClient(i) && GetEntProp(i, Prop_Send, "m_isIncapacitated", 1) )			aList.Push(i);	// "Incapped Survivor Only Players"
+			}
 		}
 	}
 
 	PushArrayCell(clients, aList.Get(GetRandomInt(0, aList.Length - 1)));
 
 	delete aList;
+}
 
+public bool FilterDeadA(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 1);
 	return true;
 }
 
+public bool FilterDeadB(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 2);
+	return true;
+}
+
+public bool FilterDeadC(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 3);
+	return true;
+}
+
+public bool FilterDeadD(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 4);
+	return true;
+}
+
+public bool FilterDeadE(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 5);
+	return true;
+}
+
+public bool FilterDeadF(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 6);
+	return true;
+}
+
+public bool FilterPlayA(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 7);
+	return true;
+}
+
+public bool FilterPlayB(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 8);
+	return true;
+}
+
+public bool FilterIncapA(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 9);
+	return true;
+}
+
+public bool FilterIncapB(const char[] pattern, Handle clients)
+{
+	MatchVariousClients(clients, 10);
+	return true;
+}
+
+
+
+// =========================
 // Specific Infected
+// =========================
+void MatchZombie(Handle clients, int zombieClass)
+{
+	for( int i = 1; i <= MaxClients; i++ )
+	{
+		if( IsClientInGame(i) && GetClientTeam(i) == 3 && GetEntProp(i, Prop_Send, "m_zombieClass") == zombieClass )
+		{
+			PushArrayCell(clients, i);
+		}
+	}
+}
+
 public bool FilterSmoker(const char[] pattern, Handle clients)
 {
 	MatchZombie(clients, 1);
@@ -2167,17 +2348,6 @@ public bool FilterTanks(const char[] pattern, Handle clients)
 	return true;
 }
 
-void MatchZombie(Handle clients, int zombieClass)
-{
-	for( int i = 1; i <= MaxClients; i++ )
-	{
-		if( IsClientInGame(i) && GetClientTeam(i) == 3 && GetEntProp(i, Prop_Send, "m_zombieClass") == zombieClass )
-		{
-			PushArrayCell(clients, i);
-		}
-	}
-}
-
 
 
 // ====================================================================================================
@@ -2206,14 +2376,25 @@ public void OnPluginEnd()
 	RemoveMultiTargetFilter("@ri",						FilterRandomC);
 	RemoveMultiTargetFilter("@randomtank",				FilterRandomD);
 	RemoveMultiTargetFilter("@rt",						FilterRandomD);
-	RemoveMultiTargetFilter("@incappedsurvivorbot",		FilterRandomE);
-	RemoveMultiTargetFilter("@isb",						FilterRandomE);
-	RemoveMultiTargetFilter("@survivorbot",				FilterRandomF);
-	RemoveMultiTargetFilter("@sb",						FilterRandomF);
-	RemoveMultiTargetFilter("@infectedbot",				FilterRandomG);
-	RemoveMultiTargetFilter("@ib",						FilterRandomG);
-	RemoveMultiTargetFilter("@tankbot",					FilterRandomH);
-	RemoveMultiTargetFilter("@tb",						FilterRandomH);
+	RemoveMultiTargetFilter("@rincappedsurvivorbot",	FilterRandomE);
+	RemoveMultiTargetFilter("@risb",					FilterRandomE);
+	RemoveMultiTargetFilter("@rsurvivorbot",			FilterRandomF);
+	RemoveMultiTargetFilter("@rsb",						FilterRandomF);
+	RemoveMultiTargetFilter("@rinfectedbot",			FilterRandomG);
+	RemoveMultiTargetFilter("@rib",						FilterRandomG);
+	RemoveMultiTargetFilter("@rtankbot",				FilterRandomH);
+	RemoveMultiTargetFilter("@rtb",						FilterRandomH);
+
+	RemoveMultiTargetFilter("@deads",					FilterDeadA);
+	RemoveMultiTargetFilter("@deadsi",					FilterDeadB);
+	RemoveMultiTargetFilter("@deadsp",					FilterDeadC);
+	RemoveMultiTargetFilter("@deadsip",					FilterDeadD);
+	RemoveMultiTargetFilter("@deadsb",					FilterDeadE);
+	RemoveMultiTargetFilter("@deadsib",					FilterDeadF);
+	RemoveMultiTargetFilter("@sp",						FilterPlayA);
+	RemoveMultiTargetFilter("@sip",						FilterPlayB);
+	RemoveMultiTargetFilter("@isb",						FilterIncapA);
+	RemoveMultiTargetFilter("@isp",						FilterIncapB);
 
 	RemoveMultiTargetFilter("@nick",					FilterNick);
 	RemoveMultiTargetFilter("@rochelle",				FilterRochelle);
@@ -2330,7 +2511,7 @@ public MRESReturn AddonsDisabler(int pThis, Handle hReturn, Handle hParams)
 			Call_Finish(aResult);
 
 			// 1 to tell the client it should use "vanilla mode"--no addons. 0 to enable addons.
-			int bVanillaMode =  aResult == Plugin_Handled ? 0 : view_as<int>(!cvar);
+			int bVanillaMode = aResult == Plugin_Handled ? 0 : view_as<int>(!cvar);
 			StoreToAddress(view_as<Address>(ptr + g_iAddonEclipse2), bVanillaMode, NumberType_Int8);
 			
 			#if DEBUG
@@ -2382,8 +2563,10 @@ void SetupDetours(GameData hGameData = null)
 	{
 		g_aDetoursHooked = new ArrayList();
 		g_aDetourHandles = new ArrayList();
+		g_aUseLastIndex = new ArrayList();
 		g_aForwardIndex = new ArrayList();
 		g_aForceDetours = new ArrayList();
+		g_aGameDataSigs = new ArrayList(ByteCountToCells(MAX_FWD_LEN));
 		g_aForwardNames = new ArrayList(ByteCountToCells(MAX_FWD_LEN));
 	}
 
@@ -2392,104 +2575,115 @@ void SetupDetours(GameData hGameData = null)
 
 
 	// Forwards listed here must match forward list in plugin start.
-	//			 GameData	DHookCallback PRE					DHookCallback POST		Signature Name							Forward Name						useLast index		forceOn detour
-	CreateDetour(hGameData, SpawnTank,							INVALID_FUNCTION,		"SpawnTank",							"L4D_OnSpawnTank");
+	//			 GameData	DHookCallback PRE					DHookCallback POST				Signature Name								Forward Name							useLast index		forceOn detour
+	CreateDetour(hGameData, SpawnTank,							INVALID_FUNCTION,				"SpawnTank",								"L4D_OnSpawnTank");
 
 	if( !g_bLeft4Dead2 && g_bLinuxOS )
-		CreateDetour(hGameData, SpawnWitchArea,					INVALID_FUNCTION,		"SpawnWitchArea",						"L4D_OnSpawnWitch");
-		// CreateDetour(hGameData, SpawnWitchAreaPre,				SpawnWitchArea,			"SpawnWitchArea",						"L4D_OnSpawnWitch");
+		CreateDetour(hGameData, SpawnWitchArea,					INVALID_FUNCTION,				"SpawnWitchArea",							"L4D_OnSpawnWitch");
+		// CreateDetour(hGameData, SpawnWitchAreaPre,				SpawnWitchArea,					"SpawnWitchArea",							"L4D_OnSpawnWitch");
 
-	CreateDetour(hGameData, SpawnWitch,							INVALID_FUNCTION,		"SpawnWitch",							"L4D_OnSpawnWitch");
-	CreateDetour(hGameData, MobRushStart,						INVALID_FUNCTION,		"OnMobRushStart",						"L4D_OnMobRushStart");
-	CreateDetour(hGameData, SpawnITMob,							INVALID_FUNCTION,		"SpawnITMob",							"L4D_OnSpawnITMob");
-	CreateDetour(hGameData, SpawnMob,							INVALID_FUNCTION,		"SpawnMob",								"L4D_OnSpawnMob");
-	CreateDetour(hGameData, EnterGhostStatePre,					EnterGhostState,		"OnEnterGhostState",					"L4D_OnEnterGhostState");
-	CreateDetour(hGameData, EnterGhostStatePre,					EnterGhostState,		"OnEnterGhostState",					"L4D_OnEnterGhostStatePre",			true); // Different forwards, same detour as above - same index.
-	CreateDetour(hGameData, IsTeamFullPre,						INVALID_FUNCTION,		"IsTeamFull",							"L4D_OnIsTeamFull");
-	CreateDetour(hGameData, ClearTeamScores,					INVALID_FUNCTION,		"ClearTeamScores",						"L4D_OnClearTeamScores");
-	CreateDetour(hGameData, SetCampaignScores,					INVALID_FUNCTION,		"SetCampaignScores",					"L4D_OnSetCampaignScores");
+	CreateDetour(hGameData, SpawnWitch,							INVALID_FUNCTION,				"SpawnWitch",								"L4D_OnSpawnWitch");
+	CreateDetour(hGameData, MobRushStart,						INVALID_FUNCTION,				"OnMobRushStart",							"L4D_OnMobRushStart");
+	CreateDetour(hGameData, SpawnITMob,							INVALID_FUNCTION,				"SpawnITMob",								"L4D_OnSpawnITMob");
+	CreateDetour(hGameData, SpawnMob,							INVALID_FUNCTION,				"SpawnMob",									"L4D_OnSpawnMob");
+	CreateDetour(hGameData, EnterGhostStatePre,					EnterGhostState,				"OnEnterGhostState",						"L4D_OnEnterGhostState");
+	CreateDetour(hGameData, EnterGhostStatePre,					EnterGhostState,				"OnEnterGhostState",						"L4D_OnEnterGhostStatePre",				true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, IsTeamFullPre,						INVALID_FUNCTION,				"IsTeamFull",								"L4D_OnIsTeamFull");
+	CreateDetour(hGameData, ClearTeamScores,					INVALID_FUNCTION,				"ClearTeamScores",							"L4D_OnClearTeamScores");
+	CreateDetour(hGameData, SetCampaignScores,					INVALID_FUNCTION,				"SetCampaignScores",						"L4D_OnSetCampaignScores");
 
 	if( !g_bLeft4Dead2 )
-		CreateDetour(hGameData, RecalculateVersusScore,			INVALID_FUNCTION,		"RecalculateVersusScore",				"L4D_OnRecalculateVersusScore");
+		CreateDetour(hGameData, RecalculateVersusScore,			INVALID_FUNCTION,				"RecalculateVersusScore",					"L4D_OnRecalculateVersusScore");
 
-	CreateDetour(hGameData, OnFirstSurvivorLeftSafeArea,		INVALID_FUNCTION,		"OnFirstSurvivorLeftSafeArea",			"L4D_OnFirstSurvivorLeftSafeArea");
-	CreateDetour(hGameData, GetCrouchTopSpeedPre,				GetCrouchTopSpeed,		"GetCrouchTopSpeed",					"L4D_OnGetCrouchTopSpeed");
-	CreateDetour(hGameData, GetRunTopSpeedPre,					GetRunTopSpeed,			"GetRunTopSpeed",						"L4D_OnGetRunTopSpeed");
-	CreateDetour(hGameData, GetWalkTopSpeedPre,					GetWalkTopSpeed,		"GetWalkTopSpeed",						"L4D_OnGetWalkTopSpeed");
-	CreateDetour(hGameData, GetMissionVSBoss,					INVALID_FUNCTION,		"GetMissionVersusBossSpawning",			"L4D_OnGetMissionVSBossSpawning");
-	CreateDetour(hGameData, OnReplaceTank,						INVALID_FUNCTION,		"ReplaceTank",							"L4D_OnReplaceTank");
-
-	if( !g_bLeft4Dead2 && g_bLinuxOS )
-		CreateDetour(hGameData, TryOfferingTankBot,				INVALID_FUNCTION,		"TryOfferingTankBot_Clone",				"L4D_OnTryOfferingTankBot");
-	else
-		CreateDetour(hGameData, TryOfferingTankBot,				INVALID_FUNCTION,		"TryOfferingTankBot",					"L4D_OnTryOfferingTankBot");
-
-	CreateDetour(hGameData, CThrowActivate,						INVALID_FUNCTION,		"CThrowActivate",						"L4D_OnCThrowActivate");
+	CreateDetour(hGameData, OnFirstSurvivorLeftSafeArea,		INVALID_FUNCTION,				"OnFirstSurvivorLeftSafeArea",				"L4D_OnFirstSurvivorLeftSafeArea");
+	CreateDetour(hGameData, GetCrouchTopSpeedPre,				GetCrouchTopSpeed,				"GetCrouchTopSpeed",						"L4D_OnGetCrouchTopSpeed");
+	CreateDetour(hGameData, GetRunTopSpeedPre,					GetRunTopSpeed,					"GetRunTopSpeed",							"L4D_OnGetRunTopSpeed");
+	CreateDetour(hGameData, GetWalkTopSpeedPre,					GetWalkTopSpeed,				"GetWalkTopSpeed",							"L4D_OnGetWalkTopSpeed");
+	CreateDetour(hGameData, GetMissionVSBoss,					INVALID_FUNCTION,				"GetMissionVersusBossSpawning",				"L4D_OnGetMissionVSBossSpawning");
+	CreateDetour(hGameData, OnReplaceTank,						INVALID_FUNCTION,				"ReplaceTank",								"L4D_OnReplaceTank");
+	CreateDetour(hGameData, CTankClaw_DoSwing_Pre,				CTankClaw_DoSwing_Post,			"CTankClaw::DoSwing",						"L4D_TankClaw_DoSwing_Pre");
+	CreateDetour(hGameData, CTankClaw_DoSwing_Pre,				CTankClaw_DoSwing_Post,			"CTankClaw::DoSwing",						"L4D_TankClaw_DoSwing_Post",			true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, CTankClaw_GroundPound_Pre,			CTankClaw_GroundPound_Post,		"CTankClaw::GroundPound",					"L4D_TankClaw_GroundPound_Pre");
+	CreateDetour(hGameData, CTankClaw_GroundPound_Pre,			CTankClaw_GroundPound_Post,		"CTankClaw::GroundPound",					"L4D_TankClaw_GroundPound_Post",		true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, CTankClaw_OnPlayerHit_Pre,			CTankClaw_OnPlayerHit_Post,		"CTankClaw::OnPlayerHit",					"L4D_TankClaw_OnPlayerHit_Pre");
+	CreateDetour(hGameData, CTankClaw_OnPlayerHit_Pre,			CTankClaw_OnPlayerHit_Post,		"CTankClaw::OnPlayerHit",					"L4D_TankClaw_OnPlayerHit_Post",		true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, CTankRock_Detonate,					INVALID_FUNCTION,				"CTankRock::Detonate",						"L4D_TankRock_OnDetonate");
+	CreateDetour(hGameData, CTankRock_OnRelease,				INVALID_FUNCTION,				"CTankRock::OnRelease",						"L4D_TankRock_OnRelease");
+	CreateDetour(hGameData, CThrowActivate,						INVALID_FUNCTION,				"CThrowActivate",							"L4D_OnCThrowActivate");
 	g_iAnimationDetourIndex = g_iCurrentIndex; // Animation Hook - detour index to enable when required.
-	CreateDetour(hGameData, SelectTankAttackPre,				SelectTankAttack,		"SelectTankAttack",						"L4D2_OnSelectTankAttack"); // Animation Hook
-	CreateDetour(hGameData, SelectTankAttackPre,				SelectTankAttack,		"SelectTankAttack",						"L4D2_OnSelectTankAttackPre",		true); // Animation Hook
+	CreateDetour(hGameData, SelectTankAttackPre,				SelectTankAttack,				"SelectTankAttack",							"L4D2_OnSelectTankAttack"); // Animation Hook
+	CreateDetour(hGameData, SelectTankAttackPre,				SelectTankAttack,				"SelectTankAttack",							"L4D2_OnSelectTankAttackPre",			true); // Animation Hook
+	CreateDetour(hGameData, EndVersusModeRoundPre,				EndVersusModeRound,				"EndVersusModeRound",						"L4D2_OnEndVersusModeRound");
+	CreateDetour(hGameData,	EndVersusModeRoundPre,				EndVersusModeRound,				"EndVersusModeRound",						"L4D2_OnEndVersusModeRound_Post",		true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, LedgeGrabbed,						INVALID_FUNCTION,				"OnLedgeGrabbed",							"L4D_OnLedgeGrabbed");
+	CreateDetour(hGameData, OnRevivedPre,						OnRevived,						"OnRevived",								"L4D2_OnRevived");
 
 	if( !g_bLinuxOS ) // Blocked on Linux in L4D1/L4D2 to prevent crashes. Waiting for DHooks update to support object returns.
-		CreateDetour(hGameData, SendInRescueVehicle,			INVALID_FUNCTION,		"SendInRescueVehicle",					"L4D2_OnSendInRescueVehicle");
+	{
+		CreateDetour(hGameData, OnUseHealingItems,				INVALID_FUNCTION,				"UseHealingItems",							"L4D2_OnUseHealingItems");
+		CreateDetour(hGameData, SendInRescueVehicle,			INVALID_FUNCTION,				"SendInRescueVehicle",						"L4D2_OnSendInRescueVehicle");
+	}
 
-	CreateDetour(hGameData, EndVersusModeRoundPre,				EndVersusModeRound,		"EndVersusModeRound",					"L4D2_OnEndVersusModeRound");
-	CreateDetour(hGameData,	EndVersusModeRoundPre,				EndVersusModeRound,		"EndVersusModeRound",					"L4D2_OnEndVersusModeRound_Post",	true); // Different forwards, same detour as above - same index.
-	CreateDetour(hGameData, LedgeGrabbed,						INVALID_FUNCTION,		"OnLedgeGrabbed",						"L4D_OnLedgeGrabbed");
-	CreateDetour(hGameData, OnRevivedPre,						OnRevived,				"OnRevived",							"L4D2_OnRevived");
+	CreateDetour(hGameData, TryOfferingTankBot,					INVALID_FUNCTION,				"TryOfferingTankBot",						"L4D_OnTryOfferingTankBot");
+	CreateDetour(hGameData, ShovedBySurvivor,					INVALID_FUNCTION,				"OnShovedBySurvivor",						"L4D_OnShovedBySurvivor");
+	CreateDetour(hGameData, OnPlayerStagger,					INVALID_FUNCTION,				"OnStaggered",								"L4D2_OnStagger");
 
-	CreateDetour(hGameData, OnPlayerStagger,					INVALID_FUNCTION,		"OnStaggered",							"L4D2_OnStagger");
 	if( !g_bLeft4Dead2 && g_bLinuxOS )
-		CreateDetour(hGameData, OnPlayerStagger_clone,			INVALID_FUNCTION,		"OnStaggered_clone",					"L4D2_OnStagger");
+	{
+		CreateDetour(hGameData, TryOfferingTankBot_Clone,		INVALID_FUNCTION,				"TryOfferingTankBot_Clone",					"L4D_OnTryOfferingTankBot");
+		CreateDetour(hGameData, ShovedBySurvivor_clone,			INVALID_FUNCTION,				"OnShovedBySurvivor_clone",					"L4D_OnShovedBySurvivor");
+		CreateDetour(hGameData, OnPlayerStagger_clone,			INVALID_FUNCTION,				"OnStaggered_clone",						"L4D2_OnStagger");
+	}
 
-	CreateDetour(hGameData, ShovedBySurvivor,					INVALID_FUNCTION,		"OnShovedBySurvivor",					"L4D_OnShovedBySurvivor");
-	if( !g_bLeft4Dead2 && g_bLinuxOS )
-		CreateDetour(hGameData, ShovedBySurvivor_clone,			INVALID_FUNCTION,		"OnShovedBySurvivor_clone",				"L4D_OnShovedBySurvivor");
-
-	CreateDetour(hGameData, CTerrorWeapon_OnHit,				INVALID_FUNCTION,		"OnHit",								"L4D2_OnEntityShoved");
-	CreateDetour(hGameData, OnShovedByPounceLanding,			INVALID_FUNCTION,		"OnShovedByPounceLanding",				"L4D2_OnPounceOrLeapStumble");
-	CreateDetour(hGameData, OnFatalFalling,						INVALID_FUNCTION,		"CDeathFallCamera::Enable",				"L4D_OnFatalFalling");
-	CreateDetour(hGameData, OnFallingPre,						OnFalling,				"CTerrorPlayer::OnFalling",				"L4D_OnFalling");
-	CreateDetour(hGameData, OnEnterStasisPre,					OnEnterStasis,			"Tank::EnterStasis",					"L4D_OnEnterStasis");
-	CreateDetour(hGameData, OnLeaveStasisPre,					OnLeaveStasis,			"Tank::LeaveStasis",					"L4D_OnLeaveStasis");
-	CreateDetour(hGameData, InfernoSpread,						INVALID_FUNCTION,		"Spread",								"L4D2_OnSpitSpread");
-
-	if( !g_bLinuxOS ) // Blocked on Linux in L4D1/L4D2 to prevent crashes. Waiting for DHooks update to support object returns.
-		CreateDetour(hGameData, OnUseHealingItems,				INVALID_FUNCTION,		"UseHealingItems",						"L4D2_OnUseHealingItems");
-
-	CreateDetour(hGameData, OnFindScavengeItemPre,				OnFindScavengeItem,		"FindScavengeItem",						"L4D2_OnFindScavengeItem");
-	CreateDetour(hGameData, OnChooseVictimPre,					OnChooseVictim,			"ChooseVictim",							"L4D2_OnChooseVictim");
-	CreateDetour(hGameData, OnMaterializeFromGhostPre,			OnMaterialize,			"OnMaterializeFromGhost",				"L4D_OnMaterializeFromGhostPre");
-	CreateDetour(hGameData, OnMaterializeFromGhostPre,			OnMaterialize,			"OnMaterializeFromGhost",				"L4D_OnMaterializeFromGhost",		true);
-	CreateDetour(hGameData, OnVomitedUpon,						INVALID_FUNCTION,		"OnVomitedUpon",						"L4D_OnVomitedUpon");
+	CreateDetour(hGameData, CTerrorWeapon_OnHit,				INVALID_FUNCTION,				"OnHit",									"L4D2_OnEntityShoved");
+	CreateDetour(hGameData, OnShovedByPounceLanding,			INVALID_FUNCTION,				"OnShovedByPounceLanding",					"L4D2_OnPounceOrLeapStumble");
+	CreateDetour(hGameData, OnFatalFalling,						INVALID_FUNCTION,				"CDeathFallCamera::Enable",					"L4D_OnFatalFalling");
+	CreateDetour(hGameData, OnFallingPre,						OnFalling,						"CTerrorPlayer::OnFalling",					"L4D_OnFalling");
+	CreateDetour(hGameData, OnEnterStasisPre,					OnEnterStasis,					"Tank::EnterStasis",						"L4D_OnEnterStasis");
+	CreateDetour(hGameData, OnLeaveStasisPre,					OnLeaveStasis,					"Tank::LeaveStasis",						"L4D_OnLeaveStasis");
+	CreateDetour(hGameData, InfernoSpread,						INVALID_FUNCTION,				"Spread",									"L4D2_OnSpitSpread");
+	CreateDetour(hGameData, OnFindScavengeItemPre,				OnFindScavengeItem,				"FindScavengeItem",							"L4D2_OnFindScavengeItem");
+	CreateDetour(hGameData, OnChooseVictimPre,					OnChooseVictim,					"ChooseVictim",								"L4D2_OnChooseVictim");
+	CreateDetour(hGameData, OnMaterializeFromGhostPre,			OnMaterialize,					"OnMaterializeFromGhost",					"L4D_OnMaterializeFromGhostPre");
+	CreateDetour(hGameData, OnMaterializeFromGhostPre,			OnMaterialize,					"OnMaterializeFromGhost",					"L4D_OnMaterializeFromGhost",			true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, OnPipeBombProjectile_Pre,			OnPipeBombProjectile_Post,		"CPipeBombProjectile_Create",				"L4D_PipeBombProjectile_Pre");
+	CreateDetour(hGameData, OnPipeBombProjectile_Pre,			OnPipeBombProjectile_Post,		"CPipeBombProjectile_Create",				"L4D_PipeBombProjectile_Post",			true); // Different forwards, same detour as above - same index.
+	CreateDetour(hGameData, OnPlayerExtinguish,					INVALID_FUNCTION,				"CTerrorPlayer::Extinguish",				"L4D_PlayerExtinguish");
+	CreateDetour(hGameData, CBreakablePropBreakPre,				CBreakablePropBreak,			"CBreakableProp::Break",					"L4D_CBreakableProp_Break");
+	CreateDetour(hGameData, OnVomitedUpon,						INVALID_FUNCTION,				"OnVomitedUpon",							"L4D_OnVomitedUpon");
 
 	if( !g_bLeft4Dead2 )
 	{
 		// Different detours, same forward (SpawnSpecial).
-		CreateDetour(hGameData, SpawnHunter,					INVALID_FUNCTION,		"SpawnHunter",							"L4D_OnSpawnSpecial");
-		CreateDetour(hGameData, SpawnBoomer,					INVALID_FUNCTION,		"SpawnBoomer",							"L4D_OnSpawnSpecial");
-		CreateDetour(hGameData, SpawnSmoker,					INVALID_FUNCTION,		"SpawnSmoker",							"L4D_OnSpawnSpecial");
+		CreateDetour(hGameData, SpawnHunter,					INVALID_FUNCTION,				"SpawnHunter",								"L4D_OnSpawnSpecial");
+		CreateDetour(hGameData, SpawnBoomer,					INVALID_FUNCTION,				"SpawnBoomer",								"L4D_OnSpawnSpecial");
+		CreateDetour(hGameData, SpawnSmoker,					INVALID_FUNCTION,				"SpawnSmoker",								"L4D_OnSpawnSpecial");
 	}
 	else
 	{
-		CreateDetour(hGameData, OnPlayerFling,					INVALID_FUNCTION,		"CTerrorPlayer::Fling",					"L4D2_OnPlayerFling");
-		CreateDetour(hGameData, OnHitByVomitJar,				INVALID_FUNCTION,		"OnHitByVomitJar",						"L4D2_OnHitByVomitJar");
-		CreateDetour(hGameData, SpawnSpecial,					INVALID_FUNCTION,		"SpawnSpecial",							"L4D_OnSpawnSpecial");
-		CreateDetour(hGameData, SpawnWitchBride,				INVALID_FUNCTION,		"SpawnWitchBride",						"L4D_OnSpawnWitchBride");
-		CreateDetour(hGameData, GetScriptValueInt,				INVALID_FUNCTION,		"GetScriptValueInt",					"L4D_OnGetScriptValueInt");
-		CreateDetour(hGameData, GetScriptValueFloat,			INVALID_FUNCTION,		"GetScriptValueFloat",					"L4D_OnGetScriptValueFloat");
-		CreateDetour(hGameData, GetScriptValueString,			INVALID_FUNCTION,		"GetScriptValueString",					"L4D_OnGetScriptValueString");
-		CreateDetour(hGameData, HasConfigurableDifficulty,		INVALID_FUNCTION,		"HasConfigurableDifficulty",			"L4D_OnHasConfigurableDifficulty");
-		CreateDetour(hGameData, GetSurvivorSet,					INVALID_FUNCTION,		"GetSurvivorSet",						"L4D_OnGetSurvivorSet");
-		CreateDetour(hGameData, FastGetSurvivorSet,				INVALID_FUNCTION,		"FastGetSurvivorSet",					"L4D_OnFastGetSurvivorSet");
-		CreateDetour(hGameData, StartMeleeSwing,				INVALID_FUNCTION,		"StartMeleeSwing",						"L4D_OnStartMeleeSwing");
-		CreateDetour(hGameData, ChangeFinaleStage,				INVALID_FUNCTION,		"ChangeFinaleStage",					"L4D2_OnChangeFinaleStage");
-		CreateDetour(hGameData, AddonsDisabler,					INVALID_FUNCTION,		"FillServerInfo",						"L4D2_OnClientDisableAddons",		false,				true); // Force detour to enable.
+		CreateDetour(hGameData, CGasCanEvent_Killed,			INVALID_FUNCTION,				"CGasCan::Event_Killed",					"L4D2_CGasCan_EventKilled");
+		CreateDetour(hGameData, CGasCanOnActionComplete,		INVALID_FUNCTION,				"CGasCan::OnActionComplete",				"L4D2_CGasCan_ActionComplete");
+		CreateDetour(hGameData, CInsectSwarm_CanHarm,			INVALID_FUNCTION,				"CInsectSwarm::CanHarm",					"L4D2_CInsectSwarm_CanHarm");
+		CreateDetour(hGameData, OnPlayerFling,					INVALID_FUNCTION,				"CTerrorPlayer::Fling",						"L4D2_OnPlayerFling");
+		CreateDetour(hGameData, OnHitByVomitJar,				INVALID_FUNCTION,				"OnHitByVomitJar",							"L4D2_OnHitByVomitJar");
+		CreateDetour(hGameData, SpawnSpecial,					INVALID_FUNCTION,				"SpawnSpecial",								"L4D_OnSpawnSpecial");
+		CreateDetour(hGameData, SpawnWitchBride,				INVALID_FUNCTION,				"SpawnWitchBride",							"L4D2_OnSpawnWitchBride");
+		CreateDetour(hGameData, GetScriptValueInt,				INVALID_FUNCTION,				"GetScriptValueInt",						"L4D_OnGetScriptValueInt");
+		CreateDetour(hGameData, GetScriptValueFloat,			INVALID_FUNCTION,				"GetScriptValueFloat",						"L4D_OnGetScriptValueFloat");
+		CreateDetour(hGameData, GetScriptValueString,			INVALID_FUNCTION,				"GetScriptValueString",						"L4D_OnGetScriptValueString");
+		CreateDetour(hGameData, HasConfigurableDifficulty,		INVALID_FUNCTION,				"HasConfigurableDifficulty",				"L4D_OnHasConfigurableDifficulty");
+		CreateDetour(hGameData, GetSurvivorSet,					INVALID_FUNCTION,				"GetSurvivorSet",							"L4D_OnGetSurvivorSet");
+		CreateDetour(hGameData, FastGetSurvivorSet,				INVALID_FUNCTION,				"FastGetSurvivorSet",						"L4D_OnFastGetSurvivorSet");
+		CreateDetour(hGameData, StartMeleeSwing,				INVALID_FUNCTION,				"StartMeleeSwing",							"L4D_OnStartMeleeSwing");
+		CreateDetour(hGameData, GetDamageForVictimPre,			GetDamageForVictim,				"CTerrorMeleeWeapon::GetDamageForVictim",	"L4D2_MeleeGetDamageForVictim");
+		CreateDetour(hGameData, ChangeFinaleStage,				INVALID_FUNCTION,				"ChangeFinaleStage",						"L4D2_OnChangeFinaleStage");
+		CreateDetour(hGameData, AddonsDisabler,					INVALID_FUNCTION,				"FillServerInfo",							"L4D2_OnClientDisableAddons",			false,				true); // Force detour to enable.
 	}
 
 	// Deprecated, unused or broken.
-	// CreateDetour(hGameData, InfectedShoved,					INVALID_FUNCTION,		"InfectedShoved",						"L4D_OnInfectedShoved"); // Missing signature
-	// CreateDetour(hGameData, OnWaterMovePre,					OnWaterMove,			"WaterMove",							"L4D2_OnWaterMove"); // Does not return water state. Use FL_INWATER instead.
-	// CreateDetour(hGameData, GetRandomPZSpawnPos,				INVALID_FUNCTION,		"GetRandomPZSpawnPosition",				"L4D_OnGetRandomPZSpawnPosition");
+	// CreateDetour(hGameData, InfectedShoved,						INVALID_FUNCTION,				"InfectedShoved",							"L4D_OnInfectedShoved"); // Missing signature
+	// CreateDetour(hGameData, OnWaterMovePre,						OnWaterMove,					"WaterMove",								"L4D2_OnWaterMove"); // Does not return water state. Use FL_INWATER instead.
+	// CreateDetour(hGameData, GetRandomPZSpawnPos,				INVALID_FUNCTION,				"GetRandomPZSpawnPosition",					"L4D_OnGetRandomPZSpawnPosition");
 
 	g_bCreatedDetours = true;
 }
@@ -2502,7 +2696,9 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 		static int index;
 		if( useLast ) index -= 1;
 
+		g_aGameDataSigs.PushString(sName);
 		g_aForwardNames.PushString(sForward);
+		g_aUseLastIndex.Push(useLast);
 		g_aForwardIndex.Push(index++);
 		g_aForceDetours.Push(forceOn);
 
@@ -2510,7 +2706,7 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 		if( !useLast )
 		{
 			Handle hDetour = DHookCreateFromConf(hGameData, sName);
-			if( !hDetour ) LogError("Failed to load \"%s\" signature.", sName);
+			if( !hDetour ) LogError("Failed to load detour \"%s\" signature.", sName);
 
 			g_aDetoursHooked.Push(0);			// Default disabled
 			g_aDetourHandles.Push(hDetour);		// Store handle
@@ -2519,7 +2715,7 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 	else
 	{
 		// Enable detours
-		if( !useLast )
+		if( !useLast ) // When using the last index, the pre and post detours are already hooked. Pre is always hooked even when only using post, to avoid crashes from dhooks.
 		{
 			int index = g_iCurrentIndex++;
 			int current = g_aDetoursHooked.Get(index);
@@ -2535,7 +2731,7 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 						PrintToServer("Enabling detour %d %s", index, sName);
 						#endif
 
-						if( fCallback != INVALID_FUNCTION && !DHookEnableDetour(hDetour, false, fCallback) ) LogError("Failed to detour \"%s\".", sName);
+						if( fCallback != INVALID_FUNCTION && !DHookEnableDetour(hDetour, false, fCallback) ) LogError("Failed to detour pre \"%s\".", sName);
 						if( fPostCallback != INVALID_FUNCTION && !DHookEnableDetour(hDetour, true, fPostCallback) ) LogError("Failed to detour post \"%s\".", sName);
 					} else {
 						g_aDetoursHooked.Set(index, 0);
@@ -2543,7 +2739,7 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 						PrintToServer("Disabling detour %d %s", index, sName);
 						#endif
 
-						if( fCallback != INVALID_FUNCTION && !DHookDisableDetour(hDetour, false, fCallback) ) LogError("Failed to disable detour \"%s\".", sName);
+						if( fCallback != INVALID_FUNCTION && !DHookDisableDetour(hDetour, false, fCallback) ) LogError("Failed to disable detour pre \"%s\".", sName);
 						if( fPostCallback != INVALID_FUNCTION && !DHookDisableDetour(hDetour, true, fPostCallback) ) LogError("Failed to disable detour post \"%s\".", sName);
 					}
 				}
@@ -2555,12 +2751,18 @@ void CreateDetour(GameData hGameData, DHookCallback fCallback, DHookCallback fPo
 // Loop through plugins, check which forwards are being used, then hook
 void CheckRequiredDetours(int client = 0)
 {
+	#if DEBUG || !DETOUR_ALL
 	char filename[PLATFORM_MAX_PATH];
+	#endif
+
+	bool useLast;
+	char signatures[MAX_FWD_LEN];
 	char forwards[MAX_FWD_LEN];
 	ArrayList aHand = new ArrayList();
 	Handle hIter = GetPluginIterator();
 	Handle hPlug;
 	int index;
+	int count;
 
 	// Iterate plugins
 	while( MorePlugins(hIter) )
@@ -2574,13 +2776,11 @@ void CheckRequiredDetours(int client = 0)
 		{
 			// Get detour index from forward list
 			index = g_aForwardIndex.Get(i);
-
-			// Get forward name
-			g_aForwardNames.GetString(i, forwards, sizeof(forwards));
+			useLast = g_aUseLastIndex.Get(i);
 
 			// Prevent checking forwards already known in use
 			// ToDo: When using extra-api.ext, we will check all plugins to gather total number using each forward and store in g_aDetoursHooked
-			if( aHand.FindValue(index) == -1 )
+			if( aHand.FindValue(index) == -1 || useLast )
 			{
 				// Only if not enabling all detours
 				#if !DETOUR_ALL
@@ -2588,53 +2788,73 @@ void CheckRequiredDetours(int client = 0)
 				// Force detour on?
 				if( g_aForceDetours.Get(i) )
 				{
-					aHand.Push(index);
+					// Get forward name
+					g_aForwardNames.GetString(i, forwards, sizeof(forwards));
+					g_aGameDataSigs.GetString(i, signatures, sizeof(signatures));
+
+					count++;
+
+					if( !useLast )
+						aHand.Push(index);
 
 					#if DEBUG
 					if( client == 0 )
 					{
 						StopProfiling(g_vProf);
 						g_fProf += GetProfilerTime(g_vProf);
-						PrintToServer("%40s> %s", "FORCED DETOUR", forwards);
+						PrintToServer("%2d %36s> %32s (%s)", count, "FORCED DETOUR", forwards, signatures);
 						StartProfiling(g_vProf);
 					}
 					#endif
 
 					if( client > 0 )
 					{
-						ReplyToCommand(client - 1, "%40s> %s", "FORCED DETOUR", forwards);
+						ReplyToCommand(client - 1, "%2d %36s> %32s (%s)", count, "FORCED DETOUR", forwards, signatures);
 					}
 				}
 				// Check if used
-				else if( GetFunctionByName(hPlug, forwards) != INVALID_FUNCTION )
-				#endif
+				else
 				{
-					aHand.Push(index);
+					// Get forward name
+					g_aForwardNames.GetString(i, forwards, sizeof(forwards));
 
-					#if DEBUG
-					if( client == 0 )
-					{
-						#if DETOUR_ALL
-						filename = "THIS_PLUGIN_TEST";
-						#else
-						GetPluginFilename(hPlug, filename, sizeof(filename));
-						#endif
-
-						StopProfiling(g_vProf);
-						g_fProf += GetProfilerTime(g_vProf);
-						PrintToServer("%40s> %s", filename, forwards);
-						StartProfiling(g_vProf);
-					}
+					if( GetFunctionByName(hPlug, forwards) != INVALID_FUNCTION )
 					#endif
-
-					if( client > 0 )
 					{
-						#if DETOUR_ALL
-						ReplyToCommand(client - 1, "%40s %s", "FORCED DETOUR", forwards);
-						#else
-						GetPluginFilename(hPlug, filename, sizeof(filename));
-						ReplyToCommand(client - 1, "%40s> %s", filename, forwards);
+						count++;
+
+						if( !useLast )
+							aHand.Push(index);
+
+						#if DEBUG
+						if( client == 0 )
+						{
+							#if DETOUR_ALL
+							filename = "THIS_PLUGIN_TEST";
+							#else
+							GetPluginFilename(hPlug, filename, sizeof(filename));
+							#endif
+
+							g_aGameDataSigs.GetString(i, signatures, sizeof(signatures));
+
+							StopProfiling(g_vProf);
+							g_fProf += GetProfilerTime(g_vProf);
+							PrintToServer("%36s> %s (%s)", filename, forwards, signatures);
+							StartProfiling(g_vProf);
+						}
 						#endif
+
+						if( client > 0 )
+						{
+							g_aGameDataSigs.GetString(i, signatures, sizeof(signatures));
+
+							#if DETOUR_ALL
+							ReplyToCommand(client - 1, "%2d %36s %32s (%s)", count, "FORCED DETOUR", forwards, signatures);
+							#else
+							GetPluginFilename(hPlug, filename, sizeof(filename));
+							ReplyToCommand(client - 1, "%2d %36s> %32s (%s)", count, filename, forwards, signatures);
+							#endif
+						}
 					}
 				}
 			}
@@ -2672,7 +2892,7 @@ void CheckRequiredDetours(int client = 0)
 
 
 // ====================================================================================================
-//										LOAD GAMEDATA
+//										MAP START - INITIALIZE - (LOAD GAMEDATA, DETOURS etc)
 // ====================================================================================================
 public void OnMapStart()
 {
@@ -2680,18 +2900,19 @@ public void OnMapStart()
 
 
 
-	// Putting this here so g_pGameRules is valid.
+	// Putting this here so g_pGameRules is valid. Changes for each map.
 	LoadGameDataRules();
 
 
 
-	// Enable or Disable detours as required.
+	// Benchmark
 	#if DEBUG
 	g_vProf = CreateProfiler();
 	g_fProf = 0.0;
 	StartProfiling(g_vProf);
 	#endif
 
+	// Enable or Disable detours as required.
 	CheckRequiredDetours();
 
 	#if DEBUG
@@ -2704,12 +2925,12 @@ public void OnMapStart()
 
 
 
-	// Because reload cmd calls this function.
+	// Because reload command calls this function. We only want these loaded on actual map start.
 	if( !g_bMapStarted )
 	{
 		g_bMapStarted = true;
 
-		GetGameMode();
+		GetGameMode(); // Get current game mode
 
 		// Precache Models, prevent crashing when spawning with SpawnSpecial()
 		for( int i = 0; i < sizeof(g_sModels1); i++ )
@@ -2781,7 +3002,7 @@ public void OnMapStart()
 			g_aMeleeIDs = new StringMap();
 
 			int iTable = FindStringTable("meleeweapons");
-			if( iTable == INVALID_STRING_TABLE )
+			if( iTable == INVALID_STRING_TABLE ) // Default to known IDs
 			{
 				g_aMeleeIDs.SetValue("fireaxe",								0);
 				g_aMeleeIDs.SetValue("frying_pan",							1);
@@ -2797,6 +3018,7 @@ public void OnMapStart()
 				g_aMeleeIDs.SetValue("pitchfork",							11);
 				g_aMeleeIDs.SetValue("shovel",								12);
 			} else {
+				// Get actual IDs
 				int iNum = GetStringTableNumStrings(iTable);
 				char sName[PLATFORM_MAX_PATH];
 
@@ -2810,6 +3032,11 @@ public void OnMapStart()
 	}
 }
 
+
+
+// ====================================================================================================
+//										LOAD GAMEDATA - (create natives, load offsets etc)
+// ====================================================================================================
 void LoadGameDataRules()
 {
 	char sPath[PLATFORM_MAX_PATH];
@@ -2849,19 +3076,16 @@ void LoadGameData()
 	//									SDK CALLS
 	// ====================================================================================================
 	// INTERNAL
-	if( g_bLeft4Dead2 )
+	StartPrepSDKCall(SDKCall_Static);
+	if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "GetWeaponInfo") == false )
 	{
-		StartPrepSDKCall(SDKCall_Static);
-		if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "GetWeaponInfo") == false )
-		{
-			LogError("Failed to find signature: GetWeaponInfo");
-		} else {
-			PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
-			PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
-			g_hSDK_Call_GetWeaponInfo = EndPrepSDKCall();
-			if( g_hSDK_Call_GetWeaponInfo == null )
-				LogError("Failed to create SDKCall: GetWeaponInfo");
-		}
+		LogError("Failed to find signature: GetWeaponInfo");
+	} else {
+		PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
+		PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
+		g_hSDK_Call_GetWeaponInfo = EndPrepSDKCall();
+		if( g_hSDK_Call_GetWeaponInfo == null )
+			LogError("Failed to create SDKCall: GetWeaponInfo");
 	}
 
 	StartPrepSDKCall(SDKCall_Static);
@@ -3065,7 +3289,7 @@ void LoadGameData()
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
-		PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+		PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer, VDECODE_FLAG_ALLOWWORLD);
 		PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
 		PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 		g_hSDK_Call_PipeBombPrj = EndPrepSDKCall();
@@ -3079,10 +3303,9 @@ void LoadGameData()
 	// DYNAMIC SIG SCANS
 	// =========================
 
-	// Load custom gamedata addresses to detour
+	// Automatically generate addresses from strings inside the custom temp gamedata used for some natives
 	if( !g_bLinuxOS )
 	{
-		// AUTOMATICALLY GENERATE DETOURS
 		// Search game memory for specific strings
 		#define MAX_HOOKS 3
 		int iMaxHooks = g_bLeft4Dead2 ? 3 : 1;
@@ -3148,7 +3371,7 @@ void LoadGameData()
 			patchAddr = patches[i];
 			if( patchAddr )
 			{
-				Format(sAddress, sizeof(sAddress), "%X", patchAddr);
+				FormatEx(sAddress, sizeof(sAddress), "%X", patchAddr);
 				ReverseAddress(sAddress, sHexAddr);
 
 				// First byte of projectile functions is \x55 || \x8B
@@ -3172,7 +3395,7 @@ void LoadGameData()
 				}
 
 				// Add call X address
-				StrCat(sAddress, sizeof(sAddress), "\\x68"); // Add "push" byte
+				StrCat(sAddress, sizeof(sAddress), "\\x68"); // Add "push" byte (this is found in the "Molotov", "VomitJar" and "GrenadeLauncher" functions only) - added to match better although not required
 				StrCat(sAddress, sizeof(sAddress), sHexAddr);
 
 
@@ -3230,7 +3453,7 @@ void LoadGameData()
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 		PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
-		PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+		PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer, VDECODE_FLAG_ALLOWWORLD);
 		PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
 		PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 		g_hSDK_Call_MolotovPrj = EndPrepSDKCall();
@@ -3249,7 +3472,7 @@ void LoadGameData()
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
-			PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+			PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer, VDECODE_FLAG_ALLOWWORLD);
 			PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
 			PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 			g_hSDK_Call_VomitJarPrj = EndPrepSDKCall();
@@ -3266,7 +3489,7 @@ void LoadGameData()
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
-			PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+			PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer, VDECODE_FLAG_ALLOWWORLD);
 			PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
 			PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 			g_hSDK_Call_GrenadeLauncher = EndPrepSDKCall();
@@ -3283,7 +3506,7 @@ void LoadGameData()
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 			PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
-			PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+			PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer, VDECODE_FLAG_ALLOWWORLD);
 			PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 			g_hSDK_Call_SpitterPrj = EndPrepSDKCall();
 			if( g_hSDK_Call_SpitterPrj == null )
@@ -3326,6 +3549,7 @@ void LoadGameData()
 				LogError("Failed to create SDKCall: OnAdrenalineUsed");
 		}
 
+		// "ForceNextStage" is now found by getting the call address from another function, instead of trying to match such a small signature, which requires using an offset byte that changes in game updates
 		/* Verify ForceNextStage addresses are equal (B will break in future updates, where A should remain intact)
 		Address aa = hGameData.GetAddress("ForceNextStageAddress");
 		Address bb = hGameData.GetAddress("ForceNextStage");
@@ -4274,11 +4498,11 @@ void LoadGameData()
 	g_pServer = hGameData.GetAddress("ServerAddr");
 	ValidateAddress(g_pServer, "g_pServer", true);
 
+	g_pWeaponInfoDatabase = hGameData.GetAddress("WeaponInfoDatabase");
+	ValidateAddress(g_pWeaponInfoDatabase, "g_pWeaponInfoDatabase", true);
+
 	if( g_bLeft4Dead2 )
 	{
-		g_pWeaponInfoDatabase = hGameData.GetAddress("WeaponInfoDatabase");
-		ValidateAddress(g_pWeaponInfoDatabase, "g_pWeaponInfoDatabase", true);
-
 		g_pMeleeWeaponInfoStore = hGameData.GetAddress("MeleeWeaponInfoStore");
 		ValidateAddress(g_pMeleeWeaponInfoStore, "g_pMeleeWeaponInfoStore", true);
 
@@ -4307,9 +4531,9 @@ void LoadGameData()
 	PrintToServer("%12d == g_pGameRules", g_pGameRules);
 	PrintToServer("%12d == g_pNavMesh", g_pNavMesh);
 	PrintToServer("%12d == g_pServer", g_pServer);
+	PrintToServer("%12d == g_pWeaponInfoDatabase", g_pWeaponInfoDatabase);
 	if( g_bLeft4Dead2 )
 	{
-		PrintToServer("%12d == g_pWeaponInfoDatabase", g_pWeaponInfoDatabase);
 		PrintToServer("%12d == g_pMeleeWeaponInfoStore", g_pMeleeWeaponInfoStore);
 		PrintToServer("%12d == ScriptedEventManagerPtr", ScriptedEventManagerPtr);
 		PrintToServer("%12d == VersusModePtr", VersusModePtr);
@@ -4439,26 +4663,6 @@ void LoadGameData()
 		L4D2IntervalTimer_Offsets[5] = hGameData.GetOffset("L4D2IntervalTimer_ChargerDeathTimer") + view_as<int>(g_pDirector);
 
 		// l4d2weapons.inc offsets
-		L4D2IntWeapon_Offsets[0] = hGameData.GetOffset("L4D2IntWeapon_Damage");
-		L4D2IntWeapon_Offsets[1] = hGameData.GetOffset("L4D2IntWeapon_Bullets");
-		L4D2IntWeapon_Offsets[2] = hGameData.GetOffset("L4D2IntWeapon_ClipSize");
-		L4D2FloatWeapon_Offsets[0] = hGameData.GetOffset("L4D2FloatWeapon_MaxPlayerSpeed");
-		L4D2FloatWeapon_Offsets[1] = hGameData.GetOffset("L4D2FloatWeapon_SpreadPerShot");
-		L4D2FloatWeapon_Offsets[2] = hGameData.GetOffset("L4D2FloatWeapon_MaxSpread");
-		L4D2FloatWeapon_Offsets[3] = hGameData.GetOffset("L4D2FloatWeapon_SpreadDecay");
-		L4D2FloatWeapon_Offsets[4] = hGameData.GetOffset("L4D2FloatWeapon_MinDuckingSpread");
-		L4D2FloatWeapon_Offsets[5] = hGameData.GetOffset("L4D2FloatWeapon_MinStandingSpread");
-		L4D2FloatWeapon_Offsets[6] = hGameData.GetOffset("L4D2FloatWeapon_MinInAirSpread");
-		L4D2FloatWeapon_Offsets[7] = hGameData.GetOffset("L4D2FloatWeapon_MaxMovementSpread");
-		L4D2FloatWeapon_Offsets[8] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationNumLayers");
-		L4D2FloatWeapon_Offsets[9] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationPower");
-		L4D2FloatWeapon_Offsets[10] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationMaxDist");
-		L4D2FloatWeapon_Offsets[11] = hGameData.GetOffset("L4D2FloatWeapon_CharPenetrationMaxDist");
-		L4D2FloatWeapon_Offsets[12] = hGameData.GetOffset("L4D2FloatWeapon_Range");
-		L4D2FloatWeapon_Offsets[13] = hGameData.GetOffset("L4D2FloatWeapon_RangeModifier");
-		L4D2FloatWeapon_Offsets[14] = hGameData.GetOffset("L4D2FloatWeapon_CycleTime");
-		L4D2FloatWeapon_Offsets[15] = hGameData.GetOffset("L4D2FloatWeapon_ScatterPitch");
-		L4D2FloatWeapon_Offsets[16] = hGameData.GetOffset("L4D2FloatWeapon_ScatterYaw");
 		L4D2BoolMeleeWeapon_Offsets[0] = hGameData.GetOffset("L4D2BoolMeleeWeapon_Decapitates");
 		L4D2IntMeleeWeapon_Offsets[0] = hGameData.GetOffset("L4D2IntMeleeWeapon_DamageFlags");
 		L4D2IntMeleeWeapon_Offsets[1] = hGameData.GetOffset("L4D2IntMeleeWeapon_RumbleEffect");
@@ -4473,6 +4677,28 @@ void LoadGameData()
 		PrintToServer("VersusStartTimer = %d", VersusStartTimer);
 		#endif
 	}
+
+	// l4d2weapons.inc offsets
+	L4D2IntWeapon_Offsets[0] = hGameData.GetOffset("L4D2IntWeapon_Damage");
+	L4D2IntWeapon_Offsets[1] = hGameData.GetOffset("L4D2IntWeapon_Bullets");
+	L4D2IntWeapon_Offsets[2] = hGameData.GetOffset("L4D2IntWeapon_ClipSize");
+	L4D2FloatWeapon_Offsets[0] = hGameData.GetOffset("L4D2FloatWeapon_MaxPlayerSpeed");
+	L4D2FloatWeapon_Offsets[1] = hGameData.GetOffset("L4D2FloatWeapon_SpreadPerShot");
+	L4D2FloatWeapon_Offsets[2] = hGameData.GetOffset("L4D2FloatWeapon_MaxSpread");
+	L4D2FloatWeapon_Offsets[3] = hGameData.GetOffset("L4D2FloatWeapon_SpreadDecay");
+	L4D2FloatWeapon_Offsets[4] = hGameData.GetOffset("L4D2FloatWeapon_MinDuckingSpread");
+	L4D2FloatWeapon_Offsets[5] = hGameData.GetOffset("L4D2FloatWeapon_MinStandingSpread");
+	L4D2FloatWeapon_Offsets[6] = hGameData.GetOffset("L4D2FloatWeapon_MinInAirSpread");
+	L4D2FloatWeapon_Offsets[7] = hGameData.GetOffset("L4D2FloatWeapon_MaxMovementSpread");
+	L4D2FloatWeapon_Offsets[8] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationNumLayers");
+	L4D2FloatWeapon_Offsets[9] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationPower");
+	L4D2FloatWeapon_Offsets[10] = hGameData.GetOffset("L4D2FloatWeapon_PenetrationMaxDist");
+	L4D2FloatWeapon_Offsets[11] = hGameData.GetOffset("L4D2FloatWeapon_CharPenetrationMaxDist");
+	L4D2FloatWeapon_Offsets[12] = hGameData.GetOffset("L4D2FloatWeapon_Range");
+	L4D2FloatWeapon_Offsets[13] = hGameData.GetOffset("L4D2FloatWeapon_RangeModifier");
+	L4D2FloatWeapon_Offsets[14] = hGameData.GetOffset("L4D2FloatWeapon_CycleTime");
+	L4D2FloatWeapon_Offsets[15] = hGameData.GetOffset("L4D2FloatWeapon_ScatterPitch");
+	L4D2FloatWeapon_Offsets[16] = hGameData.GetOffset("L4D2FloatWeapon_ScatterYaw");
 
 
 
@@ -4494,8 +4720,17 @@ void LoadGameData()
 	PrintToServer("m_iTankCount = %d", m_iTankCount);
 	PrintToServer("MobSpawnTimer = %d", MobSpawnTimer);
 
+	for( int i = 0; i < sizeof(L4D2CountdownTimer_Offsets); i++ )		PrintToServer("L4D2CountdownTimer_Offsets[%d] == %d", i, L4D2CountdownTimer_Offsets[i]);
+	for( int i = 0; i < sizeof(L4D2IntervalTimer_Offsets); i++ )		PrintToServer("L4D2IntervalTimer_Offsets[%d] == %d", i, L4D2IntervalTimer_Offsets[i]);
+	for( int i = 0; i < sizeof(L4D2IntWeapon_Offsets); i++ )			PrintToServer("L4D2IntWeapon_Offsets[%d] == %d", i, L4D2IntWeapon_Offsets[i]);
+	for( int i = 0; i < sizeof(L4D2FloatWeapon_Offsets); i++ )			PrintToServer("L4D2FloatWeapon_Offsets[%d] == %d", i, L4D2FloatWeapon_Offsets[i]);
+
 	if( g_bLeft4Dead2 )
 	{
+		for( int i = 0; i < sizeof(L4D2BoolMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2BoolMeleeWeapon_Offsets[%d] == %d", i, L4D2BoolMeleeWeapon_Offsets[i]);
+		for( int i = 0; i < sizeof(L4D2IntMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2IntMeleeWeapon_Offsets[%d] == %d", i, L4D2IntMeleeWeapon_Offsets[i]);
+		for( int i = 0; i < sizeof(L4D2FloatMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2FloatMeleeWeapon_Offsets[%d] == %d", i, L4D2FloatMeleeWeapon_Offsets[i]);
+
 		PrintToServer("g_iAddonEclipse1 = %d", g_iAddonEclipse1);
 		PrintToServer("g_iAddonEclipse2 = %d", g_iAddonEclipse2);
 		PrintToServer("SpawnTimer = %d", SpawnTimer);
@@ -4508,14 +4743,6 @@ void LoadGameData()
 		PrintToServer("m_preIncapacitatedHealthBuffer = %d", m_preIncapacitatedHealthBuffer);
 		PrintToServer("m_maxFlames = %d", m_maxFlames);
 		PrintToServer("");
-
-		for( int i = 0; i < sizeof(L4D2CountdownTimer_Offsets); i++ )		PrintToServer("L4D2CountdownTimer_Offsets[%d] == %d", i, L4D2CountdownTimer_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2IntervalTimer_Offsets); i++ )		PrintToServer("L4D2IntervalTimer_Offsets[%d] == %d", i, L4D2IntervalTimer_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2IntWeapon_Offsets); i++ )			PrintToServer("L4D2IntWeapon_Offsets[%d] == %d", i, L4D2IntWeapon_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2FloatWeapon_Offsets); i++ )			PrintToServer("L4D2FloatWeapon_Offsets[%d] == %d", i, L4D2FloatWeapon_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2BoolMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2BoolMeleeWeapon_Offsets[%d] == %d", i, L4D2BoolMeleeWeapon_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2IntMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2IntMeleeWeapon_Offsets[%d] == %d", i, L4D2IntMeleeWeapon_Offsets[i]);
-		for( int i = 0; i < sizeof(L4D2FloatMeleeWeapon_Offsets); i++ )		PrintToServer("L4D2FloatMeleeWeapon_Offsets[%d] == %d", i, L4D2FloatMeleeWeapon_Offsets[i]);
 	}
 	#endif
 
@@ -4937,7 +5164,7 @@ public int Native_OnAdrenalineUsed(Handle plugin, int numParams)
 	if( heal )
 	{
 		float fHealth = GetTempHealth(client);
-		fHealth += g_hPillsHealth.FloatValue;
+		fHealth += g_hCvarPillsHealth.FloatValue;
 		if( fHealth > 100.0 ) fHealth = 100.0;
 
 		SetTempHealth(client, fHealth);
@@ -5587,17 +5814,34 @@ int GetMeleePointer(int id)
 // ==================================================
 // Natives
 // ==================================================
+public int Native_GetWeaponID(Handle plugin, int numParams)
+{
+	static char weaponName[32];
+	GetNativeString(1, weaponName, sizeof(weaponName));
+
+	// Add "weapon_" if missing, required for usage with stored StringMap.
+	if( strncmp(weaponName, "weapon_", 7) )
+	{
+		Format(weaponName, sizeof(weaponName), "weapon_%s", weaponName);
+	}
+
+	int wepID;
+
+	if( g_aWeaponIDs.GetValue(weaponName, wepID) == false )
+	{
+		return -1;
+	}
+
+	return wepID;
+}
+
 public int Native_IsValidWeapon(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	return GetWeaponPointer() != -1;
 }
 
 public int Native_GetIntWeaponAttribute(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	int attr = GetNativeCell(2);
 	if( attr >= view_as<int>(MAX_SIZE_L4D2IntWeaponAttributes) ) // view_as to avoid tag mismatch from enum "type"
 		ThrowNativeError(SP_ERROR_PARAM, "Invalid attribute id");
@@ -5614,8 +5858,6 @@ public int Native_GetIntWeaponAttribute(Handle plugin, int numParams)
 
 public any Native_GetFloatWeaponAttribute(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	int attr = GetNativeCell(2);
 	if( attr >= view_as<int>(MAX_SIZE_L4D2FloatWeaponAttributes) ) // view_as to avoid tag mismatch from enum "type"
 		ThrowNativeError(SP_ERROR_PARAM, "Invalid attribute id");
@@ -5632,8 +5874,6 @@ public any Native_GetFloatWeaponAttribute(Handle plugin, int numParams)
 
 public int Native_SetIntWeaponAttribute(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	int attr = GetNativeCell(2);
 	if( attr >= view_as<int>(MAX_SIZE_L4D2IntWeaponAttributes) ) // view_as to avoid tag mismatch from enum "type"
 		ThrowNativeError(SP_ERROR_PARAM, "Invalid attribute id");
@@ -5641,8 +5881,16 @@ public int Native_SetIntWeaponAttribute(Handle plugin, int numParams)
 	int ptr = GetWeaponPointer();
 	if( ptr != -1 )
 	{
-		attr = L4D2IntWeapon_Offsets[attr]; // Offset
-		StoreToAddress(view_as<Address>(ptr + attr), GetNativeCell(3), NumberType_Int32);
+		if( !g_bLeft4Dead2 && attr == view_as<int>(L4D2FWA_PenetrationNumLayers) )
+		{
+			attr = L4D2IntWeapon_Offsets[attr]; // Offset
+			StoreToAddress(view_as<Address>(ptr + attr), RoundToCeil(GetNativeCell(3)), NumberType_Int32);
+		}
+		else
+		{
+			attr = L4D2IntWeapon_Offsets[attr]; // Offset
+			StoreToAddress(view_as<Address>(ptr + attr), GetNativeCell(3), NumberType_Int32);
+		}
 	}
 
 	return ptr;
@@ -5650,8 +5898,6 @@ public int Native_SetIntWeaponAttribute(Handle plugin, int numParams)
 
 public int Native_SetFloatWeaponAttribute(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	int attr = GetNativeCell(2);
 	if( attr >= view_as<int>(MAX_SIZE_L4D2FloatWeaponAttributes) ) // view_as to avoid tag mismatch from enum "type"
 		ThrowNativeError(SP_ERROR_PARAM, "Invalid attribute id");
@@ -5668,8 +5914,6 @@ public int Native_SetFloatWeaponAttribute(Handle plugin, int numParams)
 
 public int Native_GetMeleeWeaponIndex(Handle plugin, int numParams)
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	static char weaponName[32];
 	GetNativeString(1, weaponName, sizeof(weaponName));
 
@@ -6018,12 +6262,12 @@ public int Native_GetMaxChapters(Handle plugin, int numParams)
 			char sMode[64];
 			char sTemp[64];
 			char sRet[64];
-			g_hMPGameMode.GetString(sMode, sizeof(sMode));
+			g_hCvarMPGameMode.GetString(sMode, sizeof(sMode));
 
 			int index = 1;
 			while( index < 20 )
 			{
-				Format(sTemp, sizeof(sTemp), "modes/%s/%d/Map", sMode, index);
+				FormatEx(sTemp, sizeof(sTemp), "modes/%s/%d/Map", sMode, index);
 
 				// PrintToServer("#### CALL g_hSDK_Call_KV_GetString");
 				SDKCall(g_hSDK_Call_KV_GetString, infoPointer, sRet, sizeof(sRet), sTemp, "");
@@ -8059,26 +8303,155 @@ public MRESReturn OnReplaceTank(Handle hReturn, Handle hParams)
 	Call_Finish();
 }
 
+public MRESReturn CTankClaw_DoSwing_Pre(int pThis)
+{
+	// PrintToServer("##### DTR CTankClaw_DoSwing_Pre");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+
+	Call_StartForward(g_hForward_CTankClaw_DoSwing_Pre);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_Finish();
+}
+
+public MRESReturn CTankClaw_DoSwing_Post(int pThis)
+{
+	// PrintToServer("##### DTR CTankClaw_DoSwing_Post");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+
+	Call_StartForward(g_hForward_CTankClaw_DoSwing_Post);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_Finish();
+}
+
+public MRESReturn CTankClaw_GroundPound_Pre(int pThis)
+{
+	// PrintToServer("##### DTR CTankClaw_GroundPound_Pre");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+
+	Call_StartForward(g_hForward_CTankClaw_GroundPound_Pre);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_Finish();
+}
+
+public MRESReturn CTankClaw_GroundPound_Post(int pThis)
+{
+	// PrintToServer("##### DTR CTankClaw_GroundPound_Post");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+
+	Call_StartForward(g_hForward_CTankClaw_GroundPound_Post);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_Finish();
+}
+
+public MRESReturn CTankClaw_OnPlayerHit_Pre(int pThis, Handle hParams)
+{
+	//PrintToServer("##### DTR CTankClaw_OnPlayerHit_Pre");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+	int target = DHookGetParam(hParams, 1);
+	// bool incap = DHookGetParam(hParams, 2); // Unknown usage, always returns "1"
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_CTankClaw_OnPlayerHit_Pre);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_PushCell(target);
+	Call_Finish(aResult);
+
+	// WORKS - Blocks target player being flung
+	if( aResult == Plugin_Handled )
+	{
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn CTankClaw_OnPlayerHit_Post(int pThis, Handle hParams)
+{
+	//PrintToServer("##### DTR CTankClaw_OnPlayerHit_Post");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
+	int target = DHookGetParam(hParams, 1);
+	// bool incap = DHookGetParam(hParams, 2);
+
+	Call_StartForward(g_hForward_CTankClaw_OnPlayerHit_Post);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_PushCell(target);
+	Call_Finish();
+}
+
+public MRESReturn CTankRock_Detonate(int pThis, Handle hParams)
+{
+	//PrintToServer("##### DTR CTankRock_Detonate");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hThrower");
+
+	Call_StartForward(g_hForward_CTankRock_Detonate);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_Finish();
+
+	// Freezes tank rock on hit, causes constant severe shake
+	// return MRES_Supercede;
+}
+
+public MRESReturn CTankRock_OnRelease(int pThis, Handle hParams)
+{
+	//PrintToServer("##### DTR CTankRock_OnRelease");
+	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hThrower");
+
+	float v1[3];
+	float v2[3];
+	float v3[3];
+	float v4[3];
+
+	DHookGetParamVector(hParams, 1, v1); // vPos
+	DHookGetParamVector(hParams, 2, v2); // vAng
+	DHookGetParamVector(hParams, 3, v3); // vVel
+	DHookGetParamVector(hParams, 4, v4); // vRot
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_CTankRock_OnRelease);
+	Call_PushCell(tank);
+	Call_PushCell(pThis);
+	Call_PushArrayEx(v1, sizeof(v1), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v2, sizeof(v2), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v3, sizeof(v3), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v4, sizeof(v4), SM_PARAM_COPYBACK);
+	Call_Finish(aResult);
+
+	/*
+	if( aResult == Plugin_Handled )
+	{
+		// Causes the rock to not be thrown, but stuck to the Tanks hand
+		return MRES_Supercede;
+	}
+	// */
+
+	if( aResult == Plugin_Changed )
+	{
+		DHookSetParamVector(hParams, 1, v1);
+		DHookSetParamVector(hParams, 2, v2);
+		DHookSetParamVector(hParams, 3, v3);
+		DHookSetParamVector(hParams, 4, v4);
+		return MRES_ChangedHandled;
+	}
+
+	return MRES_Ignored;
+}
+
 public MRESReturn TryOfferingTankBot(Handle hReturn, Handle hParams)
 {
 	// PrintToServer("##### DTR TryOfferingTankBot");
 	int a1 = -1, a2;
 
-	if( !g_bLeft4Dead2 && g_bLinuxOS )
-	{
-		// L4D1
-		if( !DHookIsNullParam(hParams, 2) )
-			a1 = DHookGetParam(hParams, 2);
+	if( !DHookIsNullParam(hParams, 1) )
+		a1 = DHookGetParam(hParams, 1);
 
-		a2 = DHookGetParam(hParams, 3);
-	}
-	else
-	{
-		if( !DHookIsNullParam(hParams, 1) )
-			a1 = DHookGetParam(hParams, 1);
-
-		a2 = DHookGetParam(hParams, 2);
-	}
+	a2 = DHookGetParam(hParams, 2);
 
 	Action aResult = Plugin_Continue;
 	Call_StartForward(g_hForward_TryOfferingTankBot);
@@ -8095,16 +8468,41 @@ public MRESReturn TryOfferingTankBot(Handle hReturn, Handle hParams)
 	// UNKNOWN - PROBABLY WORKING
 	if( aResult == Plugin_Changed )
 	{
-		if( g_bLeft4Dead2 || !g_bLinuxOS )
-		{
-			DHookSetParam(hParams, 2, a2);
-			DHookSetReturn(hReturn, a2);
-		}
-		else
-		{
-			// L4D1
-			DHookSetParam(hParams, 3, a2);
-		}
+		DHookSetParam(hParams, 2, a2);
+		DHookSetReturn(hReturn, a2);
+
+		return MRES_ChangedOverride;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn TryOfferingTankBot_Clone(Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR TryOfferingTankBot_Clone");
+	int a1 = -1, a2;
+
+	if( !DHookIsNullParam(hParams, 2) )
+		a1 = DHookGetParam(hParams, 2);
+
+	a2 = DHookGetParam(hParams, 3);
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_TryOfferingTankBot);
+	Call_PushCell(a1);
+	Call_PushCellRef(a2);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+
+	// UNKNOWN - PROBABLY WORKING
+	if( aResult == Plugin_Changed )
+	{
+		DHookSetParam(hParams, 3, a2);
 
 		return MRES_ChangedOverride;
 	}
@@ -8251,6 +8649,44 @@ public MRESReturn StartMeleeSwing(Handle hReturn, Handle hParams)
 	{
 		DHookSetReturn(hReturn, 0);
 		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn GetDamageForVictimPre(int pThis, Handle hReturn, Handle hParams)
+{
+	return MRES_Ignored;
+}
+
+public MRESReturn GetDamageForVictim(int pThis, Handle hReturn, Handle hParams)
+{
+	//PrintToServer("##### DTR GetDamageForVictim");
+	int victim = DHookGetParam(hParams, 1);
+	if(! IsValidEdict(victim) )
+		return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwnerEntity");
+	float damage = DHookGetReturn(hReturn);
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_GetDamageForVictim);
+	Call_PushCell(client);
+	Call_PushCell(pThis);
+	Call_PushCell(victim);
+	Call_PushFloatRef(damage);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Changed )
+	{
+		DHookSetReturn(hReturn, damage);
+		return MRES_Override;
+	}
+
+	if( aResult == Plugin_Handled )
+	{
+		DHookSetReturn(hReturn, 0.0);
+		return MRES_Override;
 	}
 
 	return MRES_Ignored;
@@ -8754,6 +9190,188 @@ public MRESReturn OnMaterialize(int client)
 	return MRES_Ignored;
 }
 
+public MRESReturn OnPipeBombProjectile_Pre(Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR OnPipeBombProjectile_Pre");
+
+	int client;
+	if( !DHookIsNullParam(hParams, 5) )
+		client = DHookGetParam(hParams, 5);
+
+	float v1[3];
+	float v2[3];
+	float v3[3];
+	float v4[3];
+
+	DHookGetParamVector(hParams, 1, v1); // vPos
+	DHookGetParamVector(hParams, 2, v2); // vAng
+	DHookGetParamVector(hParams, 3, v3); // vVel
+	DHookGetParamVector(hParams, 4, v4); // vRot
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_PipeBombProjectile_Pre);
+	Call_PushCell(client);
+	Call_PushArrayEx(v1, sizeof(v1), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v2, sizeof(v2), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v3, sizeof(v3), SM_PARAM_COPYBACK);
+	Call_PushArrayEx(v4, sizeof(v4), SM_PARAM_COPYBACK);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Changed )
+	{
+		DHookSetParamVector(hParams, 1, v1);
+		DHookSetParamVector(hParams, 2, v2);
+		DHookSetParamVector(hParams, 3, v3);
+		DHookSetParamVector(hParams, 4, v4);
+		return MRES_ChangedHandled;
+	}
+
+	if( aResult == Plugin_Handled )
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn OnPipeBombProjectile_Post(Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR OnPipeBombProjectile_Post");
+
+	int client;
+	if( !DHookIsNullParam(hParams, 5) )
+		client = DHookGetParam(hParams, 5);
+
+	int entity = DHookGetReturn(hReturn);
+
+	float v1[3];
+	float v2[3];
+	float v3[3];
+	float v4[3];
+
+	DHookGetParamVector(hParams, 1, v1); // vPos
+	DHookGetParamVector(hParams, 2, v2); // vAng
+	DHookGetParamVector(hParams, 3, v3); // vVel
+	DHookGetParamVector(hParams, 4, v4); // vRot
+
+	Call_StartForward(g_hForward_PipeBombProjectile_Post);
+	Call_PushCell(client);
+	Call_PushCell(entity);
+	Call_PushArray(v1, sizeof(v1));
+	Call_PushArray(v2, sizeof(v2));
+	Call_PushArray(v3, sizeof(v3));
+	Call_PushArray(v4, sizeof(v4));
+	Call_Finish();
+
+	return MRES_Ignored;
+}
+
+public MRESReturn OnPlayerExtinguish(int client)
+{
+	// PrintToServer("##### DTR OnPlayerExtinguish");
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_PlayerExtinguish);
+	Call_PushCell(client);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn CBreakablePropBreakPre(int pThis, Handle hReturn, Handle hParams)
+{
+	return MRES_Ignored;
+}
+
+public MRESReturn CBreakablePropBreak(int pThis, Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR CBreakableProp");
+
+	int entity;
+	if( !DHookIsNullParam(hParams, 1) )
+		entity = DHookGetParam(hParams, 1);
+
+	Call_StartForward(g_hForward_CBreakableProp);
+	Call_PushCell(pThis);
+	Call_PushCell(entity);
+	Call_Finish();
+
+	return MRES_Ignored;
+}
+
+public MRESReturn CGasCanEvent_Killed(int pThis, Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR CGasCanEvent_Killed");
+	int a1 = DHookGetParamObjectPtrVar(hParams, 1, 48, ObjectValueType_EhandlePtr);
+	int a2 = DHookGetParamObjectPtrVar(hParams, 1, 52, ObjectValueType_EhandlePtr);
+
+	Call_StartForward(g_hForward_CGasCanEvent_Killed);
+	Call_PushCell(pThis);
+	Call_PushCell(a1);
+	Call_PushCell(a2);
+	Call_Finish();
+
+	return MRES_Ignored;
+}
+
+public MRESReturn CGasCanOnActionComplete(int pThis, Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR CGasCanOnActionComplete");
+
+	int client;
+	if( !DHookIsNullParam(hParams, 1) )
+		client = DHookGetParam(hParams, 1);
+
+	int nozzle = DHookGetParam(hParams, 2);
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_CGasCanOnActionComplete);
+	Call_PushCell(client);
+	Call_PushCell(pThis);
+	Call_PushCell(nozzle);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+public MRESReturn CInsectSwarm_CanHarm(int pThis, Handle hReturn, Handle hParams)
+{
+	// PrintToServer("##### DTR CInsectSwarm_CanHarm");
+
+	int spitter = GetEntPropEnt(pThis, Prop_Data, "m_hOwnerEntity");
+
+	int entity;
+	if( !DHookIsNullParam(hParams, 1) )
+		entity = DHookGetParam(hParams, 1);
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hForward_CInsectSwarm_CanHarm);
+	Call_PushCell(pThis);
+	Call_PushCell(spitter);
+	Call_PushCell(entity);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
 public MRESReturn OnVomitedUpon(int client, Handle hReturn, Handle hParams)
 {
 	// PrintToServer("##### DTR OnVomitedUpon");
@@ -8847,9 +9465,9 @@ public MRESReturn GetRandomPZSpawnPos(Handle hReturn, Handle hParams)
 		if( vecPos[0] != 0.0 )
 		{
 			// DHookSetParamVector(hParams, 4, vecPos);
-			DHookSetParamVector(hParams, 4, view_as<float>({ 0.0, 0.0, 0.0}));
+			DHookSetParamVector(hParams, 4, view_as<float>({0.0, 0.0, 0.0}));
 		} else {
-			DHookSetParamVector(hParams, 4, view_as<float>({ 0.0, 0.0, 0.0}));
+			DHookSetParamVector(hParams, 4, view_as<float>({0.0, 0.0, 0.0}));
 		}
 
 		return MRES_ChangedHandled;
@@ -9210,7 +9828,7 @@ bool GetVScriptOutput(char[] code, char[] ret, int maxlength)
 	}
 	else
 	{
-		Format(buffer, length, "Convars.SetValue(\"l4d2_vscript_return\", \"\" + %s + \"\");", code);
+		FormatEx(buffer, length, "Convars.SetValue(\"l4d2_vscript_return\", \"\" + %s + \"\");", code);
 	}
 
 	// Run code
@@ -9298,15 +9916,15 @@ stock void ReadMemoryString(int addr, char[] temp, int size)
 // ====================================================================================================
 float GetTempHealth(int client)
 {
-    float fGameTime = GetGameTime();
-    float fHealthTime = GetEntPropFloat(client, Prop_Send, "m_healthBufferTime");
-    float fHealth = GetEntPropFloat(client, Prop_Send, "m_healthBuffer");
-    fHealth -= (fGameTime - fHealthTime) * g_hDecayDecay.FloatValue;
-    return fHealth < 0.0 ? 0.0 : fHealth;
+	float fGameTime = GetGameTime();
+	float fHealthTime = GetEntPropFloat(client, Prop_Send, "m_healthBufferTime");
+	float fHealth = GetEntPropFloat(client, Prop_Send, "m_healthBuffer");
+	fHealth -= (fGameTime - fHealthTime) * g_hCvarPillsDecay.FloatValue;
+	return fHealth < 0.0 ? 0.0 : fHealth;
 }
 
 void SetTempHealth(int client, float fHealth)
 {
-    SetEntPropFloat(client, Prop_Send, "m_healthBuffer", fHealth < 0.0 ? 0.0 : fHealth);
-    SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime());
+	SetEntPropFloat(client, Prop_Send, "m_healthBuffer", fHealth < 0.0 ? 0.0 : fHealth);
+	SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime());
 }

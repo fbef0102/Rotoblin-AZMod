@@ -165,28 +165,36 @@ static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
 	GetCurrentMap(sMap, 64);
 	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
 	{
-		newfFlow = GetRandomFloat(0.50,0.55);//tank will not spawn when after 55% in this map
+		newfFlow = GetRandomFloat(0.50, 0.55);//tank will not spawn when after 55% in this map
 	}
 	else if(StrEqual(sMap, "l4d_vs_city17_02"))
 	{
-		new suerte = GetRandomInt(1, 2);
-		switch(suerte)//tank will not spawn during infinite horde event in this map	
+		//tank will not spawn during elevator (74% ~ 0.83%) in this map	
+		if( 0.17 < fFlow && fFlow < 0.53)
 		{
-			case 1: // if is 1
-			{
-				newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN],0.17);
-			}
-			case 2: // if is 2
-			{
-				newfFlow = GetRandomFloat(0.53,g_fCvarVsBossFlow[iCampaign][MAX]);
-			}
+			newfFlow = GetRandomFloat(0.53, g_fCvarVsBossFlow[iCampaign][MAX]);
 		}
 	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //tank will not spawn after 80% in this map
+	else if(StrEqual(sMap, "l4d_vs_stadium1_apartment"))
 	{
-		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.8);
+		//tank will not spawn during elevator (24% ~ 43%) in this map
+		if( 0.24 < fFlow && fFlow < 0.43)
+		{
+			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
+		}
 	}
-	
+	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //tank will not spawn after 75% in this map
+	{
+		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
+	}
+	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
+	{
+		if( 0.74 < fFlow && fFlow < 0.83)
+		{
+			newfFlow = GetRandomFloat(0.83, g_fCvarVsBossFlow[iCampaign][MAX]);
+		}
+	}
+
 	return newfFlow;
 }
 
@@ -199,11 +207,35 @@ static Float:SpecialMapWitchFlow(const Float:fFlow,iCampaign)
 	{
 		newfFlow = GetRandomFloat(0.50, 0.65);
 	}
+	else if(StrEqual(sMap, "l4d_vs_city17_02"))
+	{
+		//witch will not spawn during infinite horde event (17% ~ 53%) in this map	
+		if( 0.17 < fFlow && fFlow < 0.53)
+		{
+			newfFlow = GetRandomFloat(0.53, g_fCvarVsBossFlow[iCampaign][MAX]);
+		}
+	}
+	else if(StrEqual(sMap, "l4d_vs_stadium1_apartment"))
+	{
+		//witch will not spawn before 43% in this map (stuck in elevator)
+		if( fFlow < 0.43)
+		{
+			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
+		}
+	}
 	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //witch will not spawn after 75% in this map
 	{
 		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
 	}
-	
+	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
+	{
+		//witch will not spawn during elevator (74% ~ 83%) in this map	
+		if( 0.74 < fFlow && fFlow < 0.83)
+		{
+			newfFlow = GetRandomFloat(0.83, g_fCvarVsBossFlow[iCampaign][MAX]);
+		}
+	}
+
 	return newfFlow;
 }
 

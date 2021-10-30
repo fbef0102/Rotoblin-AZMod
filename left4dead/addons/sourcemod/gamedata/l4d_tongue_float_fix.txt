@@ -1,0 +1,42 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"UpdateAirChoke"
+			{
+				"signature"		"UpdateAirChoke"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
+			}
+		}
+	}
+	
+	"left4dead"
+	{
+		"Signatures"
+		{
+			"UpdateAirChoke"
+			{
+				"library"		"server"
+				"linux"			"@_ZN7CTongue14UpdateAirChokeEv"
+				"windows"		"\x83\xEC\x78\x55\x8B\xE9"
+			}
+		}
+	}
+	
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"UpdateAirChoke"
+			{
+				"library"		"server"
+				"linux"			"@_ZN7CTongue14UpdateAirChokeEv"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x7C\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x57"
+			}
+		}
+	}
+}

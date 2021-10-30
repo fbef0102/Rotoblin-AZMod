@@ -65,8 +65,8 @@ static					g_iDebugChannel					= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]		= "HealthControl";
 
 
-new Float:SurvivorStart[3];
-new g_iPlayerSpawn, g_iRoundStart, g_iEntityCreated;
+static Float:SurvivorStart[3];
+static g_iPlayerSpawn, g_iRoundStart, g_iEntityCreated;
 // **********************************************
 //                   Forwards
 // **********************************************
@@ -227,7 +227,7 @@ public _HC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
 	g_iRoundStart = 1;
 }
 
-public Action:TimerStart(Handle:timer)
+static Action:TimerStart(Handle:timer)
 {
 	ResetPlugin();
 	if (g_iHealthStyle == REPLACE_NO_KITS)

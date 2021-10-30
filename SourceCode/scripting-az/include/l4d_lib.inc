@@ -595,11 +595,13 @@ stock void PrintToTeam(int team, int msgType, const char[] text, any ...)
 	}
 }
 
+#pragma deprecated Use L4D_IsMissionFinalMap() from left4dhooks instead.
 stock bool IsFinalMap()
 {
 	return FindEntityByClassname(-1, "info_changelevel") == INVALID_ENT_REFERENCE;
 }
 
+#pragma deprecated Use L4D_GetGameModeType() from left4dhooks instead. 
 stock bool IsVersusMode()
 {
 	static ConVar hCvarGameMode;

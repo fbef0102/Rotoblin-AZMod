@@ -389,11 +389,11 @@ static bool:PropPhysicsIsCarryableCannister(prop_physicsEntity)
 		StrEqual(modelName, PROPANE_MODEL_NAME, false) || 
 		StrEqual(modelName, OXYGEN_MODEL_NAME, false))
 	{
-		if(bool:GetEntProp(prop_physicsEntity, Prop_Send, "m_isCarryable", 1))
-		{
-			DebugPrintToAllEx("Found carryable cannister with model type %s", modelName);
-			return true;
-		}		
+		//if(bool:GetEntProp(prop_physicsEntity, Prop_Send, "m_isCarryable", 1))
+		//{
+		DebugPrintToAllEx("Found carryable cannister with model type %s", modelName);
+		return true;
+		//}		
 	}
 	
 	return false;

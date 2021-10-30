@@ -63,7 +63,7 @@
 	* Remove environmental sounds and DSP + Remove microphone / speaker effects
 	* Only 1 pill in cabinets
 	* On the road: few pills (Pill density: 1)
-	* Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
+	* Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
 	* Pistol density: 3
 
 ### Weapon Adjustments ###

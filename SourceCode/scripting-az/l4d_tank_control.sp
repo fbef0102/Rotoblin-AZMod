@@ -201,7 +201,7 @@ public OnMapStart()//每個地圖的第一關載入時清除所有has been tank 
 		GetCurrentMap(previousmap, sizeof(previousmap));
 		return;
 	}
-	IsFinal = (IsFinalMap())? true: false;
+	IsFinal = (L4D_IsMissionFinalMap())? true: false;
 	
 	decl String:currentmap[128];
 	GetCurrentMap(currentmap, sizeof(currentmap));

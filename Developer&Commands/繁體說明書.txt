@@ -11,7 +11,7 @@ Author:
 //If you have any questions, please contact me via steam, thank you!
 
 --------引擎主要--------
-[01] sourcemod 1.10-git6510
+[01] sourcemod 1.10-git6522
 [02] metamod  1.11-git1145
 [03] stripper 1.2.2-git129
 [04] l4dtoolz 1.1.0.1
@@ -32,7 +32,7 @@ Author:
  -路上: 隨機出現不固定數量 (密度: 0.75)
 4. 清除或穿透一些小型物件，使玩家能移動順暢
 5. 封鎖一些 "this is restricted area" 區域因為特感不能復活
-6. 在地圖上新增許多障礙物、武器、梯子 //參考二代Zonemode、一代rotoblin2
+6. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
 7. 最終關卡路程符合救援進度
 8. 路上手槍生成密度: 3.0
 9. 子彈堆生成密度: 2.0
@@ -409,7 +409,6 @@ Author:
 [111] hunter_callout_blocker
 //生還者不會再喊出'Hunter'語音！（例如：森林裡的獵人處於你視野裡，不會喊出）
 
-
 [112] l4d_vocalize_antiflood
 //阻擋一直惡意亂叫濫用遊戲角色語音
 
@@ -420,8 +419,8 @@ Author:
 //自製坦克石頭hitbox + 武器對石頭傷害修改 有助於高ping戰士打掉石頭
 //誰打掉了石頭
 
-[115] l4d_vomit_pounce_fix
-//修正胖子有時候噴到正在被Hunter撲到的玩家
+[115] l4d_vomit_trace_patch
+//修正胖子的噴液會被特感隊友擋住(靈魂身體也會擋住)
 
 [116] SpeakingList
 //alltalk off 之時只給旁觀玩家顯示誰正在使用麥克風說話
@@ -509,7 +508,7 @@ Author:
 //調整Smoker舌頭拖曳的傷害與時間
 
 [143] l4d_backjump_fix
-//Hunter能在自製的物件牆壁上踢牆
+//Hunter能在自製的物件牆壁上無聲踢牆與後續彈跳
 
 [144] l4d_checkpoint_rock_patch
 //修正Tank石頭的Hitbox在安全室會變小 (我哪知道 去問Valve)
@@ -563,7 +562,13 @@ Author:
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
 
 [161] l4d_unlimited_grenades_fix
-//修正無限手榴彈的bug (土製炸彈、膽汁、火焰瓶)
+//修正無限手榴彈的bug (土製炸彈、火焰瓶)
+
+[162] l4d2_block_rocketjump
+//修正踩頭高跳
+
+[163] l4d_tongue_float_fix
+//修正舌頭直接拉走倖存者不給機會開槍 (倖存者懸空高度的問題)
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

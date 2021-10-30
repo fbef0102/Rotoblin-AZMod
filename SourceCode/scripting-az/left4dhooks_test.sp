@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.61"
+#define PLUGIN_VERSION		"1.65"
 
 /*=======================================================================================
 	Plugin Info:
@@ -31,6 +31,78 @@
 
 ========================================================================================
 	Change Log:
+
+1.65 (20-Oct-2021)
+	- Changed forward "L4D2_CGasCan_EventKilled" params to show the inflictor and attacker.
+	- Thanks to "ProjectSky" for reminding me.
+
+1.64 (20-Oct-2021)
+	- Added 1 new forward to L4D1 and L4D2:
+		- "L4D_CBreakableProp_Break" - When a physics prop is broken.
+
+	- Added 3 new forwards to L4D2:
+		- "L4D2_CGasCan_EventKilled" - When a GasCan is destroyed.
+		- "L4D2_CGasCan_ActionComplete" - When a Survivor has finished pouring gas.
+		- "L4D2_CInsectSwarm_CanHarm" - When Spitter Acid is checking if a player or entity can be damaged.
+
+	- Added 1 new native to L4D1 and L4D2:
+		- "L4D_GetWeaponID" - to get the Weapon ID by classname
+
+	- Added and unlocked all the weapon attribute modification natives to L4D1:
+	- Thanks to "Psyk0tik" for the suggestion and information about offsets.
+		- "L4D2_IsValidWeapon"
+		- "L4D2_GetFloatWeaponAttribute" and "L4D2_SetFloatWeaponAttribute"
+		- "L4D2_GetIntWeaponAttribute" and "L4D2_SetIntWeaponAttribute"
+		- "L4D2IntWeaponAttributes" enums - ("L4D2IWA_Bullets", "L4D2IWA_Damage", "L4D2IWA_ClipSize")
+		- "L4D2FloatWeaponAttributes" enums - ("L4D2FWA_MaxPlayerSpeed", "L4D2FWA_SpreadPerShot", "L4D2FWA_MaxSpread", "L4D2FWA_Range", etc)
+
+	- Added new target filters:
+		"@deads" - Dead Survivors (all, bots)
+		"@deadsi" - Dead Special Infected (all, bots) 
+		"@deadsp" - Dead Survivors players (no bots) 
+		"@deadsip" - Dead Special Infected players (no bots)- 
+		"@deadsb" - Dead Survivors bots (no players) 
+		"@deadsib" - Dead Special Infected bots (no players)- 
+		"@sp" - Survivors players (no bots)
+		"@isp" - Special Infected players (no bots)
+		"@isb" - Incapped Survivor Only Bots
+		"@isp" - Incapped Survivor Only Players
+
+	- Changed target filter names:
+		"@incappedsurvivorbot" to "@rincappedsurvivorbot"
+		"@isb" to "@risb"
+		"@survivorbot" to "@rsurvivorbot"
+		"@sb" to "@rsb"
+		"@infectedbot" to "@rinfectedbot"
+		"@ib" to "@rib"
+		"@tankbot" to "@rtankbot"
+		"@tb" to "@rtb"
+
+	- Added "FINALE_*" enums to the include file for use with the "L4D2_ChangeFinaleStage" and "L4D2_GetCurrentFinaleStage" natives and "L4D2_OnChangeFinaleStage" forward.
+	- Thanks to "Dragokas" for suggesting.
+
+	- GameData files, include file and plugins updated.
+
+1.63 (15-Oct-2021)
+	- Changed all projectile natives to allow passing 0 (world) instead of a client index. Thanks to "BHaType" for reporting.
+	- Changed forward "L4D_OnGameModeChange" from "Action" type to "Void". Thanks to "Psyk0tik" for reporting.
+	- Fixed commands "sm_l4dd_detours" and "sm_l4dhooks_detours" not showing all forwards when they have pre and post hooks.
+
+	- Added 11 new forwards to L4D1 and L4D2. Thanks to "Psyk0tik" for the suggestions, signatures and detour functions.
+		- "L4D_TankClaw_DoSwing_Pre" - When a tank is swinging to punch.
+		- "L4D_TankClaw_DoSwing_Post" - When a tank is swinging to punch.
+		- "L4D_TankClaw_GroundPound_Pre" - When an tank punches the ground.
+		- "L4D_TankClaw_GroundPound_Post" - When an tank punches the ground.
+		- "L4D_TankClaw_OnPlayerHit_Pre" - When a tank swings and punches a player.
+		- "L4D_TankClaw_OnPlayerHit_Post" - When a tank swings and punches a player.
+		- "L4D_TankRock_OnDetonate" - When a tank rock hits something.
+		- "L4D_TankRock_OnRelease" - When a tank rock is thrown.
+		- "L4D_PlayerExtinguish" - When a player is about to be extinguished.
+		- "L4D_PipeBombProjectile_Pre" - When a PipeBomb projectile is being created.
+		- "L4D_PipeBombProjectile_Post" - After a PipeBomb projectile is created.
+
+	- Added 1 new forward to L4D2. Thanks to "Lux" for the suggestion, signature and detour functions.
+		- "L4D2_MeleeGetDamageForVictim" - When calculating melee damage to inflict on something.
 
 1.61 (05-Oct-2021)
 	- Added natives "L4D_GetTempHealth" and "L4D_SetTempHealth" to handle Survivors temporary health buffer.
@@ -259,9 +331,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 
 	if( g_bLeft4Dead2 )
-		g_iForwardsMax = 54;
+		g_iForwardsMax = 70;
 	else
-		g_iForwardsMax = 43;
+		g_iForwardsMax = 55;
 
 	return APLRes_Success;
 }
@@ -477,6 +549,8 @@ public Action sm_l4dd(int client, int args)
 {
 	PrintToServer("Uncomment the things you want to test. All disabled by default now.");
 	PrintToServer("Must test individual sections on their own otherwise you'll receive errors about symbols already defined..");
+
+
 
 
 
@@ -908,7 +982,14 @@ public Action sm_l4dd(int client, int args)
 		PrintToServer("L4D2_IsValidWeapon weapon_rifle: %d",									L4D2_IsValidWeapon("weapon_rifle"));
 		PrintToServer("L4D2_IsValidWeapon weapon_autoshotgun: %d",								L4D2_IsValidWeapon("weapon_autoshotgun"));
 		PrintToServer("L4D2_IsValidWeapon weapon_smg: %d",										L4D2_IsValidWeapon("weapon_smg"));
-		PrintToServer("L4D2_IsValidWeaponF: %d",												L4D2_IsValidWeapon("smg")); // Changed to support this without "weapon_" required
+		PrintToServer("L4D2_IsValidWeapon smg: %d",												L4D2_IsValidWeapon("smg")); // Changed to support this without "weapon_" required
+		PrintToServer("");
+		PrintToServer("");
+
+		PrintToServer("L4D_GetWeaponID weapon_rifle: %d",										L4D_GetWeaponID("weapon_rifle"));
+		PrintToServer("L4D_GetWeaponID weapon_tank_claw: %d",									L4D_GetWeaponID("weapon_tank_claw"));
+		PrintToServer("L4D_GetWeaponID weapon_smg: %d",											L4D_GetWeaponID("weapon_smg"));
+		PrintToServer("L4D_GetWeaponID smg: %d",												L4D_GetWeaponID("smg"));
 		PrintToServer("");
 		PrintToServer("");
 
@@ -1664,6 +1745,129 @@ public void L4D_OnReplaceTank(int tank, int newtank)
 	}
 }
 
+public void L4D_TankClaw_DoSwing_Pre(int tank, int claw)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_DoSwing_Pre\" %d (Claw = %d)", tank, claw);
+	}
+}
+
+public void L4D_TankClaw_DoSwing_Post(int tank, int claw)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_DoSwing_Post\" %d (Claw = %d)", tank, claw);
+	}
+}
+
+public void L4D_TankClaw_GroundPound_Pre(int tank, int claw)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_GroundPound_Pre\" %d (Claw = %d)", tank, claw);
+	}
+}
+
+public void L4D_TankClaw_GroundPound_Post(int tank, int claw)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_GroundPound_Post\" %d (Claw = %d)", tank, claw);
+	}
+}
+
+public Action L4D_TankClaw_OnPlayerHit_Pre(int tank, int claw, int player)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_OnPlayerHit_Pre\" %d (Claw = %d) (Target = %d)", tank, claw, player);
+	}
+
+	// WORKS - Blocks target player being flung
+	// return Plugin_Handled;
+}
+
+public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int player)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankClaw_OnPlayerHit_Post\" %d (Claw = %d) (Target = %d)", tank, claw, player);
+	}
+}
+
+public void L4D_TankRock_OnDetonate(int tank, int rock)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankRock_OnDetonate\" %d (Rock = %d)", tank, rock);
+	}
+}
+
+public Action L4D_TankRock_OnRelease(int tank, int rock, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_TankRock_OnRelease\" %d (Rock = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", tank, rock, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+
+	// WORKS
+
+	// Change position of rock
+	// vecPos[0] += 50.0;
+	// vecPos[1] += 50.0;
+	// vecPos[2] += 50.0;
+
+	// Change angle of rock
+	// vecAng[0] += 90.0;
+	// vecAng[1] += 90.0;
+	// vecAng[2] += 90.0;
+
+	// Increase velocity of rock
+	// vecVel[0] *= 5.0;
+	// vecVel[1] *= 5.0;
+	// vecVel[2] *= 5.0;
+
+	// Increase rotation of rock
+	// vecRot[0] *= 5.0;
+	// vecRot[1] *= 5.0;
+	// vecRot[2] *= 5.0;
+
+	// return Plugin_Changed;
+}
+
 public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStasis)
 {
 	static int called;
@@ -1990,6 +2194,148 @@ public Action L4D_OnMaterializeFromGhost(int client)
 	}
 }
 
+public Action L4D_PipeBombProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_PipeBombProjectile_Pre\" %d", client);
+	}
+
+
+
+	// WORKS
+
+	// Change position of grenade
+	// vecPos[0] += 30.0;
+	// vecPos[1] += 30.0;
+	// vecPos[2] += 30.0;
+
+	// Change angle of grenade
+	// vecAng[0] += 90.0;
+	// vecAng[1] += 90.0;
+	// vecAng[2] += 90.0;
+
+	// Increase velocity of grenade
+	// vecVel[0] *= 2.0;
+	// vecVel[1] *= 2.0;
+	// vecVel[2] *= 2.0;
+
+	// Increase rotation of grenade
+	// vecRot[0] *= 5.0;
+	// vecRot[1] *= 5.0;
+	// vecRot[2] *= 5.0;
+
+	// return Plugin_Changed;
+
+
+
+	// WORKS - Blocks grenade creation
+	// return Plugin_Handled;
+}
+
+public void L4D_PipeBombProjectile_Post(int client, int projectile, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_PipeBombProjectile_Post\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public Action L4D_PlayerExtinguish(int client)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_PlayerExtinguish\" %d (%N)", client, client);
+	}
+
+	// WORKS - Block extinguish
+	// return Plugin_Handled;
+}
+
+public void L4D_CBreakableProp_Break(int prop, int entity)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_CBreakableProp_Break\" %d (%d)", prop, entity);
+	}
+}
+
+public void L4D2_CGasCan_EventKilled(int gascan, int inflictor, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_CGasCan_EventKilled\" %d (Inf=%d) (Att=%d)", gascan, inflictor, attacker);
+	}
+}
+
+public Action L4D2_CGasCan_ActionComplete(int client, int gascan, int nozzle)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_CGasCan_ActionComplete\" %d (%N) - GasCan: %d > Nozzle: %d", client, client, gascan, nozzle);
+	}
+
+	// WORKS
+
+	/*
+	// Probably want to fire the event and output for other plugins, whilst blocking the call itself to prevent adding to the Scavenge Score pour gas count.
+	// See the "Scavenge Score Fix - Gascan Pouring" plugin for more details.
+
+	// Fire event
+	Event hEvent = CreateEvent("gascan_pour_completed", true);
+	if( hEvent != null )
+	{
+		hEvent.SetInt("userid", GetClientUserId(client));
+		hEvent.Fire();
+	}
+
+	// Fire output
+	FireEntityOutput(entity, "OnUseFinished", client);
+
+	// Block call
+	return Plugin_Handled;
+	// */
+}
+
+public Action L4D2_CInsectSwarm_CanHarm(int acid, int spitter, int entity)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_CInsectSwarm_CanHarm\" %d %N > %d > %d", spitter, spitter, acid, entity);
+	}
+
+	// WORKS
+	// return Plugin_Handled;
+}
+
 public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
 {
 	static int called;
@@ -2136,6 +2482,25 @@ public Action L4D_OnStartMeleeSwing(int client, bool boolean)
 	// return Plugin_Handled;
 }
 
+public Action L4D2_MeleeGetDamageForVictim(int client, int weapon, int victim, float &damage)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_MeleeGetDamageForVictim\" %d %d > %d (%f)", client, weapon, victim, damage);
+	}
+
+	// WORKS
+	// damage = 10.0;
+	// return Plugin_Changed;
+
+	// WORKS
+	// return Plugin_Handled;
+}
+
 public Action L4D2_OnChangeFinaleStage(int &finaleType, const char[] arg)
 {
 	static int called;
@@ -2171,7 +2536,7 @@ public Action L4D2_OnClientDisableAddons(const char[] SteamID)
 	// return Plugin_Handled; // Allow addons.
 }
 
-public Action L4D_OnGameModeChange(int gamemode)
+public void L4D_OnGameModeChange(int gamemode)
 {
 	static int called;
 	if( called < MAX_CALLS )
