@@ -7,7 +7,7 @@
 #define ZC_TANK 5
 
 #define LEFT4FRAMEWORK_GAMEDATA "left4dhooks.l4d1"
-#define SECTION_NAME "GetRunTopSpeed"
+#define SECTION_NAME "CTerrorPlayer::GetRunTopSpeed"
 
 public Plugin:myinfo =
 {

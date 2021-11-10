@@ -292,9 +292,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Players cannot scratch while in the stumble animation.
     * **sm_respec** force the spectator player to respectate, only used by infected.
 	* show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
-	* Overrides special infected targeting incapacitated players.
+	* Overrides special infected targeting players.
       * ignore player who is pinned by smoker & hunter.
       * change target to nearest survivor no matter anyone gets vomited.
+      * AI Tank now ignores player who use minigun
 	 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned

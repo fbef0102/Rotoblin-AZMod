@@ -21,6 +21,26 @@
 			}
 		}
 
+		"MemPatches"
+		{
+			"ForEachSurvivor<MinigunnerScan>"
+			{
+				"signature"		"TankAttack::Update"
+				"linux"
+				{
+					"offset"	"1106"
+					"verify"	"\x0F\x84"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"1325"
+					"verify"	"\xE8"
+					"patch"		"\x90\x90\x90\x90\x90"
+				}
+			}
+		}
+
 		"Signatures"
 		{
 			"BossZombiePlayerBot::ChooseVictim"
@@ -30,6 +50,18 @@
 				"linux"			"@_ZN19BossZombiePlayerBot12ChooseVictimEP13CTerrorPlayer"
 				/* ? ? ? ? ? 83 ? ? 53 55 33 ? 39 ? ? 8B */
 				/* Search: "switching to mobile victim" */
+			}
+			
+			"TankAttack::Update"
+			{
+				"library"		"server"
+				"linux"			"@_ZN10TankAttack6UpdateEP4Tankf"
+				"windows"		"\x83\xEC\x78\x53\x55\x8B\xAC\x24\x88\x00\x00\x00"
+				/* 83 EC 78 53 55 8B AC 24 88 00 00 00 */
+				/* Search: "Looking at my victim" */
+				/* Patching: */
+				/* Go to "BossZombiePlayerBot::ChooseVictim" and xref, most likely last function is "TankAttack::Update" */
+				/* Then go back 2 jumps to reach "ForEachSurvivor<MinigunnerScan>" <- this is where we patch the jump */
 			}
 		}
 	}

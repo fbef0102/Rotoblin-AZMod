@@ -20,7 +20,6 @@
 #define IS_INFECTED_ALIVE(%1)   (IS_VALID_INFECTED(%1) && IsPlayerAlive(%1))
 
 #define TIMEOUT_TIME    30
-#define MAX_PLY         48
 
 
 // globals
@@ -28,7 +27,7 @@
 new             g_iTeamSize = 4;
 
 new             g_iPreviousCount[4];                // for each GetClientTeam(), the # players in it
-new             g_iPreviousTeams[4][MAX_PLY];       // for each GetClientTeam(), the players in it
+new             g_iPreviousTeams[4][MAXPLAYERS+1];       // for each GetClientTeam(), the players in it
 
 // voting
 new     bool:   g_bSrvVoted = false;                // whether anyone in survivor team voted using the command

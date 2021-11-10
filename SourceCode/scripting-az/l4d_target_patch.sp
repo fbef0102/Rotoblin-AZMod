@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION 		"1.4"
+#define PLUGIN_VERSION 		"1.5"
 
 /*=======================================================================================
 	Plugin Info:
@@ -11,6 +11,10 @@
 
 ========================================================================================
 	Change Log:
+1.5 (6-Nov-2021)
+	- make Special Infected stop attacking if no target left
+	- AI Tank now ignores player who use minigun 
+
 1.4 (23-Feb-2021)
 	- fixed m_isIT not found
 
@@ -35,6 +39,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <dhooks>
+#include <sourcescramble>
 
 #define CVAR_FLAGS			FCVAR_NOTIFY
 #define GAMEDATA			"l4d_target_patch"
@@ -47,6 +52,7 @@ bool g_bCvarAllow, g_bCvarTarget_Incap, g_bCvarTarget_Pinned,
 	g_bCvarTarget_Hanging, g_bCvarTarget_Vomit;
 Handle g_hDetour;
 bool g_bPinBoomer[MAXPLAYERS+1];
+bool g_bBlind[MAXPLAYERS+1];
 
 
 // ====================================================================================================
@@ -82,6 +88,12 @@ public void OnPluginStart()
 
 	// Detour
 	g_hDetour = DHookCreateFromConf(hGameData, "BossZombiePlayerBot::ChooseVictim");
+
+	// patch tank targets minigun player
+	MemoryPatch hPatch = MemoryPatch.CreateFromConf(hGameData, "ForEachSurvivor<MinigunnerScan>");
+	if (!hPatch.Validate() || !hPatch.Enable())
+		SetFailState("patch");
+
 	delete hGameData;
 
 	if( !g_hDetour )
@@ -242,6 +254,10 @@ public void OnGamemode(const char[] output, int caller, int activator, float del
 		g_iCurrentMode = 8;
 }
 
+public void OnClientPutInServer(int client)
+{
+	g_bBlind[client] = false;
+}
 
 // ====================================================================================================
 //					EVENT
@@ -251,6 +267,7 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	for( int i = 0; i <= MaxClients; i++ )
 	{
 		ResetVars(i);
+		g_bBlind[i] = false;
 	}
 }
 
@@ -310,6 +327,9 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	if( victim <= 0 )
 		return MRES_Ignored;
 		
+	// If has target
+	if( L4D_GetSurvivorVictim(client) != -1) return MRES_Ignored;
+
 	// Ignore non-specified special infected
 	int class = GetEntProp(client, Prop_Send, "m_zombieClass");
 	if( class == 5 ) class = 4;
@@ -353,13 +373,33 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	}
 
 	// Override victim
-	if( newVictim > 0)
+	if( newVictim > 0 )
 	{
+		g_bBlind[client] = false;
+		ToggleFreezePlayer(client, false);
 		DHookSetReturn(hReturn, newVictim);
 		return MRES_Supercede;
 	}
 
-	return MRES_Ignored;// Allow targeting anyone if all players are down.
+	g_bBlind[client] = true;
+	ToggleFreezePlayer(client, true); // stop attacking if all players are down.
+	return MRES_Ignored;
+}
+
+void ToggleFreezePlayer(int client, int freeze)
+{
+	SetEntityMoveType(client, freeze ? MOVETYPE_NONE : MOVETYPE_WALK);
+}
+
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+{
+	if(IsClientInGame(client) && IsFakeClient(client) && g_bBlind[client])
+	{
+		if(buttons & IN_ATTACK || buttons & IN_ATTACK2)
+			return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
 }
 
 public bool IsPlayerPinned(int client)
@@ -396,4 +436,25 @@ public bool IsIncapacitated(int client)
 void ResetVars(int client)
 {
 	g_bPinBoomer[client] = false;
+}
+
+int L4D_GetSurvivorVictim(int client)
+{
+	int victim;
+	
+    /* Hunter */
+	victim = GetEntPropEnt(client, Prop_Send, "m_pounceVictim");
+	if (victim > 0)
+	{
+		return victim;
+ 	}
+
+    /* Smoker */
+ 	victim = GetEntPropEnt(client, Prop_Send, "m_tongueVictim");
+	if (victim > 0)
+	{
+		return victim;	
+	}
+
+	return -1;
 }

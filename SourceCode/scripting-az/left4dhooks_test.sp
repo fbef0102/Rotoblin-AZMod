@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.65"
+#define PLUGIN_VERSION		"1.70"
 
 /*=======================================================================================
 	Plugin Info:
@@ -32,9 +32,22 @@
 ========================================================================================
 	Change Log:
 
-1.65 (20-Oct-2021)
-	- Changed forward "L4D2_CGasCan_EventKilled" params to show the inflictor and attacker.
-	- Thanks to "ProjectSky" for reminding me.
+1.70 (07-Nov-2021)
+	- Added native "L4D_TankRockPrj" to create a Tank Rock projectile.
+	- Added native "L4D_DetonateProjectile" to detonate grenade projectiles.
+	- Added natives to L4D2: "L4D2_GetSurvivorSetMap" and "L4D2_GetSurvivorSetMod" to return the maps and modified Survivor set.
+	- Changed forwards "L4D_OnGetSurvivorSet" and "L4D_OnFastGetSurvivorSet" to post hooks to retrieve the correct value. Thanks to "Gabe Iggy" for reporting.
+
+1.69 (03-Nov-2021)
+	- Added forward "L4D_OnPouncedOnSurvivor" to notify when a Survivor is being pounced on by a Hunter.
+	- Added forward "L4D2_OnStartCarryingVictim" to L4D2 to notify when a Survivor is being grabbed by a Charger.
+	- Fixed some natives disabling the plugin if their signatures broke. Only their functionality will break.
+
+1.68 (02-Nov-2021)
+	- Added new forward "L4D_OnGrabWithTongue" to L4D2 to notify when someone is about to be grabbed by a Smoker Tongue. Requested by "Alexmy".
+	- Added new forward "L4D2_OnJockeyRide" to notify when someone is about to be ridden by a Jockey. Requested by "Alexmy".
+	- Cleaned and consolidated the code: standardized gamedata names, function names and variable names.
+	- Compatibility support for SourceMod 1.11. Fixed various warnings.
 
 1.64 (20-Oct-2021)
 	- Added 1 new forward to L4D1 and L4D2:
@@ -58,11 +71,11 @@
 
 	- Added new target filters:
 		"@deads" - Dead Survivors (all, bots)
-		"@deadsi" - Dead Special Infected (all, bots) 
-		"@deadsp" - Dead Survivors players (no bots) 
-		"@deadsip" - Dead Special Infected players (no bots)- 
-		"@deadsb" - Dead Survivors bots (no players) 
-		"@deadsib" - Dead Special Infected bots (no players)- 
+		"@deadsi" - Dead Special Infected (all, bots)
+		"@deadsp" - Dead Survivors players (no bots)
+		"@deadsip" - Dead Special Infected players (no bots)
+		"@deadsb" - Dead Survivors bots (no players)
+		"@deadsib" - Dead Special Infected bots (no players)
 		"@sp" - Survivors players (no bots)
 		"@isp" - Special Infected players (no bots)
 		"@isb" - Incapped Survivor Only Bots
@@ -249,7 +262,7 @@
 	- New natives added.
 
 1.13 (05-May-2020)
-	- Made all natives optional from the include file. Thanks to "Crasher_3637" for requesting.
+	- Made all natives optional from the include file. Thanks to "Psyk0tik" for requesting.
 
 1.10 (14-Mar-2020)
 	- New natives added.
@@ -298,6 +311,7 @@
 #define REQUIRE_PLUGIN
 
 #define MAX_CALLS			1		// How many times to print each forward
+#define DEMO_ANIM			0		// Demonstate "Incapped Crawling" animation hooks
 
 bool g_bLeft4Dead2;
 bool g_bLibraryActive;
@@ -331,9 +345,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 
 	if( g_bLeft4Dead2 )
-		g_iForwardsMax = 70;
+		g_iForwardsMax = 74;
 	else
-		g_iForwardsMax = 55;
+		g_iForwardsMax = 57;
 
 	return APLRes_Success;
 }
@@ -361,11 +375,13 @@ public void OnPluginStart()
 	RegAdminCmd("sm_l4df", sm_l4df, ADMFLAG_ROOT);
 	RegAdminCmd("sm_l4dd", sm_l4dd, ADMFLAG_ROOT);
 
+	#if DEMO_ANIM
 	HookEvent("player_incapacitated",	player_incapacitated);
 	HookEvent("revive_success",			revive_success);
 	HookEvent("player_death",			player_death);
 	HookEvent("round_end",				round_end);
 	HookEvent("player_spawn",			player_spawn);
+	#endif
 }
 
 
@@ -426,6 +442,7 @@ stock void PrecacheParticle(const char[] sEffectName)
 // ====================================================================================================
 // CRAWLING TEST - Remove "INCAPPED CRAWLING WITH ANIMATION" plugin to test.
 // ====================================================================================================
+#if DEMO_ANIM
 bool g_bCrawling;
 
 public void player_spawn(Event event, const char[] name, bool dontBroadcast)
@@ -492,8 +509,8 @@ Action OnAnimPost(int client, int &anim)
 			case 'b': { anim = 631; }	// gambler
 			case 'h': { anim = 636; }	// mechanic
 			case 'd': { anim = 639; }	// producer
-			case 'v': { anim = 539; }	// NamVet	
-			case 'e': { anim = 542; }	// Biker	
+			case 'v': { anim = 539; }	// NamVet
+			case 'e': { anim = 542; }	// Biker
 			case 'a': { anim = 539; }	// Manager
 			case 'n': { anim = 529; }	// TeenGirl
 		}
@@ -529,7 +546,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			g_bCrawling = true;
 		}
 	}
+
+	return Plugin_Continue;
 }
+#endif
 // ====================================================================================================
 
 
@@ -557,10 +577,62 @@ public Action sm_l4dd(int client, int args)
 	// =========================
 	// NATIVES - Mine
 	// =========================
+	// Version 1.72 tests
+	/*
+	PrintToServer("POINTER_DIRECTOR = %d",			L4D_GetPointer(POINTER_DIRECTOR));
+	PrintToServer("POINTER_SERVER = %d",			L4D_GetPointer(POINTER_SERVER));
+	PrintToServer("POINTER_GAMERULES = %d",			L4D_GetPointer(POINTER_GAMERULES));
+	PrintToServer("POINTER_NAVMESH = %d",			L4D_GetPointer(POINTER_NAVMESH));
+	PrintToServer("POINTER_ZOMBIEMANAGER = %d",		L4D_GetPointer(POINTER_ZOMBIEMANAGER));
+	PrintToServer("POINTER_WEAPONINFO = %d",		L4D_GetPointer(POINTER_WEAPONINFO));
+	PrintToServer("POINTER_MELEEINFO = %d",			L4D_GetPointer(POINTER_MELEEINFO));
+	PrintToServer("POINTER_EVENTMANAGER = %d",		L4D_GetPointer(POINTER_EVENTMANAGER));
+	PrintToServer("POINTER_SCAVENGEMODE = %d",		L4D_GetPointer(POINTER_SCAVENGEMODE));
+	PrintToServer("POINTER_VERSUSMODE = %d",		L4D_GetPointer(POINTER_VERSUSMODE));
+
+	int target = GetAnyRandomClient();
+	if( target )
+	{
+		PrintToServer("L4D_GetClientFromAddress %d (%d) == %d", target, GetEntityAddress(target), L4D_GetClientFromAddress(GetEntityAddress(target)));
+	}
+
+	int entity = FindEntityByClassname(-1, "prop_dynamic");
+	if( entity != INVALID_ENT_REFERENCE )
+	{
+		PrintToServer("L4D_GetEntityFromAddress %d (%d) == %d", entity, GetEntityAddress(entity), L4D_GetEntityFromAddress(GetEntityAddress(entity)));
+	}
+
+	if( target )
+	{
+		// OFFSET: (Hardcoded for demonstration)
+		// Search: "#Cstrike_Name_Change"
+		// Look for "CBasePlayer::SetPlayerName" near bottom of function. Offset inside.
+
+		char temp[32];
+		Address addy;
+		int os = L4D_GetServerOS();
+
+		if( g_bLeft4Dead2 && os == SERVER_OS_LINUX )			addy = view_as<Address>(8361);
+		else if( g_bLeft4Dead2 && os == SERVER_OS_WINDOWS )		addy = view_as<Address>(8365);
+		else if( !g_bLeft4Dead2 && os == SERVER_OS_LINUX )		addy = view_as<Address>(3845);
+		else if( !g_bLeft4Dead2 && os == SERVER_OS_WINDOWS )	addy = view_as<Address>(3825);
+
+		// Returns the players name, read from a memory address
+		addy += GetEntityAddress(target);
+		L4D_ReadMemoryString(addy, temp, sizeof(temp));
+
+		PrintToServer("L4D_ReadMemoryString %N == [%s]", target, temp);
+	}
+	// */
+
+
+
 	/*
 	// WORKS
 	if( g_bLeft4Dead2 )
 	{
+		PrintToServer("L4D2_GetSurvivorSetMap: %d", L4D2_GetSurvivorSetMap());
+		PrintToServer("L4D2_GetSurvivorSetMod: %d", L4D2_GetSurvivorSetMod());
 		PrintToServer("L4D2_HasConfigurableDifficultySetting %d", L4D2_HasConfigurableDifficultySetting());
 		PrintToServer("L4D2_IsGenericCooperativeMode %d", L4D2_IsGenericCooperativeMode());
 		PrintToServer("L4D2_IsRealismMode %d", L4D2_IsRealismMode());
@@ -859,6 +931,22 @@ public Action sm_l4dd(int client, int args)
 		SetEntProp(projectile, Prop_Data, "m_iHammerID", 2467737); // Avoid conflict with "Flare Gun" plugin.
 		PrintToServer("L4D2_GrenadeLauncherPrj %d", projectile);
 	}
+
+
+
+	vAng = view_as<float>({ 0.0, 0.0, 500.0 }); // Shoot upwards
+	vPos[2] += 100.0; // Move projectile above player to avoid collision
+	projectile = L4D_TankRockPrj(client, vPos, vAng);
+	PrintToChatAll("L4D_TankRockPrj == %d", projectile);
+
+	// projectile = L4D_MolotovPrj(client, vPos, vAng);
+	if( g_bLeft4Dead2 )
+	{
+		// projectile = L4D2_VomitJarPrj(client, vPos, vAng);
+		// projectile = L4D2_SpitterPrj(client, vPos, vAng);
+		// projectile = L4D2_GrenadeLauncherPrj(client, vPos, vAng);
+	}
+	CreateTimer(1.0, TimerDetonate, EntIndexToEntRef(projectile));
 
 
 
@@ -1452,6 +1540,17 @@ public Action sm_l4dd(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action TimerDetonate(Handle timer, any entity)
+{
+	entity = EntRefToEntIndex(entity);
+	if( entity != INVALID_ENT_REFERENCE )
+	{
+		L4D_DetonateProjectile(entity);
+	}
+
+	return Plugin_Continue;
+}
+
 
 
 // ====================================================================================================
@@ -1472,6 +1571,8 @@ public Action L4D_OnSpawnSpecial(int &zombieClass, const float vector[3], const 
 	// return Plugin_Changed; // WORKS
 
 	// return Plugin_Handled; // WORKS
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
@@ -1484,7 +1585,10 @@ public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
 
 		ForwardCalled("\"L4D_OnSpawnTank\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
+
 	// return Plugin_Handled; // WORKS
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnSpawnWitch(const float vector[3], const float qangle[3])
@@ -1497,7 +1601,10 @@ public Action L4D_OnSpawnWitch(const float vector[3], const float qangle[3])
 
 		ForwardCalled("\"L4D_OnSpawnWitch\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
+
 	// return Plugin_Handled; // WORKS
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnSpawnWitchBride(const float vector[3], const float qangle[3])
@@ -1510,7 +1617,10 @@ public Action L4D2_OnSpawnWitchBride(const float vector[3], const float qangle[3
 
 		ForwardCalled("\"L4D2_OnSpawnWitchBride\" (%f %f %f). (%f %f %f)", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 	}
+
 	// return Plugin_Handled; // WORKS
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnMobRushStart()
@@ -1524,6 +1634,8 @@ public Action L4D_OnMobRushStart()
 		ForwardCalled("\"L4D_OnMobRushStart\"");
 	}
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnSpawnITMob(int &amount)
@@ -1543,6 +1655,8 @@ public Action L4D_OnSpawnITMob(int &amount)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnSpawnMob(int &amount)
@@ -1562,6 +1676,8 @@ public Action L4D_OnSpawnMob(int &amount)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnEnterGhostStatePre(int client)
@@ -1577,6 +1693,8 @@ public Action L4D_OnEnterGhostStatePre(int client)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D_OnEnterGhostState(int client)
@@ -1613,7 +1731,7 @@ public Action L4D_OnIsTeamFull(int team, bool &full)
 	// full = true;
 	// return Plugin_Changed;
 
-	// return Plugin_Continue;
+	return Plugin_Continue;
 }
 
 public Action L4D_OnClearTeamScores(bool newCampaign)
@@ -1629,6 +1747,8 @@ public Action L4D_OnClearTeamScores(bool newCampaign)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnSetCampaignScores(int &scoreA, int &scoreB)
@@ -1649,6 +1769,8 @@ public Action L4D_OnSetCampaignScores(int &scoreA, int &scoreB)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
@@ -1664,6 +1786,8 @@ public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetCrouchTopSpeed(int target, float &retVal)
@@ -1680,6 +1804,8 @@ public Action L4D_OnGetCrouchTopSpeed(int target, float &retVal)
 	// WORKS
 	// retVal = 500.0;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetRunTopSpeed(int target, float &retVal)
@@ -1696,6 +1822,8 @@ public Action L4D_OnGetRunTopSpeed(int target, float &retVal)
 	// WORKS
 	// retVal = 500.0;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetWalkTopSpeed(int target, float &retVal)
@@ -1712,6 +1840,8 @@ public Action L4D_OnGetWalkTopSpeed(int target, float &retVal)
 	// WORKS
 	// retVal = 500.0;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetMissionVSBossSpawning(float &spawn_pos_min, float &spawn_pos_max, float &tank_chance, float &witch_chance)
@@ -1731,6 +1861,8 @@ public Action L4D_OnGetMissionVSBossSpawning(float &spawn_pos_min, float &spawn_
 	// tank_chance = 1.0;
 	// witch_chance = 1.0;
 	// return Plugin_Changed;
+
+	return Plugin_Continue;
 }
 
 public void L4D_OnReplaceTank(int tank, int newtank)
@@ -1806,6 +1938,8 @@ public Action L4D_TankClaw_OnPlayerHit_Pre(int tank, int claw, int player)
 
 	// WORKS - Blocks target player being flung
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int player)
@@ -1866,6 +2000,8 @@ public Action L4D_TankRock_OnRelease(int tank, int rock, float vecPos[3], float 
 	// vecRot[2] *= 5.0;
 
 	// return Plugin_Changed;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStasis)
@@ -1881,6 +2017,8 @@ public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStasis)
 
 	// WORKING
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnCThrowActivate(int ability)
@@ -1896,6 +2034,8 @@ public Action L4D_OnCThrowActivate(int ability)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnSelectTankAttackPre(int client, int &sequence)
@@ -1912,6 +2052,8 @@ public Action L4D2_OnSelectTankAttackPre(int client, int &sequence)
 	// WORKS
 	// sequence = 761;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnSelectTankAttack(int client, int &sequence)
@@ -1928,6 +2070,8 @@ public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 	// WORKS
 	// sequence = 48;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnSendInRescueVehicle()
@@ -1943,6 +2087,8 @@ public Action L4D2_OnSendInRescueVehicle()
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
@@ -1958,6 +2104,8 @@ public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D2_OnEndVersusModeRound_Post()
@@ -1985,6 +2133,8 @@ public Action L4D_OnRecalculateVersusScore(int client)
 
 	// UNTESTED
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnLedgeGrabbed(int client)
@@ -2000,6 +2150,8 @@ public Action L4D_OnLedgeGrabbed(int client)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D2_OnRevived(int client)
@@ -2027,6 +2179,8 @@ public Action L4D2_OnStagger(int target, int source)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnShovedBySurvivor(int client, int victim, const float vector[3])
@@ -2042,6 +2196,8 @@ public Action L4D_OnShovedBySurvivor(int client, int victim, const float vector[
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vector[3], bool bIsHighPounce)
@@ -2057,6 +2213,8 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vect
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnPounceOrLeapStumble(int victim, int attacker)
@@ -2072,6 +2230,8 @@ public Action L4D2_OnPounceOrLeapStumble(int victim, int attacker)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnSpitSpread(int spitter, int projectile, float &x, float &y, float &z)
@@ -2093,6 +2253,8 @@ public Action L4D2_OnSpitSpread(int spitter, int projectile, float &x, float &y,
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnUseHealingItems(int client)
@@ -2108,6 +2270,8 @@ public Action L4D2_OnUseHealingItems(int client)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnFindScavengeItem(int client, int &item)
@@ -2124,12 +2288,96 @@ public Action L4D2_OnFindScavengeItem(int client, int &item)
 	// WORKS
 	// if( item == -1 )
 	// {
-		// item = 440;
+		// item = 440; // 440 being an entity index (must set a valid "weapon_*" entity)
 		// return Plugin_Changed;
 	// }
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public Action L4D_OnPouncedOnSurvivor(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnPouncedOnSurvivor\" %d (%N) pouncing %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	// WORKS
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public Action L4D_OnGrabWithTongue(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnGrabWithTongue\" %d (%N) grabbing %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	/* WORKS
+	// Remove and re-create the custom ability.
+	// This allows the player to keep moving and not frozen in place for a few seconds.
+	// Tried setting "m_flMaxspeed", movement type and remove FL_FROZEN "m_fFlags" but only this method worked.
+	int ability = GetEntPropEnt(attacker, Prop_Send, "m_customAbility");
+	RemoveEntity(ability);
+
+	// Create ability again
+	L4D_SetClass(attacker, 1);
+
+	// Set next attack time. Otherwise they can shoot again instantly. Remove if that's what you want. Doesn't show cooldown circle for next attack time.
+	ability = GetEntPropEnt(attacker, Prop_Send, "m_customAbility");
+	if( ability > 0 ) SetEntPropFloat(ability, Prop_Send, "m_nextActivationTimer", GetGameTime() + 2.0, 1);
+
+	return Plugin_Handled;
+	// */
+
+	return Plugin_Continue;
+}
+
+public Action L4D2_OnJockeyRide(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnJockeyRide\" %d (%N) grabbing %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	// WORKS
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public Action L4D2_OnStartCarryingVictim(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnStartCarryingVictim\" %d (%N) grabbing %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	// WORKS
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnVomitedUpon(int victim, int &attacker, bool &boomerExplosion)
@@ -2147,6 +2395,8 @@ public Action L4D_OnVomitedUpon(int victim, int &attacker, bool &boomerExplosion
 	// return Plugin_Changed;
 
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnHitByVomitJar(int victim, int &attacker)
@@ -2165,6 +2415,8 @@ public Action L4D2_OnHitByVomitJar(int victim, int &attacker)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnMaterializeFromGhostPre(int client)
@@ -2180,6 +2432,8 @@ public Action L4D_OnMaterializeFromGhostPre(int client)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnMaterializeFromGhost(int client)
@@ -2192,6 +2446,8 @@ public Action L4D_OnMaterializeFromGhost(int client)
 
 		ForwardCalled("\"L4D_OnMaterializeFromGhost\" %d (%N)", client, client);
 	}
+
+	return Plugin_Continue;
 }
 
 public Action L4D_PipeBombProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
@@ -2235,6 +2491,8 @@ public Action L4D_PipeBombProjectile_Pre(int client, float vecPos[3], float vecA
 
 	// WORKS - Blocks grenade creation
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D_PipeBombProjectile_Post(int client, int projectile, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
@@ -2262,6 +2520,8 @@ public Action L4D_PlayerExtinguish(int client)
 
 	// WORKS - Block extinguish
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D_CBreakableProp_Break(int prop, int entity)
@@ -2319,6 +2579,8 @@ public Action L4D2_CGasCan_ActionComplete(int client, int gascan, int nozzle)
 	// Block call
 	return Plugin_Handled;
 	// */
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_CInsectSwarm_CanHarm(int acid, int spitter, int entity)
@@ -2334,6 +2596,8 @@ public Action L4D2_CInsectSwarm_CanHarm(int acid, int spitter, int entity)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
@@ -2353,6 +2617,8 @@ public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
 
 	// ATTACK THEMSELVES (no target) - the special will stand still.
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetScriptValueInt(const char[] key, int &retVal)
@@ -2372,7 +2638,8 @@ public Action L4D_OnGetScriptValueInt(const char[] key, int &retVal)
 		// retVal = 1;
 		// return Plugin_Handled;
 	// }
-	// return Plugin_Continue;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetScriptValueFloat(const char[] key, float &retVal)
@@ -2395,7 +2662,8 @@ public Action L4D_OnGetScriptValueFloat(const char[] key, float &retVal)
 		// retVal = 2.0;
 		// return Plugin_Handled;
 	// }
-	// return Plugin_Continue;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetScriptValueString(const char[] key, const char[] defaultVal, char retVal[128])
@@ -2417,6 +2685,8 @@ public Action L4D_OnGetScriptValueString(const char[] key, const char[] defaultV
 		// retVal = "";
 		// return Plugin_Handled;
 	// }
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnHasConfigurableDifficulty(int &retVal)
@@ -2433,6 +2703,8 @@ public Action L4D_OnHasConfigurableDifficulty(int &retVal)
 	// WORKS
 	// retVal = 0;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnGetSurvivorSet(int &retVal)
@@ -2449,6 +2721,8 @@ public Action L4D_OnGetSurvivorSet(int &retVal)
 	// WORKS
 	// retVal = 1;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnFastGetSurvivorSet(int &retVal)
@@ -2465,6 +2739,8 @@ public Action L4D_OnFastGetSurvivorSet(int &retVal)
 	// WORKS
 	// retVal = 1;
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnStartMeleeSwing(int client, bool boolean)
@@ -2480,6 +2756,8 @@ public Action L4D_OnStartMeleeSwing(int client, bool boolean)
 
 	// WORKS - PREDICTION ISSUES - Hear and partially see swing in first person
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_MeleeGetDamageForVictim(int client, int weapon, int victim, float &damage)
@@ -2499,6 +2777,8 @@ public Action L4D2_MeleeGetDamageForVictim(int client, int weapon, int victim, f
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnChangeFinaleStage(int &finaleType, const char[] arg)
@@ -2518,6 +2798,8 @@ public Action L4D2_OnChangeFinaleStage(int &finaleType, const char[] arg)
 
 	// WORKS
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnClientDisableAddons(const char[] SteamID)
@@ -2533,7 +2815,7 @@ public Action L4D2_OnClientDisableAddons(const char[] SteamID)
 
 	// Requires l4d2_addons_eclipse 1 to be used.
 	// return Plugin_Continue; // Block addons.
-	// return Plugin_Handled; // Allow addons.
+	return Plugin_Handled; // Allow addons.
 }
 
 public void L4D_OnGameModeChange(int gamemode)
@@ -2561,6 +2843,8 @@ public Action L4D2_OnPlayerFling(int client, int attacker, float vecDir[3])
 
 	// WORKS - Block being flung
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnFatalFalling(int client, int camera)
@@ -2576,6 +2860,8 @@ public Action L4D_OnFatalFalling(int client, int camera)
 
 	// WORKS - Block block death fall camera
 	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public void L4D_OnFalling(int client)

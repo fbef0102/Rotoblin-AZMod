@@ -27,6 +27,13 @@
   * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).
 	
 ### Gameplay / Balance Changes ###
+* Special Infected(!inf):
+  * **General:**
+	* Overrides special infected targeting players.
+      * ignore player who is pinned by smoker & hunter.
+      * change target to nearest survivor no matter anyone gets vomited.
+      * AI Tank now ignores player who use minigun
+
 * Special Infected:
   * **Tanks:**
 	* Tank burn life time: 125s (vanilla: **75**)

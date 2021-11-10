@@ -98,11 +98,18 @@ public void __pl_l4dh_SetNTVOptional()
 	MarkNativeAsOptional("L4D_IsInLastCheckpoint");
 	MarkNativeAsOptional("L4D2_IsReachable");
 	MarkNativeAsOptional("L4D_HasPlayerControlledZombies");
+	MarkNativeAsOptional("L4D_DetonateProjectile");
+	MarkNativeAsOptional("L4D_TankRockPrj");
 	MarkNativeAsOptional("L4D_PipeBombPrj");
 	MarkNativeAsOptional("L4D_MolotovPrj");
 	MarkNativeAsOptional("L4D2_VomitJarPrj");
 	MarkNativeAsOptional("L4D2_GrenadeLauncherPrj");
 
+	MarkNativeAsOptional("L4D_GetPointer");
+	MarkNativeAsOptional("L4D_GetClientFromAddress");
+	MarkNativeAsOptional("L4D_GetEntityFromAddress");
+	MarkNativeAsOptional("L4D_ReadMemoryString");
+	MarkNativeAsOptional("L4D_GetServerOS");
 	MarkNativeAsOptional("L4D2_ExecVScriptCode");
 	MarkNativeAsOptional("L4D2_GetVScriptOutput");
 	MarkNativeAsOptional("L4D2_SpitterPrj");
@@ -117,6 +124,8 @@ public void __pl_l4dh_SetNTVOptional()
 	MarkNativeAsOptional("L4D2_IsTankInPlay");
 	MarkNativeAsOptional("L4D2_GetScriptValueInt");
 	MarkNativeAsOptional("L4D2_NavAreaTravelDistance");
+	MarkNativeAsOptional("L4D2_GetSurvivorSetMod");
+	MarkNativeAsOptional("L4D2_GetSurvivorSetMap");
 	MarkNativeAsOptional("L4D2_HasConfigurableDifficultySetting");
 	MarkNativeAsOptional("L4D2_IsGenericCooperativeMode");
 	MarkNativeAsOptional("L4D_IsCoopMode");
@@ -321,6 +330,12 @@ public void __pl_l4dh_SetNTVOptional()
 // ====================================================================================================
 // VARIOUS ENUMS
 // ====================================================================================================
+enum
+{
+	SERVER_OS_WINDOWS = 0,
+	SERVER_OS_LINUX = 1,
+}
+
 // For the game mode native and forward.
 enum
 {
@@ -329,6 +344,21 @@ enum
 	GAMEMODE_VERSUS		= 2,
 	GAMEMODE_SURVIVAL	= 4,
 	GAMEMODE_SCAVENGE	= 8
+}
+
+// For the "L4D_GetPointer" native
+enum PointerType
+{
+	POINTER_DIRECTOR		= 1,	// @TheDirector
+	POINTER_SERVER			= 2,	// @sv
+	POINTER_GAMERULES		= 3,	// @g_pGameRules
+	POINTER_NAVMESH			= 4,	// @TheNavMesh
+	POINTER_ZOMBIEMANAGER	= 5,	// @TheZombieManager
+	POINTER_WEAPONINFO		= 6,	// @_ZL20m_WeaponInfoDatabase
+	POINTER_MELEEINFO		= 7,	// @g_MeleeWeaponInfoStore (L4D2 Only)
+	POINTER_EVENTMANAGER	= 8,	// pScriptedEventManager (L4D2 Only)
+	POINTER_SCAVENGEMODE	= 9,	// pScavengeMode (L4D2 Only)
+	POINTER_VERSUSMODE		= 10	// pVersusMode
 }
 
 // Provided by "BHaType":
@@ -803,7 +833,7 @@ forward void L4D_TankRock_OnDetonate(int tank, int rock);
  * @brief Called whenever CTankRock::OnRelease(Vector const&, QAngle const&, Vector const&, Vector const&) is invoked
  * @remarks When a tank rock is thrown.
  *
- * @param tank			tank client index
+ * @param tank			tank client index (can be -1 if the rock was created by the native "L4D_TankRockPrj" or the "env_rock_launcher" entity)
  * @param rock			the rock entity index
  * @param vecPos		the position vector of the rock
  * @param vecAng		the angle vector of the rock
@@ -1188,6 +1218,52 @@ forward Action L4D2_CGasCan_ActionComplete(int client, int gascan, int nozzle);
 forward Action L4D2_CInsectSwarm_CanHarm(int acid, int spitter, int entity);
 
 /**
+ * @brief Called whenever CTerrorPlayer::OnPouncedOnSurvivor() is invoked
+ * @remarks Called when a Survivor player is about to be pounced on by a Hunter
+ *
+ * @param victim			the client who's being pounced
+ * @param attacker			the Hunter pouncing on someone
+ *
+ * @return					Plugin_Handled to block, Plugin_Continue otherwise
+ */
+forward Action L4D_OnPouncedOnSurvivor(int victim, int attacker);
+
+/**
+ * @brief Called whenever CTerrorPlayer::GrabVictimWithTongue() is invoked
+ * @remarks Called when a Survivor player is about to be grabbed by a Smoker
+ *
+ * @param victim			the client who's being grabbed
+ * @param attacker			the Smoker grabbing someone
+ *
+ * @return					Plugin_Handled to block, Plugin_Continue otherwise
+ */
+forward Action L4D_OnGrabWithTongue(int victim, int attacker);
+
+/**
+ * @brief Called whenever CTerrorPlayer::OnLeptOnSurvivor() is invoked
+ * @remarks Called when a Survivor player is about to be ridden by a Jockey
+ *
+ * @param victim			the client who's being grabbed
+ * @param attacker			the Jockey grabbing someone
+ *
+ * @return					Plugin_Handled to block, Plugin_Continue otherwise
+ */
+ // L4D2 only.
+forward Action L4D2_OnJockeyRide(int victim, int attacker);
+
+/**
+ * @brief Called whenever CTerrorPlayer::OnStartCarryingVictim() is invoked
+ * @remarks Called when a Survivor player is about to be carried by a Charger
+ *
+ * @param victim			the client who's being grabbed
+ * @param attacker			the Charger picking up someone
+ *
+ * @return					Plugin_Handled to block, Plugin_Continue otherwise
+ */
+ // L4D2 only.
+forward Action L4D2_OnStartCarryingVictim(int victim, int attacker);
+
+/**
  * @brief Called whenever CTerrorPlayer::OnVomitedUpon is invoked
  * @remarks Called when a Survivor player is covered in Boomer bile, or when using "Bile the World" plugin by "AtomicStryker"
  *
@@ -1327,6 +1403,49 @@ forward Action L4D_OnGetRandomPZSpawnPosition(int &client, int &zombieClass, int
 // ====================================================================================================
 // NATIVES - Silvers
 // ====================================================================================================
+/**
+ * @brief Returns the address pointer to various internal game objects
+ *
+ * @param	ptr_type		Using the PointerType enum to select which pointer to return
+ *
+ * @return	Address pointer or 0 on failure.
+ */
+native Address L4D_GetPointer(PointerType ptr_type);
+
+/**
+ * @brief Returns a client index from a memory address
+ *
+ * @param	addy		Address to check
+ *
+ * @return	Client index or 0 on failure.
+ */
+native int L4D_GetClientFromAddress(Address addy);
+
+/**
+ * @brief Returns an entity index from a memory address
+ *
+ * @param	addy		Address to check
+ *
+ * @return	Entity index or -1 on failure.
+ */
+native int L4D_GetEntityFromAddress(Address addy);
+
+/**
+ * @brief Returns an entity index from a memory address
+ *
+ * @param	addy		Address to check
+ *
+ * @return	Entity index or -1 on failure.
+ */
+native int L4D_ReadMemoryString(Address addy, char[] buffer, int maxlength);
+
+/**
+ * @brief Returns the servers operating system.
+ *
+ * @return	0=Windows. 1=Linux.
+ */
+native int L4D_GetServerOS();
+
 /**
 * @brief Runs a specified VScript code.
 * @remarks Saves having to create an entity. The entity can remain alive and used again...
@@ -1569,6 +1688,30 @@ native bool L4D2_IsReachable(int client, const float vecPos[3]);
 native bool L4D_HasPlayerControlledZombies();
 
 /**
+ * @brief Detonates an active grenade projectile
+ * @remarks Can detonate in L4D1 & L4D2: "molotov_projectile", "pipebomb_projectile", "tank_rock"
+ * @remarks Can detonate in L4D2: "vomitjar_projectile", "grenadelauncher_projectile", "spitter_projectile"
+ *
+ * @param entity	The projectile entity to detonate
+ *
+ * @noreturn
+ */
+native int L4D_DetonateProjectile(int entity);
+
+/**
+ * @brief Creates an activated Tank Rock projectile.
+ * @remarks It seems when using a Survivor for the client index and hitting another Survivor, the victim will take 1.0 damage (maybe due to friendly fire settings).
+ * @remarks Suggest using an OnTakeDamage hook if you want to apply more damage.
+ *
+ * @param client	Client id to attribute the projectile to for damage credit. Passing 0 (world) is allowed
+ * @param vecPos	Vector coordinate of the projectile on creation
+ * @param vecAng	Vector direction of the projectile
+ *
+ * @return			Entity index of the projectile
+ */
+native int L4D_TankRockPrj(int client, const float vecPos[3], const float vecAng[3]);
+
+/**
  * @brief Creates an activated PipeBomb projectile.
  * @remarks Does not attach the "Fuse" or "Light" particles, see the "left4dhooks_test" plugin for example on attaching these
  * @remarks Also used in the "PipeBomb Shove" plugin by Silvers
@@ -1745,6 +1888,24 @@ native float L4D2_NavAreaTravelDistance(float startPos[3], float endPos[3], bool
  **/
 // L4D2 only.
 native bool L4D2_HasConfigurableDifficultySetting();
+
+/**
+ * @brief Returns the maps default Survivor set
+ * @brief Does not return the overridden value when changed from the "L4D_OnGetSurvivorSet" or "L4D_OnFastGetSurvivorSet" forwards.
+ *
+ * @return				Maps default survivor set
+ **/
+// L4D2 only.
+native int L4D2_GetSurvivorSetMap();
+
+/**
+ * @brief Returns the current Survivor set
+ * @brief Return the current set which may have been overridden if changed in the "L4D_OnGetSurvivorSet" or "L4D_OnFastGetSurvivorSet" forwards.
+ *
+ * @return				Maps default survivor set
+ **/
+// L4D2 only.
+native int L4D2_GetSurvivorSetMod();
 
 /**
  * @brief Returns if the current game mode is Coop/Realism mode.
