@@ -8,7 +8,7 @@
 			{
 				"windows"
 				{
-					"signature"	"CTerrorWeapon::TrySwing"			
+					"signature"	"CTerrorWeapon::TrySwing"
 				}
 				"linux"
 				{
@@ -27,7 +27,7 @@
 			"TrySwing_Count"
 			{
 				"windows"		"22"
-				"linux"			"26"
+				"linux"			"23"
 			}
 		}
 
@@ -36,8 +36,8 @@
 			"CTerrorWeapon::TrySwing"
 			{
 				"library"		"server"
-				"windows"		"\x83\x2A\x2A\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x55"
 				"linux"			"@_ZN13CTerrorWeapon8TrySwingEfff"
+				"windows"		"\x83\x2A\x2A\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x55"
 				/* 83 ? ? 56 8B ? 8B ? 8B ? ? ? ? ? ? ? 84 ? 0F 85 ? ? ? ? 55 */
 				/* Search: "Weapon.Swing" - xref vtable. */
 			}

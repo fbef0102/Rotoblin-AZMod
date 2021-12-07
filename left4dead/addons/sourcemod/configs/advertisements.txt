@@ -38,7 +38,7 @@
     }
 	"5"
     {
-        "chat"			"{lightgreen}Roto-AZmod developer: Harry、乘風"
+        "chat"			"{lightgreen}Roto-AZmod developer: Harry"
     }
 	"6"
     {

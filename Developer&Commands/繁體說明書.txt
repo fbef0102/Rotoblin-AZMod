@@ -2,11 +2,7 @@ Competitive L4D1 Configuration
 -Based on L4D2 Acemod、L4D2 Zonemod、L4D1 rotoblin2 
 
 Author:
--Taiwan 哈利 - 撰寫一代對抗比賽腳本與插件, Write L4D1 Rotoblin scripts and plugins
-
--China 乘風 - 引擎, 模塊, 盜版破解, 安裝補丁, 調整, 校正, 輔助插件修改, 網路參數, 部分漢化
-
--Taiwan JJ - 部分漢化 + 三方載圖
+1. 哈利 (台灣人) 
 //如果有任何問題, 歡迎加steam好友並傳送訊息
 //If you have any questions, please contact me via steam, thank you!
 

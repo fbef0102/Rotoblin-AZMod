@@ -15,26 +15,26 @@
 		{
 			"L4DD::CTankClaw::DoSwing"
 			{
-				"signature"	"CTankClaw::DoSwing"
-				"callconv"	"thiscall"
-				"return"	"void"
-				"this"		"entity"
+				"signature"		"CTankClaw::DoSwing"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
 			}
 
 			"L4DD::CTankClaw::GroundPound"
 			{
-				"signature"	"CTankClaw::GroundPound"
-				"callconv"	"thiscall"
-				"return"	"void"
-				"this"		"entity"
+				"signature"		"CTankClaw::GroundPound"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
 			}
 
 			"L4DD::CTankClaw::OnPlayerHit"
 			{
-				"signature"	"CTankClaw::OnPlayerHit"
-				"callconv"	"thiscall"
-				"return"	"void"
-				"this"		"entity"
+				"signature"		"CTankClaw::OnPlayerHit"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
 				"arguments"
 				{
 					"player"
@@ -50,18 +50,18 @@
 
 			"L4DD::CTankRock::Detonate"
 			{
-				"signature"	"CTankRock::Detonate"
-				"callconv"	"thiscall"
-				"return"	"void"
-				"this"		"entity"
+				"signature"		"CTankRock::Detonate"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
 			}
 
 			"L4DD::CTankRock::OnRelease"
 			{
-				"signature"	"CTankRock::OnRelease"
-				"callconv"	"thiscall"
-				"return"	"void"
-				"this"		"entity"
+				"signature"		"CTankRock::OnRelease"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
 				"arguments"
 				{
 					"vec"
@@ -153,7 +153,7 @@
 			{
 				"signature"		"ZombieManager::SpawnHunter"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -172,7 +172,7 @@
 			{
 				"signature"		"ZombieManager::SpawnBoomer"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -191,7 +191,7 @@
 			{
 				"signature"		"ZombieManager::SpawnSmoker"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -210,7 +210,7 @@
 			{
 				"signature"		"ZombieManager::SpawnTank"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -229,7 +229,7 @@
 			{
 				"signature"		"ZombieManager::SpawnWitch"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -248,7 +248,7 @@
 			{
 				"signature"		"ZombieManager::SpawnWitch_Area"
 				"callconv"		"thiscall"
-				"return"		"int"
+				"return"		"cbaseentity"
 				"this"			"ignore"
 				"arguments"
 				{
@@ -1376,7 +1376,7 @@
 				"library"	"server"
 				"linux"		"@_ZN5Music4PlayEPKcifbb"
 				"windows"	"\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x53\x33\x2A\x39"
-				/* 81 ? ? ? ? ? A1 ? ? ? ? 53 33 ? 39 */
+				/* ? ? ? ? ? ? A1 ? ? ? ? 53 33 ? 39 ? ? 89 */
 				/* Search "Invalid emit entity index: %i\n" */
 			}
 
@@ -1805,8 +1805,8 @@
 			{
 				"library"	"server"
 				"linux"		"@_ZN13ZombieManager9SpawnTankERK6VectorRK6QAngle"
-				"windows"	"\x56\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x85\x2A\x75\x2A\x5E\xC2\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x6A\x2A\x6A\x2A\x6A\x2A\x8B\x2A\xFF\x2A\x6A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x05"
-				/* 56 68 ? ? ? ? E8 ? ? ? ? 8B ? 83 ? ? 85 ? 75 ? 5E C2 ? ? 8B ? ? ? ? ? ? ? 6A ? 6A ? 6A ? 8B ? FF ? 6A ? 8B ? E8 ? ? ? ? 8B ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 05 */
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x85\x2A\x75\x2A\x5E\xC2\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x6A\x2A\x6A\x2A\x6A\x2A\x8B\x2A\xFF\x2A\x6A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x05"
+				/* ? ? ? ? ? ? E8 ? ? ? ? 8B ? 83 ? ? 85 ? 75 ? 5E C2 ? ? 8B ? ? ? ? ? ? ? 6A ? 6A ? 6A ? 8B ? FF ? 6A ? 8B ? E8 ? ? ? ? 8B ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 05 */
 			}
 
 			/*
