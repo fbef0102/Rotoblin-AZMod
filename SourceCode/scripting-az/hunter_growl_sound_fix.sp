@@ -27,7 +27,7 @@ public Plugin:myinfo =
 	author = "Harry Potter",
 	description = "Fix Hunter produces growl sound when MIC on Bug",
 	version = PLUGIN_VERSION,
-	url = "hhttp://steamcommunity.com/profiles/76561198026784913"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
 public OnPluginStart()

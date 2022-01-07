@@ -1,0 +1,11 @@
+﻿v8.3.3
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.10-git6522 + MetaMod 1.11-git1145)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+
+------------------New------------------
+
+------------------Change------------------
+* Fixed a bug where tank and witch can't spawn at earlier progress percent
+* map stripper samll rework

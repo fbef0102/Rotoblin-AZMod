@@ -19,6 +19,7 @@ new Voten = 0;
 #define VOTE_YES "yes"
 native ClientVoteMenuSet(client,trueorfalse);//from votes3
 native SaveWitchPercent(Float:fWitchFlow); //from l4d_versus_same_UnprohibitBosses
+native float GetSurCurrentFloat(); // from l4d_current_survivor_progress
 
 public Plugin:myinfo =
 {
@@ -180,8 +181,8 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 		}
 		else
 		{
-			CreateTimer(3.0, RewriteBossFlows);
-			CreateTimer(5.0, PrintMessage);
+			CreateTimer(2.0, RewriteBossFlows);
+			CreateTimer(4.0, PrintMessage);
 			EmitSoundToAll("ui/menu_enter05.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_bossvote6");
 			CreateTimer(2.0, VoteEndDelay);
@@ -194,8 +195,14 @@ public Action:RewriteBossFlows(Handle:timer)
 {
 	if (!InSecondHalfOfRound())
 	{
+		float fSurvivorflow = GetSurCurrentFloat();
+
+		if ( 0.01 < fSurvivorflow < 1 && fTankFlow < fSurvivorflow) fTankFlow = fSurvivorflow;
 		SetTankSpawn(fTankFlow);
+
+		if ( 0.01 < fSurvivorflow < 1 && fWitchFlow < fSurvivorflow) fWitchFlow = fSurvivorflow;
 		SetWitchSpawn(fWitchFlow);
+
 		SaveBossPercents();
 		SaveWitchPercent(fWitchFlow);
 	}

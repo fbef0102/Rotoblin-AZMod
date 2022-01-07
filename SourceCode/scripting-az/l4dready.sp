@@ -1367,12 +1367,11 @@ public Action:checksurvivorspawn(Handle:timer,any:client)
 
 public Action:L4D_OnSpawnTank(const Float:vector[3], const Float:qangle[3])
 {
-	DebugPrintToAll("OnSpawnTank(vector[%f,%f,%f], qangle[%f,%f,%f]", 
-		vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
+	//PrintToChatAll("OnSpawnTank(vector[%f,%f,%f], qangle[%f,%f,%f]", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 		
-	if(hasleftsaferoom == false || (cvarEnforceReady.BoolValue == true && hasdirectorStart == false))
+	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 	{
-		DebugPrintToAll("Blocking tank spawn...");
+		//PrintToChatAll("Blocking tank spawn...");
 		return Plugin_Handled;
 	}
 	else
@@ -1384,7 +1383,7 @@ public Action:L4D_OnSpawnTank(const Float:vector[3], const Float:qangle[3])
 public Action:L4D_OnSpawnWitch(const Float:vector[3], const Float:qangle[3])
 {
 	//PrintToChatAll("ready L4D_OnSpawnWitch, hasleftsaferoom: %d, hasdirectorStart: %d",hasleftsaferoom,hasdirectorStart);
-	if(hasleftsaferoom == false || (cvarEnforceReady.BoolValue == true && hasdirectorStart == false))
+	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 	{
 		//PrintToChatAll("Blocking witch spawn...");
 		return Plugin_Handled;
@@ -3046,20 +3045,6 @@ bool:IsClientInGameHuman(client)
 {
 	return IsClientInGame(client) && !IsFakeClient(client) && ((GetClientTeam(client) == L4D_TEAM_SURVIVORS || GetClientTeam(client) == L4D_TEAM_INFECTED) || GetConVarBool(cvarReadySpectatorRUP));
 }
-
-public GetAnyClient()
-{
-	new i;
-	for(i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientConnected(i) && IsClientInGameHuman(i))
-		{
-			return i;
-		}
-	}
-	return 0;
-}
-
 
 DebugPrintToAll(const String:format[], any:...)
 {

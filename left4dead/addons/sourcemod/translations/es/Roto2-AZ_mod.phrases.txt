@@ -2209,7 +2209,7 @@
 	}
 	"l4d_storm2"
 	{
-		"es" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
+		"es" 	"You Are {1} INFECTED!!! \n Use medical item to cure yourself"
 	}
 	"l4d_storm3"
 	{

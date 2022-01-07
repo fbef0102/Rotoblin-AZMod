@@ -2218,7 +2218,7 @@
 	}
 	"l4d_storm2"
 	{
-		"pt" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
+		"pt" 	"You Are {1} INFECTED!!! \n Use medical item to cure yourself"
 	}
 	"l4d_storm3"
 	{

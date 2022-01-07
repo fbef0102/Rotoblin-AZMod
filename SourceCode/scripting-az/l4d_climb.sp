@@ -377,7 +377,7 @@ void Start(int client)
 		CopyVector(normal, BodyNormal[3]);
 		
 		int clone = CreateClone(client);
-		if(IsValidEntity(clone))
+		if(clone > 0 && IsValidEntity(clone))
 		{
 			Clone[client] = clone; 
 			
@@ -831,7 +831,12 @@ int CreateClone(int client)
 		clone = CreateEntityByName("commentary_dummy");
 	}
 	else
-	{ clone = CreateEntityByName("prop_dynamic_override"); }
+	{ 
+		clone = CreateEntityByName("prop_dynamic_override"); 
+	}
+
+	if(clone == -1) return -1;
+
 	if(IsValidEntity(clone))
 	{
 		SetEntityModel(clone, playerModel);
@@ -1160,7 +1165,7 @@ public Action RemoveInstructorHint(Handle timer, DataPack pack)
 bool IsValidEntityAndNotWorld(int entity)
 {
 	if (!IsValidEntity(entity)) return false;
-	if (entity <= 0) return false;
+	if (entity <= MaxClients) return false;
 	return true;
 }
 

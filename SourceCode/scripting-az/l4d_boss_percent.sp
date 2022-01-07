@@ -58,7 +58,6 @@ public OnPluginStart()
 	RegConsoleCmd("sm_witch", BossCmd);
 	RegConsoleCmd("sm_t", BossCmd);
 
-	HookEvent("round_start", RoundStartEvent, EventHookMode_PostNoCopy);	InSecondHalfOfRound = true;
 	HookEvent("round_end", PD_ev_RoundEnd, EventHookMode_PostNoCopy);
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 }
@@ -86,10 +85,6 @@ public Native_SaveBossPercents(Handle:plugin, numParams)
 	CreateTimer(1.0, SaveBossFlows);
 }
 
-public RoundStartEvent(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	CreateTimer(5.0, SaveBossFlows);
-}
 public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	//LogMessage("this is PD_ev_RoundEnd , InSecondHalfOfRound is true");

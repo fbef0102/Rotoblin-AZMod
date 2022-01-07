@@ -598,9 +598,9 @@ public FindSurvivorStart()
 	new String:EdictClassName[128];
 	new Float:Location[3];
 	//Search entities for either a locked saferoom door,
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if ((StrContains(EdictClassName, "prop_door_rotating_checkpoint", false) != -1) && (GetEntProp(i, Prop_Send, "m_bLocked")==1))
@@ -612,9 +612,9 @@ public FindSurvivorStart()
 		}
 	}
 	//or a survivor start point.
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "info_survivor_position", false) != -1)
@@ -640,9 +640,9 @@ public RemoveMedkits(SaferoomKits[4])
 	new Float:NearestMedkit[3];
 	new Float:Location[3];
 	//Look for the nearest medkit from where the survivors start,
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
@@ -660,9 +660,9 @@ public RemoveMedkits(SaferoomKits[4])
 		}
 	}
 	//then remove the kits
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
@@ -691,9 +691,9 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 	new Float:NearestMedkit[3];
 	new Float:Location[3];
 	//Look for the nearest medkit from where the survivors start,
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
@@ -711,9 +711,9 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 		}
 	}
 	//then replace the kits
-	for (new i = 0; i <= EntityCount; i++)
+	for (new i = MaxClients + 1; i <= EntityCount; i++)
 	{
-		if (IsValidEntity(i))
+		if (IsValidEntity(i) && IsValidEdict(i))
 		{
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)

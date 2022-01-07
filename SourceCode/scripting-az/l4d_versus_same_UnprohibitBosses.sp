@@ -27,8 +27,11 @@ static 	Float:fWitchData_agnel[3],Float:fWitchData_origin[3];
 static	bool:Tank_firstround_spawn,bool:Witch_firstround_spawn;
 static bool:b_IsSecondWitch, bool:b_KillSecondWitch;
 new Float:fWitchFlow;
-native IsWitchRestore();
-new Handle:WITCHPARTY;
+native bool IsWitchRestore(); // from l4d2_witch_restore
+ConVar WITCHPARTY;
+int g_iRoundStart, g_iPlayerSpawn;
+native float GetSurCurrentFloat(); // from l4d_current_survivor_progress
+native void SaveBossPercents(); // from l4d_boss_percent
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 { 
@@ -49,6 +52,7 @@ public Plugin:myinfo =
 	version = PLUGIN_VERSION,
 	url = "myself"
 }
+
 public OnPluginStart()
 {
 	//強制每一關生出tank與witch
@@ -77,37 +81,28 @@ public OnPluginStart()
 	}
 
 	HookEvent("tank_spawn",			TS_ev_TankSpawn,		EventHookMode_PostNoCopy);
-	HookEvent("round_start", TS_ev_RoundStart, EventHookMode_PostNoCopy);
+	HookEvent("player_spawn", 	Event_PlayerSpawn,	EventHookMode_PostNoCopy);
+	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
+	HookEvent("round_end",		Event_RoundEnd,		EventHookMode_PostNoCopy);
 	HookEvent("witch_spawn", TS_ev_WitchSpawn);
 }
-public TS_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+
+public void OnPluginEnd()
+{
+	ResetPlugin();
+}
+
+public void OnAllPluginsLoaded()
 {
 	WITCHPARTY = FindConVar("l4d_multiwitch_enabled");
-	b_IsSecondWitch = false;
-	b_KillSecondWitch = true;
-	
-	CreateTimer(2.5,COLD_DOWN);
 }
 
-public Action:COLD_DOWN(Handle:timer)
-{
-	if (InSecondHalfOfRound())
-	{
-		if(fWitchFlow == 0.0)
-			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
-		else
-		{
-			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
-			L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
-			L4D2Direct_SetVSWitchFlowPercent(1, 0.2);
-			L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
-		}
-	}
-}
-
+char sMap[64];
 public OnMapStart()
 {
-	//強制每一關生出tank與witch
+	GetCurrentMap(sMap, 64);
+
+	/*//強制每一關生出tank與witch
 	new iCampaign = (L4D_IsMissionFinalMap())? FINAL : (L4D_IsFirstMapInScenario())? INTRO : REGULAR;
 	//LogMessage("iCampaign: %d",iCampaign);
 	new Float:fTankFlow =  GetRandomBossFlow(iCampaign);
@@ -121,7 +116,7 @@ public OnMapStart()
 		L4D2Direct_SetVSTankFlowPercent(1, fTankFlow);
 	}
 	
-	if(WITCHPARTY != INVALID_HANDLE && GetConVarInt(WITCHPARTY) == 1)
+	if(WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1)
 	{
 		//LogMessage("WITCH PARTY Enable, l4d_versus_same_UnprohibitBosses.smx doesn't spawn Witch");
 	}
@@ -143,26 +138,115 @@ public OnMapStart()
 	ClearVec();
 	
 	//強制witch出生在一樣的位置
-	Witch_firstround_spawn = false;
+	Witch_firstround_spawn = false;*/
 }
 
-static Float:GetRandomBossFlow(iCampaign)
+public void OnMapEnd()
+{
+	ResetPlugin();
+}
+
+public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	b_IsSecondWitch = false;
+	b_KillSecondWitch = true;
+	
+	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
+		CreateTimer(2.0, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
+	g_iRoundStart = 1;
+}
+
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
+		CreateTimer(2.0, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
+	g_iPlayerSpawn = 1;
+}
+
+public Action:COLD_DOWN(Handle:timer)
+{
+	ResetPlugin();
+
+	if (InSecondHalfOfRound())
+	{
+		if(fWitchFlow == 0.0)
+			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
+		else
+		{
+			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
+			L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
+			L4D2Direct_SetVSWitchFlowPercent(1, 0.2);
+			L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
+		}
+	}
+	else
+	{
+		//強制每一關生出tank與witch
+		int iCampaign = (L4D_IsMissionFinalMap())? FINAL : (L4D_IsFirstMapInScenario())? INTRO : REGULAR;
+		float fSurvivorflow = GetSurCurrentFloat();
+		if (!IsTankProhibit()){
+			float fTankFlow = GetRandomBossFlow(iCampaign);
+			//LogMessage("fSurvivorflow: %.2f - fTankFlow: %.2f", fSurvivorflow, fTankFlow);
+			if ( 0.01 < fSurvivorflow < 1 && fTankFlow < fSurvivorflow) fTankFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			fTankFlow = SpecialMapTankFlow(fTankFlow,iCampaign);
+			
+			L4D2Direct_SetVSTankToSpawnThisRound(0, true);
+			L4D2Direct_SetVSTankToSpawnThisRound(1, true);
+			L4D2Direct_SetVSTankFlowPercent(0, fTankFlow);
+			L4D2Direct_SetVSTankFlowPercent(1, fTankFlow);
+		}
+		
+		if (!IsWitchProhibit())
+		{
+			fWitchFlow = GetRandomBossFlow(iCampaign);
+			//LogMessage("fSurvivorflow: %.2f - fWitchFlow: %.2f", fSurvivorflow, fWitchFlow);
+			if ( 0.01 < fSurvivorflow < 1 && fWitchFlow < fSurvivorflow) fWitchFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			fWitchFlow = SpecialMapWitchFlow(fWitchFlow,iCampaign);
+			
+			L4D2Direct_SetVSWitchToSpawnThisRound(0, true);
+			L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
+			L4D2Direct_SetVSWitchFlowPercent(0, fWitchFlow);
+			L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
+		}
+		
+		//強制tank出生在一樣的位置
+		g_bFixed = false;
+		Tank_firstround_spawn = false;
+		ClearVec();
+		
+		//強制witch出生在一樣的位置
+		Witch_firstround_spawn = false;
+	}
+
+	SaveBossPercents();
+}
+
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+{
+	ResetPlugin();
+}
+
+static float GetRandomBossFlow(int iCampaign)
 {
 	return GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], g_fCvarVsBossFlow[iCampaign][MAX]);
 }
 
-static bool:IsTankProhibit()//犧牲第一關與最後一關不要生Tank
+static bool IsTankProhibit()//犧牲第一關與最後一關不要生Tank
 {
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
 	return StrEqual(sMap, "l4d_river01_docks") || StrEqual(sMap, "l4d_river03_port")|| StrEqual(sMap, "l4d_forest03_dam");
+}
+
+static bool IsWitchProhibit()
+{
+	if(WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1)
+		return true;
+
+	return false;
 }
 
 static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
 {
 	new Float:newfFlow = fFlow;
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
 	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
 	{
 		newfFlow = GetRandomFloat(0.50, 0.55);//tank will not spawn when after 55% in this map
@@ -183,12 +267,17 @@ static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
 			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
 		}
 	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //tank will not spawn after 75% in this map
+	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) 
 	{
-		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
+		//tank will not spawn after 75% in this map
+		if( 0.75 < fFlow)
+		{
+			newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
+		}
 	}
 	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
 	{
+		//tank will not spawn during elevator (74% ~ 83%) in this map
 		if( 0.74 < fFlow && fFlow < 0.83)
 		{
 			newfFlow = GetRandomFloat(0.83, g_fCvarVsBossFlow[iCampaign][MAX]);
@@ -201,8 +290,6 @@ static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
 static Float:SpecialMapWitchFlow(const Float:fFlow,iCampaign)
 {
 	new Float:newfFlow = fFlow;
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
 	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
 	{
 		newfFlow = GetRandomFloat(0.50, 0.65);
@@ -223,9 +310,13 @@ static Float:SpecialMapWitchFlow(const Float:fFlow,iCampaign)
 			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
 		}
 	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) //witch will not spawn after 75% in this map
+	else if(StrEqual(sMap, "l4d_vs_stadium4_city2"))
 	{
-		newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
+		//witch will not spawn after 75% in this map
+		if( 0.75 < fFlow)
+		{
+			newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
+		}
 	}
 	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
 	{
@@ -257,11 +348,9 @@ public _UB_Common_CvarChange(Handle:convar, const String:oldValue[], const Strin
 
 public TS_ev_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if( (WITCHPARTY != INVALID_HANDLE && GetConVarInt(WITCHPARTY) == 1) || GetConVarInt(FindConVar("sv_cheats")) == 1 ) return;	
+	if( (WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1) || GetConVarInt(FindConVar("sv_cheats")) == 1 ) return;	
 	
 	new iEnt = GetEventInt(event, "witchid");
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
 	if(StrEqual(sMap, "l4d_vs_city17_01") && !IsWitchRestore()){//issue with city17 map1, two witches spawn in this stage, kill second witch spawn
 		if(b_IsSecondWitch && b_KillSecondWitch){
 			//PrintToChatAll("kill city17_01 second witch...");
@@ -352,4 +441,10 @@ static ClearVec()
 bool:InSecondHalfOfRound()
 {
 	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
+}
+
+void ResetPlugin()
+{
+	g_iRoundStart = 0;
+	g_iPlayerSpawn = 0;
 }

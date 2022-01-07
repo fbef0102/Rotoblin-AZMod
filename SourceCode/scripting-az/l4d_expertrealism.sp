@@ -36,7 +36,7 @@ public void OnPluginStart()
 	hGlow = CreateConVar("l4d_survivor_glowenable", "0", "If 1, Enable Server Glows for survivor team. (0=Hide Glow)", FCVAR_NOTIFY,true,0.0,true,1.0);
 	hHideHud = CreateConVar("l4d_survivor_hidehud", "64", "HUD hidden flag for survivor team. (1=weapon selection, 2=flashlight, 4=all, 8=health, 16=player dead, 32=needssuit, 64=misc, 128=chat, 256=crosshair, 512=vehicle crosshair, 1024=in vehicle)", FCVAR_NOTIFY,true,0.0);
 	hHardCoreHUDMODE = CreateConVar("l4d_survivor_hardcore_enable", "1", "If 1, Enable HardCore Mode, hide HUD and Glow by default.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	hHardCoreHUDButton = CreateConVar("l4d_survivor_hardcore_buttons", "4", "Hud will show while survivors 1: are in stillness, 2: holding SLOW_WALK(Shift), 4: holding DUCK, add numbers together (0: None).", FCVAR_NOTIFY, true, 0.0, true, 7.0);
+	hHardCoreHUDButton = CreateConVar("l4d_survivor_hardcore_buttons", "6", "Hud will show while survivors 1: are in stillness, 2: holding SLOW_WALK(Shift), 4: holding DUCK, add numbers together (0: None).", FCVAR_NOTIFY, true, 0.0, true, 7.0);
 	hHardCoreHUDTime = CreateConVar("l4d_survivor_hardcore_time", "1", "0=Instant. Duration of Hud and Glow for HardCore Mode. How long to keep the hud and glow enabled.", FCVAR_NOTIFY, true, 0.0);
 	hHardCoreHUDAnnounceType = CreateConVar("l4d_survivor_hardcore_announce_type", "0", "Changes how message displays for HardCore Mode. (0: Disable, 1:In chat, 2: In Hint Box, 3: In center text)", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 

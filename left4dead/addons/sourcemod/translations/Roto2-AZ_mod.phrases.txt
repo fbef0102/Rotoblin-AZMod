@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.3.2"
+		"en"			"Rotoblin-AZ Mod v8.3.3"
 	}
 	"Plugin_Information"
 	{
@@ -2978,8 +2978,9 @@
 	}
 	"l4d_storm2"
 	{
-		"en" 	"You Are %d INFECTED!!! \n Use medical item to cure yourself"
-		"zho" 	"你被感染, 層數：%d \n必須使用醫療物品治癒"
+		"#format"	"{1:d}"
+		"en" 	"You Are {1} INFECTED!!! \n Use medical item to cure yourself"
+		"zho" 	"你被感染, 層數：{1} \n必須使用醫療物品治癒"
 	}
 	"l4d_storm3"
 	{

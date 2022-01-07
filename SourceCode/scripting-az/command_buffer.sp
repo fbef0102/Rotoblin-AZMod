@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"2.5"
+#define PLUGIN_VERSION 		"2.7"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,16 @@
 
 ========================================================================================
 	Change Log:
+
+2.7 (06-Dec-2021)
+	- Fixed the last version breaking plugin functionality. Thanks to "sorallll" for reporting.
+
+2.6 (27-Nov-2021)
+	- Fixed "Failed to grow array" error. Thanks to "azureblue" for reporting.
+
+2.5a (16-Jun-2021)
+	- L4D2: Compatibility update for "2.2.1.3" update. Thanks to "ProjectSky" for reporting and "bedildewo" for fixing.
+	- GameData .txt file and plugin updated.
 
 2.5 (03-May-2021)
 	- Fixed errors when inputting a string with format specifiers. Thanks to "sorallll" for reporting and "Dragokas" for fix.
@@ -80,8 +90,7 @@
 #endif
 
 bool g_NextFrame;
-ArrayList g_sPrimaryCmdList;
-ArrayList g_sSecondaryCmdList;
+ArrayList g_sCommandList;
 char g_sCurrentCommand[ARGS_BUFFER_LENGTH];
 
 public Plugin myinfo =
@@ -97,8 +106,7 @@ public void OnPluginStart()
 {
 	CreateConVar("command_buffer_version", PLUGIN_VERSION, "Command and ConVar - Buffer Overflow Fixer plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	g_sPrimaryCmdList = new ArrayList(ByteCountToCells(ARGS_BUFFER_LENGTH));
-	g_sSecondaryCmdList = new ArrayList(ByteCountToCells(ARGS_BUFFER_LENGTH));
+	g_sCommandList = new ArrayList(ByteCountToCells(ARGS_BUFFER_LENGTH));
 
 	// ====================================================================================================
 	// Detour - Anytime convars are added to the buffer this will fire
@@ -183,7 +191,7 @@ public MRESReturn InsertCommandPost(Handle hReturn, Handle hParams)
 		PrintToServer("Fix: [%s]", g_sCurrentCommand);
 	#endif
 
-	g_sPrimaryCmdList.PushString(g_sCurrentCommand);
+	g_sCommandList.PushString(g_sCurrentCommand);
 
 	// Prevent "Cbuf_AddText: buffer overflow" message
 	DHookSetReturn(hReturn, true);
@@ -196,14 +204,18 @@ public MRESReturn InsertCommandPost(Handle hReturn, Handle hParams)
 // ====================================================================================================
 public void OnNextFrame(any na)
 {
+	// Remove next frame so if they fail it will create the request and execute again on next frame
+	g_NextFrame = false;
+
 	// Swap the buffers so we don't add to the list we're currently processing in our InsertServerCommand hook.
 	// Executes the ConVars/commands in the order they were.
-	ArrayList sCmdList = g_sPrimaryCmdList;
-	g_sPrimaryCmdList = g_sSecondaryCmdList;
-	g_sSecondaryCmdList = sCmdList;
+	ArrayList sCmdList = g_sCommandList.Clone();
+	g_sCommandList.Clear();
 
 	static char sCommand[ARGS_BUFFER_LENGTH];
-	for( int i = 0; i < sCmdList.Length; i++ )
+
+	int length = sCmdList.Length;
+	for( int i = 0; i < length; i++ )
 	{
 		// Debug print
 		#if DEBUGGING
@@ -218,8 +230,4 @@ public void OnNextFrame(any na)
 		// Flush the command buffer now. Outside of loop doesn't work - the convars would remain incorrect.
 		ServerExecute();
 	}
-
-	// Clean up
-	sCmdList.Clear();
-	g_NextFrame = false;
 }
