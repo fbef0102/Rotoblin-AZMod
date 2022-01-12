@@ -8,7 +8,7 @@
  *  Description:	Provides map functions for modules
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2021  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2022  Harry <fbef0102@gmail.com>
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or

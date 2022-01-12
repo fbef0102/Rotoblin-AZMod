@@ -14,6 +14,7 @@ new Float:ftongue_drag_first_damage_interval;
 new Float:ftongue_drag_first_damage_amount;
 new Float:ftongue_drag_damage_interval;
 
+native bool IsInPause();
 public Plugin:myinfo =
 {
 	name = "L4D1 Smoker Drag Damage Interval",
@@ -91,24 +92,25 @@ public Event_ChokeStop(Handle:event, const String:name[], bool:dontBroadcast)
 
 public OnTongueGrab(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "victim"));
-	
-	//PrintToChatAll("%N got grab",client);
+	//PrintToChatAll("%d got grab", GetClientOfUserId(GetEventInt(event, "victim"));
 
 	CreateTimer(
 			ftongue_drag_first_damage_interval, 
 			Timer_FirstDrag, 
-			client, 
+			GetEventInt(event, "victim"), 
 			TIMER_FLAG_NO_MAPCHANGE
 	);
 }
 
-public Action:Timer_FirstDrag(Handle:timer, any:client)
+public Action Timer_FirstDrag(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
+
 	if (!IsSurvivor(client))
 	{
 		return Plugin_Stop;
 	}
+	
 	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if(!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker)) || IsSurvivorBeingChoked(client)) 
 	{
@@ -117,11 +119,23 @@ public Action:Timer_FirstDrag(Handle:timer, any:client)
 
 	//PrintToChatAll("%N Timer_FirstDrag",client);
 
-	CreateTimer(
-			ftongue_drag_damage_interval,  
-			Timer_DragInterval, 
-			client, 
+	if(IsInPause())
+	{
+		CreateTimer(
+			ftongue_drag_first_damage_interval, 
+			Timer_FirstDrag, 
+			userid, 
 			TIMER_FLAG_NO_MAPCHANGE
+		);
+		
+		return Plugin_Continue;
+	}
+	
+	CreateTimer(
+		ftongue_drag_damage_interval,  
+		Timer_DragInterval, 
+		userid, 
+		TIMER_FLAG_NO_MAPCHANGE
 	);
 
 	HurtEntity(client, attacker, ftongue_drag_first_damage_amount);
@@ -129,8 +143,10 @@ public Action:Timer_FirstDrag(Handle:timer, any:client)
 	return Plugin_Continue;
 }
 
-public Action:Timer_DragInterval(Handle:timer, any:client)
+public Action Timer_DragInterval(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
+
 	if (!IsSurvivor(client))
 	{
 		return Plugin_Stop;
@@ -146,9 +162,14 @@ public Action:Timer_DragInterval(Handle:timer, any:client)
 	CreateTimer(
 			ftongue_drag_damage_interval,  
 			Timer_DragInterval, 
-			client, 
+			userid, 
 			TIMER_FLAG_NO_MAPCHANGE
 	);
+
+	if(IsInPause())
+	{
+		return Plugin_Continue;
+	}
 
 	HurtEntity(client, attacker, ftongue_drag_damage_amount);
 

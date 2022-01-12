@@ -15,7 +15,8 @@
 */
 
 #include <sourcemod>
-#include <sdktools> 
+#include <sdktools>
+ 
 public Plugin:myinfo =
 {
 	name = "[L4D] Pills Here",
@@ -28,10 +29,11 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	LoadTranslations("common.phrases");
-	RegAdminCmd("sm_give", Command_GivePills, ADMFLAG_BAN, "¸øÉú»¹ÕßÒ©Íè");
-	RegAdminCmd("sm_geiyao", Command_GivePills, ADMFLAG_BAN, "¸øÉú»¹ÕßÒ©Íè");
-	RegAdminCmd("sm_geiyaoto", Command_GiveWhoPills, ADMFLAG_BAN, "¸øÌØ¶¨Éú»¹ÕßÒ©Íè");
-	RegAdminCmd("sm_giveto", Command_GiveWhoPills, ADMFLAG_BAN, "¸øÌØ¶¨Éú»¹ÕßÒ©Íè");	
+	LoadTranslations("Roto2-AZ_mod.phrases");
+	RegAdminCmd("sm_give", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
+	RegAdminCmd("sm_geiyao", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
+	RegAdminCmd("sm_geiyaoto", Command_GiveWhoPills, ADMFLAG_BAN, "Give a pill to the specificed survivor");
+	RegAdminCmd("sm_giveto", Command_GiveWhoPills, ADMFLAG_BAN, "Give a pill to the specificed survivor");	
 }
 
 
@@ -56,7 +58,7 @@ public GivePillsAll()
 		}
 	}
 	SetCommandFlags("give", flags|FCVAR_CHEAT);
-	//PrintToChatAll("\x03ÏµÍ³£º\x01Èç¹ûÏµÍ³Ã»ÓĞ×Ô¶¯·¢Ò©£¬¹ÜÀíÔ±¿ÉÒÔÊäÈë»ñµÃÒ©Íè:\x04!geiyao");
+	//PrintToChatAll("å¦‚æœç³»çµ±æ²’æœ‰ç™¼è—¥ï¼Œç®¡ç†å“¡å¯è¼¸å…¥!give or !giveto <player>");
 }
 
 public Action:Command_GiveWhoPills(client, args)

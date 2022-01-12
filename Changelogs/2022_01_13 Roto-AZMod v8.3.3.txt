@@ -9,3 +9,6 @@
 ------------------Change------------------
 * Fixed a bug where tank and witch can't spawn at earlier progress percent
 * map stripper samll rework
+* Fixed smoker still does damage to the survivor when he drags the survivor during pause.
+* Fixed translation phase not found
+* Copyright (C) 2017-2022  Harry <fbef0102@gmail.com>
