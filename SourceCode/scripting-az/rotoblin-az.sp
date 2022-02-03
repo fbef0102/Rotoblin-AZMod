@@ -46,6 +46,7 @@
 #define TEAM_SPECTATOR				1
 #define TEAM_SURVIVOR				2
 #define TEAM_INFECTED				3
+#define ZOMBIECLASS_TANK 			5
 #define MAX_EDICTS					2048
 
 // Plugin info
@@ -53,7 +54,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.3.2"								// Version
+#define PLUGIN_VERSION			"8.3.4"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds

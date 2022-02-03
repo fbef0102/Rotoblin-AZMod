@@ -2,8 +2,11 @@
 // ====================================================================================================
 Change Log:
 
+1.0.2 (25-January-2022)
+    - Fixed plugin not working in some situations. (thanks "HarryPotter" for reporting)
+
 1.0.1 (06-March-2021)
-    - Fixed on L4D1. (L4D1 behaves differently than on L4D2)
+    - Fixed weapon_gascan on L4D1.
 
 1.0.0 (03-March-2021)
     - Initial release.
@@ -17,7 +20,7 @@ Change Log:
 #define PLUGIN_NAME                   "[L4D1 & L4D2] Weapon Prop Give Fix"
 #define PLUGIN_AUTHOR                 "Mart"
 #define PLUGIN_DESCRIPTION            "Fix props not spawning as prop_physics when using 'give' command"
-#define PLUGIN_VERSION                "1.0.1"
+#define PLUGIN_VERSION                "1.0.2"
 #define PLUGIN_URL                    "https://forums.alliedmods.net/showthread.php?t=331053"
 
 // ====================================================================================================
@@ -59,12 +62,6 @@ public Plugin myinfo =
 // ====================================================================================================
 // Defines
 // ====================================================================================================
-#define CLASSNAME_PROP_PHYSICS             "prop_physics"
-#define CLASSNAME_WEAPON_PROPANETANK       "weapon_propanetank"
-#define CLASSNAME_WEAPON_OXYGENTANK        "weapon_oxygentank"
-#define CLASSNAME_WEAPON_FIREWORKCRATE     "weapon_fireworkcrate"
-#define CLASSNAME_WEAPON_GASCAN            "weapon_gascan"
-
 #define MODEL_PROPANECANISTER         "models/props_junk/propanecanister001a.mdl"
 #define MODEL_OXYGENTANK              "models/props_equipment/oxygentank01.mdl"
 #define MODEL_FIREWORKS_CRATE         "models/props_junk/explosive_box001.mdl"
@@ -91,7 +88,6 @@ static ConVar g_hCvar_Gascan;
 // bool - Plugin Variables
 // ====================================================================================================
 static bool   g_bL4D2;
-static bool   g_bConfigLoaded;
 static bool   g_bCvar_Enabled;
 static bool   g_bCvar_PropaneCanister;
 static bool   g_bCvar_OxygenTank;
@@ -101,6 +97,7 @@ static bool   g_bCvar_Gascan;
 // ====================================================================================================
 // entity - Plugin Variables
 // ====================================================================================================
+static bool   ge_bOnThinkPostHooked[MAXENTITIES+1];
 static int    ge_iType[MAXENTITIES+1];
 
 // ====================================================================================================
@@ -151,18 +148,9 @@ public void OnPluginStart()
 
 /****************************************************************************************************/
 
-public void OnMapEnd()
-{
-    g_bConfigLoaded = false;
-}
-
-/****************************************************************************************************/
-
 public void OnConfigsExecuted()
 {
     GetCvars();
-
-    g_bConfigLoaded = true;
 
     LateLoad();
 }
@@ -193,53 +181,43 @@ public void GetCvars()
 
 public void LateLoad()
 {
-    if (!g_bCvar_Enabled)
-        return;
-
+    char classname[21];
     int entity;
 
-    if (g_bCvar_PropaneCanister)
+    classname = "weapon_propanetank";
+    entity = INVALID_ENT_REFERENCE;
+    while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
     {
-        entity = INVALID_ENT_REFERENCE;
-        while ((entity = FindEntityByClassname(entity, CLASSNAME_WEAPON_PROPANETANK)) != INVALID_ENT_REFERENCE)
-        {
-            ge_iType[entity] = TYPE_PROPANECANISTER;
-            OnSpawnPost(entity);
-        }
+        OnEntityCreated(entity, classname);
+        OnThinkPost(entity);
     }
 
-    if (g_bCvar_OxygenTank)
+    classname = "weapon_oxygentank";
+    entity = INVALID_ENT_REFERENCE;
+    while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
     {
-        entity = INVALID_ENT_REFERENCE;
-        while ((entity = FindEntityByClassname(entity, CLASSNAME_WEAPON_OXYGENTANK)) != INVALID_ENT_REFERENCE)
-        {
-            ge_iType[entity] = TYPE_OXYGENTANK;
-            OnSpawnPost(entity);
-        }
+        OnEntityCreated(entity, classname);
+        OnThinkPost(entity);
     }
 
     if (g_bL4D2)
     {
-        if (g_bCvar_FireworksCrate)
+        classname = "weapon_fireworkcrate";
+        entity = INVALID_ENT_REFERENCE;
+        while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
         {
-            entity = INVALID_ENT_REFERENCE;
-            while ((entity = FindEntityByClassname(entity, CLASSNAME_WEAPON_FIREWORKCRATE)) != INVALID_ENT_REFERENCE)
-            {
-                ge_iType[entity] = TYPE_FIREWORKS_CRATE;
-                OnSpawnPost(entity);
-            }
+            OnEntityCreated(entity, classname);
+            OnThinkPost(entity);
         }
     }
     else
     {
-        if (g_bCvar_Gascan)
+        classname = "weapon_gascan";
+        entity = INVALID_ENT_REFERENCE;
+        while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
         {
-            entity = INVALID_ENT_REFERENCE;
-            while ((entity = FindEntityByClassname(entity, CLASSNAME_WEAPON_GASCAN)) != INVALID_ENT_REFERENCE)
-            {
-                ge_iType[entity] = TYPE_GASCAN;
-                OnSpawnPost(entity);
-            }
+            OnEntityCreated(entity, classname);
+            OnThinkPost(entity);
         }
     }
 }
@@ -251,6 +229,7 @@ public void OnEntityDestroyed(int entity)
     if (!IsValidEntityIndex(entity))
         return;
 
+    ge_bOnThinkPostHooked[entity] = false;
     ge_iType[entity] = TYPE_NONE;
 }
 
@@ -258,47 +237,45 @@ public void OnEntityDestroyed(int entity)
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-    if (!g_bConfigLoaded)
+    if (classname[0] != 'w' || classname[1] != 'e') // weapon_*
         return;
 
-    if (!g_bCvar_Enabled)
+    if (ge_bOnThinkPostHooked[entity])
         return;
 
-    if (!IsValidEntityIndex(entity))
-        return;
-
-    if (classname[0] != 'w' && classname[1] != 'e') // weapon_*
-        return;
-
-    if (g_bCvar_PropaneCanister && StrEqual(classname, CLASSNAME_WEAPON_PROPANETANK))
+    if (StrEqual(classname, "weapon_propanetank"))
     {
         ge_iType[entity] = TYPE_PROPANECANISTER;
-        SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
+        ge_bOnThinkPostHooked[entity] = true;
+        SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
         return;
     }
 
-    if (g_bCvar_OxygenTank && StrEqual(classname, CLASSNAME_WEAPON_OXYGENTANK))
+    if (StrEqual(classname, "weapon_oxygentank"))
     {
         ge_iType[entity] = TYPE_OXYGENTANK;
-        SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
+        ge_bOnThinkPostHooked[entity] = true;
+        SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
         return;
     }
 
     if (g_bL4D2)
     {
-        if (g_bCvar_FireworksCrate && StrEqual(classname, CLASSNAME_WEAPON_FIREWORKCRATE))
+        if (StrEqual(classname, "weapon_fireworkcrate"))
         {
             ge_iType[entity] = TYPE_FIREWORKS_CRATE;
-            SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
+            ge_bOnThinkPostHooked[entity] = true;
+            SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
             return;
         }
     }
     else
     {
-        if (g_bCvar_Gascan && StrEqual(classname, CLASSNAME_WEAPON_GASCAN))
+        if (StrEqual(classname, "weapon_gascan"))
         {
             ge_iType[entity] = TYPE_GASCAN;
-            SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
+            ge_bOnThinkPostHooked[entity] = true;
+            SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
             return;
         }
     }
@@ -306,39 +283,30 @@ public void OnEntityCreated(int entity, const char[] classname)
 
 /****************************************************************************************************/
 
-public void OnSpawnPost(int entity)
+public void OnThinkPost(int entity)
 {
-    // Wait until the next frame because some plugins do TeleportEntity after DispatchSpawn
-    RequestFrame(OnNextFrame, EntIndexToEntRef(entity));
-}
-
-/****************************************************************************************************/
-
-public void OnNextFrame(int entityRef)
-{
-    int entity = EntRefToEntIndex(entityRef);
-
-    if (entity == INVALID_ENT_REFERENCE)
+    if (!g_bCvar_Enabled)
         return;
+
+    int type = ge_iType[entity];
+
+    switch (type)
+    {
+        case TYPE_PROPANECANISTER: if (!g_bCvar_PropaneCanister) return;
+        case TYPE_OXYGENTANK: if (!g_bCvar_OxygenTank) return;
+        case TYPE_FIREWORKS_CRATE: if (!g_bCvar_FireworksCrate) return;
+        case TYPE_GASCAN: if (!g_bCvar_Gascan) return;
+        default: return;
+    }
 
     if (GetEntProp(entity, Prop_Send, "m_hOwner") != -1)
-    {
-        if (!g_bL4D2) // L4D1 fix
-            RequestFrame(OnNextFrame, entityRef);
-
         return;
-    }
 
     float vPos[3];
     GetEntPropVector(entity, Prop_Send, "m_vecOrigin", vPos);
 
-    if (vPos[0] == 0 && vPos[1] == 0 && vPos[2] == 0) // Probably on client hands
-        return;
-
     float vAng[3];
     GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
-
-    int type = ge_iType[entity]; // Before Kill otherwise the value will reset
 
     AcceptEntityInput(entity, "Kill");
 
@@ -349,43 +317,22 @@ public void OnNextFrame(int entityRef)
 
 public void CreateProp(int type, float vPos[3], float vAng[3])
 {
-    int entity;
+    char modelname[PLATFORM_MAX_PATH];
 
     switch (type)
     {
-        case TYPE_PROPANECANISTER:
-        {
-            entity = CreateEntityByName(CLASSNAME_PROP_PHYSICS);
-            SetEntityModel(entity, MODEL_PROPANECANISTER);
-        }
-
-        case TYPE_OXYGENTANK:
-        {
-            entity = CreateEntityByName(CLASSNAME_PROP_PHYSICS);
-            SetEntityModel(entity, MODEL_OXYGENTANK);
-        }
-
-        case TYPE_FIREWORKS_CRATE:
-        {
-            entity = CreateEntityByName(CLASSNAME_PROP_PHYSICS);
-            SetEntityModel(entity, MODEL_FIREWORKS_CRATE);
-        }
-
-        case TYPE_GASCAN:
-        {
-            entity = CreateEntityByName(CLASSNAME_PROP_PHYSICS);
-            SetEntityModel(entity, MODEL_GASCAN);
-        }
-
-        default:
-        {
-            return;
-        }
+        case TYPE_PROPANECANISTER: modelname = MODEL_PROPANECANISTER;
+        case TYPE_OXYGENTANK: modelname = MODEL_OXYGENTANK;
+        case TYPE_FIREWORKS_CRATE: modelname = MODEL_FIREWORKS_CRATE;
+        case TYPE_GASCAN: modelname = MODEL_GASCAN;
+        default: return;
     }
 
-    TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+    int entity = CreateEntityByName("prop_physics");
+    DispatchKeyValue(entity, "model", modelname);
+    DispatchKeyValueVector(entity, "origin", vPos);
+    DispatchKeyValueVector(entity, "angles", vAng);
     DispatchSpawn(entity);
-    ActivateEntity(entity);
 }
 
 // ====================================================================================================

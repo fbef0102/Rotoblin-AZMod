@@ -7,12 +7,39 @@
 
 public Plugin myinfo = 
 {
-	name = "L4D2 Car Alarm Hittable Fix",
-	author = "Sir",
+	name = "L4D1 Car Alarm Hittable Fix",
+	author = "Sir, l4d1 port by Harry",
 	description = "Disables the Car Alarm when a Tank hittable hits the alarmed car.",
 	version = "1.1",
 	url = "nah"
 };
+
+#define GAMEDATA		"l4d_car_alarm_hittable_fix"
+int g_iOffset;
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success;
+}
+
+public void OnPluginStart()
+{
+	Handle hGameData = LoadGameConfigFile(GAMEDATA);
+	if( hGameData == null ) SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
+
+	g_iOffset = GameConfGetOffset(hGameData, "Alarm_Patch_Offset");
+	if( g_iOffset == -1 ) SetFailState("\n==========\nMissing required offset: \"Alarm_Patch_Offset\".\nPlease update your GameData file for this plugin.\n==========");
+
+	delete hGameData;
+}
 
 public void OnEntityCreated(int entity, const char[] classname) 
 {
@@ -30,10 +57,11 @@ public Action OnAlarmCarTouch(int car, int entity)
 		if (GetEntProp(entity, Prop_Send, "m_hasTankGlow") > 0)
 		{
 			// Disable the Car Alarm
-			AcceptEntityInput(car, "Disable");
+			SetEntData(car, g_iOffset, 1, 1, false);
 
 			// Fake damage to Car to stop the glass from still blinking, delay it to prevent issues.
-			CreateTimer(0.3, DisableAlarm, car);
+			// It seems not working in l4d1
+			// CreateTimer(0.3, DisableAlarm, car);
 
 			// Unhook car, we don't need it anymore.
 			SDKUnhook(car, SDKHook_Touch, OnAlarmCarTouch);

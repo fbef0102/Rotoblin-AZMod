@@ -234,7 +234,8 @@ bool CanBeTP(int client) //要被傳送的玩家
 	if (!IsClientInGame(client) || !IsFakeClient(client))return false;
 	if (GetClientTeam(client) != 3 || !IsPlayerAlive(client))return false;
 	if (GetInfectedClass(client) == L4DInfected_Tank )return false;
-	if (CanBeSeenByHumanSurvivors(client)) return false;
+	if (L4D_GetSurvivorVictim(client) != -1) return false; //正在控人類
+	if (CanBeSeenBySurvivors(client)) return false;
 	return true;
 }
 
@@ -243,8 +244,8 @@ bool CanTP2(int client) //傳送目的地的玩家
 	if(!IsClientInGame(client)) return false;
 	if(GetClientTeam(client) != 3 || !IsPlayerAlive(client)) return false;
 	if(IsPlayerGhost(client)) return false;
-	if(!g_bTeleVisibleThreats && CanBeSeenByHumanSurvivors(client)) return false; //在人類視野範圍內
 	//if(L4D_GetSurvivorVictim(client) != -1) return false; //正在控人類
+	if(!g_bTeleVisibleThreats && CanBeSeenBySurvivors(client)) return false; //在人類視野範圍內
 	
 	return true;
 }
@@ -439,11 +440,11 @@ static bool TraceFilter(int entity, int mask, int self)
 	return entity != self;
 }
 
-bool CanBeSeenByHumanSurvivors(int infected)
+bool CanBeSeenBySurvivors(int infected)
 {
 	for (int client = 1; client <= MaxClients; ++client)
 	{
-		if (IsAliveHumanSurvivor(client) && IsVisibleTo(client, infected))
+		if (IsAliveSurvivor(client) && IsVisibleTo(client, infected))
 		{
 			return true;
 		}
@@ -451,10 +452,9 @@ bool CanBeSeenByHumanSurvivors(int infected)
 	return false;
 }
 
-static bool IsAliveHumanSurvivor(int client)
+bool IsAliveSurvivor(int client)
 {
     return IsClientInGame(client)
-    	&& !IsFakeClient(client)
         && GetClientTeam(client) == 2
         && IsPlayerAlive(client);
 }

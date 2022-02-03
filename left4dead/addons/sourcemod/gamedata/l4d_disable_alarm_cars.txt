@@ -1,0 +1,18 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			/* Found at top of function:
+				NIX: if ( *((_BYTE *)a1 + 1936) ) return;
+				WIN: if ( !*(_BYTE *)(this + 1916)
+			*/
+			"Alarm_Patch_Offset"
+			{
+				"windows"		"1916"
+				"linux"			"1936"
+			}
+		}
+	}
+}

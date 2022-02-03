@@ -51,7 +51,7 @@ static			Handle:	g_hBlockUse_Timer[MAXPLAYERS +1]	= {INVALID_HANDLE};
 
 static					g_iBlockClientThrow					= 0;			// Client index to block rock throws from
 
-static			bool:	g_bIsTankFireImmune					= true;			// Boolean for fire immunity
+static			bool:	g_bIsTankFireImmune					= false;			// Boolean for fire immunity
 
 static					g_iDebugChannel							= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]					= "GhostTank";
@@ -91,7 +91,7 @@ public _GT_OnPluginEnable()
 	HookTankEvent(TANK_PASSED	, _GT_TankPassed_Event);
 	HookPublicEvent(EVENT_ONPLAYERRUNCMD, _GT_OnPlayerRunCmd);
 	
-	g_bIsTankFireImmune = true;
+	g_bIsTankFireImmune = false;
 
 	DebugPrintToAllEx("Module is now loaded");
 }
@@ -124,7 +124,7 @@ public _GT_OnPluginDisable()
 public _GT_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	DebugPrintToAllEx("Round start");
-	g_bIsTankFireImmune = true;
+	g_bIsTankFireImmune = false;
 }
 
 /**
@@ -137,21 +137,21 @@ public _GT_TankSpawn_Event()
 	new client = GetTankClient(); // Get current tank client
 	new Float:fFireImmunityTime = FIRE_IMMUNITY_TIME;
 
-	if (IsFakeClient(client)) // if AI tank
-	{
-		new Float:fSelectionTime = GetConVarFloat(g_hSelectionTimeCvar); // Get selection time
+	if (!IsFakeClient(client)) return;
 
-		g_iBlockClientThrow = client;
-		SetEntityMoveType(client, MOVETYPE_NONE);			// Freeze ai tank
-		SetPlayerGhostState(client, true);					// Ghost ai tank
+	new Float:fSelectionTime = GetConVarFloat(g_hSelectionTimeCvar); // Get selection time
 
-		CreateTimer(fSelectionTime, _GT_ResumeTank_Timer,client);	// Create timer for restoring ai tank
-		fFireImmunityTime += fSelectionTime;				// Add some more time to fire immunity
-	}
+	g_iBlockClientThrow = client;
+	SetEntityMoveType(client, MOVETYPE_NONE);			// Freeze ai tank
+	SetPlayerGhostState(client, true);					// Ghost ai tank
 
-	CreateTimer(0.1, _GT_TankOnFire_Timer, client, TIMER_REPEAT);
+	CreateTimer(fSelectionTime, _GT_ResumeTank_Timer,client);	// Create timer for restoring ai tank
+	fFireImmunityTime += fSelectionTime;				// Add some more time to fire immunity
+
+	//CreateTimer(0.1, _GT_TankOnFire_Timer, client, TIMER_REPEAT);
+	g_bIsTankFireImmune = true;
 	CreateTimer(fFireImmunityTime, _GT_FireImmunity_Timer); // Create fire immunity timer
-	DebugPrintToAllEx("Tank spawned, created fire immunity timer. Immunity time %f", fFireImmunityTime);
+	//PrintToChatAll("Tank spawned, created fire immunity timer. Immunity time %.2f", fFireImmunityTime);
 }
 
 /**
@@ -161,8 +161,7 @@ public _GT_TankSpawn_Event()
  */
 public _GT_TankKilled_Event()
 {
-	g_bIsTankFireImmune = true;
-	DebugPrintToAllEx("Tank killed");
+	g_bIsTankFireImmune = false;
 }
 
 /**
@@ -186,12 +185,10 @@ public _GT_TankPassed_Event()
  */
 public _GT_PlayerHurt_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (!IsTankInPlay()) return; // If the tank isn't in play, return
-
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!client) return;
+	if (!client || !IsClientInGame(client)) return;
 
-	if (g_bIsTankFireImmune && GetTankClient() == client)
+	if (g_bIsTankFireImmune && GetClientTeam(client) == TEAM_INFECTED && IsPlayerAlive(client) && GetEntProp(client,Prop_Send,"m_zombieClass") == ZOMBIECLASS_TANK)
 	{
 		new dmgtype = GetEventInt(event, "type");
 		if (dmgtype != FIRE_DAMAGE_TYPE) return; // If it wasn't fire that hurt the tank, return
@@ -296,7 +293,6 @@ public Action:_GT_ResumeTank_Timer(Handle:timer,any:client)
 public Action:_GT_FireImmunity_Timer(Handle:timer)
 {
 	g_bIsTankFireImmune = false; // Tank is no longer fire immune
-	DebugPrintToAllEx("Tank is no longer fire immune");
 }
 
 /**
@@ -305,7 +301,7 @@ public Action:_GT_FireImmunity_Timer(Handle:timer)
  * @param timer			Handle to the timer object.
  * @noreturn
  */
-public Action:_GT_TankOnFire_Timer(Handle:timer,any:client)
+/*public Action:_GT_TankOnFire_Timer(Handle:timer,any:client)
 {
 	if (!g_bIsTankFireImmune || !client || !IsClientInGame(client) || GetClientTeam(client) !=3 || GetEntProp(client, Prop_Send, "m_zombieClass") != 5) return Plugin_Stop;
 
@@ -315,7 +311,7 @@ public Action:_GT_TankOnFire_Timer(Handle:timer,any:client)
 		DebugPrintToAllEx("Fire was put out");
 	}
 	return Plugin_Continue;
-}
+}*/
 
 /**
  * Called when the block use timer interval has elapsed.

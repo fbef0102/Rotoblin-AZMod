@@ -363,6 +363,18 @@ void L4D1_Specific(Handle &hGamedata)
 				
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnAnimationEvent'");
 			}
+			else if(byte == 0x74)
+			{
+				OnAnimationEvent = patch + view_as<Address>(offset);
+				
+				OnAnimationEventBytesStore[0] = LoadFromAddress(OnAnimationEvent, NumberType_Int8);
+				OnAnimationEventBytesStore[1] = LoadFromAddress(OnAnimationEvent + view_as<Address>(1), NumberType_Int8);
+				
+				StoreToAddress(OnAnimationEvent, 0x76, NumberType_Int8);//functions flipped around jump if below and equal which will be always true
+				//StoreToAddress(OnAnimationEvent + view_as<Address>(1), 0x90, NumberType_Int8);
+				
+				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnAnimationEvent'");
+			}
 			else
 			{
 				LogError("Incorrect offset for 'WitchAttack::OnAnimationEvent'.");

@@ -1215,6 +1215,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	hasdirectorStart = false;
 	hasleftsaferoom = false;
 	g_bGameTeamSwitchBlock = false;
+	inLiveCountdown = false;
 	
 
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )

@@ -1,5 +1,6 @@
 # Rotoblin-AZMod
-v8.3.3
+v8.3.4 
+@ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
@@ -72,7 +73,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
   * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached to the sm_admin menu
-  * votemanager2.smx make All non-adm players can not call a value vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
+  * votes3.smx makes All players can not call a valve vote (esc->vote). Remeber if player wants to call a vote, use **!votes** instead!!
   * Adm type **!slots <#>** to forcechange server slots
   * [All Admin commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Adm%20Commands.png)
   * [Everyone commands](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/Roto-AZMod%20Everyone%20Commands.png)
@@ -237,7 +238,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Prevents people from blocking players who climb on the ladder including tank.
 * Spectators stay spectator on map change.
 * Forces all players on the right team after map/campaign/match change"
-* Fixed a l4d1 value bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
+* Fixed a l4d1 valve bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
      > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see.
 * Fixed players using bunnyhop to increase their MaxSpeed.
 * Fixed second team having different SI spawns on round start.
@@ -253,7 +254,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * Pulled Survivors go through Common Infected
      * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
      * Commons go through Witch (prevent commons from pushing witch in l4d1)
-  
+* Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
+* Removes touch links for player on team change to prevent same player to be affected by whatever he was "touching" before team change on his old position. ([Video](https://youtu.be/UzmRm_LcK8A))
+* Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
+* Fixed Multiple visual spectator bugs after team swap in finale
+	
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 30s.
@@ -280,6 +285,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * No gunfire slowdown and shove slowdown
     * Can't spawn in saferoom or any "this is restricted area" rooms (one of l4d1 original feature)
     * Allow duck fastspeed exploit when infected ghost state (one of l4d1 original feature)
+	* Allow water bhop and swim (one of l4d1 original feature)
     * NSpecial infected cannot damage each other.(but still move back) The tank can damage other special infected.
     * Can't M2 scratch when duck (one of l4d1 original feature)
     * Stop special infected getting bashed to death except for Boomer 
@@ -295,7 +301,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Overrides special infected targeting players.
       * ignore player who is pinned by smoker & hunter.
       * change target to nearest survivor no matter anyone gets vomited.
-      * AI Tank now ignores player who use minigun
+      * AI Tank now ignores player who use minigun.
+      * if no target found, freeze infected.
+	* Enable free movement (Left/Right/Crouch) on SI when M2-ing.
 	 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -339,6 +347,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
 	* Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
 	* Tank burn life time: 125s (vanilla: **75**)
+	* Ghost Tank freezes and being immune to fire for a while.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -360,6 +369,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Drag Damage: 1, interval: 0.33 (3 dps, same as vanilla)
 	* Choke Damage: 1, interval: 0.2 (5 dps, same as vanilla)
 	* Fix tongue instant choking survivors.
+	* Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
 	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)
@@ -398,6 +408,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *10%*: **4 Hunters**
 	* Explode after 3 times shove (original: 5)
 	* Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
+	* Fixes boomer teleport whenever hes close enough to ladder
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
@@ -450,6 +461,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
   * Prevents small push effect between survior players, bots still get pushed.
   * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On
+  * Disables the Car Alarm before survivors leave the safe room.
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
@@ -505,6 +517,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fix props not spawning as prop_physics when using 'give' command
 * Changes the collision from all weapons or carryables to collide only with the world and static stuff
 * Survivors can climb the wall during ready up.
+* Shows a laser for straight-flying fired projectiles during ready up.
 * Allows changing of displayed game type in server browser
 <img src="https://i.imgur.com/hbJd1Hs.png" alt="FGkLDMp.png" width="950" height = "500">
 

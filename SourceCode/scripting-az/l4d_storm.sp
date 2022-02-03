@@ -235,7 +235,7 @@ public OnPluginStart()
 		g_ByteSaved[i] = LoadFromAddress(g_Address + view_as<Address>(i), NumberType_Int8);
 	}
 
-	if( g_ByteSaved[0] != 0xE8 ) SetFailState("Failed to load, byte mis-match. %d (0x%02X != 0xE8)", offset, g_ByteSaved[0]);
+	if( g_ByteSaved[0] != (g_ByteCount == 1 ? 0x0F : 0xE8) ) SetFailState("Failed to load, byte mis-match. %d (0x%02X != 0xE8)", offset, g_ByteSaved[0]);
 
 	delete hGameData;
 
@@ -252,7 +252,7 @@ public OnPluginStart()
 	g_hCvarModesOff =	CreateConVar(	"l4d_storm_modes_off",		"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
 	g_hCvarModesTog = CreateConVar(		"l4d_storm_modes_tog",		"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
 	g_hCvarMixer =	CreateConVar(		"l4d_storm_mixer",			"0",			"0=Off, 1=Turn down the voip voice transmit volume during the storm state.", CVAR_FLAGS);
-	g_hCvarPost =	CreateConVar(		"l4d_storm_post",			"-0.0",		"0.0=Off. Applies post process effect during the storm state. Value near 0 will blur, lower values cause other effects.", CVAR_FLAGS);
+	g_hCvarPost =	CreateConVar(		"l4d_storm_post",			"0.0",		"0.0=Off. Applies post process effect during the storm state. Value near 0 will blur, lower values cause other effects.", CVAR_FLAGS);
 	g_hCvarStyle =	CreateConVar(		"l4d_storm_style",			"0",			"Method to refresh map light style: 0=Old (0.2 sec low FPS, does not the whole world). 1=Almost always lights the whole world (0.5 sec low FPS), 2=Lights the whole world (1 sec low FPS).", CVAR_FLAGS);
 	CreateConVar(						"l4d_storm_version",		PLUGIN_VERSION,	"Weather Control plugin version.", CVAR_FLAGS|FCVAR_REPLICATED|FCVAR_DONTRECORD);
 
@@ -4575,8 +4575,17 @@ void PatchAddress(bool patch)
 	if( !patched && patch )
 	{
 		patched = true;
-		for( int i = 0; i < g_ByteCount; i++ )
-			StoreToAddress(g_Address + view_as<Address>(i), 0x90, NumberType_Int8);
+
+		// Linux
+		if( g_ByteCount == 1 )
+		{
+			StoreToAddress(g_Address + view_as<Address>(1), 0x89, NumberType_Int8);
+		}
+		else
+		{
+			for( int i = 0; i < g_ByteCount; i++ )
+				StoreToAddress(g_Address + view_as<Address>(i), 0x90, NumberType_Int8);
+		}
 	}
 	else if( patched && !patch )
 	{

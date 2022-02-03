@@ -7,7 +7,7 @@ Author:
 //If you have any questions, please contact me via steam, thank you!
 
 --------引擎主要--------
-[01] sourcemod 1.10-git6522
+[01] sourcemod 1.10-git6528
 [02] metamod  1.11-git1145
 [03] stripper 1.2.2-git129
 [04] l4dtoolz 1.1.0.1
@@ -209,6 +209,7 @@ Author:
 //adm give Survivors HP (!hp)
 
 [49] votes3　
+//禁止使用官方介面投票
 //投票各種項目(!votes)
 
 [50] l4dready
@@ -334,216 +335,217 @@ Author:
 [88] hunter_growl_sound_fix
 //修正Hunter玩家MIC說話的時候Hunter會發出低吼聲即使Hunter仍然站著不動
 
-[89] votemanager2
-//官方投票需要管理員權限
-
-[90] l4d_tank_count
+[89] l4d_tank_count
 //坦克存活計秒器, 拳頭/石頭/玩具 擊中計數器
 
-[91] ratemonitor
+[90] ratemonitor
 //顯示玩家的 Cmdrate/Updaterate/Rate (!rates)
 
-[92] l4d_drop_secondary
+[91] l4d_drop_secondary
 //玩家死亡掉落第二武器(手槍) + ready模式中死亡不會掉落武器
 
-[93] l4d2_si_ffblock
+[92] l4d2_si_ffblock
 //Disables friendly fire between infected players except Tank/Witch
 
-[94] l4dinfectedbots
+[93] l4dinfectedbots
 //pub混野中新增特感bot
 
-[95] 1vHunters
+[94] 1vHunters
 //支援多Hunters混戰模式
 
-[96] l4d2_smg_reload_tweak
+[95] l4d2_smg_reload_tweak
 //smg reload faster with faster reload animation
 
-[97] botpopstop
+[96] botpopstop
 //Removes pills from bots if they try to use them and restores them when a human takes over.
 
-[98] l4d_PillsHere
+[97] l4d_PillsHere
 //Gives pills to survivors who doesn't have pill
 
-[99] all4dead
+[98] all4dead
 //This mod allows administrators to influence what the AI director does without sv_cheats 1.
 
-[100] l4d_multiwitch
+[99] l4d_multiwitch
 //A plugin that spawns unlimited witches off of a timer.
 
-[101] server_loader
+[100] server_loader
 //executes server_startup.cfg file on server startup
 
-[102] l4d_disable_shadows
+[101] l4d_disable_shadows
 //Disables all shadows from the map, Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
 
-[103] l4d_NoRescueFirstTank
+[102] l4d_NoRescueFirstTank
 //移除救援後的第一隻坦克
 //rescue second tank spawn same position for both team
 
-[104] AI_HardSI
+[103] AI_HardSI
 //智能AI
 
-[105] finalefix
+[104] finalefix
 //Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
 
-[106] l4d_QuadCaps
+[105] l4d_QuadCaps
 //If Boomer dies last, then next Special Infected Spawn: 100% Quad Incaps
 //The Starting SI remain random (yet equal on both sides)
 
-[107] savechat
+[106] savechat
 //紀錄玩家聊天與說話紀錄 in left4dead\addons\sourcemod\logs\chat
 
-[108] l4d_slot_vote
+[107] l4d_slot_vote
 //Allow players to change server slots by using vote.
 
-[109] bequiet
+[108] bequiet
 //Please be Quiet!
 
-[110] l4d_teamshuffle
+[109] l4d_teamshuffle
 //team shuffle (!shuffle)
 
-[111] hunter_callout_blocker
+[110] hunter_callout_blocker
 //生還者不會再喊出'Hunter'語音！（例如：森林裡的獵人處於你視野裡，不會喊出）
 
-[112] l4d_vocalize_antiflood
+[111] l4d_vocalize_antiflood
 //阻擋一直惡意亂叫濫用遊戲角色語音
 
-[113] gametype_description
+[112] gametype_description
 //允許在伺服器瀏覽表中更改顯示的遊戲類型
 
-[114] l4d_rock_lagcomp
+[113] l4d_rock_lagcomp
 //自製坦克石頭hitbox + 武器對石頭傷害修改 有助於高ping戰士打掉石頭
 //誰打掉了石頭
 
-[115] l4d_vomit_trace_patch
+[114] l4d_vomit_trace_patch
 //修正胖子的噴液會被特感隊友擋住(靈魂身體也會擋住)
 
-[116] SpeakingList
+[115] SpeakingList
 //alltalk off 之時只給旁觀玩家顯示誰正在使用麥克風說話
 //alltalk on 之時全體玩家顯示誰正在使用麥克風說話
 
-[117] l4d_spectator_prefix
+[116] l4d_spectator_prefix
 //玩家旁觀時更改名子前啜, 好讓外面人看到伺服器資訊誰在玩,誰沒在玩
 
-[118] AntiBreach
+[117] AntiBreach
 //防止低能特感玩家利用安全門bug復活衝破進去安全室
 
-[119] witch_allow_in_safezone
+[118] witch_allow_in_safezone
 //Witch能追人類到安全室內
 
-[120] l4d_ssi_teleport_fix
+[119] l4d_ssi_teleport_fix
 //AI 特感傳送到距離人類最近的特感身上
 
-[121] l4d2_si_ladder_booster
+[120] l4d2_si_ladder_booster
 //AI 特感爬梯子加速
 
-[122] l4d_sm_respawn
+[121] l4d_sm_respawn
 //sm_respawn 復活玩家
 
-[123] firebulletsfix
+[122] firebulletsfix
 //Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving.
 
-[124] l4d_bossvote
+[123] l4d_bossvote
 //Allow players to change server slots by using vote.
 
-[125] command_buffer
+[124] command_buffer
 //ConVars 太多啦
 
-[126] l4d_weapon_csgo_reload
+[125] l4d_weapon_csgo_reload
 //reload like  CSGO weapon
 
-[127] anti-friendly_fire
+[126] anti-friendly_fire
 //射隊友 = 射你自己
 
-[128] L4DVSAutoSpectateOnAFK
+[127] L4DVSAutoSpectateOnAFK
 //自動旁觀AFK玩家並且踢掉
-[129] sv_steamgroup_fixer
+
+[128] sv_steamgroup_fixer
 //修正 sv_steamgroup 指令無法顯示正確群組
 
-[130] l4d_wind
+[129] l4d_wind
 //增加電腦玩家
 
-[131] l4d_dynamic_light
+[130] l4d_dynamic_light
 //手電筒發亮特效
 
-[132] l4d2_noghostcheat
+[131] l4d2_noghostcheat
 //防止玩家看到鬼
 
-[133] [L4D] Rock Glow
+[132] [L4D] Rock Glow
 //坦克石頭發光(只有特感與旁觀隊伍能看見)
 
-[134] l4d_target_patch
+[133] l4d_target_patch
 //特感能夠識別目標並轉移（不會重複追同一隻、不攻擊已倒地的玩家）
 
-[135] l4d_collision_adjustments (linux only)
+[134] l4d_collision_adjustments (linux only)
 //碰撞模型穿透
 //坦克石頭穿透小殭屍(還是會殺死)
 //被舌頭拉走的玩家穿透小殭屍
 //坦克石頭穿透倒地的玩家(如果即將倒地不會穿透)
 //小殭屍穿透witch(避免witch堵路)
 
-[136] l4d_pause_message
+[135] l4d_pause_message
 //如果伺服器不支援暫停功能，控制台停止刷版顯示誰暫停 誰解除暫停
 
-[137] l4d_tank_rock_ignition
+[136] l4d_tank_rock_ignition
 //Tank著火，丟出來的石頭也會著火
 
-[138] witch_prevent_target_loss
+[137] witch_prevent_target_loss
 //Witch不會失去目標
 
-[139] antisaferoomdooropen
+[138] antisaferoomdooropen
 //防止玩家不等人直接開門衝出去
 
-[140] l4d_flashlight
+[139] l4d_flashlight
 //給旁觀者更好的觀看體驗
 
-[141] l4d_info_editor
+[140] l4d_info_editor
 //Modify gamemodes.txt and weapons.txt values by config instead of conflicting Game files.
 
-[142] l4d_smoker_drag_damage_interval
+[141] l4d_smoker_drag_damage_interval
 //調整Smoker舌頭拖曳的傷害與時間
 
-[143] l4d_backjump_fix
+[142] l4d_backjump_fix
 //Hunter能在自製的物件牆壁上無聲踢牆與後續彈跳
 
-[144] l4d_checkpoint_rock_patch
+[143] l4d_checkpoint_rock_patch
 //修正Tank石頭的Hitbox在安全室會變小 (我哪知道 去問Valve)
 
-[145] l4d_expertrealism
+[144] l4d_expertrealism
 //寫實模式 (看不到隊友輪廓與血量狀態)
 
-[146] left4dhooks
+[145] left4dhooks
 //Left 4 Downtown + L4D Direct
 
-[147] rotoblin-az
+[146] rotoblin-az
 //核心插件
 
-[148] l4d_mix
+[147] l4d_mix
 //team mix (!mix)
 
-[149] l4d_useful_upgrades
+[148] l4d_useful_upgrades
 //黑暗戰役輔助 雷射裝置/消音槍/夜視鏡
 
-[150] l4d2_boomer_shenanigans
+[149] l4d2_boomer_shenanigans
 //Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
 
-[151] l4d2_car_alarm_hittable_fix
-//Tank打過的警報車不會被人類觸發警報
+[150] l4d_car_alarm_hittable_fix
+//被其他Tank能打的物件觸碰的警報車關閉警報
 
-[152] l4d_weapon_prop_give_fix
+[151] l4d_weapon_prop_give_fix
 //使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
 
-[153] l4d_unswap_empty_primary
+[152] l4d_unswap_empty_primary
 //撿到空彈夾的主武器不會自動切換到手槍
 
-[154] physics_object_pushfix
+[153] physics_object_pushfix
 //人類與特感不會再推擠物件
 
-[155] l4d_pipebomb_ignore
+[154] l4d_pipebomb_ignore
 //即使玩家丟出土製炸彈，Bot依然能開槍行動
 
-[156] l4d_climb
+[155] l4d_climb
 //蜘蛛人爬牆插件
+
+[156] l4d_lasertag
+//子彈彈道雷射光
 
 [157] l4d_remove_item_collision
 //所有物品與武器不會有碰撞屬性
@@ -557,14 +559,32 @@ Author:
 [160] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
 
-[161] l4d_unlimited_grenades_fix
-//修正無限手榴彈的bug (土製炸彈、火焰瓶)
-
-[162] l4d2_block_rocketjump
+[161] l4d2_block_rocketjump
 //修正踩頭高跳
 
-[163] l4d_tongue_float_fix
+[162] l4d_tongue_float_fix
 //修正舌頭直接拉走倖存者不給機會開槍 (倖存者懸空高度的問題)
+
+[163] l4d_disable_alarm_cars
+//關閉警報車直到倖存者離開安全室
+
+[164] l4d_boomer_ladder_fix
+//修正Boomer的體型比較容易黏在特感梯子上
+
+[165] l4d_nosecondchances
+//AI取代真人玩家的特感Bot之後處死 (除非有抓到倖存者)
+
+[166] l4d_fix_deathfall_cam
+//修復地圖上point_deathfall_camer與戰役下的各種"point_viewcontrol*"永久鎖住玩家鏡頭  (旁觀者與特感觀視角會卡住)
+
+[167] remove_touch_links
+//修復特感處在死亡/倒地區域內換到倖存者隊伍之後倖存者會立即死亡/倒地
+
+[168] l4d_no_m2_movement_block
+//特感使用右鍵抓人的時候可以左右移動並蹲下
+
+[169] disable_cameras
+//防止因為地圖上的鏡頭視角錯誤造成伺服器崩潰
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

@@ -1,0 +1,43 @@
+"Games"
+{
+	"#default"
+	{
+		"Signatures"
+		{
+			"CBaseEntity::PhysicsRemoveTouchedList"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11CBaseEntity24PhysicsRemoveTouchedListEPS_"
+				"mac"		"@_ZN11CBaseEntity24PhysicsRemoveTouchedListEPS_"
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Signatures"
+		{
+			"CBaseEntity::PhysicsRemoveTouchedList"
+			{
+				"library"	"server"
+				// Look for "remove 0x%x: %s-%s (%d-%d)", pick xref with a while loop
+				// 83 EC ? 55 8B ? ? ? 8B ? ? ? ? ? D1
+				"windows"	"\x83\xEC\x2A\x55\x8B\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xD1"
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"CBaseEntity::PhysicsRemoveTouchedList"
+			{
+				"library"	"server"
+				// Look for "remove 0x%x: %s-%s (%d-%d)", pick xref with a while loop
+				// 55 8B EC 83 EC 08 53 8B 5D 08 8B 83 B8 03 00 00
+				"windows"	"\x55\x8B\xEC\x83\xEC\x08\x53\x8B\x5D\x08\x8B\x83\xB8\x03\x00\x00"
+			}
+		}
+	}
+}

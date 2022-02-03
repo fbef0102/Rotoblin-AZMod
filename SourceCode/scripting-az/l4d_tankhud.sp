@@ -21,6 +21,8 @@ native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native bool:IsInPause();//From roto
 
 ConVar z_tank_health;
+ConVar z_tank_burning_lifetime;
+ConVar versus_tank_bonus_health;
 
 public Plugin:myinfo = 
 {
@@ -43,9 +45,31 @@ public OnPluginStart()
 	HookEvent("entity_killed",		PD_ev_EntityKilled);
 	
 	z_tank_health = FindConVar("z_tank_health");
+	z_tank_burning_lifetime = FindConVar("z_tank_burning_lifetime");
+	versus_tank_bonus_health = FindConVar("versus_tank_bonus_health");
+
+	GetCvars();
+	z_tank_health.AddChangeHook(ConVarChanged_Cvars);
+	z_tank_burning_lifetime.AddChangeHook(ConVarChanged_Cvars);
+	versus_tank_bonus_health.AddChangeHook(ConVarChanged_Cvars);
 
 	for (new i = 1; i <= MaxClients; i++) 
 		bTankHudActive[i] = true;
+}
+
+public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
+float tank_health;
+float tank_burning_lifetime;
+int tank_burn_damage_per_second;
+void GetCvars()
+{
+	tank_health = z_tank_health.FloatValue * versus_tank_bonus_health.FloatValue;
+	tank_burning_lifetime = z_tank_burning_lifetime.FloatValue;
+	tank_burn_damage_per_second = RoundFloat(tank_health / tank_burning_lifetime);
 }
 
 public Action:ToggleTankHudCmd(client, args) 
@@ -208,10 +232,12 @@ bool:FillTankInfo(Handle:TankHud)
 	if (health <= 0 || IsIncapacitated(tankclient) || !IsPlayerAlive(tankclient))
 	{  
 		info = "Health  : Dead";
+		DrawPanelText(TankHud, info);
+		return true;
 	}
 	else
 	{
-		new healthPercent = RoundFloat(100.0 * health / z_tank_health.FloatValue);
+		new healthPercent = RoundFloat(100.0 * health / tank_health);
 		Format(info, sizeof(info), "Health  : %i / %i%%", health, ((healthPercent < 1) ? 1 : healthPercent));
 	}
 	DrawPanelText(TankHud, info);
@@ -230,7 +256,7 @@ bool:FillTankInfo(Handle:TankHud)
 	// Draw fire status
 	if (GetEntityFlags(tankclient) & FL_ONFIRE)
 	{
-		new timeleft = RoundToCeil(health / 80.0);
+		new timeleft = RoundToCeil(health / float(tank_burn_damage_per_second));
 		Format(info, sizeof(info), "On Fire : %is", timeleft);
 		DrawPanelText(TankHud, info);
 	}

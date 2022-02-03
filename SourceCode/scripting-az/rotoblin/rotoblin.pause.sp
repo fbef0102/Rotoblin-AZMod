@@ -645,6 +645,15 @@ static Pause()
 			break;
 		}
 	}
+
+	//Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
+	for (new client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client) && !IsplayerHangingFromLedge(client) && IsPlayerAttackedBySmoker(client))
+		{
+			ToggleFreezePlayer(client, true);
+		}
+	}
 	
 	CreateTimer(1.0, MenuRefresh_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
@@ -679,6 +688,14 @@ static Unpause()
 			FakeClientCommand(client, "unpause");
 			SetConVarBool(g_hPausable, false);
 			break;
+		}
+	}
+
+	for (new client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client))
+		{
+			ToggleFreezePlayer(client, false);
 		}
 	}
 	
@@ -831,4 +848,28 @@ bool:CanPause()
 		}
 	}
 	return true;
+}
+
+bool IsplayerHangingFromLedge(int client)
+{
+	if(GetEntProp(client, Prop_Send, "m_isHangingFromLedge"))
+		return true;
+
+	return false;
+}
+
+bool IsPlayerAttackedBySmoker(int client)
+{
+	int attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
+	if (attacker > 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+ToggleFreezePlayer(client, freeze)
+{
+	SetEntityMoveType(client, freeze ? MOVETYPE_NONE : MOVETYPE_WALK);
 }

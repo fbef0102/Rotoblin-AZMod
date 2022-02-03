@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION 		"1.5"
+#define PLUGIN_VERSION 		"1.6"
 
 /*=======================================================================================
 	Plugin Info:
@@ -11,6 +11,9 @@
 
 ========================================================================================
 	Change Log:
+1.6 (20-Jan-2022)
+	- Remove ConVar "l4d_target_patch_vomit"
+	
 1.5 (6-Nov-2021)
 	- make Special Infected stop attacking if no target left
 	- AI Tank now ignores player who use minigun 
@@ -45,13 +48,12 @@
 #define GAMEDATA			"l4d_target_patch"
 
 ConVar g_hCvarAllow, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog, g_hCvarTargets;
-ConVar g_hCvarTarget_Incap, g_hCvarTarget_Pinned, g_hCvarTarget_Hanging, g_hCvarTarget_Vomit;
+ConVar g_hCvarTarget_Incap, g_hCvarTarget_Pinned, g_hCvarTarget_Hanging;
 
 int g_iCvarTargets;
 bool g_bCvarAllow, g_bCvarTarget_Incap, g_bCvarTarget_Pinned,
-	g_bCvarTarget_Hanging, g_bCvarTarget_Vomit;
+	g_bCvarTarget_Hanging;
 Handle g_hDetour;
-bool g_bPinBoomer[MAXPLAYERS+1];
 bool g_bBlind[MAXPLAYERS+1];
 
 
@@ -92,7 +94,7 @@ public void OnPluginStart()
 	// patch tank targets minigun player
 	MemoryPatch hPatch = MemoryPatch.CreateFromConf(hGameData, "ForEachSurvivor<MinigunnerScan>");
 	if (!hPatch.Validate() || !hPatch.Enable())
-		SetFailState("patch");
+		SetFailState("ForEachSurvivor<MinigunnerScan> patch failed");
 
 	delete hGameData;
 
@@ -112,7 +114,6 @@ public void OnPluginStart()
 	g_hCvarTarget_Incap =	CreateConVar(	"l4d_target_patch_incap",			"1",				"If 1, Special Infected ignores player who is incapacitated.", CVAR_FLAGS, true, 0.0, true, 1.0 );
 	g_hCvarTarget_Pinned =	CreateConVar(	"l4d_target_patch_pinned",			"1",				"If 1, Special Infected ignores player who is pinned by another infected.", CVAR_FLAGS, true, 0.0, true, 1.0 );
 	g_hCvarTarget_Hanging =	CreateConVar(	"l4d_target_patch_hanging",			"1",				"If 1, Special Infected ignores player who is hanging from ledge.", CVAR_FLAGS, true, 0.0, true, 1.0 );
-	g_hCvarTarget_Vomit =	CreateConVar(	"l4d_target_patch_vomit",			"0",				"If 1, Special Infected ignores player who is on vomit.", CVAR_FLAGS, true, 0.0, true, 1.0 );
 	CreateConVar(							"l4d_target_patch_version",			PLUGIN_VERSION,		"Target Patch plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	g_hCvarMPGameMode = FindConVar("mp_gamemode");
@@ -125,7 +126,6 @@ public void OnPluginStart()
 	g_hCvarTarget_Incap.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarTarget_Pinned.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarTarget_Hanging.AddChangeHook(ConVarChanged_Cvars);
-	g_hCvarTarget_Vomit.AddChangeHook(ConVarChanged_Cvars);
 	
 	IsAllowed();
 }
@@ -161,7 +161,6 @@ void GetCvars()
 	g_bCvarTarget_Incap = g_hCvarTarget_Incap.BoolValue;
 	g_bCvarTarget_Pinned = g_hCvarTarget_Pinned.BoolValue;
 	g_bCvarTarget_Hanging = g_hCvarTarget_Hanging.BoolValue;
-	g_bCvarTarget_Vomit = g_hCvarTarget_Vomit.BoolValue;
 }
 
 void IsAllowed()
@@ -174,8 +173,6 @@ void IsAllowed()
 	{
 		HookEvent("player_spawn",					Event_PlayerSpawn);
 		HookEvent("round_start",					Event_RoundStart);
-		HookEvent("player_now_it",					Event_BoomerStart);		// Boomer
-		HookEvent("player_no_longer_it",			Event_BoomerEnd);
 		DetourAddress(true);
 		g_bCvarAllow = true;
 	}
@@ -184,8 +181,6 @@ void IsAllowed()
 	{
 		UnhookEvent("player_spawn",					Event_PlayerSpawn);
 		UnhookEvent("round_start",					Event_RoundStart);
-		UnhookEvent("player_now_it",				Event_BoomerStart);		// Boomer
-		UnhookEvent("player_no_longer_it",			Event_BoomerEnd);
 		DetourAddress(false);
 		g_bCvarAllow = false;
 	}
@@ -266,7 +261,6 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	for( int i = 0; i <= MaxClients; i++ )
 	{
-		ResetVars(i);
 		g_bBlind[i] = false;
 	}
 }
@@ -274,21 +268,8 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	ResetVars(client);
+	g_bBlind[client] = false;
 }
-
-public void Event_BoomerStart(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	g_bPinBoomer[client] = true;
-}
-
-public void Event_BoomerEnd(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	g_bPinBoomer[client] = false;
-}
-
 
 // ====================================================================================================
 //					DETOUR
@@ -327,6 +308,9 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	if( victim <= 0 )
 		return MRES_Ignored;
 		
+	// If client is ghost (example: ghost tank)
+	if( IsPlayerGhost(client) ) return MRES_Ignored;
+		
 	// If has target
 	if( L4D_GetSurvivorVictim(client) != -1) return MRES_Ignored;
 
@@ -357,9 +341,6 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 
 			if(g_bCvarTarget_Incap && IsIncapacitated(i))  //ignore player incapped
 				continue;
-			
-			if(g_bCvarTarget_Vomit && IsPlayerOnVomit(i)) //ignore player get vomited
-				continue;
 
 			
 			GetClientAbsOrigin(i, vTarg);
@@ -375,14 +356,18 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	// Override victim
 	if( newVictim > 0 )
 	{
-		g_bBlind[client] = false;
-		ToggleFreezePlayer(client, false);
+		if(g_bBlind[client] == true)
+		{
+			g_bBlind[client] = false;
+			ToggleFreezePlayer(client, false);
+		}
 		DHookSetReturn(hReturn, newVictim);
 		return MRES_Supercede;
 	}
 
 	g_bBlind[client] = true;
-	ToggleFreezePlayer(client, true); // stop attacking if all players are down.
+	if(GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) ToggleFreezePlayer(client, true); // stop attacking if all players are down.
+	else ToggleFreezePlayer(client, false);
 	return MRES_Ignored;
 }
 
@@ -418,11 +403,6 @@ public bool IsPlayerPinned(int client)
 	return false;
 }
 
-public bool IsPlayerOnVomit(int client)
-{
-	return g_bPinBoomer[client];
-}
-
 public bool IsHandingFromLedge(int client)
 {
 	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isHangingFromLedge") || GetEntProp(client, Prop_Send, "m_isFallingFromLedge"));
@@ -431,11 +411,6 @@ public bool IsHandingFromLedge(int client)
 public bool IsIncapacitated(int client)
 {
 	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
-}
-
-void ResetVars(int client)
-{
-	g_bPinBoomer[client] = false;
 }
 
 int L4D_GetSurvivorVictim(int client)
@@ -457,4 +432,9 @@ int L4D_GetSurvivorVictim(int client)
 	}
 
 	return -1;
+}
+
+bool IsPlayerGhost(int client)
+{
+	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isGhost"));
 }

@@ -541,10 +541,10 @@ static Handle:delayedDmgTimer 	= INVALID_HANDLE;	// Delayed damage update timer
 static Handle:pInfHUD 		= INVALID_HANDLE;	// The panel shown to all infected users
 static Handle:usrHUDPref 		= INVALID_HANDLE;	// Stores the client HUD preferences persistently
 
-// Console commands
 static Handle:h_InfHUD		= INVALID_HANDLE;
 static Handle:h_Announce 	= INVALID_HANDLE;
 
+ConVar z_spawn_safety_range;
 
 public Plugin:myinfo = 
 {
@@ -732,7 +732,7 @@ public OnPluginStart()
 		HookConVarChange(cvarZombieHP[2], cvarZombieHPChanged);
 	}
 	
-	
+	z_spawn_safety_range = FindConVar("z_spawn_safety_range");
 	
 	// Create persistent storage for client HUD preferences 
 	usrHUDPref = CreateTrie();
@@ -1052,9 +1052,7 @@ TweakSettings()
 	SetConVarInt(FindConVar("z_attack_flow_range"), 50000);
 	SetConVarInt(FindConVar("director_spectate_specials"), 1);
 	
-	new Handle:HH = FindConVar("z_spawn_safety_range");
-	if(HH != INVALID_HANDLE)
-		SetConVarInt(HH, 0);
+	SetConVarInt(z_spawn_safety_range, 0);
 		
 	SetConVarInt(FindConVar("z_spawn_flow_limit"), 50000);
 	DirectorCvarsModified = false;
@@ -1420,9 +1418,7 @@ DirectorStuff()
 {	
 	SpecialHalt = false;
 	
-	new Handle:HH = FindConVar("z_spawn_safety_range");
-	if(HH != INVALID_HANDLE)
-		SetConVarInt(HH, 0);
+	SetConVarInt(z_spawn_safety_range, 0);
 		
 	SetConVarInt(FindConVar("director_spectate_specials"), 1);
 	
@@ -2023,7 +2019,7 @@ public Action:DisposeOfCowards(Handle:timer, any:coward)
 	if (IsClientInGame(coward) && IsFakeClient(coward) && GetClientTeam(coward) == TEAM_INFECTED && !IsPlayerTank(coward) && PlayerIsAlive(coward))
 	{
 		// Check to see if the infected can be seen by the survivors. If so, kill the timer and make a new one.
-		if (CanBeSeenByHumanSurvivors(coward) || L4D_GetSurvivorVictim(coward) != -1)
+		if (CanBeSeenBySurvivors(coward) || IsTooClose(coward, z_spawn_safety_range.FloatValue) || L4D_GetSurvivorVictim(coward) != -1)
 		{
 			FightOrDieTimer[coward] = INVALID_HANDLE;
 			FightOrDieTimer[coward] = CreateTimer(GetConVarFloat(h_idletime_b4slay), DisposeOfCowards, coward);
@@ -3663,7 +3659,7 @@ public OnPluginEnd()
 	ResetConVar(FindConVar("hunter_pounce_loft_rate"), true, true);
 	ResetConVar(FindConVar("z_attack_flow_range"), true, true);
 	ResetConVar(FindConVar("director_spectate_specials"), true, true);
-	ResetConVar(FindConVar("z_spawn_safety_range"), true, true);
+	ResetConVar(z_spawn_safety_range, true, true);
 	ResetConVar(FindConVar("z_spawn_flow_limit"), true, true);
 	ResetConVar(h_MaxPlayerZombies, true, true);
 	ResetConVar(FindConVar("z_tank_health"), true, true);
@@ -3671,9 +3667,7 @@ public OnPluginEnd()
 	ResetConVar(FindConVar("Z_frustration_lifetime"), true, true);
 	ResetConVar(FindConVar("vs_max_team_switches"), true, true);
 	
-	new Handle:HH = FindConVar("z_spawn_safety_range");
-	if(HH != INVALID_HANDLE)
-		ResetConVar(HH, true, true);
+	ResetConVar(z_spawn_safety_range, true, true);
 		
 	ResetConVar(FindConVar("z_spawn_flow_limit"), true, true);
 	//ResetConVar(FindConVar("z_max_player_zombies"), true, true);
@@ -4135,7 +4129,7 @@ public Action:evtInfectedDeath(Handle:event, const String:name[], bool:dontBroad
 {
 	// Infected player died, so refresh the HUD
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (client && IsClientConnected(client) && IsClientInGame(client))
+	if (client && IsClientInGame(client))
 	{
 		if (GetClientTeam(client) == TEAM_INFECTED)
 		{
@@ -4502,11 +4496,11 @@ static bool TraceFilter(int entity, int mask, int self)
 	return entity != self;
 }
 
-bool CanBeSeenByHumanSurvivors(int infected)
+bool CanBeSeenBySurvivors(int infected)
 {
 	for (int client = 1; client <= MaxClients; ++client)
 	{
-		if (IsAliveHumanSurvivor(client) && IsVisibleTo(client, infected))
+		if (IsAliveSurvivor(client) && IsVisibleTo(client, infected))
 		{
 			return true;
 		}
@@ -4514,12 +4508,28 @@ bool CanBeSeenByHumanSurvivors(int infected)
 	return false;
 }
 
-bool IsAliveHumanSurvivor(int client)
+bool IsAliveSurvivor(int client)
 {
     return IsClientInGame(client)
-    	&& !IsFakeClient(client)
         && GetClientTeam(client) == TEAM_SURVIVORS
         && IsPlayerAlive(client);
+}
+
+bool IsTooClose(int client, float distance)
+{
+	float fInfLocation[3], fSurvLocation[3], fVector[3];
+	GetClientAbsOrigin(client, fInfLocation);
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && GetClientTeam(i)==2 && IsPlayerAlive(i))
+		{
+			GetClientAbsOrigin(i, fSurvLocation);
+			MakeVectorFromPoints(fInfLocation, fSurvLocation, fVector);
+			if (GetVectorLength(fVector, true) < Pow(distance, 2.0)) return true;
+		}
+	}
+	return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////

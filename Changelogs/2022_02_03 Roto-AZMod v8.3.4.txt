@@ -1,0 +1,51 @@
+﻿v8.3.4
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.10-git6528 + MetaMod 1.11-git1145)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+-plugins\l4d_unlimited_grenades_fix.smx
+-plugins\votemanager2.smx
+* No need these anymore
+
+------------------New------------------
+-plugins\l4d_disable_alarm_cars.smx
+-gamedata\l4d_disable_alarm_cars.txt
+* Disables the Car Alarm before survivors leave the safe room
+
+-plugins\l4d_boomer_ladder_fix.smx
+-gamedata\l4d_boomer_ladder_fix.txt
+* Fixes boomer teleport whenever hes close enough to ladder
+
+-plugins\l4d_fix_deathfall_cam.smx
+-gamedata\l4d_fix_deathfall_cam.txt
+* Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
+
+-plugins\l4d_nosecondchances.smx
+* When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
+
+-plugins\l4d_lasertag.smx
+* Shows a laser for straight-flying fired projectiles during ready up.
+
+-plugins\remove_touch_links.smx
+-gamedata\remove_touch_links.txt
+* Removes touch links for player on team change to prevent same player to be affected by whatever he was "touching" before team change on his old position.
+(Video: https://youtu.be/UzmRm_LcK8A)
+
+-plugins\l4d_no_m2_movement_block.smx
+-gamedata\l4d_no_m2_movement_block.txt
+* Enable free movement (Left/Right/Crouch) on SI when M2-ing.
+
+-plugins\disable_cameras.smx
+* Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
+* Fixed Multiple visual spectator bugs after team swap in finale
+
+------------------Change------------------
+* Rename l4d2_car_alarm_hittable_fix -> l4d_car_alarm_hittable_fix
+* Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
+* Kick Infected Bots after they die if survivors didn't leave start safe area yet. (Prevent infected ghost bug)
+* Overrides special infected targeting players.
+  * ignore player who is pinned by smoker & hunter.
+  * change target to nearest survivor no matter anyone gets vomited.
+  * AI Tank now ignores player who use minigun.
+  * if no target found, freeze infected.
+* Ghost Tank freezes and being immune to fire for a while.

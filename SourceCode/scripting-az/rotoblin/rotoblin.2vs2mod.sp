@@ -37,8 +37,6 @@ static	const	String:	DEBUG_CHANNEL_NAME[]	= "2vs2mod";
 static			Handle:	g_bIsModEnabled_Cvar	= INVALID_HANDLE;
 static			bool:	g_bIsModEnabled			= false;
 
-static	const	String:	INFECTED_BOT_NAMES[][]	= {"Hunter", "Boomer", "Smoker"};
-
 // **********************************************
 //                   Forwards
 // **********************************************
@@ -132,10 +130,10 @@ public Action:_2V2_TankPassedCheckDelay(Handle:timer)
  */
 public _2V2_OnClientPutInServer(client)
 {
-	if (!client || !IsFakeClient(client)) return; // Only deal with bots
+	if (!g_bIsModEnabled || !client || !IsFakeClient(client)) return; // Only deal with bots
 
 	DebugPrintToAllEx("Client %i was put in server", client);
-	CreateTimer(0.1, _2V2_SlayInfectedBot, client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(0.1, _2V2_SlayInfectedBot, client, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 /**
@@ -147,54 +145,30 @@ public _2V2_OnClientPutInServer(client)
  */
 public Action:_2V2_SlayInfectedBot(Handle:timer, any:client)
 {
-	if (!client || !IsClientInGame(client) || !IsFakeClient(client)) return Plugin_Stop;
+	if (!g_bIsModEnabled || !client || !IsClientInGame(client) || !IsFakeClient(client) || GetClientTeam(client) != 3) return Plugin_Continue;
 
-	decl String:name[32];
-	GetClientName(client, name, sizeof(name));
-
-	if (strlen(name) == 0) return Plugin_Continue; // Client still don't have a name
-
-	new bool:foundBot = false;
-	for (new i = 0; i < sizeof(INFECTED_BOT_NAMES); i++)
+	if (IsPlayerAlive(client))
 	{
-		if (StrContains(name, INFECTED_BOT_NAMES[i], false) == -1) continue;
-		foundBot = true;
-		break;
-	}
-
-	if (!foundBot) return Plugin_Stop;
-
-	if (IsPlayerAlive(client))//When a spawned Infected Player disconnects, changes team or becomes Tank the SI will instantly get killed unless it has someone capped.
-	{
-		new Handle:L4DINFECTEDBOTSH = FindConVar("l4d_infectedbots_hunter_limit");
-		new Handle:L4DINFECTEDBOTSS = FindConVar("l4d_infectedbots_smoker_limit");
-		new Handle:L4DINFECTEDBOTSB = FindConVar("l4d_infectedbots_boomer_limit");
-		if(L4DINFECTEDBOTSH != INVALID_HANDLE && L4DINFECTEDBOTSS != INVALID_HANDLE && L4DINFECTEDBOTSB != INVALID_HANDLE)
-		{
-			if(GetConVarInt(L4DINFECTEDBOTSH) > 0 || GetConVarInt(L4DINFECTEDBOTSS) > 0 || GetConVarInt(L4DINFECTEDBOTSB) > 0)
-			{
-				return Plugin_Stop;
-			}
-		}
 		new zombieclass = GetEntProp(client, Prop_Send, "m_zombieClass");
 		if(zombieclass == 5) //if is Tank
-			return Plugin_Stop;
+			return Plugin_Continue;
 		
 		new hasvictim ;
 		if(zombieclass == 1) //if is Smoker
 		{
 			hasvictim = GetEntPropEnt(client, Prop_Send, "m_tongueVictim");
-			if(hasvictim>0&&IsSurvivor(hasvictim)) return Plugin_Stop;
+			if(hasvictim>0) return Plugin_Continue;
 		}
 		if(zombieclass == 3) //if is Hunter
 		{
 			hasvictim = GetEntPropEnt(client, Prop_Send, "m_pounceVictim");
-			if(hasvictim>0&&IsSurvivor(hasvictim)) return Plugin_Stop;
+			if(hasvictim>0) return Plugin_Continue;
 		}
+		
 		ForcePlayerSuicide(client);
+		CreateTimer(1.0, _2V2_KickInfectedBot, client);
 	}
-	CreateTimer(1.0, _2V2_KickInfectedBot, client);
-	return Plugin_Stop;
+	return Plugin_Continue;
 }
 
 /**

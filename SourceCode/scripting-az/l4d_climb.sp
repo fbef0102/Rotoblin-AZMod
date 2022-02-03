@@ -73,7 +73,7 @@ public Plugin myinfo =
 	name = "Climb Everywhere",
 	author = "Pan Xiaohai, Shadowysn (New syntax), cravenge, Harry",
 	description = "Makes Everyone Climb On Surfaces.",
-	version = "1.2",
+	version = "1.3",
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) 
@@ -143,11 +143,18 @@ public void OnPluginStart()
 public void OnPluginEnd()
 {
 	ResetPlugin();
+	ResetAllState();
 }
 
 public void OnMapEnd()
 {
 	ResetPlugin();
+	ResetAllState();
+}
+
+public void OnClientDisconnect(int client)
+{
+	Stop(client);
 }
 
 public Action OnCommandReturnToSafeRoom(int client, const char[] command, int args) {
@@ -490,14 +497,15 @@ public Action OnSetTransmitClient(int climber, int client)
 
 public void PreThink(int client)
 {
-	if(IsValidClient(client) && IsPlayerAlive(client))
+	if(IsPlayerAlive(client))
 	{
-		if (IsValidEntityAndNotWorld(Clone[client]))
+		int clone = Clone[client];
+		if (IsValidEntityAndNotWorld(clone))
 		{
-			if(HasEntProp(Clone[client], Prop_Send, "m_flPoseParameter"))
+			if(HasEntProp(clone, Prop_Send, "m_flPoseParameter"))
 			{
-				SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 0), 0); // body_pitch
-				SetEntPropFloat(Clone[client], Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 1), 1); // body_yaw
+				SetEntPropFloat(clone, Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 0), 0); // body_pitch
+				SetEntPropFloat(clone, Prop_Send, "m_flPoseParameter", GetEntPropFloat(client, Prop_Send, "m_flPoseParameter", 1), 1); // body_yaw
 			}
 			else
 			{
@@ -1164,8 +1172,8 @@ public Action RemoveInstructorHint(Handle timer, DataPack pack)
 
 bool IsValidEntityAndNotWorld(int entity)
 {
-	if (!IsValidEntity(entity)) return false;
 	if (entity <= MaxClients) return false;
+	if (!IsValidEntity(entity)) return false;
 	return true;
 }
 

@@ -1,0 +1,46 @@
+"Games"
+{
+	"left4dead"
+	{
+		"MemPatches"
+		{
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				"signature" "CTerrorGameMovement::CheckForLadders"
+				
+				"linux"
+				{
+					"offset"	"8Fh"
+					"verify"	"\x75"
+					"patch"		"\xEB"
+				}
+				
+				"windows"     
+				{
+					"offset"	"5Ch"
+					"verify"	"\x74"
+					"patch"		"\xEB"
+				}
+			}
+		}
+		
+		"Addresses" 
+		{
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				"signature" "CTerrorGameMovement::CheckForLadders"
+			}
+		}
+		
+		"Signatures" 
+		{
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				/* 56 8B F1 83 BE 2C 08 00 00 00 74 ? 8B 8E 2C 08 00 00 */
+	
+				"windows"    "\x56\x8B\xF1\x83\xBE\x2C\x08\x00\x00\x00\x74\x2A\x8B\x8E\x2C\x08\x00\x00"
+				"linux"	"@_ZN19CTerrorGameMovement15CheckForLaddersEb"
+			}
+		}
+	}
+}

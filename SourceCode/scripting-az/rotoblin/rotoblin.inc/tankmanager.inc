@@ -45,12 +45,12 @@ enum TANK_EVENT_TYPE
 	TANK_KILLED,
 	TANK_PASSED
 }
+#define ZOMBIECLASS_TANK 5					// Zombie class of the tank, used to find tank after he have been passed to another player
 
 // --------------------
 //       Private
 // --------------------
 
-static	const			ZOMBIECLASS_TANK		= 5;					// Zombie class of the tank, used to find tank after he have been passed to another player
 static	const	String:	CLASSNAME_TANK[]		= "Tank";
 static	const	String:	NETPROP_FRUSTRATION[]	= "m_frustration";
 static	const	String:	NETPROP_INCAPACITATED[]	= "m_isIncapacitated";

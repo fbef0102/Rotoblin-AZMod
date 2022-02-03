@@ -84,11 +84,14 @@ public Action:Timer_TankStumbleByDoorCheck(Handle:timer, any:client)
 	if(Tankclient<0 || !IsClientConnected(Tankclient) ||!IsClientInGame(Tankclient)) return;
 	if (SDKCall(g_hIsStaggering, Tankclient) && !surkillboomerboomtank && !tankstumblebydoor && !tankkillboomerboomhimself && !boomerboomtank)//tank在暈眩 by door
 	{
-		decl String:clientName[128];
-		GetClientName(client,clientName,128);
-		CPrintToChatAll("{green}[TS] %t","l4d_pig_infected1",clientName);
-		tankstumblebydoor = true;
-		CreateTimer(3.0,COLD_DOWN,_);
+		if(IsTooClose(client, Tankclient))
+		{
+			decl String:clientName[128];
+			GetClientName(client,clientName,128);
+			CPrintToChatAll("{green}[TS] %t","l4d_pig_infected1",clientName);
+			tankstumblebydoor = true;
+			CreateTimer(3.0,COLD_DOWN,_);
+		}
 	}
 }
 
@@ -269,16 +272,19 @@ public Action:Timer_SurKillBoomerCheck(Handle:timer, any:client)
 	
 	if(SDKCall(g_hIsStaggering, Tankclient) && !surkillboomerboomtank && !tankstumblebydoor && !tankkillboomerboomhimself && !boomerboomtank)//tank在暈眩
 	{
-		decl String:clientName[128];
-		GetClientName(client,clientName,128);
-		decl String:surclientName[128];
-		GetClientName(surclient,surclientName,128);
-		if(!IsFakeClient(client))//真人boomer player
-			CPrintToChatAll("{green}[TS] %t","l4d_pig_infected5",surclientName, clientName);
-		else
-			CPrintToChatAll("{green}[TS] %t","l4d_pig_infected6",surclientName, clientName);
-		surkillboomerboomtank=true;
-		CreateTimer(3.0,COLD_DOWN,_);
+		if(IsTooClose(client, Tankclient))
+		{
+			decl String:clientName[128];
+			GetClientName(client,clientName,128);
+			decl String:surclientName[128];
+			GetClientName(surclient,surclientName,128);
+			if(!IsFakeClient(client))//真人boomer player
+				CPrintToChatAll("{green}[TS] %t","l4d_pig_infected5",surclientName, clientName);
+			else
+				CPrintToChatAll("{green}[TS] %t","l4d_pig_infected6",surclientName, clientName);
+			surkillboomerboomtank=true;
+			CreateTimer(3.0,COLD_DOWN,_);
+		}
 	}
 }
 
@@ -299,26 +305,29 @@ public Action:Timer_TankKillBoomerCheck(Handle:timer, Handle:h_Pack)
 	GetClientName(client,clientName,128);
 	if(SDKCall(g_hIsStaggering, Tankclient) && !surkillboomerboomtank && !tankstumblebydoor && !tankkillboomerboomhimself && !boomerboomtank)//tank在暈眩
 	{
-		if(!IsFakeClient(client))//真人SI player
-		{	
-			for (new i = 1; i < MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
-				{
-					SetGlobalTransTarget(i);
-					CPrintToChat(i,"{green}[TS] %t","l4d_pig_infected7",Tank_weapon,clientName);
-				}
-		}
-		else	
+		if(IsTooClose(client, Tankclient))
 		{
-			for (new i = 1; i < MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
-				{
-					SetGlobalTransTarget(i);
-					CPrintToChat(i,"{green}[TS] %t","l4d_pig_infected8",Tank_weapon);
-				}
+			if(!IsFakeClient(client))//真人SI player
+			{	
+				for (new i = 1; i < MaxClients; i++)
+					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
+					{
+						SetGlobalTransTarget(i);
+						CPrintToChat(i,"{green}[TS] %t","l4d_pig_infected7",Tank_weapon,clientName);
+					}
+			}
+			else	
+			{
+				for (new i = 1; i < MaxClients; i++)
+					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
+					{
+						SetGlobalTransTarget(i);
+						CPrintToChat(i,"{green}[TS] %t","l4d_pig_infected8",Tank_weapon);
+					}
+			}
+			tankkillboomerboomhimself = true;
+			CreateTimer(3.0,COLD_DOWN,_);
 		}
-		tankkillboomerboomhimself = true;
-		CreateTimer(3.0,COLD_DOWN,_);
 	}
 	else
 	{
@@ -369,19 +378,22 @@ public Action:Timer_BoomerSuicideCheck(Handle:timer, any:client)
 	
 	if (SDKCall(g_hIsStaggering, Tankclient) && !surkillboomerboomtank && !tankstumblebydoor && !tankkillboomerboomhimself && !boomerboomtank)//tank在暈眩
 	{
-		if(!IsFakeClient(client))//真人boomer player
-		{	for (new i = 1; i < MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
-					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected13",i,clientName);
-		}
-		else
+		if(IsTooClose(client, Tankclient))
 		{
-			for (new i = 1; i < MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
-					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected14",i);
+			if(!IsFakeClient(client))//真人boomer player
+			{	for (new i = 1; i < MaxClients; i++)
+					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
+						CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected13",i,clientName);
+			}
+			else
+			{
+				for (new i = 1; i < MaxClients; i++)
+					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
+						CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected14",i);
+			}
+			boomerboomtank = true;
+			CreateTimer(3.0,COLD_DOWN,_);
 		}
-		boomerboomtank = true;
-		CreateTimer(3.0,COLD_DOWN,_);
 	}
 	else
 	{
@@ -434,4 +446,18 @@ public Event_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 public OnMapStart()
 {
 	for (new i = MaxClients + 1; i < MAXENTITIES; i++) g_bIsWitch[i] = false;
+}
+
+bool IsTooClose(int client, int tank)
+{
+	float fClientLocation[3], fTankLocation[3];
+	GetEntPropVector(client, Prop_Send, "m_vecOrigin", fClientLocation);
+	GetEntPropVector(tank, Prop_Send, "m_vecOrigin", fTankLocation);
+
+	if(GetVectorDistance(fClientLocation, fTankLocation, true) <= 400*400)
+	{
+		return true;
+	}
+
+	return false;
 }

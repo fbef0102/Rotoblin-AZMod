@@ -61,7 +61,7 @@ public Plugin:myinfo =
 	name = "Votes Menu",
 	author = "fenghf,l4d1 modify by Harry Potter and JJ",
 	description = "Votes Commands",
-	version = "1.7",
+	version = "1.8",
 	url = "http://bbs.3dmgame.com/l4d"
 };
 
@@ -99,6 +99,8 @@ public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 
+	RegConsoleCmd("callvote",Callvote_Handler); //block valve vote
+
 	//RegAdminCmd("sm_voter", Command_Vote, ADMFLAG_KICK|ADMFLAG_VOTE|ADMFLAG_GENERIC|ADMFLAG_BAN|ADMFLAG_CHANGEMAP, "投票开启ready插件");S
 	RegConsoleCmd("voteshp", Command_VoteHp);
 	RegConsoleCmd("votesalltalk", Command_VoteAlltalk);
@@ -108,8 +110,6 @@ public OnPluginStart()
 	RegConsoleCmd("votesmaps2menu", Command_Votemaps2Menu);
 	RegConsoleCmd("voteskick", Command_VotesKick);
 	RegConsoleCmd("sm_votes", Command_Votes, "open vote meun");
-	RegConsoleCmd("sm_callvote", Command_Votes, "open vote meun");
-	RegConsoleCmd("sm_callvotes", Command_Votes, "open vote meun");
 	RegConsoleCmd("votes", Command_Votes, "open vote meun");
 	RegConsoleCmd("votesforcespectate", Command_Votesforcespectate);
 	
@@ -424,6 +424,15 @@ public Votes_Menu(Handle:menu, MenuAction:action, client, itemNum)
 	}
 	else if ( action == MenuAction_End)
 			delete menu;
+}
+
+public Action:Callvote_Handler(client, args)
+{
+	if(client == 0) return Plugin_Handled;
+
+	CPrintToChat(client, "[TS] Valve Vote is blocked. Use {green}!votes{default} instead");
+
+	return Plugin_Handled;
 }
 
 public Action:Command_VoteHp(client, args)
