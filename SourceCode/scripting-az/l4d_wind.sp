@@ -30,7 +30,7 @@ public Plugin myinfo =
 	author = "Harry Potter",
 	description = "Create a survivor bot + teleport an alive player in game",
 	version = "1.3",
-	url = "http://steamcommunity.com/profiles/76561198026784913"
+	url = "https://steamcommunity.com/id/fbef0102/"
 }
 
 public void OnPluginStart()
@@ -73,7 +73,7 @@ public Action sm_addabot(int client, int args)
 		bool canTeleport = SetTeleportEndPoint(client);
 		if(canTeleport)
 		{
-			PerformTeleport(client,bot,g_pos);
+			PerformTeleport(client,bot,g_pos,true);
 		}
 		
 		CreateTimer(0.1, Timer_KickFakeBot, bot, TIMER_REPEAT);
@@ -124,12 +124,15 @@ static bool SetTeleportEndPoint(int client)
 	return true;
 }
 
-void PerformTeleport(int client, int target, float pos[3])
+void PerformTeleport(int client, int target, float pos[3], bool addbot = false)
 {
 	pos[2] += 5.0;
 	TeleportEntity(target, pos, NULL_VECTOR, NULL_VECTOR);
 	
-	LogAction(client,target, "\"%L\" teleported \"%L\" after respawning him" , client, target);
+	if(addbot)
+		LogAction(client,target, "\"%L\" teleported \"%L\" after respawn him (New bot)." , client, target);
+	else
+		LogAction(client,target, "\"%L\" teleported \"%L\"" , client, target);
 }
 
 
