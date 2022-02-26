@@ -1,0 +1,36 @@
+﻿v8.3.5
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+
+------------------New------------------
+-plugins\l4d_tongue_bend_fix.smx
+* Fix unexpected tongue breaks for \"bending too many times\".
+
+-plugins\l4d_tongue_timer.smx
+* Modify the Smoker's tongue ability timer in certain scenarios.
+
+left4dead\maps\l4d_vs_airport01_greenhouse.nav
+* Dead Air Map 1 Nav Remake (Fixed Horde/Mob sometimes unable to spawn while survivors are in start safe area)
+
+left4dead\maps\l4d_vs_hospital04_interior.nav
+* No Mercy Map 4 Nav Remake (Fixed Horde/Mob sometimes unable to spawn while survivors are in elevator)
+
+left4dead\maps\l4d_vs_smalltown05_houseboat.nav
+* Death Toll Map 5 Nav Remake
+
+SourceCode\scripting-az\rotoblin\rotoblin.finalespawn.sp
+* Reduces the spawn range on finales to normal spawning
+// Same as convar "z_finale_spawn_safety_range"
+// Convar "z_finale_spawn_safety_range" affects common zombie spawn and tank spawn, which causes nav issue on final map such as horde unable to spawn
+// So we use plugin only for special infected
+
+------------------Change------------------
+### Gameplay / Balance Changes ###
+* Special Infected(!inf):
+  * **Smoker:**
+	* Smoker's ability recharge cooldown
+	  - *After a successful hit*: 15s -> 13s
+	  - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
+	  - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
+

@@ -1,6 +1,7 @@
 #include <sourcemod>
 #include <adminmenu>
 #include <sdktools>
+#include <multicolors>
 #define PLUGIN_VERSION "2.6"
 
 enum
@@ -16,32 +17,25 @@ public Plugin myinfo =
 	author = "Harry Potter",
 	description = "Adm type !givehp to set survivor team full health",
 	version = PLUGIN_VERSION,
-	url = "https://steamcommunity.com/id/AkemiHomuraGoddess/"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
-bool L4D2Version = false;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) 
 {
 	EngineVersion test = GetEngineVersion();
 	
-	if( test == Engine_Left4Dead )
+	if( test != Engine_Left4Dead )
 	{
-		L4D2Version = false;
-	}
-	else if( test == Engine_Left4Dead2 )
-	{
-		L4D2Version = true;
-	}
-	else
-	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
 		return APLRes_SilentFailure;
 	}
 	
 	return APLRes_Success; 
 }
 
-public void OnPluginStart(){
+public void OnPluginStart()
+{
+	LoadTranslations("Roto2-AZ_mod.phrases");
 	RegAdminCmd("sm_hp", restore_hp, ADMFLAG_ROOT, "Restore all survivors full hp");
 	RegAdminCmd("sm_givehp", restore_hp, ADMFLAG_ROOT, "Restore all survivors full hp");
 }
@@ -49,7 +43,7 @@ public void OnPluginStart(){
 public Action restore_hp(int client, int args){
 	if (client == 0)
 	{
-		PrintToServer("[TS] \"Restore_hp\" cannot be used by server.");
+		PrintToServer("[TS] %t","command cannot be used by server.");
 		return Plugin_Handled;
 	}
 	
@@ -58,7 +52,9 @@ public Action restore_hp(int client, int args){
 			CheatCommand(i);
 	}
 	
-	PrintToChatAll("\x01[\x05TS\x01] Adm \x03%N \x01restores \x05all survivors \x04FULL HP", client);
+	static char clientName[128];
+	GetClientName(client,clientName,128);
+	CPrintToChatAll("{default}[{olive}TS{default}] %t","admin_hp", clientName);
 	LogMessage("[TS] Adm %N restores all survivors FULL HP", client);
 	
 	return Plugin_Handled;
@@ -99,28 +95,6 @@ bool IsIncapacitated(int client)
 int GetInfectedAttacker(int client)
 {
 	int attacker;
-
-	if(L4D2Version)
-	{
-		/* Charger */
-		attacker = GetEntPropEnt(client, Prop_Send, "m_pummelAttacker");
-		if (attacker > 0)
-		{
-			return attacker;
-		}
-
-		attacker = GetEntPropEnt(client, Prop_Send, "m_carryAttacker");
-		if (attacker > 0)
-		{
-			return attacker;
-		}
-		/* Jockey */
-		attacker = GetEntPropEnt(client, Prop_Send, "m_jockeyAttacker");
-		if (attacker > 0)
-		{
-			return attacker;
-		}
-	}
 
 	/* Hunter */
 	attacker = GetEntPropEnt(client, Prop_Send, "m_pounceAttacker");

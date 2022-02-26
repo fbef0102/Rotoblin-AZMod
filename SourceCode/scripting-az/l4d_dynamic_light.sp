@@ -1,6 +1,6 @@
 /*
 *	Dynamic Light
-*	Copyright (C) 2021 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.8"
+#define PLUGIN_VERSION 		"1.10"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,12 @@
 
 ========================================================================================
 	Change Log:
+
+1.10 (07-Feb-2022)
+	- Fixed compile warnings. They did not show up before.
+
+1.9 (06-Feb-2022)
+	- Fixed the light potentially teleporting behind when too close to an object. Thanks to "KrutoyKolbas" for reporting.
 
 1.8 (15-Feb-2021)
 	- Fixed not excluding the Molotov when "l4d_dynamic_light_guns" cvar was set to 1. Thanks to "HarryPotter" for fixing.
@@ -579,7 +585,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	if( g_bCvarAllow && IsClientInGame(client) )
 	{
 		if( g_iCvarBots == 0 && IsFakeClient(client) )
-			return;
+			return Plugin_Continue;
 
 
 		int entity = g_iLightIndex[client];
@@ -589,7 +595,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			if( IsValidEntRef(entity) == true )
 				DeleteLight(client);
 
-			return;
+			return Plugin_Continue;
 		}
 
 
@@ -713,6 +719,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 void DeleteLight(int client)
@@ -722,7 +730,7 @@ void DeleteLight(int client)
 
 	if( IsValidEntRef(entity) )
 	{
-		AcceptEntityInput(entity, "Kill");
+		RemoveEntity(entity);
 
 		if( g_iTransmit[client] == 1 )
 		{
@@ -822,9 +830,9 @@ void TeleportDynamicLight(int client, int entity)
 			if( fDist <= g_iCvarDist + 50 )
 			{
 				GetAngleVectors(vAng, vAng, NULL_VECTOR, NULL_VECTOR);
-				vPos[0] -= vAng[0] * 50;
-				vPos[1] -= vAng[1] * 50;
-				vPos[2] -= vAng[2] * 50;
+				vPos[0] -= vAng[0] * (fDist > 50.0 ? 50.0 : fDist);
+				vPos[1] -= vAng[1] * (fDist > 50.0 ? 50.0 : fDist);
+				vPos[2] -= vAng[2] * (fDist > 50.0 ? 50.0 : fDist);
 				TeleportEntity(entity, vPos, NULL_VECTOR, NULL_VECTOR);
 			}
 			else
@@ -857,9 +865,9 @@ void TeleportDynamicLight(int client, int entity)
 				}
 
 				GetAngleVectors(vAng, vAng, NULL_VECTOR, NULL_VECTOR);
-				vPos[0] -= vAng[0] * 50;
-				vPos[1] -= vAng[1] * 50;
-				vPos[2] -= vAng[2] * 50;
+				vPos[0] -= vAng[0] * (fDist > 50.0 ? 50.0 : fDist);
+				vPos[1] -= vAng[1] * (fDist > 50.0 ? 50.0 : fDist);
+				vPos[2] -= vAng[2] * (fDist > 50.0 ? 50.0 : fDist);
 				TeleportEntity(entity, vPos, NULL_VECTOR, NULL_VECTOR);
 
 				if( g_iLightState[client] == 0 )

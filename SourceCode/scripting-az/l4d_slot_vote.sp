@@ -186,7 +186,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 			
 			if (g_iDesiredSlots == g_iCurrentSlots)
 			{
-				CPrintToChat(iClient, "%t", "Same as current", g_iDesiredSlots);
+				CPrintToChat(iClient, "%T", "Same as current", iClient, g_iDesiredSlots);
 				return Plugin_Handled;
 			}
 
@@ -197,7 +197,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 			}
 			else
 			{
-				CPrintToChat(iClient, "%t", "Usage", g_iMinAllowedSlots, g_iMaxAllowedSlots,"!slots");
+				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots,"!slots");
 			}
 			return Plugin_Handled;
 		}
@@ -205,7 +205,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 	
 	if (GetClientTeam(iClient) == 1)
 	{
-		PrintToChat(iClient, "%t", "Spectator response");
+		PrintToChat(iClient, "%T", "Spectator response",iClient);
 		return Plugin_Handled;
 	}
 	
@@ -225,7 +225,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 
 			if (g_iDesiredSlots == g_iCurrentSlots)
 			{
-				CPrintToChat(iClient, "%t", "Same as current", g_iDesiredSlots);
+				CPrintToChat(iClient, "%T", "Same as current", iClient, g_iDesiredSlots);
 				return Plugin_Handled;
 			}
 
@@ -235,7 +235,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 			}
 			else
 			{
-				CPrintToChat(iClient, "%t", "Usage", g_iMinAllowedSlots, g_iMaxAllowedSlots);
+				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots);
 			}
 
 			return Plugin_Handled;
@@ -245,7 +245,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 	}
 	else
 	{
-		PrintToChat(iClient, "%t", "Vote denied");
+		PrintToChat(iClient, "%T", "Vote denied", iClient);
 	}
 
 	return Plugin_Handled;
@@ -294,7 +294,7 @@ public Action:Cmd_NoSpec(iClient, iArgs)
 
 	if (iSpecs == 0)
 	{
-		PrintToChat(iClient, "%t", "No spectators");
+		PrintToChat(iClient, "T", "No spectators",iClient);
 		return Plugin_Handled;
 	}
 
@@ -307,7 +307,7 @@ public Action:Cmd_NoSpec(iClient, iArgs)
 
 	if (GetClientTeam(iClient) == 1)
 	{
-		PrintToChat(iClient, "%t", "Spectator response");
+		PrintToChat(iClient, "%T", "Spectator response,",iClient);
 		return Plugin_Handled;
 	}
 	
@@ -360,7 +360,7 @@ public MenuHandler_SlotMenu(Handle:hSlotMenu, MenuAction:action, param1, param2)
 			}
 			if (g_iDesiredSlots == g_iCurrentSlots)
 			{
-				CPrintToChat(param1, "%t", "Same as current", g_iDesiredSlots);
+				CPrintToChat(param1, "%T", "Same as current", param1, g_iDesiredSlots);
 				return;
 			}
 
@@ -378,7 +378,7 @@ static StartSlotVote(iClient)
 {
 	if (GetClientTeam(iClient) == 1)
 	{
-		PrintToChat(iClient, "%t", "Spectator response");
+		PrintToChat(iClient, "%T", "Spectator response",iClient);
 		return;
 	}
 
@@ -404,7 +404,7 @@ static StartSlotVote(iClient)
 		return;
 	}
 
-	PrintToChat(iClient, "%t", "Vote denied");
+	PrintToChat(iClient, "%T", "Vote denied",iClient);
 }
 
 public Action:TimerChangeMaxPlayers(Handle:timer)
@@ -417,7 +417,7 @@ static StartNoSpecVote(iClient)
 {
 	if (GetClientTeam(iClient) == 1)
 	{
-		PrintToChat(iClient, "%t", "Spectator response");
+		PrintToChat(iClient, "%T", "Spectator response",iClient);
 		return;
 	}
 	
@@ -447,7 +447,7 @@ static StartNoSpecVote(iClient)
 		return;
 	}
 	
-	PrintToChat(iClient, "%t", "Vote denied");
+	PrintToChat(iClient, "%T", "Vote denied",iClient);
 }
 
 public Action:TimerKickAllSpectators(Handle:hTimer)

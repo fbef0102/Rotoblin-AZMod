@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.4 
+v8.3.5
 @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -159,6 +159,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 * **Nav Remake:**
   * No Mercy Map 1
+  * No Mercy Map 4
+  * Dead Air Map 1
+  * Death Toll Map 5
 
 - - - -
 ### Weapon Adjustments ###
@@ -364,12 +367,16 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	
   * **Smoker:**
 	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
-    * Smoker's ability will now recharge within **13** seconds after a successful hit (vanilla: **15**)
-	* First Drag Damage: 3, interval: 1 (same as vanilla)
-	* Drag Damage: 1, interval: 0.33 (3 dps, same as vanilla)
-	* Choke Damage: 1, interval: 0.2 (5 dps, same as vanilla)
+	* First Drag Damage: 3, interval: 1s (same as vanilla)
+	* Drag Damage: 1, interval: 0.33s (3 dps, same as vanilla)
+	* Choke Damage: 1, interval: 0.2s (5 dps, same as vanilla)
 	* Fix tongue instant choking survivors.
 	* Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
+	* Fix unexpected tongue breaks for \"bending too many times\".
+	* Smoker's ability recharge cooldown
+	  - *After a successful hit*: 15s -> 13s
+	  - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
+	  - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
 	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)

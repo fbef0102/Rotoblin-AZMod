@@ -9,8 +9,8 @@
 ConVar g_hCvar_tankProps, g_hCvar_tankPropsGlow, g_hCvar_tankPropsGlowSpec, g_hCvarColor;
 Handle hTankProps       = INVALID_HANDLE;
 Handle hTankPropsHit    = INVALID_HANDLE;
-int i_Ent[5000] = -1;
-int i_EntSpec[5000]= -1;
+int i_Ent[2048+1] = -1;
+int i_EntSpec[2048+1]= -1;
 int g_iCvarColor[3];
 bool tankSpawned;
 int iTankClient = -1;
@@ -208,7 +208,7 @@ public Action TankDeadCheck( Handle timer ) {
 
 	if ( GetTankClient() == -1 ) {
 		UnhookTankProps();
-		CreateTimer(1.0, FadeTankProps,_ ,TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(3.5, FadeTankProps,_ ,TIMER_FLAG_NO_MAPCHANGE);
 		tankSpawned = false;
 	}
 }
@@ -226,129 +226,134 @@ public void PropDamaged(int victim, int attacker, int inflictor, float damage, i
 	}
 }
 
-void CreateTankPropGlow(int entity)
+void CreateTankPropGlow(int car)
 {
 	static char sModelName[64];
-	GetEntPropString(entity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
+	GetEntPropString(car, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 	//PrintToChatAll("m_ModelName: %s", sModelName);
 		
 	float vPos[3];
 	float vAng[3];
 		
-	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
-	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
+	GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
+	GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
 
+	int entity;
 	if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
 	{
-		i_Ent[entity] = CreateEntityByName("prop_dynamic_override");
-		DispatchKeyValue(i_Ent[entity], "model", sModelName);
-		DispatchKeyValue(i_Ent[entity], "targetname", "propglow");
+		entity = CreateEntityByName("prop_dynamic_override");
+		if(entity < 0 ) return;
+		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "targetname", "propglow");
 	}
 	else
 	{
-		i_Ent[entity] = CreateEntityByName("prop_glowing_object");
-		DispatchKeyValue(i_Ent[entity], "model", sModelName);
-		DispatchKeyValue(i_Ent[entity], "StartGlowing", "1");
-		DispatchKeyValue(i_Ent[entity], "targetname", "propglow");
+		entity = CreateEntityByName("prop_glowing_object");
+		if(entity < 0 ) return;
+		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "StartGlowing", "1");
+		DispatchKeyValue(entity, "targetname", "propglow");
 		
-		DispatchKeyValue(i_Ent[entity], "GlowForTeam", "3");
+		DispatchKeyValue(entity, "GlowForTeam", "3");
 	}
 
 
 	/* GlowForTeam =  -1:ALL  , 0:NONE , 1:SPECTATOR  , 2:SURVIVOR , 3:INFECTED */
 	
-	DispatchKeyValue(i_Ent[entity], "fadescale", "1");
-	DispatchKeyValue(i_Ent[entity], "fademindist", "3000");
-	DispatchKeyValue(i_Ent[entity], "fademaxdist", "3200");
+	DispatchKeyValue(entity, "fadescale", "1");
+	DispatchKeyValue(entity, "fademindist", "3000");
+	DispatchKeyValue(entity, "fademaxdist", "3200");
 	
-	TeleportEntity(i_Ent[entity], vPos, vAng, NULL_VECTOR);
-	DispatchSpawn(i_Ent[entity]);
-	SetEntityRenderMode( i_Ent[entity], RENDER_GLOW );
-	SetEntityRenderColor (i_Ent[entity], g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2],200 );
+	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+	DispatchSpawn(entity);
+	SetEntityRenderMode( entity, RENDER_GLOW );
+	SetEntityRenderColor (entity, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2],255 );
 	
-	SDKHook(entity, SDKHook_VPhysicsUpdatePost, TankThink);
+	i_Ent[car] = EntIndexToEntRef(entity);
+	SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
+
+	SetEntityRenderMode( car, RENDER_TRANSCOLOR );
+	SetEntityRenderColor (car, 0, 0, 0, 5 );
 }
 
-public void TankThink(int entity)
+public Action Hook_SetTransmit(int entity, int client)
 {
-	if (!IsValidEntity(entity) || !tankSpawned)
-	{
-		if (IsValidEdict(i_Ent[entity]))
-		{
-			RemoveEdict(i_Ent[entity]);
-		}
-		SDKUnhook(entity, SDKHook_VPhysicsUpdatePost, TankThink);
-		return;
-	}
-	
-	if (IsValidEdict(i_Ent[entity]))
+	return Plugin_Handled;
+}
+
+public void TankThink(int car)
+{
+	int entity = i_Ent[car];
+	if (IsValidEntRef(entity))
 	{
 		float vPos[3];
 		float vAng[3];
-		GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
-		GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(i_Ent[entity], vPos, vAng, NULL_VECTOR);
+		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
+		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
+		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+	}
+	else
+	{
+		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
 
-void CreateTankPropGlowSpectator(int entity)
+void CreateTankPropGlowSpectator(int car)
 {
 	static char sModelName[64];
-	GetEntPropString(entity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
+	GetEntPropString(car, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 	
 	float vPos[3];
 	float vAng[3];
 		
-	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
-	GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
+	GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
+	GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
 
+	int entity;
 	if (strcmp(sModelName, "models/props_vehicles/generatortrailer01.mdl", false) == 0)
 	{
-		i_EntSpec[entity] = CreateEntityByName("prop_dynamic_override");
-		DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
-		DispatchKeyValue(i_EntSpec[entity], "targetname", "propglow");
+		entity = CreateEntityByName("prop_dynamic_override");
+		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "targetname", "propglow");
 	}
 	else
 	{
-		i_EntSpec[entity] = CreateEntityByName("prop_glowing_object");
-		DispatchKeyValue(i_EntSpec[entity], "model", sModelName);
-		DispatchKeyValue(i_EntSpec[entity], "StartGlowing", "1");
-		DispatchKeyValue(i_EntSpec[entity], "StartDisabled", "1");
-		DispatchKeyValue(i_EntSpec[entity], "targetname", "propglow");
+		entity = CreateEntityByName("prop_glowing_object");
+		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "StartGlowing", "1");
+		DispatchKeyValue(entity, "StartDisabled", "1");
+		DispatchKeyValue(entity, "targetname", "propglow");
 		
-		DispatchKeyValue(i_EntSpec[entity], "GlowForTeam", "1");
+		DispatchKeyValue(entity, "GlowForTeam", "1");
 	}
 	
-	DispatchKeyValue(i_EntSpec[entity], "fadescale", "1");
-	DispatchKeyValue(i_EntSpec[entity], "fademindist", "3000");
-	DispatchKeyValue(i_EntSpec[entity], "fademaxdist", "3200");
+	DispatchKeyValue(entity, "fadescale", "1");
+	DispatchKeyValue(entity, "fademindist", "3000");
+	DispatchKeyValue(entity, "fademaxdist", "3200");
 	
-	TeleportEntity(i_EntSpec[entity], vPos, vAng, NULL_VECTOR);
-	DispatchSpawn(i_EntSpec[entity]);
-	SetEntityRenderFx(i_EntSpec[entity], RENDERFX_FADE_FAST);
+	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+	DispatchSpawn(entity);
+	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
 
-	SDKHook(entity, SDKHook_VPhysicsUpdatePost, SpecTankThink);
+	i_EntSpec[car] = EntIndexToEntRef(entity);
+
+	SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
 }
 
-public void SpecTankThink(int entity)
+public void SpecTankThink(int car)
 {
-	if (!IsValidEntity(entity) || !tankSpawned)
-	{
-		if (IsValidEdict(i_EntSpec[entity]))
-		{
-			RemoveEdict(i_EntSpec[entity]);
-		}
-		SDKUnhook(entity, SDKHook_VPhysicsUpdatePost, SpecTankThink);
-		return;
-	}
-	
-	if (IsValidEdict(i_EntSpec[entity]))
+	int entity = i_EntSpec[car];
+	if (IsValidEntRef(entity))
 	{
 		float vPos[3];
 		float vAng[3];
-		GetEntPropVector(entity, Prop_Data, "m_vecOrigin", vPos);
-		GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(i_EntSpec[entity], vPos, vAng, NULL_VECTOR);
+		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
+		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
+		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+	}
+	else
+	{
+		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
 
@@ -359,10 +364,10 @@ public Action FadeTankProps( Handle timer ) {
 		if(IsValidEdict(entity))
 		{
             RemoveEdict(entity);
-            if (IsValidEdict(i_Ent[entity]))
+            if (IsValidEntRef(i_Ent[entity]))
 				RemoveEdict(i_Ent[entity]);
 				
-            if (IsValidEdict(i_EntSpec[entity]))
+            if (IsValidEntRef(i_EntSpec[entity]))
 				RemoveEdict(i_EntSpec[entity]);
         }
     }
@@ -451,7 +456,7 @@ bool IsTank( int client ) {
 
 bool IsValidEntRef(int entity)
 {
-	if( entity && EntRefToEntIndex(entity) != INVALID_ENT_REFERENCE && entity!= -1 && IsValidEntity(entity) && IsValidEdict(entity))
+	if( entity && EntRefToEntIndex(entity) != INVALID_ENT_REFERENCE)
 		return true;
 	return false;
 }

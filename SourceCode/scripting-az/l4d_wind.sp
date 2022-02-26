@@ -12,25 +12,26 @@ ConVar g_cvAddTopMenu, g_cvAddBot;
 TopMenuObject hAdminTeleportItem;
 bool g_bMenuAdded;
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	EngineVersion evEngine = GetEngineVersion();
-
-	if (evEngine != Engine_Left4Dead && evEngine != Engine_Left4Dead2)
-	{
-		strcopy(error, err_max, "SM Respawn only supports Left 4 Dead 1 & 2.");
-		return APLRes_SilentFailure;
-	}
-	return APLRes_Success;
-}
-
 public Plugin myinfo = 
 {
 	name = "Add a survivor bot + Teleport an alive player",
 	author = "Harry Potter",
 	description = "Create a survivor bot + teleport an alive player in game",
 	version = "1.3",
-	url = "https://steamcommunity.com/id/fbef0102/"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) 
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+	
+	return APLRes_Success; 
 }
 
 public void OnPluginStart()

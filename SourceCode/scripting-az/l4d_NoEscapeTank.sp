@@ -57,9 +57,6 @@ public OnPluginStart()
 
 public NET_ev_FinaleEscStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	//if(IsTankProhibit()) return;
-	if (!g_bEnableNoEscTank) return;
-
 	g_bVehicleIncoming = true;
 }
 
@@ -68,12 +65,20 @@ public NET_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 	g_bVehicleIncoming = false;
 }
 
-// left4downtown
-public Action:L4D_OnSpawnTank(const Float:vector[3], const Float:qangle[3])
+public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
 {
 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
 	{
 		//PrintToChatAll("Blocking tank spawn...");
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStatis)
+{
+	if(g_bEnableNoEscTank && g_bVehicleIncoming)
+	{
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;

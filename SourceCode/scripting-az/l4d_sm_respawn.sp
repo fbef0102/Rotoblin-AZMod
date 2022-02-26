@@ -4,8 +4,9 @@
 #include <sourcemod>
 #include <sdktools>
 #include <adminmenu>
+#include <left4dhooks>
 
-#define PLUGIN_VERSION "2.3"
+#define PLUGIN_VERSION "2.4"
 
 #define CVAR_FLAGS	FCVAR_NOTIFY
 
@@ -30,10 +31,7 @@ ConVar g_cvGameMode;
 bool g_bLeft4dead2;
 bool g_bMenuAdded;
 
-Handle g_hSDKRespawnPlayer;
 Handle g_WarpToValidPositionSDKCall;
-
-Address g_Address_Respawn, g_Address_ResetStatCondition;
 
 TopMenuObject hAdminSpawnItem;
 
@@ -69,32 +67,6 @@ public void OnPluginStart()
 	if (hGameData == null) SetFailState("Could not find gamedata file at addons/sourcemod/gamedata/l4drespawn.txt , you FAILED AT INSTALLING");
 	
 	StartPrepSDKCall(SDKCall_Player);
-	if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "RoundRespawn") == false )
-	{
-		SetFailState("Failed to find signature: RoundRespawn");
-	}
-	else {
-		//PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain); // WTF not work
-		g_hSDKRespawnPlayer = EndPrepSDKCall();
-		if (g_hSDKRespawnPlayer == null) SetFailState("Failed to create SDKCall: RoundRespawn");
-	}
-	
-	int iOffset = GameConfGetOffset(hGameData, "RoundRespawn_Offset");
-	if( iOffset == -1 ) SetFailState("Failed to load \"RoundRespawn_Offset\" offset.");
-
-	int iByteMatch = GameConfGetOffset(hGameData, "RoundRespawn_Byte");
-	if( iByteMatch == -1 ) SetFailState("Failed to load \"RoundRespawn_Byte\" byte.");
-
-	g_Address_Respawn = GameConfGetAddress(hGameData, "RoundRespawn");
-	if( !g_Address_Respawn ) SetFailState("Failed to load \"RoundRespawn\" address.");
-	
-	g_Address_ResetStatCondition = g_Address_Respawn + view_as<Address>(iOffset);
-	
-	int iByteOrigin = LoadFromAddress(g_Address_ResetStatCondition, NumberType_Int8);
-	if( iByteOrigin != iByteMatch ) SetFailState("Failed to load, byte mis-match @ %d (0x%02X != 0x%02X)", iOffset, iByteOrigin, iByteMatch);
-	
-	
-	StartPrepSDKCall(SDKCall_Player);
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "WarpToValidPositionIfStuck");
 	g_WarpToValidPositionSDKCall = EndPrepSDKCall();
 	if(g_WarpToValidPositionSDKCall == null)
@@ -113,11 +85,6 @@ public void OnPluginStart()
 	g_cvAddTopMenu.AddChangeHook(OnCvarChanged);
 	
 	OnAdminMenuReady(null);
-}
-
-public void OnPluginEnd()
-{
-	PatchAddress(false);
 }
 
 public void OnCvarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -360,10 +327,7 @@ bool vRespawnPlayer(int client, int target, float vec[3] = {99999.0, 99999.0, 99
 				PrintToChat(client, "[SM] You Dumb? %N is still alive!",target);
 				return false;
 			}
-			PatchAddress(true);
-			//int result = SDKCall(g_hSDKRespawnPlayer, target);
-			SDKCall(g_hSDKRespawnPlayer, target);
-			PatchAddress(false);
+			L4D_RespawnPlayer(target);
 			
 			//if( result )
 			{
@@ -513,20 +477,4 @@ void vCheatCommand(int client, char[] command, char[] arguments = "")
 	SetCommandFlags(command, iCmdFlags & ~FCVAR_CHEAT);
 	FakeClientCommand(client, "%s %s", command, arguments);
 	SetCommandFlags(command, iCmdFlags | GetCommandFlags(command));
-}
-
-void PatchAddress(bool patch)
-{
-	static bool patched;
-
-	if( !patched && patch )
-	{
-		patched = true;
-		StoreToAddress(g_Address_ResetStatCondition, 0x79, NumberType_Int8); // if (!bool) - 0x75 JNZ => 0x78 JNS (jump short if not sign) - always not jump
-	}
-	else if( patched && !patch )
-	{
-		patched = false;
-		StoreToAddress(g_Address_ResetStatCondition, 0x75, NumberType_Int8);
-	}
 }

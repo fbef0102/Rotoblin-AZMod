@@ -589,7 +589,7 @@ PrintDamage(iIndex, bool:bTankBoss, bool:bLoose = false, iCrownTech = 0)
 		}
 
 		if (bTankBoss){
-			CPrintToChatAll("{default}[{olive}TS{default}] {blue}%N {default}%t", iClient[0][INDEX],"l4d_tank_witch_damage_announce_spawnAnnouncer2",iClient[0][DMG]);
+			CPrintToChatAll("{default}[{olive}TS{default}] {blue}%s {default}%t", sName,"l4d_tank_witch_damage_announce_spawnAnnouncer2",iClient[0][DMG]);
 			g_bIsTankAlive = false;
 		}
 		else

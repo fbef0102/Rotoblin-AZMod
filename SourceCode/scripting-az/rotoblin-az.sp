@@ -54,7 +54,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.3.4"								// Version
+#define PLUGIN_VERSION			"8.3.5"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
@@ -98,6 +98,7 @@
 #include "rotoblin/rotoblin.weaponcontrol.sp"
 #include "rotoblin/rotoblin.itemcontrol.sp"
 #include "rotoblin/rotoblin.healthcontrol.sp"
+#include "rotoblin/rotoblin.finalespawn.sp"
 
 // **********************************************
 //					  Forwards
@@ -187,6 +188,7 @@ public OnPluginStartEx()
 	_ItemControl_OnPluginStart();
 	_MeleeFatigue_OnPluginStart();
 	_Weapon_Attributes_OnPluginStart();
+	_FinaleSpawn_OnPluginStart();
 	// Create cvar for control plugin state
 	Format(buffer, sizeof(buffer), "Sets whether %s is enabled", PLUGIN_FULLNAME);
 	convar = CreateConVarEx("enable", "0", buffer, FCVAR_NOTIFY);

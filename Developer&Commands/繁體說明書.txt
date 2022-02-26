@@ -586,6 +586,13 @@ Author:
 [169] disable_cameras
 //防止因為地圖上的鏡頭視角錯誤造成伺服器崩潰
 
+[170] l4d_tongue_timer
+//Somker在某些的情況之下增長下次發動攻擊的舌頭冷卻時間
+//1. 被人類快速救援, 2. 被Tank拳頭或石頭或車子快速解開
+
+[171] l4d_tongue_bend_fix
+//舌頭拉到人之後彎曲十次以內都不會斷掉
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
