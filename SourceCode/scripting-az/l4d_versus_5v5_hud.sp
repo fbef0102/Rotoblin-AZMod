@@ -3,7 +3,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <left4dhooks>
-#include <l4d_weapon_stocks>
 #include <multicolors>
 
 #define HUD_5V5_DRAW_INTERVAL   0.5

@@ -65,8 +65,8 @@ Author:
 [02] pill_passer 
 //可以按 R 鍵傳藥丸
 
-[03] tankdoorfix 
-//修正tank有時候沒辦法打破門
+[03] l4d_fix_punch_block 
+//修正身旁有小殭屍的時候，Tank無法在打破門
 
 [04] pounce_maxdamage 
 //可設定高撲最大傷害
@@ -460,7 +460,8 @@ Author:
 //修正 sv_steamgroup 指令無法顯示正確群組
 
 [129] l4d_wind
-//增加電腦玩家
+//ADM打指令!wind增加電腦玩家
+//!admin->玩家指令新增"傳送玩家"
 
 [130] l4d_dynamic_light
 //手電筒發亮特效
@@ -593,6 +594,12 @@ Author:
 [171] l4d_tongue_bend_fix
 //舌頭拉到人之後彎曲十次以內都不會斷掉
 
+[172] l4d_reload_fix
+//不能利用換槍快速裝滿子彈
+
+[173] l4d_commonlimit_overflow_block
+//殭屍數量超過z_common_limit上限將自動被移除 (避免地圖或導演生成太多小殭屍導致Lag)
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -627,102 +634,103 @@ Map = 地圖難度修改
 [07] Death Aboard
 
 --------指令備忘錄--------
-[ADM]
--!sm_cvar versus_shove_hunter_fov	"45"	//90 = Default, 0 to disable not-pouncing deadstops
--!sm_cvar versus_shove_hunter_fov_pouncing "30" //45 = Default, 0 to disable pouncing deadstops
--!rcon quit //restart server
--!snow ,!rains, !fog, !maplight <a-z>, !faz ,!sun, !lightning, !background, !wind // (only in dark coop)
--!addban //sm_addban <time> <steamid> [reason]
--!ban //sm_ban <#userid|name> <minutes|0> [reason]
--!banip //sm_banip <ip|#userid|name> <time> [reason]
--!give //adm gives the whole team pills
--!giveto <name> //adm gives the survivor player who doesn't have pill
--!settankplayer <name> //adm force this player will become the tank
--!kickspec //forcekick all non-adm spectators
--!slots <#> //forcechange server slots
--!admin //adm menu
--!respawn <name> //respawn survivor
--!wind //add a human bot (dark coop、witch party、5v5)
--!hp	//adm give survivor team full health
--!cm 	//forcechange map
--!load	//forceload match
--!sm_execcfg <filename> //exec cfg file
--!forceshuffle //force team shuffle (during ready-up)
--!forcemix //force mix (during ready-up)
--!forcestart //Round starts when ready stage
--!forcepause //Server pause by adm
--!forceunpause //Server unpause by adm
--!swapto <name> <team(1,2, or 3)> //swap player to team
--!swapmenu //bring up a swap players menu
--!swapscores //swap the score between the first and second team
--!setscore <team(2,3)> <score> //set campaign score (during ready-up)
--!resetscores //clear all campaign score (during ready-up)
--!restartmap //restart current level
-
+[管理員專用]
+-!rcon quit //重啟伺服器
+-!snow ,!rains, !fog, !maplight <a-z>, !faz ,!sun, !lightning, !background, !wind // (限黑暗模式)
+-!addban //sm_addban <time> <steamid> [reason] //封鎖玩家
+-!ban //sm_ban <#userid|name> <minutes|0> [reason] //封鎖玩家
+-!banip //sm_banip <ip|#userid|name> <time> [reason] //封鎖玩家IP
+-!give //給整隊倖存者藥丸
+-!giveto <name> //給指定的倖存者藥丸
+-!settankplayer <name> //指定一位特感玩家將成為Tank
+-!kickspec //踢出所有非adm的旁觀者
+-!slots <#> //強制改變伺服器滿位人數
+-!respawn <name> //復活指定的玩家在準心位置上
+-!wind //增加一個bot在準心位置上
+-!hp	//倖存者回滿血
+-!cm 	//強制切換地圖
+-!load	//強制載入模式
+-!sm_execcfg <filename> //執行cfg的指定檔案
+-!forceshuffle //強制雙方隊伍洗牌 (限Ready期間)
+-!forcemix //強制Mix選隊長挑隊員 (限Ready期間)
+-!forcestart //Ready期間強制開始遊戲
+-!forcepause //管理員強制暫停遊戲
+-!forceunpause //管理員強制解除暫停遊戲
+-!swapto <name> <team(1,2, or 3)> //把指定的玩家強制換到指定的隊伍，1: 旁觀者, 2: 倖存陣營, 3: 特感陣營
+-!swapscores //雙方隊伍分數交換
+-!setscore <team(2,3)> <score> //設定隊伍的分數，2: 倖存陣營, 3: 特感陣營
+-!resetscores //清除雙方隊伍所有的分數 (限Ready期間)
+-!restartmap //重新該關卡
+-!admin //管理員菜單
+* "Respawn Player" //復活玩家在準心位置上
+* "Teleport Player" //傳送玩家在準心位置上
 
 [Everyone]
--!s,!afk,!away,!spectate 	//switch team to spectate
--!sur 			//switch team to survivor
--!inf 			//switch team to infected
--!cur(!current)		//survivors current
--!boss(!tank,!witch)	//boss percent
--!pause			//pause game
--!votes			//vote menu(kick、change map、alltalk、custom maps、hp)
--!tankhud		//tank hud
--!spechud		//spec hud
--!respec <name>	 //used by infected, force client spectator to respectate
--!ps,!printscores,-!scores,!score	//print all round scores
--!health(!bonus)		//print this round score
--!hear			//listen mode
--!kills			//survivor status
--!mvp			//survivor mvp status
--!warpto <#|name> (1|Francis, 2|Bill, 3|Zoey, 4|Louis) //warp to survivors when infected ghost
--!info(!Harry)		//Rotoblin-AZ Mod information menu
--!jukestop 		//stop jukebox music
--!roll <#> 		//game
--!code <1~100000> 	//game
--!coin			//game
--!random		//random choose a team for you (spectator)
--!lerps			 //show players' lerp
--!lerpss 			//show spectators' lerp
--!rates 			//show players' rates
--!ht 			//Hunter Bot limit (witch party、multi Hunters)
--!timer 			//Bot Spawn Timer (witch party、multi Hunters)
--!slots 			//change server slots
--!kickspec 		//kick all non-adm spectators
--!mix 			//vote to start a mix
--!shuffle			 //vote to start a shuffle
--!speaklist		//mic speak list
--!voteboss		 //L4D Boss Percents Vote (first round & ready-up)
--!top5 			//Top 5 Skeeter
--!skeets 		//Show Your Skeet Rank
--!rank 			//Show Your Skeets
--!pounce5 		//Top 5 Pouncer
--!pounces		//Show Your Pounce Stats
--!lang			//which language would you see in this mod
--!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //secret trophy on your head (during ready-up)
--!load(!mode,!match)	//load a match
-//5v5, 5v5hu, 5v5nb, 5v5 classic
-//4v4, 4v4 classic, 4v4hu, 4v4nb
-//3v3, 3v3hu, 3v3nb
-//2v2, 2v2hu, 2v2nb
-//1v1, 1v2, 1v3, 1v4, 1v5
-//2v3, 2v4, 2v5
-//3v4, 3v5
-//4v5
-//witch party
-//dark coop
--!cm 			//change map
-//nm (No Mercy)
-//dt (Death Toll)
-//da (Dead Air)
-//bh (Blood Harvest)
-//ts (The Sacrifice)
-//cc (Crash Course)
-//c17 (City 17)
-//sb (Suicide Blitz)
-//ihm (I hate mountain)
-//dfb (Dead Flag Blues)
-//dbd (Dead Before Dawn)
-//dab (Death Aboard)
-//aotd (The Arena of the Dead)
+-!s,!afk,!away,!spectate 	//切換成旁觀者
+-!sur 			//成為倖存者
+-!inf 			//成為特感
+-!cur(!current)		//倖存者目前路程
+-!boss(!tank,!witch)	//Tank與Witch的路程
+-!pause			//暫停遊戲
+-!votes			//投票菜單 (踢人、換圖、語音、換三方圖、回滿血、強制隊友旁觀)
+-!tankhud		//關閉或開啟 Tank 介面
+-!spechud		//關閉或開啟 Spechud 介面
+-!hide			//隱藏 準備/暫停 介面
+-!show			//顯示 準備/暫停 介面
+-!respec <name>	 //限特感玩家使用, 強制旁觀者重新旁觀避免卡圖標
+-!ps,!printscores,-!scores,!score	//打印雙方隊伍所有關卡的分數
+-!health(!bonus)		//打印回合分數 (血分、藥分、路程、關卡難度)
+-!hear			//限旁觀玩家使用, 能看到雙方隊伍的隊伍聊天、亦能聽到雙方隊伍的麥克風語音
+-!kills			//倖存者的統計狀態
+-!mvp			//倖存者的MVP狀態
+-!warpto <#|name> (1|Francis, 2|Bill, 3|Zoey, 4|Louis) //限靈魂特感玩家使用, 傳送到指定的倖存者身上
+-!info(!Harry)		//Rotoblin-AZ Mod 各種資訊
+-!jukestop 		//停止 jukebox 點唱機音樂
+-!roll <#> 		//來玩遊戲吧, 擲骰子
+-!code <1~100000> 	//來玩遊戲吧, 終極密碼
+-!coin			//來玩遊戲吧, 擲硬幣
+-!random		//限旁觀玩家使用, 隨機成為倖存者或特感
+-!lerps			 //顯示雙方隊伍玩家的lerp
+-!lerpss 			//顯示旁觀者所有玩家的lerp
+-!rates 			//顯示所有玩家的rates
+-!ht 			//指定Hunter Bot數量 (限witch party、多Hunters 模式)
+-!timer 			//Bot Spawn Timer (限witch party、多Hunters 模式)
+-!slots 			//投票改變伺服器人數上限
+-!kickspec 		//投票踢出所有非adm的旁觀者
+-!mix 			//投票Mix選隊長挑隊員 (限Ready期間)
+-!shuffle			 ///投票雙方隊伍洗牌 (限Ready期間)
+-!speaklist		//提示目前有哪些玩家使用麥克風語音 (提示位於螢幕正中央小小的字幕)
+-!voteboss <tank> <witch>		 //改變Tank與Witch的路程 (限第一回合Ready期間)
+-!top5 			//前五名空爆Skeet高手
+-!skeets 		//顯示你的Skeet排名
+-!rank 			//顯示你的Skeet數量統計與高撲數量統計
+-!pounce5 		//前五名Hunter高撲大佬
+-!pounces		//顯示你的高撲排名
+-!lang			//顯示你在這伺服器中會看到的語言
+-!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //隱藏的Ready頭上獎盃 (限Ready期間)
+-!load(!mode,!match)	//投票載入模式
+* 5v5, 5v5hu, 5v5nb, 5v5 classic
+* 4v4, 4v4 classic, 4v4hu, 4v4nb
+* 3v3, 3v3hu, 3v3nb
+* 2v2, 2v2hu, 2v2nb
+* 1v1, 1v2, 1v3, 1v4, 1v5
+* 2v3, 2v4, 2v5
+* 3v4, 3v5
+* 4v5
+* witch party
+* dark coop
+-!cm 			//投票切換地圖
+* nm (No Mercy)
+* dt (Death Toll)
+* da (Dead Air)
+* bh (Blood Harvest)
+* ts (The Sacrifice)
+* cc (Crash Course)
+* c17 (City 17)
+* sb (Suicide Blitz)
+* ihm (I hate mountain)
+* dfb (Dead Flag Blues)
+* dbd (Dead Before Dawn)
+* dab (Death Aboard)
+* aotd (The Arena of the Dead)
+* 149 (One 4 Nine)

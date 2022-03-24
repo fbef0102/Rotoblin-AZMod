@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.3.5"
+		"en"			"Rotoblin-AZ Mod v8.3.6"
 	}
 	"Plugin_Information"
 	{
@@ -1291,13 +1291,6 @@
 		"en"	"Force Panic Event!!"
 		"zho"	"強制刷屍潮!!"
 	}
-	///////////////caster_assister.smx///////////////
-	"Player is black and white."
-	{
-		"#format"	"{1:s},{2:s}"
-		"en"	"{1} ({2}) is black and white."
-		"zho"	"{1} ({2}) 黑白了."
-	}
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
@@ -2060,12 +2053,6 @@
 	{
 		"en"	"You can't spawn near safe room doors."
 		"zho"	"你現在不能在安全門附近復活."
-	}
-	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
-	"No Instant Spawn"
-	{
-		"en"	"Passing {green}Tank {default}to {red}AI{default}, {olive}No Instant Spawn{default}!! Force suicide"
-		"zho"	"失去 {green}Tank{default} 控制權給{red}AI{default}, {olive}不得馬上回靈魂{default}!! 強制自殺"
 	}
 	"Give Tank To AI"
 	{
@@ -2943,6 +2930,16 @@
 		"#format"	"{1:s}"
 		"en"		"{green}{1}{default} was found to be {lightgreen}telespawning{default} and was killed."
 		"zho"		"{green}{1}{default} 被發現使用 {lightgreen}傳送復活(telespawning){default} 而強制自殺."
+	}
+	"PausePanelHide"
+	{
+		"en"		"[{olive}Pause{default}] Panel is now {red}off{default}"
+		"zho"		"[{olive}Pause{default}] 暫停介面已 {red}關閉{default}"
+	}
+	"PausePanelShow"
+	{
+		"en"		"[{olive}Pause{default}] Panel is now {blue}on{default}"
+		"zho"		"[{olive}Pause{default}] 暫停介面已 {red}開啟{default}"
 	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"

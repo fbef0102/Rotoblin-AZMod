@@ -19,8 +19,6 @@
 #define ALL_FEATURES            (SKEET_POUNCING_AI | BLOCK_STUMBLE_SCRATCH)
 
 // Globals
-new     Handle:         hGameConf;
-new     Handle:         hIsStaggering;
 new     bool:           bLateLoad                                               = false;
 
 // CVars
@@ -33,7 +31,7 @@ new                     iHunterSkeetDamage[MAXPLAYERS+1]                        
     
     Changelog
     ---------
-        1.1.0
+        1.1.1
             - l4d1 port by HarryPotter
             
         1.0.9
@@ -81,7 +79,7 @@ public Plugin:myinfo =
     name = "Bot SI skeet/level damage fix",
     author = "Tabun, dcx2, HarryPotter",
     description = "Makes AI SI take (and do) damage like human SI.",
-    version = "1.1.0",
+    version = "1.1.1",
     url = "https://github.com/Tabbernaut/L4D2-Plugins/tree/master/ai_damagefix"
 }
 
@@ -115,22 +113,6 @@ public OnPluginStart()
             }
         }
     }
-    
-    // sdkhook
-    hGameConf = LoadGameConfigFile(GAMEDATA_FILE);
-    if (hGameConf == INVALID_HANDLE)
-    SetFailState("[aidmgfix] Could not load game config file (staggersolver.txt).");
-
-    StartPrepSDKCall(SDKCall_Player);
-
-    if (!PrepSDKCall_SetFromConf(hGameConf, SDKConf_Signature, "IsStaggering"))
-    SetFailState("[aidmgfix] Could not find signature IsStaggering.");
-    PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
-    hIsStaggering = EndPrepSDKCall();
-    if (hIsStaggering == INVALID_HANDLE)
-    SetFailState("[aidmgfix] Failed to load signature IsStaggering");
-
-    CloseHandle(hGameConf);
 }
 
 
@@ -173,17 +155,6 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
                 return Plugin_Changed;
             }
         }
-    }
-    
-    return Plugin_Continue;
-}
-
-public Action:OnPlayerRunCmd(client, &buttons)
-{
-    // If the AI Infected is staggering, block melee so they can't scratch
-    if ((fEnabled & BLOCK_STUMBLE_SCRATCH) && IsClientAndInGame(client) && GetClientTeam(client) == TEAM_INFECTED && IsFakeClient(client) && SDKCall(hIsStaggering, client))
-    {
-        buttons &= ~IN_ATTACK2;
     }
     
     return Plugin_Continue;

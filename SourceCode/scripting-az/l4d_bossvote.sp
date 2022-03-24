@@ -197,10 +197,10 @@ public Action:RewriteBossFlows(Handle:timer)
 	{
 		float fSurvivorflow = GetSurCurrentFloat();
 
-		if ( 0.01 < fSurvivorflow < 1 && fTankFlow < fSurvivorflow) fTankFlow = fSurvivorflow;
+		if ( 0.0 < fTankFlow && 0.01 < fSurvivorflow < 1 && fTankFlow < fSurvivorflow) fTankFlow = fSurvivorflow;
 		SetTankSpawn(fTankFlow);
 
-		if ( 0.01 < fSurvivorflow < 1 && fWitchFlow < fSurvivorflow) fWitchFlow = fSurvivorflow;
+		if ( 0.0 < fWitchFlow && 0.01 < fSurvivorflow < 1 && fWitchFlow < fSurvivorflow) fWitchFlow = fSurvivorflow;
 		SetWitchSpawn(fWitchFlow);
 
 		SaveBossPercents();
@@ -230,6 +230,7 @@ SetTankSpawn(Float:flow)
 		else
 		{
 			L4D2Direct_SetVSTankToSpawnThisRound(i, false);
+			L4D2Direct_SetVSTankFlowPercent(i, 0.0);
 		}
 	}
 }
@@ -246,6 +247,7 @@ SetWitchSpawn(Float:flow)
 		else
 		{
 			L4D2Direct_SetVSWitchToSpawnThisRound(i, false);
+			L4D2Direct_SetVSWitchFlowPercent(i, 0.0);
 		}
 	}
 }

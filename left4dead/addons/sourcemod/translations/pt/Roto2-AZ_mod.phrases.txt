@@ -965,11 +965,6 @@
 	{
 		"pt"	"Evento de panico forçado!!"
 	}
-	///////////////caster_assister.smx///////////////
-	"Player is black and white."
-	{
-		"pt"	"{1} ({2}) está preto e branco."
-	}
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
@@ -1540,10 +1535,6 @@
 		"pt"	"Você não pode aparecer perto das portas da sala segura."
 	}
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
-	"No Instant Spawn"
-	{
-		"pt"	"Passando {green}Tank {default}para {red}AI{default}, {olive}Sem instante spawn{default}!! Forçar suicidio"
-	}
 	"Give Tank To AI"
 	{
 		"pt"	"{red}{1}{default} foi dado ao AI TANK!"
@@ -2191,6 +2182,14 @@
 	"rotoblin22"
 	{
 		"pt"		"{green}{1}{default} foi descoberto como {lightgreen}telespawning{default} e foi morto."
+	}
+	"PausePanelHide"
+	{
+		"pt"		"[{olive}Pause{default}] Panel is now {red}off{default}"
+	}
+	"PausePanelShow"
+	{
+		"pt"		"[{olive}Pause{default}] Panel is now {blue}on{default}"
 	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"

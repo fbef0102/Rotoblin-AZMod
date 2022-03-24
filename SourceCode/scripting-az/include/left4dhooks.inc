@@ -59,17 +59,17 @@
 
 
 // Natives:
-// L4D1 = 25 [left4downtown] + 47 [l4d_direct] + 15 [l4d2addresses] + 46 [silvers - mine!] + 4 [anim] = 128
-// L4D2 = 54 [left4downtown] + 61 [l4d_direct] + 26 [l4d2addresses] + 81 [silvers - mine!] + 4 [anim] = 215
+// L4D1 = 25 [left4downtown] + 47 [l4d_direct] + 15 [l4d2addresses] + 51 [silvers - mine!] + 4 [anim] = 139
+// L4D2 = 54 [left4downtown] + 61 [l4d_direct] + 26 [l4d2addresses] + 88 [silvers - mine!] + 4 [anim] = 229
 
 // Forwards:
-// L4D1 = 61;
-// L4D2 = 78;
+// L4D1 = 64;
+// L4D2 = 88;
 
-// Stocks: (L4D1 = 106. L4D2 = 149)
-// left4dhooks_silver			37 stocks	(L4D2 = 4,		L4D1 = 0)
-// left4dhooks_stocks			82 stocks	(L4D2 = 39,		L4D1 = 4)
-// left4dhooks_lux_library		34 stocks	(L4D2 = 4,		L4D1 = 0)
+// Stocks: (L4D1 = 107. L4D2 = 152)
+// left4dhooks_silver			41 stocks	(Only: L4D2 = 7,		L4D1 = 0)
+// left4dhooks_stocks			83 stocks	(Only: L4D2 = 39,		L4D1 = 4)
+// left4dhooks_lux_library		34 stocks	(Only: L4D2 = 4,		L4D1 = 0)
 
 
 
@@ -141,6 +141,9 @@ public void __pl_l4dh_SetNTVOptional()
 	MarkNativeAsOptional("L4D2_AreWanderersAllowed");
 	MarkNativeAsOptional("L4D2_GetCurrentFinaleStage");
 	MarkNativeAsOptional("L4D2_ForceNextStage");
+	MarkNativeAsOptional("L4D_ForceVersusStart");
+	MarkNativeAsOptional("L4D_ForceSurvivalStart");
+	MarkNativeAsOptional("L4D2_ForceScavengeStart");
 	MarkNativeAsOptional("L4D2_IsTankInPlay");
 	MarkNativeAsOptional("L4D2_GetScriptValueInt");
 	MarkNativeAsOptional("L4D2_NavAreaTravelDistance");
@@ -384,16 +387,16 @@ enum PointerType
 // X -> Y (means X state will become Y state on next frame or some seconds later)
 enum
 {
-    STATE_ACTIVE = 0,
-    STATE_WELCOME,				// -> STATE_PICKING_TEAM
-    STATE_PICKING_TEAM,
-    STATE_PICKINGCLASS,			// -> STATE_ACTIVE
-    STATE_DEATH_ANIM,			// -> STATE_DEATH_WAIT_FOR_KEY
-    STATE_DEATH_WAIT_FOR_KEY,	// -> STATE_OBSERVER_MODE
-    STATE_OBSERVER_MODE,
-    STATE_WAITING_FOR_RESCUE,
-    STATE_GHOST,
-    STATE_INTRO_CAMERA
+	STATE_ACTIVE = 0,
+	STATE_WELCOME,				// -> STATE_PICKING_TEAM
+	STATE_PICKING_TEAM,
+	STATE_PICKINGCLASS,			// -> STATE_ACTIVE
+	STATE_DEATH_ANIM,			// -> STATE_DEATH_WAIT_FOR_KEY
+	STATE_DEATH_WAIT_FOR_KEY,	// -> STATE_OBSERVER_MODE
+	STATE_OBSERVER_MODE,
+	STATE_WAITING_FOR_RESCUE,
+	STATE_GHOST,
+	STATE_INTRO_CAMERA
 }
 
 // From: https://developer.valvesoftware.com/wiki/L4D2_Director_Scripts
@@ -406,15 +409,15 @@ enum
 	FINALE_GAUNTLET_2 = 3,
 	FINALE_HORDE_ATTACK_2 = 4,
 	FINALE_FINAL_BOSS = 5,
-	FINALE_HORDE_ESCAPE    = 6,
-	FINALE_CUSTOM_PANIC    = 7,
-	FINALE_CUSTOM_TANK    = 8,
-	FINALE_CUSTOM_SCRIPTED    = 9,
-	FINALE_CUSTOM_DELAY    = 10,
+	FINALE_HORDE_ESCAPE = 6,
+	FINALE_CUSTOM_PANIC = 7,
+	FINALE_CUSTOM_TANK = 8,
+	FINALE_CUSTOM_SCRIPTED = 9,
+	FINALE_CUSTOM_DELAY = 10,
 	FINALE_CUSTOM_CLEAROUT = 11,
 	FINALE_GAUNTLET_START = 12,
 	FINALE_GAUNTLET_HORDE = 13,
-	FINALE_GAUNTLET_HORDE_BONUSTIME    = 14,
+	FINALE_GAUNTLET_HORDE_BONUSTIME = 14,
 	FINALE_GAUNTLET_BOSS_INCOMING = 15,
 	FINALE_GAUNTLET_BOSS = 16,
 	FINALE_GAUNTLET_ESCAPE = 17
@@ -1130,6 +1133,29 @@ forward Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vec
 forward Action L4D2_OnPounceOrLeapStumble(int victim, int attacker);
 
 /**
+ * @brief Called when CTerrorPlayer::OnKnockedDown(CTerrorPlayer*) is invoked.
+ * @remarks Called when someone is about to be hit by a Tank rock or lunged by a Hunter
+ * @remarks Called multiple times when someone is about to be has been pounced by a Hunter
+ *
+ * @param victim		Client index of the victim.
+ * @param reason		The Knockdown reason type. 1=Hunter lunge, 2=Tank rock, 3=Charger impact.
+ *
+ * @return				Plugin_Handled to block fling, Plugin_Continue to allow.
+ **/
+forward Action L4D_OnKnockedDown(int client, int reason);
+
+/**
+ * @brief Called when CTerrorPlayer::OnKnockedDown(CTerrorPlayer*) is invoked.
+ * @remarks Called when a player is about to be pummelled by Charger.
+ *
+ * @param victim		Client index of the victim.
+ * @param reason		The Knockdown reason type. 1=Hunter lunge, 2=Tank rock.
+ *
+ * @noreturn
+ **/
+forward void L4D_OnKnockedDown_Post(int client, int reason);
+
+/**
  * @brief Called whenever CInferno::Spread(Vector const&) is invoked (only for spitters -- ignores fire)
  *
  * @param spitter	 	spitter that spat (:D)
@@ -1196,7 +1222,7 @@ forward Action L4D_OnMaterializeFromGhostPre(int client);
  *
  * @noreturn
  */
-forward Action L4D_OnMaterializeFromGhost(int client);
+forward void L4D_OnMaterializeFromGhost(int client);
 
 /**
  * @brief Called whenever CPipeBombProjectile::Create is invoked
@@ -1259,6 +1285,19 @@ forward void L4D_CBreakableProp_Break(int prop, int entity);
  */
  // L4D2 only.
 forward void L4D2_CGasCan_EventKilled(int gascan, int inflictor, int attacker);
+
+/**
+ * @brief Called whenever CGasCan::ShouldStartAction() is invoked
+ * @remarks Called when someone is about to pour a gascan into a nozzle
+ *
+ * @param client			the client pouring
+ * @param gascan			the gascan entity index that is being consumed
+ * @param nozzle			the nozzle being poured into
+ *
+ * @return					Plugin_Handled to block adding to Scavenge score (see "Scavenge Score Fix" plugin for more details), Plugin_Continue otherwise
+ */
+ // L4D2 only.
+forward Action L4D2_CGasCan_ShouldStartAction(int client, int gascan);
 
 /**
  * @brief Called whenever CGasCan::OnActionComplete() is invoked
@@ -1407,9 +1446,59 @@ forward void L4D2_OnWaterMove(int client);
  * @remarks You can use the "GAMEMODE_*" enums provided above to match the mode.
  * @remarks Only triggers when the server starts and after when the game mode changes.
  *
- * @return	Current game mode.
+ * @param gamemode		Current game mode.
+ *
+ * @noreturn
  */
 forward void L4D_OnGameModeChange(int gamemode);
+
+/**
+ * @brief Called when CTerrorPlayer::QueuePummelVictim is invoked.
+ * @remarks Called when a player is about to be pummelled bby a Charger.
+ *
+ * @param attacker		Client index of the attacker.
+ * @param victim		Client index of the victim.
+ *
+ * @return				Plugin_Handled to block pummel, Plugin_Continue to allow.
+ **/
+// L4D2 only.
+forward Action L4D2_OnPummelVictim(int attacker, int victim);
+
+/**
+ * @brief Called when CTerrorPlayer::QueuePummelVictim is invoked.
+ * @remarks Called when a player is about to be pummelled bby a Charger.
+ *
+ * @param attacker		Client index of the attacker.
+ * @param victim		Client index of the victim.
+ *
+ * @noreturn
+ **/
+// L4D2 only.
+forward void L4D2_OnPummelVictim_Post(int attacker, int victim);
+
+/**
+ * @brief Called when ThrowImpactedSurvivor(CTerrorPlayer *, CTerrorPlayer *, float, bool) is invoked.
+ * @remarks Called when a player is about to be flung probably by Charger impact.
+ *
+ * @param attacker		Client index of the attacker.
+ * @param victim		Client index of the victim.
+ *
+ * @return				Plugin_Handled to block fling, Plugin_Continue to allow.
+ **/
+// L4D2 only.
+forward Action L4D2_OnThrowImpactedSurvivor(int attacker, int victim);
+
+/**
+ * @brief Called when ThrowImpactedSurvivor(CTerrorPlayer *, CTerrorPlayer *, float, bool) is invoked.
+ * @remarks Called when a player is flung by a Charger impact.
+ *
+ * @param attacker		Client index of the attacker.
+ * @param victim		Client index of the victim.
+ *
+ * @noreturn
+ **/
+// L4D2 only.
+forward void L4D2_OnThrowImpactedSurvivor_Post(int attacker, int victim);
 
 /**
  * @brief Called when CTerrorPlayer::Fling(Vector const&, PlayerAnimEvent_t, CBaseCombatCharacter*, float) is invoked.
@@ -1423,6 +1512,20 @@ forward void L4D_OnGameModeChange(int gamemode);
  **/
 // L4D2 only.
 forward Action L4D2_OnPlayerFling(int client, int attacker, float vecDir[3]);
+
+/**
+ * @brief Called when CTerrorPlayer::Fling(Vector const&, PlayerAnimEvent_t, CBaseCombatCharacter*, float) is invoked.
+ * @remarks Called when a player is flung to the ground.
+ * @remarks This will not trigger if the fling is being blocked by other plugins
+ *
+ * @param client		Client index of the player.
+ * @param attacker		Client index of the attacker.
+ * @param vecDir		Vector direction of the fling.
+ *
+ * @noreturn
+ **/
+// L4D2 only.
+forward void L4D2_OnPlayerFling_Post(int client, int attacker, float vecDir[3]);
 
 /**
  * @brief Called when CDeathFallCamera::Enable(CBasePlayer*) is invoked.
@@ -1640,6 +1743,17 @@ native int L4D_Dissolve(int entity);
  * @noreturn
  */
 native void L4D_OnITExpired(int client);
+
+/**
+ * @brief Returns the estimated fall damage of a player.
+ * @remarks This only gives an estimate and not the actual damage the player is likely to receive
+ * @remarks The value maxes out at 400.0. Use SourceScamble to modify "FallingDamageForSpeed(float)" and change the minimum and maximum values
+ *
+ * @param client	Client id of the player
+ *
+ * @noreturn
+ */
+native float L4D_EstimateFallingDamage(int client);
 
 /**
  * @brief Sets a physics entity angular velocity vector.
@@ -1926,6 +2040,28 @@ native int L4D2_GetCurrentFinaleStage();
  */
 // L4D2 only.
 native void L4D2_ForceNextStage();
+
+/**
+ * @brief Forces the game to start in Versus.
+ *
+ * @noreturn
+ */
+native void L4D_ForceVersusStart();
+
+/**
+ * @brief Forces the game to start in Survival.
+ *
+ * @noreturn
+ */
+native void L4D_ForceSurvivalStart();
+
+/**
+ * @brief Forces the game to start in Scavenge.
+ *
+ * @noreturn
+ */
+// L4D2 only.
+native void L4D2_ForceScavengeStart();
 
 /**
  * @brief Returns true when any tanks are on the map
@@ -3007,7 +3143,7 @@ native CountdownTimer L4D2Direct_GetSIClassSpawnTimer(int class);
  * @note The initial pass from AI to a player counts as a pass.
  * @note As this is global on the director weird things could potentially happen if more than one tank is alive at a time with z_frustration 1.
  *
- * @return          The number of passes.
+ * @return			The number of passes.
  */
 native int L4D2Direct_GetTankPassedCount();
 
@@ -3017,7 +3153,7 @@ native int L4D2Direct_GetTankPassedCount();
  * @note The initial pass from AI to a player counts as a pass.
  * @note As this is global on the director weird things could potentially happen if more than one tank is alive at a time with z_frustration 1.
  *
- * @param           New number of passes value
+ * @param			New number of passes value
  *
  * @noreturn
  */
@@ -3378,21 +3514,21 @@ native int L4D2Direct_GetScriptedEventManager();
  * @note Some positions will not return a nav area (Address_Null). Notable examples are saferooms and small ledges like the guard rail at the start of c2m1_highway.
  * @remarks This is less reliable than L4D_GetNearestNavArea.
  *
- * @param pos           The position to find the containing nav area of
+ * @param pos			The position to find the containing nav area of
  * @param beneathLimit
  *
- * @return              Address to a TerrorNavArea or Address_Null
- * @error               Unable to prepare SDK call
+ * @return				Address to a TerrorNavArea or Address_Null
+ * @error				Unable to prepare SDK call
  */
 native Address L4D2Direct_GetTerrorNavArea(float pos[3], float beneathLimit = 120.0);
 
 /**
  * Find the distance through the map (in flow units) that a TerrorNavArea is located.
  *
- * @param  pTerrorNavArea   Pointer to a TerrorNavArea
+ * @param pTerrorNavArea	Pointer to a TerrorNavArea
  *
- * @return                  The flow units through the map that the TerrorNavArea is located at.
- * @error                   When passed an Address_Null
+ * @return					The flow units through the map that the TerrorNavArea is located at.
+ * @error					When passed an Address_Null
  */
 native float L4D2Direct_GetTerrorNavAreaFlow(Address pTerrorNavArea);
 

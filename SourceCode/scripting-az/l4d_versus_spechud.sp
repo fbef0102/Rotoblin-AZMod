@@ -2,7 +2,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <left4dhooks>
 #include <l4d_weapon_stocks>
 #include <multicolors>
 
@@ -41,7 +40,6 @@ static const String:L4DSI_Names[][] =
 
 new Handle:survivor_limit;
 new Handle:z_max_player_zombies;
-new Handle:g_hVsBossBuffer;
 
 new bool:bSpecHudActive[MAXPLAYERS + 1];
 
@@ -54,6 +52,7 @@ native IsInReady(); //from l4dready_scrds
 native Is_Ready_Plugin_On();//from l4dready_scrds
 native GetTankPercent(); //from l4d_boss_percent
 native GetWitchPercent(); //from l4d_boss_percent
+native GetSurCurrent(); //from l4d_current_survivor_progress
 native bool:IsClientVoteMenu(client);//From Votes2
 native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native Score_GetTeamCampaignScore(team);//From l4dscores
@@ -65,7 +64,7 @@ public Plugin:myinfo =
 	name = "Hyper-V HUD Manager [Public Version]",
 	author = "Visor, L4D1 port by harry",
 	description = "Provides different HUDs for spectators",
-	version = "8.1",
+	version = "8.2",
 	url = "https://github.com/Attano/smplugins"
 };
 
@@ -82,7 +81,6 @@ public Native_IsClientSpecHud(Handle:plugin, numParams)
 public OnPluginStart() 
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	g_hVsBossBuffer = FindConVar("versus_boss_buffer");
 	
 	survivor_limit = FindConVar("survivor_limit");
 	z_max_player_zombies = FindConVar("z_max_player_zombies");
@@ -266,14 +264,15 @@ FillSurvivorInfo(Handle:hSpecHud)
 		}
 		else
 		{
-			L4D2WeaponId primaryWep = L4D2_GetWeaponId(GetPlayerWeaponSlot(client, 1));
-			GetLongWeaponName(primaryWep, info, sizeof(info));
+			L4D2WeaponId primaryWep = L4D2_GetWeaponId(GetPlayerWeaponSlot(client, 0));
+			if(primaryWep == L4D2WeaponId_None) FormatEx(info, sizeof(info), "None");
+			else GetLongWeaponName(primaryWep, info, sizeof(info));
 			GetMeleePrefix(client, buffer, sizeof(buffer)); 
 			Format(info, sizeof(info), "%s/%s", info, buffer);
 		
 			if (IsSurvivorHanging(client))
 			{
-				Format(info, sizeof(info), "%s: %iHP <Hanging> [%s]", name, GetSurvivorHealth(client), info);
+				Format(info, sizeof(info), "%s: %iHP <Hanging>", name, GetSurvivorHealth(client));
 			}
 			else if (IsIncapacitated(client))
 			{
@@ -463,7 +462,7 @@ FillGameInfo(Handle:hSpecHud)
 		Format(info, sizeof(info), "%t (%s round)", "ROTO_AZ_PLUGIN_VERSION", (InSecondHalfOfRound() ? "2nd" : "1st"));
 		DrawPanelText(hSpecHud, info);
 
-		new Surcurrent = RoundToNearest(GetHighestSurvivorFlow() * 100.0);
+		new Surcurrent = GetSurCurrent();
 		Surcurrent = Surcurrent>=100 ? 100 : Surcurrent;
 		Format(info, sizeof(info), "Current: %i%%", Surcurrent);
 		DrawPanelText(hSpecHud, info);
@@ -538,27 +537,6 @@ GetRealClientCount()
 bool:InSecondHalfOfRound()
 {
 	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
-}
-
-Float:GetHighestSurvivorFlow()
-{
-	new Float:proximity = GetMaxSurvivorCompletion() + (GetConVarFloat(g_hVsBossBuffer) / L4D2Direct_GetMapMaxFlowDistance());
-	//LogMessage("L4D2Direct_GetMapMaxFlowDistance() is %f and GetConVarFloat(g_hVsBossBuffer) is %f",L4D2Direct_GetMapMaxFlowDistance(),GetConVarFloat(g_hVsBossBuffer));
-	return proximity;
-}
-//
-stock Float:GetMaxSurvivorCompletion()
-{
-	new Float:flow = 0.0;
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientConnected(i) && IsClientInGame(i)&& GetClientTeam(i) == 2)
-		{
-			flow = MAX(flow, L4D2Direct_GetFlowDistance(i));
-			//LogMessage("flow is %f",flow);
-		}
-	}
-	return (flow / L4D2Direct_GetMapMaxFlowDistance());
 }
 
 bool:IsSpectator(client)

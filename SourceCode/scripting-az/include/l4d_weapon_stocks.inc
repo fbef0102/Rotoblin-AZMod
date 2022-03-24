@@ -387,6 +387,14 @@ stock void L4D2_InitWeaponNameTrie()
     }
 }
 
+/**
+ * Returns weapon name by weapon id.
+ *
+ * @param weaponName	Weapon id to get name from.
+ * @param dest			Destination string buffer to copy to.
+ * @param destlen		Destination buffer length (includes null terminator).
+ * @return				Number of cells written.
+ */
 stock int GetLongWeaponName(L4D2WeaponId weaponId, char[] dest, int destlen)
 {
     if (!L4D2_IsValidWeaponId(weaponId))

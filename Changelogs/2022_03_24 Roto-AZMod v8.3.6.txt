@@ -1,0 +1,37 @@
+﻿v8.3.6
+-Please download latest "Windows Server files" or "Linux Server files" (https://github.com/fbef0102/L4D1-Server4Dead/releases)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+-gamedata\staggersolver.txt
+* Replace with L4D_IsPlayerStaggering(left4dhooks function)
+
+-plugins\tankdoorfix.smx
+* Replace by new plugin
+
+------------------New------------------
+-stripper\Roto-AZMod\maps\l4d_149_1.cfg
+-stripper\Roto-AZMod\maps\l4d_149_2.cfg
+-stripper\Roto-AZMod\maps\l4d_149_3.cfg
+-stripper\Roto-AZMod\maps\l4d_149_4.cfg
+-stripper\Roto-AZMod\maps\l4d_149_5.cfg
+* **Support Custom maps:**
+  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)**
+  * One 4 Nine (!cm 149)
+
+-data\mapinfo.txt
+* Sets a tank spawn and has the option to remove the witch spawn point on every map
+
+-plugins\l4d_reload_fix.smx
+* Prevent filling the clip and skipping the reload animation when taking the same weapon.
+
+-plugins\l4d_commonlimit_overflow_block.smx
+* Prevents director or map overrides of z_common_limit. Kill common if overflow.
+
+-plugins\l4d_fix_punch_block.smx
+* Fix common infected blocking the punch tracing.
+
+------------------Change------------------
+-plugins\l4d_collision_adjustments.smx
+* Works on linux/windows both system now
+* Please download latest "Windows Server files" or "Linux Server files"

@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.87"
+#define PLUGIN_VERSION		"1.90"
 
 /*=======================================================================================
 	Plugin Info:
@@ -32,9 +32,55 @@
 ========================================================================================
 	Change Log:
 
+1.90 (20-Mar-2022)
+	- Added forwards "L4D_OnKnockedDown" and "L4D_OnKnockedDown_Post" to trigger when a Survivor is being thrown by a Tank rock or Hunter lung.
+	- Added forwards "L4D2_OnThrowImpactedSurvivor" and "L4D2_OnThrowImpactedSurvivor_Post" to trigger when a Survivor is impacted by a Charger.
+	- Added forwards "L4D2_OnPummelVictim" and "L4D2_OnPummelVictim_Post" to trigger when a Survivor is about to be pummelled by a Charger.
+	- Added native "L4D_EstimateFallingDamage" to check a players estimated falling damage. Requested by "Eyal282".
+	- Added stocks "L4D_GetPinnedSurvivor" and "L4D2_IsMultiCharged" in the "left4dhooks_silver.inc" include file. Requested by "Eyal282".
+	- Changed stock "L4D_IsPlayerStaggering" in the "left4dhooks_silver.inc" include file to add better thanks. Thanks to "HarryPotter" for modifying.
+	- Changed forward "L4D_OnMaterializeFromGhost" from "Action" type to "void". Thanks to "Eyal282" for reporting.
+
+	- Updated: Plugin and test plugin.
+	- Updated: "left4dhooks.inc" and "left4dhooks_silver.inc" Include files.
+	- Updated: "left4dhooks.l4d1.txt" and "left4dhooks.l4d2.txt" GameData files.
+
+1.88 (01-Mar-2022)
+	- Added forward "L4D2_CGasCan_ShouldStartAction" (L4D2 only) to trigger when someone is about to pour a gascan. Requested by "Eyal282".
+	- Added forward "L4D2_OnPlayerFling_Post" as a post hook to supplement the "L4D2_OnPlayerFling" forward. Requested by "Eyal282".
+
+	- Added natives "L4D_ForceVersusStart", "L4D_ForceSurvivalStart" and "L4D2_ForceScavengeStart" (L4D2 only). Requested by "ProjectSky".
+	- Thanks to "Lux" for some advice.
+
+	- Added stock "L4D_GetClientTeam" to the "left4dhooks_stocks.inc" include file. Requested by Eyal282".
+	- Added stock "L4D_IsPlayerStaggering" to the "left4dhooks_silver.inc" include file. Thanks to "HarryPotter" for writing.
+	- Changed stock "L4D_ForcePanicEvent" in the "left4dhooks_silver.inc" include file to strip cheat flags when executing the command. Thanks to "Eyal282" for reporting.
+
+	- Fixed stock "L4D_GetPinnedInfected" in the "left4dhooks_silver.inc" include file not returning a Charger carrying someone. Thanks to "Eyal282" for reporting.
+
+	- Added enums "L4D1ZombieClassname" and "L4D2ZombieClassname" to the "left4dhooks_stocks.inc" include file to retrieve a classname from the relative "L4D1ZombieClassType" and "L4D2ZombieClassType" enums.
+
+	- Added target filters "@blackwhite" and "@bw" to target people who are on their third strike (black and white - about to die). Requested by "eyal282".
+	- Added target filters "@survivorbots" and "@sb" to target Survivor Bots. Requested by "LordVGames".
+	- Added target filters "@infectedbots" and "@ib" to target Infected Bots. Requested by "LordVGames".
+
+	- Changed "L4D2Direct_SetShovePenalty" and "L4D2Direct_SetNextShoveTime" to use SDKCalls instead of writing to memory.
+
+	- Changes to potentially fix intermittent crashing on map change when using "CTimer_Set*", "ITimer_Set*", natives.
+	- Thanks to "Forgetest" and "vikingo12" for reporting and possible solutions.
+	- Requires re-compiling with SourceMod 1.11 to take affect.
+
+	- Updated: Plugin and test plugin.
+	- Updated: "left4dhooks.inc" Include file.
+	- Updated: "left4dhooks_silver.inc" Include file.
+	- Updated: "left4dhooks_stocks.inc" Include file.
+	- Updated: "left4dhooks.l4d1.txt" and "left4dhooks.l4d2.txt" GameData files.
+	- Plugins using these stocks should recompile their plugin if the relative stock mentioned above has been updated.
+
 1.87 (05-Feb-2022)
 	- Added native "L4D_LobbyIsReserved" to return if players connected from the lobby and reserved the server.
 	- Added natives "L4D_GetLobbyReservation" and "L4D_SetLobbyReservation" to get and set the lobby reservation ID.
+	- Setting lobby reservation may not work when L4DToolZ is installed.
 
 	- Added new weapon attribute. Requested by "vikingo12".
 		- L4D2FloatWeaponAttributes: "L4D2FWA_ReloadDuration".
@@ -406,9 +452,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 
 	if( g_bLeft4Dead2 )
-		g_iForwardsMax = 79;
+		g_iForwardsMax = 88;
 	else
-		g_iForwardsMax = 62;
+		g_iForwardsMax = 64;
 
 	return APLRes_Success;
 }
@@ -803,7 +849,7 @@ public Action sm_l4dd(int client, int args)
 	int entity = FindEntityByClassname(-1, "prop_dynamic");
 	// int weapon = FindEntityByClassname(-1, "weapon_pistol*");
 	int weapon = GetPlayerWeaponSlot(client, L4D_WEAPON_SLOT_PRIMARY);
-	int bot = GetAnyRandomBot();
+	int bot = GetRandomSurvivor(1, 1);
 
 
 
@@ -938,6 +984,8 @@ public Action sm_l4dd(int client, int args)
 	// =========================
 	// NATIVES - Mine
 	// =========================
+	// PrintToServer("Fall dmg: %f", L4D_EstimateFallingDamage(client));
+
 	// Version 1.72 tests
 	/*
 	// TEST: L4D_GetPointer
@@ -1017,7 +1065,7 @@ public Action sm_l4dd(int client, int args)
 	// When a Survivor is taking over another Survivor, should change team to 0 otherwise the players old character will disappear.
 	ChangeClientTeam(client, 0);
 
-	int bot = GetAnyRandomBot();
+	int bot = GetRandomSurvivor(1, 1);
 	PrintToServer("L4D_SetHumanSpec %d (%d - %N)",					L4D_SetHumanSpec(bot, client), bot, bot);
 	PrintToServer("L4D_TakeOverBot %d (%d - %N)",					L4D_TakeOverBot(client), bot, bot);
 
@@ -2923,7 +2971,7 @@ public Action L4D_OnMaterializeFromGhostPre(int client)
 	return Plugin_Continue;
 }
 
-public Action L4D_OnMaterializeFromGhost(int client)
+public void L4D_OnMaterializeFromGhost(int client)
 {
 	static int called;
 	if( called < MAX_CALLS )
@@ -2933,8 +2981,6 @@ public Action L4D_OnMaterializeFromGhost(int client)
 
 		ForwardCalled("\"L4D_OnMaterializeFromGhost\" %d (%N)", client, client);
 	}
-
-	return Plugin_Continue;
 }
 
 public Action L4D_PipeBombProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
@@ -3066,6 +3112,23 @@ public Action L4D2_CGasCan_ActionComplete(int client, int gascan, int nozzle)
 	// Block call
 	return Plugin_Handled;
 	// */
+
+	return Plugin_Continue;
+}
+
+public Action L4D2_CGasCan_ShouldStartAction(int client, int gascan)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_CGasCan_ShouldStartAction\" %d (%N) - GasCan: %d", client, client, gascan);
+	}
+
+	// WORKS
+	// return Plugin_Handled;
 
 	return Plugin_Continue;
 }
@@ -3326,6 +3389,105 @@ public void L4D_OnGameModeChange(int gamemode)
 		called++;
 
 		ForwardCalled("\"L4D_OnGameModeChange\" %d", gamemode);
+	}
+}
+
+public Action L4D_OnKnockedDown(int client, int reason)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnKnockedDown\" %d (%N) reason %d", client, client, reason);
+	}
+
+	// To stop player velocity use RequestFrame and set their velocity to 0,0,0 or restore to previous maybe?
+	// RequestFrame(OnFrameResetMove, GetClientUserId(client));
+
+	// WORKS - Block the flung animation, player velocity will still change (L4D2 only?)
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void OnFrameResetMove(int client)
+{
+	client = GetClientOfUserId(client);
+	if( client && IsClientInGame(client) )
+	{
+		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, view_as<float>({ 0.0, 0.0, 0.0 }));
+	}
+}
+
+public void L4D_OnKnockedDown_Post(int client, int reason)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnKnockedDown_Post\" %d (%N) reason %d", client, client, reason);
+	}
+}
+
+public Action L4D2_OnPummelVictim(int attacker, int victim)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnPummelVictim\" %d (%N) pummelled %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	// WORKS - Block being pummelled
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_OnPummelVictim_Post(int attacker, int victim)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnPummelVictim_Post\" %d (%N) pummelled %d (%N)", attacker, attacker, victim, victim);
+	}
+}
+
+public Action L4D2_OnThrowImpactedSurvivor(int attacker, int victim)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnThrowImpactedSurvivor\" %d (%N) flung %d (%N)", attacker, attacker, victim, victim);
+	}
+
+	// WORKS - Block being flung
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_OnThrowImpactedSurvivor_Post(int attacker, int victim)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnThrowImpactedSurvivor\" %d (%N) flung %d (%N)", attacker, attacker, victim, victim);
 	}
 }
 

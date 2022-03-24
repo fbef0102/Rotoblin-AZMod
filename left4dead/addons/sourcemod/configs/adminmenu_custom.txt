@@ -90,6 +90,10 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_deathaboard01_prison"
 		}
+		"One 4 Nine"
+		{
+			"cmd" "sm_rcon changelevel l4d_149_1"
+		}
 	}
 	"Changemode"
 	{

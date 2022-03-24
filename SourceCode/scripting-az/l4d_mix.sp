@@ -779,8 +779,8 @@ void SwapPlayersToDesignatedTeams()
 
 public Action MoveToSurvivor(Handle timer, any targetplayer)
 {
-	char playerName[64];
-	GetClientName(targetplayer, playerName, 64);
+	if(!targetplayer || !IsClientInGame(targetplayer)) return Plugin_Continue;
+
 	FakeClientCommand(targetplayer, "sm_survivor");
 	
 	CreateTimer(0.1, CheckClientInSurvivorTeam, targetplayer, _);
@@ -789,8 +789,8 @@ public Action MoveToSurvivor(Handle timer, any targetplayer)
 
 public Action MoveToInfected(Handle timer, any targetplayer)
 {
-	char playerName[64];
-	GetClientName(targetplayer, playerName, 64);
+	if(!targetplayer || !IsClientInGame(targetplayer)) return Plugin_Continue;
+
 	FakeClientCommand(targetplayer, "sm_infected");
 	
 	CreateTimer(0.1, CheckClientInInfectedTeam, targetplayer, _);
@@ -799,7 +799,7 @@ public Action MoveToInfected(Handle timer, any targetplayer)
 
 public Action:CheckClientInSurvivorTeam(Handle:timer, any:client)
 {
-	if(!IsClientInGame(client)) return;
+	if(!client || !IsClientInGame(client)) return;
 	
 	if (GetClientTeam(client) != 2)
 		CreateTimer(0.1, Survivor_Take_Control, client, TIMER_FLAG_NO_MAPCHANGE);
@@ -807,7 +807,7 @@ public Action:CheckClientInSurvivorTeam(Handle:timer, any:client)
 
 public Action:CheckClientInInfectedTeam(Handle:timer, any:client)
 {
-	if(!IsClientInGame(client)) return;
+	if(!client || !IsClientInGame(client)) return;
 	
 	if (GetClientTeam(client) != 3)
 		ChangeClientTeam(client, 3);

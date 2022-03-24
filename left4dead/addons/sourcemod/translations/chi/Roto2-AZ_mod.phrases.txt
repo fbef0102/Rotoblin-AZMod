@@ -965,11 +965,6 @@
 	{
 		"chi"	"强制刷尸潮!!"
 	}
-	///////////////caster_assister.smx///////////////
-	"Player is black and white."
-	{
-		"chi"	"{1} ({2}) 黑白了"
-	}
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
@@ -1540,10 +1535,6 @@
 		"chi"	"你现在不能在安全门附近复活."
 	}
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
-	"No Instant Spawn"
-	{
-		"chi"	"失去 {green}坦克{default} 控制权给{red}AI{default}, {olive}不得马上回灵魂状态{default}!! 强制自杀"
-	}
 	"Give Tank To AI"
 	{
 		"chi"	"{red}{1}{default} 转移给AI坦克了!"
@@ -2130,7 +2121,7 @@
 	}
 	"rotoblin12"
 	{
-		"chi"		"标记{blue}特感{default}队伍已准备."
+		"chi"		"标记{red}特感{default}队伍已准备."
 	}
 	"rotoblin13"
 	{
@@ -2191,6 +2182,14 @@
 	"rotoblin22"
 	{
 		"chi"		"{green}{1}{default} 被发现使用 {lightgreen}传送复活(telespawning){default} 而强制自杀."
+	}
+	"PausePanelHide"
+	{
+		"chi"		"[{olive}Pause{default}] 暂停界面已 {red}关闭{default}"
+	}
+	"PausePanelShow"
+	{
+		"chi"		"[{olive}Pause{default}] 暂停界面已 {red}开启{default}"
 	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"

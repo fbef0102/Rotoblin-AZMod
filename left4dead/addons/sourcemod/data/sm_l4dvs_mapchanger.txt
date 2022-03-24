@@ -65,4 +65,9 @@
 		"next mission map" "l4d_vs_farm01_hilltop"
 		"next mission name" "Blood Harvest (5 Maps)"
 	}
+	"l4d_149_5"
+	{
+		"next mission map" "l4d_airport01_greenhouse"
+		"next mission name" "Dead Air (5 Maps)"
+	}
 }

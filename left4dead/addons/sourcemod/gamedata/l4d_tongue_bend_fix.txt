@@ -1,0 +1,90 @@
+"Games"
+{
+	"#default"
+	{
+		"Offsets"
+		{
+			"OS"
+			{
+				"linux"			"1"
+				"windows"		"0"
+			}
+		}
+		
+		"Addresses"
+		{
+			"TongueState_StrFind"
+			{
+				"windows"
+				{
+					"signature"	"TongueState_StrFind"
+				}
+			}
+		}
+		
+		"Signatures"
+		{
+			"TongueState_StrFind"
+			{
+				"library"		"server"
+				"windows"		"STATE_TONGUE_IN_MOUTH"
+			}
+			
+			"CTongue::OnUpdateAttachedToTargetState"
+			{
+				"library"		"server"
+				"linux"			"@_ZN7CTongue29OnUpdateAttachedToTargetStateEv"
+			}
+		}
+	}
+	
+	"left4dead"
+	{
+        "MemPatches"
+        {
+			"CTongue::OnUpdateAttachedToTargetState__UpdateBend_jump_patch"
+			{
+				"signature"		"CTongue::OnUpdateAttachedToTargetState"
+				"linux"
+				{
+					"offset"	"217h"
+					"verify"	"\x0F\x85"
+					"patch"		"\x90\x90\x90\x90\x90\x90"
+				}
+			}
+		}
+		
+		"Offsets"
+		{
+			"CTongue::OnUpdateAttachedToTargetState__UpdateBend_jump_patch"
+			{
+				"windows"		"494"
+			}
+		}
+	}
+	
+    "left4dead2"
+    {
+        "MemPatches"
+        {
+			"CTongue::OnUpdateAttachedToTargetState__UpdateBend_jump_patch"
+			{
+				"signature"		"CTongue::OnUpdateAttachedToTargetState"
+				"linux"
+				{
+					"offset"	"1D8h"
+					"verify"	"\x0F\x85"
+					"patch"		"\x90\x90\x90\x90\x90\x90"
+				}
+			}
+		}
+		
+		"Offsets"
+		{
+			"CTongue::OnUpdateAttachedToTargetState__UpdateBend_jump_patch"
+			{
+				"windows"		"750"
+			}
+		}
+	}
+}

@@ -1,44 +1,33 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
-#include <sdktools>
+#include <left4dhooks>
 
-#define GAMEDATA_FILE "staggersolver"
-
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "l4d_stumble_block_button",
-	author = "CanadaRox",
+	author = "CanadaRox, A1m (fix), HarryPotter",
 	description = "Blocks all button presses during stumbles",
-	version = "(^.^)",
+	version = "1.2",
 };
 
-new Handle:g_hGameConf;
-new Handle:g_hIsStaggering;
-
-public OnPluginStart()
+public void OnPluginStart()
 {
-	g_hGameConf = LoadGameConfigFile(GAMEDATA_FILE);
-	if (g_hGameConf == INVALID_HANDLE)
-		SetFailState("[Stagger Solver] Could not load game config file.");
-
-	StartPrepSDKCall(SDKCall_Player);
-
-	if (!PrepSDKCall_SetFromConf(g_hGameConf, SDKConf_Signature, "IsStaggering"))
-		SetFailState("[Stagger Solver] Could not find signature IsStaggering.");
-	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
-	g_hIsStaggering = EndPrepSDKCall();
-	if (g_hIsStaggering == INVALID_HANDLE)
-		SetFailState("[Stagger Solver] Failed to load signature IsStaggering");
-
-	CloseHandle(g_hGameConf);
+	//nothing
 }
 
-public Action:OnPlayerRunCmd(client, &buttons)
+public Action OnPlayerRunCmd(int client, int &buttons)
 {
-	if (IsClientInGame(client) && IsPlayerAlive(client) && SDKCall(g_hIsStaggering, client))
-	{
-		buttons = 0;
+	if (IsClientInGame(client) && IsPlayerAlive(client) && L4D_IsPlayerStaggering(client)) {
+		/*
+			* if you shoved the infected player with the butt while moving on the ladder, 
+			* he will not be able to move until he is killed
+		*/
+		if (GetEntityMoveType(client) != MOVETYPE_LADDER) {
+			buttons = 0;
+			return Plugin_Changed;
+		}
 	}
 	return Plugin_Continue;
 }

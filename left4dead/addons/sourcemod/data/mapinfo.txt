@@ -1,0 +1,180 @@
+"MapInfo"
+{
+	"l4d_vs_airport05_runway"
+	{
+		"tank_ban_flow"
+		{
+			"Before Plane"
+			{
+				"min"		"0"
+				"max"		"49"
+			}
+			"After Plane"
+			{
+				"min"		"56"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Before Plane"
+			{
+				"min"		"0"
+				"max"		"49"
+			}
+			"After Plane"
+			{
+				"min"		"66"
+				"max"		"100"
+			}
+		}
+	}
+	"l4d_vs_city17_02"
+	{
+		"tank_ban_flow"
+		{
+			"Infinite Horde Event"
+			{
+				"min"		"18"
+				"max"		"52"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Infinite Horde Event"
+			{
+				"min"		"0"
+				"max"		"45"
+			}
+		}
+	}
+	"l4d_vs_stadium1_apartment"
+	{
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"25"
+				"max"		"42"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Before Elevator"
+			{
+				"min"		"0"
+				"max"		"42"
+			}
+		}
+	}
+	"l4d_vs_stadium4_city2"
+	{
+		"tank_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"70"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"76"
+				"max"		"100"
+			}
+		}
+	}
+	"l4d_vs_stadium5_stadium"
+	{
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"75"
+				"max"		"82"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"75"
+				"max"		"82"
+			}
+		}
+	}
+	"l4d_149_1"
+	{
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"51"
+				"max"		"71"
+			}
+			"The End of the Map"
+			{
+				"min"		"84"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"51"
+				"max"		"71"
+			}
+			"The End of the Map"
+			{
+				"min"		"84"
+				"max"		"100"
+			}
+		}
+	}
+	"l4d_149_2"
+	{
+		"tank_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"66"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"66"
+				"max"		"100"
+			}
+		}
+	}
+	"l4d_149_3"
+	{
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"41"
+				"max"		"57"
+			}
+			"The End of the Map"
+			{
+				"min"		"87"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"41"
+				"max"		"57"
+			}
+		}
+	}
+}

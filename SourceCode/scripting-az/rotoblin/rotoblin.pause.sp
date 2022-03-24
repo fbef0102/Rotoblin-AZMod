@@ -58,6 +58,7 @@ static			bool:	g_bIsUnpausable				= false;
 new Handle:pauseDelayCvar;
 new pauseDelay;
 new Handle:deferredPauseTimer;
+bool hiddenPanel[MAXPLAYERS+1];
 
 enum L4D2Team
 {
@@ -104,6 +105,7 @@ public _Pause_OnPluginStart()
 public _P_OnPluginEnabled()
 {
 	HookPublicEvent(EVENT_ONMAPEND, _P_OnMapEnd);
+	HookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _P_OnClientDisconnect);
 
 	g_hPausable = FindConVar(PAUSABLE_CVAR);
 	
@@ -134,6 +136,10 @@ public _P_OnPluginEnabled()
 	RegConsoleCmd("sm_unready", Unready_Cmd, "Marks your team as not ready for an unpause");
 	RegConsoleCmd("sm_nr", Unready_Cmd, "Marks your team as not ready for an unpause");
 	
+	RegConsoleCmd("sm_hide",			Hide_Cmd, "Hides the pause panel so other menus can be seen");
+	RegConsoleCmd("sm_show",			Show_Cmd, "Shows a hidden pause panel");
+	
+
 	HookEvent("round_end", _PC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	HookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 }
@@ -164,10 +170,17 @@ public _P_OnPluginDisabled()
 	UnhookConVarChange(g_hPauseEnable_Cvar, _P_PauseEnable_CvarChange);
 
 	UnhookPublicEvent(EVENT_ONMAPEND, _P_OnMapEnd);
+	UnhookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _P_OnClientDisconnect);
 	
 	UnhookEvent("round_end", _PC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 }
+
+public _P_OnClientDisconnect(client)
+{
+	hiddenPanel[client] = false;
+}
+
 public _PC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	TimeCount = 0;
@@ -649,7 +662,11 @@ static Pause()
 	//Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client) && !IsplayerHangingFromLedge(client) && IsPlayerAttackedBySmoker(client))
+		if (!IsClientInGame(client)) continue;
+
+		hiddenPanel[client] = false;
+		
+		if(GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client) && !IsplayerHangingFromLedge(client) && IsPlayerAttackedBySmoker(client))
 		{
 			ToggleFreezePlayer(client, true);
 		}
@@ -751,7 +768,8 @@ UpdatePanel()
 	{
 		if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientVoteMenu(client) && !IsClientInfoMenu(client))
 		{
-			SendPanelToClient(menuPanel, client, DummyHandler, 1);
+			if(!hiddenPanel[client])
+				SendPanelToClient(menuPanel, client, DummyHandler, 1);
 		}
 	}
 }
@@ -872,4 +890,28 @@ bool IsPlayerAttackedBySmoker(int client)
 ToggleFreezePlayer(client, freeze)
 {
 	SetEntityMoveType(client, freeze ? MOVETYPE_NONE : MOVETYPE_WALK);
+}
+
+public Action Hide_Cmd(int client, int args)
+{
+	if (g_bIsPaused)
+	{
+		hiddenPanel[client] = true;
+		CPrintToChat(client, "%T", "PausePanelHide", client);
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
+public Action Show_Cmd(int client, int args)
+{
+	if (g_bIsPaused)
+	{
+		hiddenPanel[client] = false;
+		CPrintToChat(client, "%T", "PausePanelShow", client);
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
 }

@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.5
+v8.3.6
 @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -25,12 +25,12 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 	
 - - - -	
 ### Server Install Optional ###
-* [SMAC](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Sourcemod_Anti-Cheat.zip) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
-* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/linux_auto_restart/plugins/linux_auto_restart.smx) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
+* [Sourcemod_Anti-Cheat](https://github.com/fbef0102/L4D1-Server4Dead/releases) is a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
-* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/skeet_database/plugins/skeet_database.smx) records players' skeets, and save to server-side Database.
-* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/pounce_database/plugins/pounce_database.smx) records players' pounces, and save to server-side Database. 
-* [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/blob/master/GagMuteBanEx/plugins/GagMuteBanEx.smx) enhances and improves ban/gag/mute for admin.
+* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/skeet_database) records players' skeets, and save to server-side Database.
+* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/pounce_database) records players' pounces, and save to server-side Database. 
+* [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
 - - - -	
 ### If you appreciate my work, you can [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
 
@@ -156,6 +156,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Dead Before Dawn (!cm dbd)
   * The Arena of the Dead (!cm aotd)
   * Death Aboard (!cm dab)
+  * One 4 Nine (!cm 149)
   
 * **Nav Remake:**
   * No Mercy Map 1
@@ -205,7 +206,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Blocking a rocket jump exploit (with pipebomb/molotov/tank rock/common head).
 * Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
 * Allows bots to shoot while a PipeBomb projectile is active on the map.
-* Fixed the bug in which doors do not break although the tank is punching at them.
+* Fix common infected blocking the punch tracing.
 * Survivors cannot hear ghost footsteps and spawn sound.
 * Stops Shoves slowing the Tank and Charger Down
 * Fixed Players being able to exploit switching team to get earlier SI Spawns.
@@ -252,7 +253,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
 * Prevents players' data in ghost mode from being sent to Survivors
 * Fixes an exploit where unlimited grenades could be created.
-* Mother fucker no collisions to fix a handful of silly collision bugs in l4d1 (only works in **Linux**)
+* Mother fucker no collisions to fix a handful of silly collision bugs in l4d1
      * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
      * Pulled Survivors go through Common Infected
      * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
@@ -261,7 +262,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Removes touch links for player on team change to prevent same player to be affected by whatever he was "touching" before team change on his old position. ([Video](https://youtu.be/UzmRm_LcK8A))
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
-	
+* Prevents director or map overrides of z_common_limit. Kill common if overflow.
+
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 30s.
@@ -469,6 +471,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Prevents small push effect between survior players, bots still get pushed.
   * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On
   * Disables the Car Alarm before survivors leave the safe room.
+  * Prevent filling the clip and skipping the reload animation when taking the same weapon.
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**

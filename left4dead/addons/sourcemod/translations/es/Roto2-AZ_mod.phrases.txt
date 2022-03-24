@@ -956,11 +956,6 @@
 	{
 		"es"	"Horda forzada!!"
 	}
-	///////////////caster_assister.smx///////////////
-	"Player is black and white."
-	{
-		"es"	"{1} ({2}) esta en blanco y negro."
-	}
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
@@ -1531,10 +1526,6 @@
 		"es"	"No puede engendrar cerca de puertas de habitaciones seguras."
 	}
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
-	"No Instant Spawn"
-	{
-		"es"	"Pasate al {green}Tank {default}a {red}BOT{default}, {olive}No hay spawn instantaneo{default}!! Espera"
-	}
 	"Give Tank To AI"
 	{
 		"es"	"{red}{1}{default} is given to AI Tank!"
@@ -2182,6 +2173,14 @@
 	"rotoblin22"
 	{
 		"es"		"{green}{1}{default} fue descubierto haciendo{lightgreen}telespawning{default} y fue asesinado."
+	}
+	"PausePanelHide"
+	{
+		"es"		"[{olive}Pause{default}] Panel is now {red}off{default}"
+	}
+	"PausePanelShow"
+	{
+		"es"		"[{olive}Pause{default}] Panel is now {blue}on{default}"
 	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"

@@ -2452,7 +2452,13 @@ CheckSurvivorProgress()
 		Format(panel_message, sizeof(panel_message), "The Survivors have made it %d%% of the way!",survivor_progress);
 		DrawPanelText(PANEL, panel_message);
 		
-		for (new i = 1; i <= MaxClients; i++) SendPanelToClient(PANEL, i, DummyPANELHudHandler, 3);
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if(!IsClientInGame(i) || IsFakeClient(i)) continue;
+
+			if(GetClientMenu(i, INVALID_HANDLE) == MenuSource_None)
+				SendPanelToClient(PANEL, i, DummyPANELHudHandler, 3);
+		}
 		
 		CloseHandle(PANEL);
 		

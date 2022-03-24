@@ -35,4 +35,9 @@
 		"mapinfo"		"l4d_deathaboard01_prison"
 		"mapname"		"幽靈輪船 Death Aboard"
 	}
+	"8"
+	{
+		"mapinfo"		"l4d_149_1"
+		"mapname"		"古墓亡影 One 4 Nine"
+	}
 }

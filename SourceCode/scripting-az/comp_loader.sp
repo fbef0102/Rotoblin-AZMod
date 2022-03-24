@@ -10,13 +10,14 @@
 
 //plugin version
 #if FULL_VERSION
-#define PLUGIN_VERSION "2.1"
+#define PLUGIN_VERSION "2.2"
 #else
-#define PLUGIN_VERSION "2.1"
+#define PLUGIN_VERSION "2.2"
 #endif
 
 #define L4D_MAXCLIENTS MaxClients
 #define L4D_MAXCLIENTS_PLUS1 (L4D_MAXCLIENTS + 1)
+#define MAPINFPMAXLEN 2048
 
 new Handle:MapCountdownTimer;
 #define CAMPAIGN_CHANGE_DELAY 4
@@ -1929,68 +1930,63 @@ public Action:Map_Changer(client, args)
 			return Plugin_Handled;
 		}
 		
-		new mapInfoMaxLen =2048;
-		decl String:mapInfo[mapInfoMaxLen];
-		decl String:mapInfo2[mapInfoMaxLen];
+		static char mapInfo[MAPINFPMAXLEN];
+		static char mapInfo2[MAPINFPMAXLEN];
 		#if CUSTOM_CONFIGS
-		decl String:mapInfo3[mapInfoMaxLen];
-		decl String:mapInfo4[mapInfoMaxLen];
+		static char mapInfo3[MAPINFPMAXLEN];
+		static char mapInfo4[MAPINFPMAXLEN];
+		//static char mapInfo5[MAPINFPMAXLEN];
 		#endif
-		decl String:mapInfo9[mapInfoMaxLen];
-		//if(isAdmin == true) Format(mapInfo, mapInfoMaxLen, "| command                     | force changemap(admin)                      |\n");
-		//else Format(mapInfo, mapInfoMaxLen, "| command                     | request to changemap                        |\n");
-		Format(mapInfo, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap da               | Change the Campaign to Dead Air             |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap deadair          |                                             |\n",mapInfo);		
-		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap dt               | Change the Campaign to Death Toll           |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap deathtoll        |                                             |\n",mapInfo);		
-		Format(mapInfo, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap bh               | Change the Campaign to Blood Harvest        |\n",mapInfo);
-		Format(mapInfo, mapInfoMaxLen, "%s| !changemap bloodharvest     |                                             |",mapInfo);		
-		Format(mapInfo2, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap nm               | Change the Campaign to No Mercy             |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap nomercy          |                                             |\n",mapInfo2);		
-		Format(mapInfo2, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap cc               | Change the Campaign to Crash Course         |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap crashcourse      |                                             |\n",mapInfo2);		
-		Format(mapInfo2, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap ts               |                                             |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap sa               | Change the Campaign to The Sacrifice        |\n",mapInfo2);
-		Format(mapInfo2, mapInfoMaxLen, "%s| !changemap thesacrifice     |                                             |",mapInfo2);
+		static char mapInfo9[MAPINFPMAXLEN];
+		Format(mapInfo, MAPINFPMAXLEN,    "|----------------------|-----------------------------------|\n");
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm da               | Change Map to Dead Air            |\n",mapInfo);
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm deadair          |                                   |\n",mapInfo);		
+		Format(mapInfo, MAPINFPMAXLEN,  "%s|----------------------|-----------------------------------|\n",mapInfo);
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm dt               | Change Map to Death Toll          |\n",mapInfo);
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm deathtoll        |                                   |\n",mapInfo);		
+		Format(mapInfo, MAPINFPMAXLEN,  "%s|----------------------|-----------------------------------|\n",mapInfo);
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm bh               | Change Map to Blood Harvest       |\n",mapInfo);
+		Format(mapInfo, MAPINFPMAXLEN,  "%s| !cm bloodharvest     |                                   |",mapInfo);		
+		Format(mapInfo2, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm nm               | Change Map to No Mercy            |\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm nomercy          |                                   |\n",mapInfo2);		
+		Format(mapInfo2, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm cc               | Change Map to Crash Course        |\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm crashcourse      |                                   |\n",mapInfo2);		
+		Format(mapInfo2, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm ts               |                                   |\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm sa               | Change Map to The Sacrifice       |\n",mapInfo2);
+		Format(mapInfo2, MAPINFPMAXLEN, "%s| !cm thesacrifice     |                                   |",mapInfo2);
 		#if CUSTOM_CONFIGS
-		Format(mapInfo3, mapInfoMaxLen, "|-----------------------------|---------------------------------------------|\n");
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap c17              | Change the Campaign to City 17              |\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap city17           |                                             |\n",mapInfo3);		
-		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap sb               | Change the Campaign to Suicide Blitz        |\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap suicideblitz     |                                             |\n",mapInfo3);	
-		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap ihm              |                                             |\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap mountain         | Change the Campaign to I hate mountain      |\n",mapInfo3);		
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap ihatemountain    |                                             |\n",mapInfo3);		
-		Format(mapInfo3, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap dfb              |                                             |\n",mapInfo3);
-		Format(mapInfo3, mapInfoMaxLen, "%s| !changemap blue             | Change the Campaign to Dead Flag Blues      |",mapInfo3);	
-		Format(mapInfo4, mapInfoMaxLen, "| !changemap deadflagblues    |                                             |\n");	
-		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dbd              |                                             |\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dawn             | Change the Campaign to Dead Before Dawn     |\n",mapInfo4);		
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap deadbeforedawn   |                                             |\n",mapInfo4);		
-		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap aotd             |                                             |\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap arena            | Change the Campaign to The Arena of the Dead|\n",mapInfo4);	
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap thearenaofthedead|                                             |\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s|-----------------------------|---------------------------------------------|\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap dab              |                                             |\n",mapInfo4);
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap aboard           | Change the Campaign to Death Aboard         |\n",mapInfo4);	
-		Format(mapInfo4, mapInfoMaxLen, "%s| !changemap deathaboard      |                                             |",mapInfo4);
-		
+		Format(mapInfo3, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm c17              | Change Map to City 17             |\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm city17           |                                   |\n",mapInfo3);		
+		Format(mapInfo3, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm sb               | Change Map to Suicide Blitz       |\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm suicideblitz     |                                   |\n",mapInfo3);	
+		Format(mapInfo3, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm ihm              | Change Map to I Hate Mountain     |\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm ihatemountain    |                                   |\n",mapInfo3);		
+		Format(mapInfo3, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm dfb              | Change Map to Dead Flag Blue      |\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm deadflagblues    |                                   |\n",mapInfo3);	
+		Format(mapInfo3, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm dbd              | Change Map to Dead Before Dawn    |\n",mapInfo3);
+		Format(mapInfo3, MAPINFPMAXLEN, "%s| !cm deadbeforedawn   |                                   |",mapInfo3);		
+		Format(mapInfo4, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm aotd             | Change Map to The Area Of The Dead|\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm thearenaofthedead|                                   |\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm dab              | Change Map to Death Aboard        |\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm deathaboard      |                                   |\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm 149              | Change Map to One 4 Nine          |\n",mapInfo4);
+		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm one4nine         |                                   |",mapInfo4);
 		#endif		
-		Format(mapInfo9, mapInfoMaxLen,    "|-----------------------------|---------------------------------------------|\n");
-		if(isAdmin == true) Format(mapInfo9, mapInfoMaxLen, "%s| !changemap cancel           | cancel all requests                         |\n", mapInfo9);
-		else Format(mapInfo9, mapInfoMaxLen, "%s| !changemap cancel           | cancel the request                          |\n", mapInfo9);
-		Format(mapInfo9, mapInfoMaxLen,    "%s|-----------------------------|---------------------------------------------|", mapInfo9);	
+		Format(mapInfo9, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		if(isAdmin == true) Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel all requests               |\n", mapInfo9);
+		else Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel the request                |\n", mapInfo9);
+		Format(mapInfo9, MAPINFPMAXLEN,      "%s|----------------------|-----------------------------------|", mapInfo9);	
 		
 		if (client == 0)
 		{
@@ -2004,6 +2000,7 @@ public Action:Map_Changer(client, args)
 			#if CUSTOM_CONFIGS
 			PrintToConsole(client, mapInfo3);
 			PrintToConsole(client, mapInfo4);
+			//PrintToConsole(client, mapInfo5);
 			#endif
 			PrintToConsole(client, mapInfo9);
 		}
@@ -2037,6 +2034,7 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsDeadBeforeDawn = 0;
 		new AdminValueIsTheArenaoftheDead = 0;
 		new AdminValueIsDeathAboard = 0;
+		new AdminValueIsOne4Nine = 0;
 		#endif
 		new AdminValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
 				
@@ -2059,25 +2057,24 @@ public Action:Map_Changer(client, args)
 		else if(StrEqual(Admin_Map, "sb", false)) AdminValueIsSB = 1;
 		else if((StrEqual(Admin_Map, "suicideblitz", false))) AdminValueIsSB = 1;
 		else if((StrEqual(Admin_Map, "ihm", false))) AdminValueIsIHateMountain = 1;
-		else if((StrEqual(Admin_Map, "mountain", false))) AdminValueIsIHateMountain = 1;
 		else if((StrEqual(Admin_Map, "ihatemountain", false))) AdminValueIsIHateMountain = 1;
 		else if((StrEqual(Admin_Map, "dfb", false))) AdminValueIsDeadFlagBlues = 1;
-		else if((StrEqual(Admin_Map, "blue", false))) AdminValueIsDeadFlagBlues = 1;
 		else if((StrEqual(Admin_Map, "deadflagblues", false))) AdminValueIsDeadFlagBlues = 1;
 		else if((StrEqual(Admin_Map, "dbd", false))) AdminValueIsDeadBeforeDawn = 1;
-		else if((StrEqual(Admin_Map, "dawn", false))) AdminValueIsDeadBeforeDawn = 1;
 		else if((StrEqual(Admin_Map, "deadbeforedawn", false))) AdminValueIsDeadBeforeDawn = 1;
 		else if((StrEqual(Admin_Map, "aotd", false))) AdminValueIsTheArenaoftheDead = 1;
-		else if((StrEqual(Admin_Map, "arena", false))) AdminValueIsTheArenaoftheDead = 1;
 		else if((StrEqual(Admin_Map, "thearenaofthedead", false))) AdminValueIsTheArenaoftheDead = 1;
 		else if((StrEqual(Admin_Map, "dab", false))) AdminValueIsDeathAboard = 1;
-		else if((StrEqual(Admin_Map, "aboard", false))) AdminValueIsDeathAboard = 1;
 		else if((StrEqual(Admin_Map, "deathaboard", false))) AdminValueIsDeathAboard = 1;
+		else if((StrEqual(Admin_Map, "149", false))) AdminValueIsOne4Nine = 1;
+		else if((StrEqual(Admin_Map, "one4nine", false))) AdminValueIsOne4Nine = 1;
 		#endif
 
 		AdminValueSumOfMaps = AdminValueIsNM + AdminValueIsDT + AdminValueIsBH + AdminValueIsDA + AdminValueIsSA + AdminValueIsCC;
 		#if CUSTOM_CONFIGS
-		AdminValueSumOfMaps += AdminValueIsC17 + AdminValueIsSB + AdminValueIsIHateMountain + AdminValueIsDeadFlagBlues + AdminValueIsDeadBeforeDawn + AdminValueIsTheArenaoftheDead + AdminValueIsDeathAboard;//calculate the sum of all the config value integers
+		AdminValueSumOfMaps += AdminValueIsC17 + AdminValueIsSB + AdminValueIsIHateMountain +
+				AdminValueIsDeadFlagBlues + AdminValueIsDeadBeforeDawn + AdminValueIsTheArenaoftheDead + 
+				AdminValueIsDeathAboard + AdminValueIsOne4Nine;//calculate the sum of all the config value integers
 		#endif
 		if(AdminValueSumOfMaps == 1)
 		{	
@@ -2225,6 +2222,17 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
 			}
+			else if(AdminValueIsOne4Nine == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_149_1";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","One 4 Nine");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
 			#endif
 		}
 		else
@@ -2279,6 +2287,7 @@ public Action:Map_Changer(client, args)
 				new ValueIsDeadBeforeDawn = 0;
 				new ValueIsTheArenaoftheDead = 0;
 				new ValueIsDeathAboard = 0;
+				new ValueIsOne4Nine = 0;
 				#endif
 				
 				new ValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
@@ -2302,26 +2311,25 @@ public Action:Map_Changer(client, args)
 				else if(StrEqual(PlayerMap, "sb", false)) ValueIsSB = 1;
 				else if((StrEqual(PlayerMap, "suicideblitz", false))) ValueIsSB = 1;
 				else if((StrEqual(PlayerMap, "ihm", false))) ValueIsIHateMountain = 1;
-				else if((StrEqual(PlayerMap, "mountain", false))) ValueIsIHateMountain = 1;
 				else if((StrEqual(PlayerMap, "ihatemountain", false))) ValueIsIHateMountain = 1;
 				else if((StrEqual(PlayerMap, "dfb", false))) ValueIsDeadFlagBlues = 1;
-				else if((StrEqual(PlayerMap, "blue", false))) ValueIsDeadFlagBlues = 1;
 				else if((StrEqual(PlayerMap, "deadflagblues", false))) ValueIsDeadFlagBlues = 1;
 				else if((StrEqual(PlayerMap, "dbd", false))) ValueIsDeadBeforeDawn = 1;
-				else if((StrEqual(PlayerMap, "dawn", false))) ValueIsDeadBeforeDawn = 1;
 				else if((StrEqual(PlayerMap, "deadbeforedawn", false))) ValueIsDeadBeforeDawn = 1;
 				else if((StrEqual(PlayerMap, "aotd", false))) ValueIsTheArenaoftheDead = 1;
-				else if((StrEqual(PlayerMap, "arena", false))) ValueIsTheArenaoftheDead = 1;
 				else if((StrEqual(PlayerMap, "thearenaofthedead", false))) ValueIsTheArenaoftheDead = 1;
 				else if((StrEqual(PlayerMap, "dab", false))) ValueIsDeathAboard = 1;
-				else if((StrEqual(PlayerMap, "aboard", false))) ValueIsDeathAboard = 1;
 				else if((StrEqual(PlayerMap, "deathaboard", false))) ValueIsDeathAboard = 1;
+				else if((StrEqual(PlayerMap, "149", false))) ValueIsOne4Nine = 1;
+				else if((StrEqual(PlayerMap, "one4nine", false))) ValueIsOne4Nine = 1;
 				#endif
 
 				
 				ValueSumOfMaps = ValueIsNM + ValueIsDT + ValueIsBH + ValueIsDA + ValueIsSA	+ ValueIsCC + ValueIsTS;
 				#if CUSTOM_CONFIGS
-				ValueSumOfMaps += ValueIsC17 + ValueIsSB + ValueIsIHateMountain + ValueIsDeadFlagBlues + ValueIsDeadBeforeDawn + ValueIsTheArenaoftheDead + ValueIsDeathAboard;//calculate the sum of all the config value integers
+				ValueSumOfMaps += ValueIsC17 + ValueIsSB + ValueIsIHateMountain + ValueIsDeadFlagBlues + 
+					ValueIsDeadBeforeDawn + ValueIsTheArenaoftheDead + ValueIsDeathAboard +
+					ValueIsOne4Nine;//calculate the sum of all the config value integers
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2422,6 +2430,11 @@ public Action:Map_Changer(client, args)
 					{
 						PlayerMap = "Death Aboard";
 						PlayerMapChat = "DAB";
+					}
+					else if(ValueIsOne4Nine == 1)
+					{
+						PlayerMap = "One 4 Nine";
+						PlayerMapChat = "149";
 					}
 					#endif
 				}
@@ -2533,6 +2546,12 @@ public Action:Map_Changer(client, args)
 							else if(StrEqual(PlayerMap, "Death Aboard", false))
 							{
 								MapToExecuteName = "l4d_deathaboard01_prison";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "One 4 Nine", false))
+							{
+								MapToExecuteName = "l4d_149_1";
 								Timer_Map_Change();	
 								return Plugin_Handled;														
 							}

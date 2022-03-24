@@ -1,68 +1,73 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
-#include <sdktools>
+#include <left4dhooks>
 #include <multicolors>
 
-new lastHumanTank = -1;
+int lastHumanTankId;
+native void SetClientDeathCam(int client); // from nodeathcamskip.smx
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
-	name = "L4D passing Tank no instant respawn",
-	author = "Visor, L4D1 port by Harry",
-	description = "Passing control to AI tank will no longer be rewarded with an instant respawn",
-	version = "0.3",
-	url = "https://github.com/Attano/Equilibrium"
+	name = "L4D2 Profitless AI Tank",
+	author = "Visor, Forgetest, l4d1 modify by Harry",
+	description = "Passing control to AI Tank will no longer be rewarded with an instant respawn",
+	version = "0.5",
+	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
-public OnPluginStart()
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success;
+}
+
+public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	HookEvent("tank_frustrated", OnTankFrustrated, EventHookMode_Post);
 }
 
-public OnTankFrustrated(Handle:event, const String:name[], bool:dontBroadcast)
+public void OnMapStart()
 {
-	new tank = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!IsFakeClient(tank))
+	lastHumanTankId = 0;
+}
+
+void OnTankFrustrated(Event event, const char[] name, bool dontBroadcast)
+{
+	lastHumanTankId = event.GetInt("userid");
+	RequestFrame(OnNextFrame_Reset);
+}
+
+void OnNextFrame_Reset()
+{
+	lastHumanTankId = 0;
+}
+
+public Action L4D_OnEnterGhostStatePre(int client)
+{
+	if (lastHumanTankId && GetClientUserId(client) == lastHumanTankId)
 	{
-		lastHumanTank = tank;
-		CreateTimer(0.1, CheckForAITank, _, TIMER_FLAG_NO_MAPCHANGE);
+		lastHumanTankId = 0;
+		L4D_State_Transition(client, STATE_DEATH_ANIM);
+		SetClientDeathCam(client); //Block player skipping death cam
+
+		static char lastHumanTank_Name[128];
+		GetClientName(client, lastHumanTank_Name, 128);
+		for (int j = 1; j < MaxClients; j++)
+			if (IsClientInGame(j) && IsClientConnected(j) && !IsFakeClient(j) && (GetClientTeam(j) == 1 || GetClientTeam(j) == 3))
+				CPrintToChat(j,"{default}[{olive}TS{default}] %T","Give Tank To AI",j,lastHumanTank_Name);
+		
+		return Plugin_Handled;
 	}
-}
-
-public Action:CheckForAITank(Handle:timer)
-{
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (IsTank(i))
-		{
-			if (IsInfected(lastHumanTank)&&IsFakeClient(i))//Tank is AI
-			{
-				TeleportEntity(lastHumanTank,
-				Float:{0.0, 0.0, 0.0}, // Teleport to map center
-				NULL_VECTOR, 
-				NULL_VECTOR);
-				ForcePlayerSuicide(lastHumanTank);
-				CPrintToChat(lastHumanTank,"{default}[{olive}TS{default}] %T","No Instant Spawn",lastHumanTank);
-				decl String:lastHumanTank_Name[128];
-				GetClientName(lastHumanTank,lastHumanTank_Name,128);	
-				for (new j = 1; j < MaxClients; j++)
-					if (IsClientInGame(j) && IsClientConnected(j) && !IsFakeClient(j) && (GetClientTeam(j) == 1 || GetClientTeam(j) == 3))
-						CPrintToChat(j,"{default}[{olive}TS{default}] %T","Give Tank To AI",j,lastHumanTank_Name);
-			}
-			return Plugin_Handled;
-		}
-	}
-	return Plugin_Handled;
-}
-
-bool:IsTank(client)
-{
-	return (IsInfected(client) && GetEntProp(client, Prop_Send, "m_zombieClass") == 5);
-}
-
-bool:IsInfected(client)
-{
-	return (client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 3);
+	
+	return Plugin_Continue;
 }

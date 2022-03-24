@@ -1,6 +1,6 @@
 /*
 *	Flashlight Package
-*	Copyright (C) 2021 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"2.18"
+#define PLUGIN_VERSION 		"2.23"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,8 +31,27 @@
 
 ========================================================================================
 	Change Log:
-2.18 (04-Sep-2021)
-	- by Harry
+2.23 (10-March-2022)
+	- L4D1 only by Harry
+	- Add Spectator Flashlight
+
+2.22 (15-Jan-2022)
+	- Fixed not saving light state across map changes. Thanks to "NoroHime" for reporting.
+
+2.21 (01-Jan-2022)
+	- Fixed not setting the default color when "l4d_flashlight_default" is "1" and "l4d_flashlight_random" is "0". Thanks to "kalmas77" for reporting.
+
+2.20 (25-Dec-2021)
+	- Fixed command "sm_light <color>" not changing the color. Thanks to "Shadowart" for reporting.
+	- Fixed cvar "l4d_flashlight_default" not restricting bots when set to "1". Thanks to "Shadowart" for reporting.
+
+2.19 (09-Dec-2021)
+	- Changes to fix warnings when compiling on SourceMod 1.11.
+	- Changed command "sm_light" to accept "rand" or "random" as a parameter option to give a random light color. Requested by "NoroHime".
+	- Code change includes completely random color instead of specified from the list. Uncomment and delete other code if you want this instead.
+
+2.18 (18-Sep-2021)
+	- Menu now returns to the page it was on before selecting an option. Requested by "Shadowart".
 
 2.17 (04-Aug-2021)
 	- Changed the plugin to allow bots to use the color cvar when _default cvar is enabled _random cvar was disabled.
@@ -173,8 +192,8 @@ Menu g_hMenu;
 // ====================================================================================================
 public Plugin myinfo =
 {
-	name = "[L4D & L4D2] Flashlight Package",
-	author = "SilverShot",
+	name = "[L4D] Flashlight Package",
+	author = "SilverShot, Harry",
 	description = "Attaches an extra flashlight to survivors and spectators.",
 	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?t=173257"
@@ -183,9 +202,9 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	EngineVersion test = GetEngineVersion();
-	if( test != Engine_Left4Dead && test != Engine_Left4Dead2 )
+	if( test != Engine_Left4Dead )
 	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
 		return APLRes_SilentFailure;
 	}
 	return APLRes_Success;
@@ -256,8 +275,8 @@ public void OnPluginStart()
 	g_hCvarUsers.AddChangeHook(ConVarChanged_Cvars);
 
 	// Commands
-	RegAdminCmd(	"sm_lightclient",	CmdLightClient,	ADMFLAG_ROOT,	"Create and toggle flashlight attachment on the specified target. Usage: sm_lightclient <#user id|name> [R G B|red|green|blue|purple|orange|yellow|white]");
-	RegConsoleCmd(	"sm_light",			CmdLight,						"Toggle the attached flashlight.");
+	RegAdminCmd(	"sm_lightclient",	CmdLightClient,	ADMFLAG_ROOT,	"Create and toggle flashlight attachment on the specified target. Usage: sm_lightclient <#user id|name> [R G B|off|random|red|green|blue|purple|cyan|orange|white|pink|lime|maroon|teal|yellow|grey]");
+	RegConsoleCmd(	"sm_light",			CmdLightCommand,				"Toggle the attached flashlight. Usage: sm_light [R G B|off|random|red|green|blue|purple|cyan|orange|white|pink|lime|maroon|teal|yellow|grey]");
 	RegConsoleCmd(	"sm_lightmenu",		CmdLightMenu,					"Opens the flashlight color menu.");
 
 	CreateColors();
@@ -292,7 +311,7 @@ public void OnMapEnd()
 public void OnClientDisconnect(int client)
 {
 	g_iClientColor[client] = 0;
-	g_iClientLight[client] = 0;
+	g_iClientLight[client] = 1;
 }
 
 public void OnClientCookiesCached(int client)
@@ -383,9 +402,11 @@ public int Menu_Light(Menu menu, MenuAction action, int client, int index)
 			char sColor[12];
 			menu.GetItem(index, sColor, sizeof(sColor));
 			CommandLight(client, 3, sColor);
-			g_hMenu.Display(client, 0);
+			g_hMenu.DisplayAt(client, 7 * RoundToFloor(index / 7.0), 0);
 		}
 	}
+
+	return 0;
 }
 
 
@@ -415,6 +436,8 @@ public Action TimerIntro(Handle timer, any client)
 			CPrintToChat(client, "%s%T", CHAT_TAG, "Flashlight Intro", client);
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 
@@ -448,7 +471,6 @@ public void ConVarChanged_LightAlpha(Handle convar, const char[] oldValue, const
 		entity = g_iLightIndex[i];
 		if( IsValidEntRef(entity) )
 		{
-			SetVariantEntity(entity);
 			SetVariantInt(g_iCvarAlpha);
 			AcceptEntityInput(entity, "distance");
 		}
@@ -620,6 +642,19 @@ void UnhookEvents()
 public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundOver = false;
+
+	CreateTimer(1.5, Timer_CreateSpecLight, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action Timer_CreateSpecLight(Handle timer) //for 2+ round spectators
+{
+	if( g_bCvarAllow )
+	{
+		for( int i = 1; i <= MaxClients; i++ )
+		{
+			if(IsClientInGame(i)) CreateTimer(0.1, TimerDelayCreateLight, GetClientUserId(i));
+		}
+	}
 }
 
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
@@ -692,7 +727,7 @@ public Action TimerDelayCreateLight(Handle timer, any client)
 			int team = GetClientTeam(client);
 			bool fake = IsFakeClient(client);
 
-			if( team == 2 && ((g_iCvarDefault & 1 && !fake) || (g_iCvarDefault & 3 && fake)) )
+			if( team == 2 && ((g_iCvarDefault & 1 && !fake && g_iClientLight[client] != 0) || (g_iCvarDefault & 3 && fake)) )
 			{
 				// Set light on
 				g_iClientLight[client] = 1;
@@ -715,12 +750,14 @@ public Action TimerDelayCreateLight(Handle timer, any client)
 						color += 65536 * StringToInt(sColors[2]);
 						g_iClientColor[client] = color;
 					}
-				} else if( fake ) {
+				}
+				else if( g_iClientColor[client] == 0 )
+				{
 					g_iClientColor[client] = g_iCvarColor;
 				}
 			}
 
-			if( g_iCvarDefault & 2 && team == 3 && !fake )
+			if( g_iCvarDefault & 2 && team == 3 && !fake && g_iClientLight[client] != 0 )
 			{
 				g_iClientLight[client] = 1;
 			}
@@ -821,8 +858,8 @@ public Action CmdLightClient(int client, int args)
 			args--;
 		}
 	}
-	else
-		args = 0;
+	// else
+		// args = 0;
 
 	for( int i = 0; i < target_count; i++ )
 	{
@@ -865,14 +902,40 @@ void CommandForceLight(int client, int target, int args, const char[] sArg)
 	// Toggle or set light color and turn on.
 	if( args == 1 )
 	{
-		char sTempL[12];
+		if( strncmp(sArg, "rand", 4, false) == 0 )
+		{
+			char sTempL[12];
 
-		if( g_hColors.GetString(sArg, sTempL, sizeof(sTempL)) == false )
-			sTempL = "-1 -1 -1";
+			// Completely random color
+			// Format(sTempL, sizeof(sTempL), "%d %d %d", GetRandomInt(20, 255), GetRandomInt(20, 255), GetRandomInt(20, 255));
 
-		SetVariantEntity(entity);
-		SetVariantString(sTempL);
-		AcceptEntityInput(entity, "color");
+			// Random color from list
+			int size = g_hSnapColors.Length;
+			g_hSnapColors.GetKey(GetRandomInt(0, size - 1), sTempL, sizeof(sTempL));
+			if( g_hColors.GetString(sTempL, sTempL, sizeof(sTempL)) )
+			{
+				SetVariantString(sTempL);
+				AcceptEntityInput(entity, "color");
+			}
+		}
+		else if( strcmp(sArg, "off", false) == 0 )
+		{
+			g_iClientLight[target] = 0;
+			SetClientCookie(target, g_hCookieState, "0");
+
+			DeleteLight(target);
+			return;
+		}
+		else
+		{
+			char sTempL[12];
+
+			if( g_hColors.GetString(sArg, sTempL, sizeof(sTempL)) == false )
+				sTempL = "-1 -1 -1";
+
+			SetVariantString(sTempL);
+			AcceptEntityInput(entity, "color");
+		}
 	}
 	else if( args == 3 )
 	{
@@ -882,7 +945,6 @@ void CommandForceLight(int client, int target, int args, const char[] sArg)
 		ExplodeString(sArg, " ", sSplit, sizeof(sSplit), sizeof(sSplit[]));
 		Format(sTempL, sizeof(sTempL), "%d %d %d", StringToInt(sSplit[0]), StringToInt(sSplit[1]), StringToInt(sSplit[2]));
 
-		SetVariantEntity(entity);
 		SetVariantString(sTempL);
 		AcceptEntityInput(entity, "color");
 	}
@@ -907,7 +969,7 @@ void CommandForceLight(int client, int target, int args, const char[] sArg)
 
 	if( g_iCvarSave && !IsFakeClient(target) )
 	{
-		char sNum[10];
+		char sNum[4];
 		IntToString(g_iClientLight[target], sNum, sizeof(sNum));
 		SetClientCookie(target, g_hCookieState, sNum);
 	}
@@ -918,7 +980,7 @@ void CommandForceLight(int client, int target, int args, const char[] sArg)
 // ====================================================================================================
 //					COMMAND - sm_light
 // ====================================================================================================
-public Action CmdLight(int client, int args)
+public Action CmdLightCommand(int client, int args)
 {
 	char sArg[25];
 	GetCmdArgString(sArg, sizeof(sArg));
@@ -1001,6 +1063,9 @@ void CommandLight(int client, int args, const char[] sArg)
 	{
 		if( strcmp(sArg, "off", false) == 0 )
 		{
+			g_iClientLight[client] = 0;
+			SetClientCookie(client, g_hCookieState, "0");
+
 			DeleteLight(client);
 			return;
 		}
@@ -1024,14 +1089,29 @@ void CommandLight(int client, int args, const char[] sArg)
 		flagc = 1;
 
 	// Toggle or set light color and turn on.
-	if( flagc && args == 1 )
+	if( flagc && args == 1 && strncmp(sArg, "rand", 4, false) == 0 )
+	{
+		char sTempL[12];
+
+		// Completely random color
+		// Format(sTempL, sizeof(sTempL), "%d %d %d", GetRandomInt(20, 255), GetRandomInt(20, 255), GetRandomInt(20, 255));
+
+		// Random color from list
+		int size = g_hSnapColors.Length;
+		g_hSnapColors.GetKey(GetRandomInt(0, size - 1), sTempL, sizeof(sTempL));
+		if( g_hColors.GetString(sTempL, sTempL, sizeof(sTempL)) )
+		{
+			SetVariantString(sTempL);
+			AcceptEntityInput(entity, "color");
+		}
+	}
+	else if( flagc && args == 1 )
 	{
 		char sTempL[12];
 
 		if( g_hColors.GetString(sArg, sTempL, sizeof(sTempL)) == false )
 			sTempL = "-1 -1 -1";
 
-		SetVariantEntity(entity);
 		SetVariantString(sTempL);
 		AcceptEntityInput(entity, "color");
 	}
@@ -1043,7 +1123,6 @@ void CommandLight(int client, int args, const char[] sArg)
 		ExplodeString(sArg, " ", sSplit, sizeof(sSplit), sizeof(sSplit[]));
 		Format(sTempL, sizeof(sTempL), "%d %d %d", StringToInt(sSplit[0]), StringToInt(sSplit[1]), StringToInt(sSplit[2]));
 
-		SetVariantEntity(entity);
 		SetVariantString(sTempL);
 		AcceptEntityInput(entity, "color");
 	}
@@ -1070,7 +1149,7 @@ void CommandLight(int client, int args, const char[] sArg)
 
 	if( g_iCvarSave && !IsFakeClient(client) )
 	{
-		char sNum[10];
+		char sNum[4];
 		IntToString(g_iClientLight[client], sNum, sizeof(sNum));
 		SetClientCookie(client, g_hCookieState, sNum);
 	}
@@ -1228,6 +1307,8 @@ public Action TimerDeleteEntity(Handle timer, any entity)
 {
 	if( IsValidEntRef(entity) )
 		RemoveEntity(entity);
+
+	return Plugin_Continue;
 }
 
 
@@ -1244,7 +1325,7 @@ bool IsValidEntRef(int entity)
 
 bool IsValidClient(int client)
 {
-	if( !client || !IsClientInGame(client) )
+	if( !client || !IsClientInGame(client) || !IsPlayerAlive(client) )
 		return false;
 
 	int team = GetClientTeam(client);

@@ -2,16 +2,7 @@
 #pragma newdecls required
 #include <sourcemod>
 #include <left4dhooks>
-
-#define  LEFT4FRAMEWORK_GAMEDATA	"left4dhooks.l4d1"
-
-public Extension __ext_collision = 
-{
-	name = "collisionhook",
-	file = "collisionhook.ext.2.l4d",
-	autoload = 1,
-	required = 0,
-}
+#include <collisionhook>
 
 #define CLASSNAME_LENGTH 64
 #define L4D_TEAM_SPEC 1 
@@ -46,17 +37,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
-bool g_bLinuxOS;
 public void OnPluginStart()
 {
-	GameData hGameData = LoadGameConfigFile(LEFT4FRAMEWORK_GAMEDATA);
-	if (hGameData == null) {
-		SetFailState("Could not load gamedata/%s.txt", LEFT4FRAMEWORK_GAMEDATA);
-	}
-	g_bLinuxOS = hGameData.GetOffset("OS") == 1;
-
-	delete hGameData;
-
 	hRockFix = CreateConVar("collision_tankrock_common", "1", "Will Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them?",FCVAR_NOTIFY);
 	hPullThrough = CreateConVar("collision_smoker_common", "1", "Will Pulled Survivors go through Common Infected?",FCVAR_NOTIFY);
 	hRockThroughIncap = CreateConVar("collision_tankrock_incap", "1", "Will Rocks go through Incapacitated Survivors? (Won't go through new incaps caused by the Rock)",FCVAR_NOTIFY);
@@ -74,16 +56,11 @@ public void OnPluginStart()
 	HookEvent("round_start", event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("player_bot_replace", OnBotSwap);
 	HookEvent("bot_player_replace", OnBotSwap);
-
-	if(!g_bLinuxOS)
-	{
-		LogMessage("windows unsupports collisionhook, disabled l4d_collision_adjustments.smx");
-	}
 }
 
 public Action CH_PassFilter(int ent1, int ent2, bool &result)
 {
-	if (!g_bLinuxOS || !IsValidEdict(ent1) || !IsValidEdict(ent2)) return Plugin_Continue;
+	if (!IsValidEdict(ent1) || !IsValidEdict(ent2)) return Plugin_Continue;
 
 	GetEdictClassname(ent1, sEntityCName, 20);
 	GetEdictClassname(ent2, sEntityCNameTwo, 20);

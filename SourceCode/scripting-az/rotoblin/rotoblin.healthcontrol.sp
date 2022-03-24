@@ -731,6 +731,11 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 				}
 			}
 		}
+
+		if(k == 4)
+		{
+			break;
+		}
 	}
 }
 

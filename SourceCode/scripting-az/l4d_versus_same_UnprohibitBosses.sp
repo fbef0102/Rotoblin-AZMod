@@ -1,6 +1,5 @@
-/*this plugin fix two issues*/
-//1.Fix each round tank/Witch spawn different positions for both team
-//2.Fix C17 map1 two witches
+//Each round tank/Witch spawn same position and angle for both team
+//data/mapinfo.txt to ban tank/witch flow
 //The Author: Harry Potter
 //Only for L4D1
 
@@ -11,7 +10,7 @@
 #include <left4dhooks>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.5"
+#define PLUGIN_VERSION "1.6"
 
 #define INTRO		0
 #define REGULAR	1
@@ -25,23 +24,37 @@ static Handle:g_hCvarVsBossChance[3][2], Handle:g_hCvarVsBossFlow[3][2], Float:g
 static	bool:g_bFixed,Float:g_fTankData_origin[3],Float:g_fTankData_angel[3];
 static 	Float:fWitchData_agnel[3],Float:fWitchData_origin[3];
 static	bool:Tank_firstround_spawn,bool:Witch_firstround_spawn;
-static bool:b_IsSecondWitch, bool:b_KillSecondWitch;
-new Float:fWitchFlow;
-native bool IsWitchRestore(); // from l4d2_witch_restore
-ConVar WITCHPARTY;
+float g_fWitchFlow, g_fTankFlow;
 int g_iRoundStart, g_iPlayerSpawn;
+ConVar WITCHPARTY, sv_cheats;
+ConVar g_hTankMapOff, g_hWitchMapOff, g_hCvarWitchAvoidTank;
+
+static KeyValues g_hMIData = null;
+
+ArrayList hValidTankFlows;
+ArrayList hValidWitchFlows;
+
+native bool IsWitchRestore(); // from l4d2_witch_restore
 native float GetSurCurrentFloat(); // from l4d_current_survivor_progress
 native void SaveBossPercents(); // from l4d_boss_percent
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{ 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
 	CreateNative("SaveWitchPercent",Native_SaveWitchPercent);
 	return APLRes_Success;
 }
 
 public Native_SaveWitchPercent(Handle:plugin, numParams) {
-	new Float:num1 = GetNativeCell(1);
-	fWitchFlow = num1;
+	float num1 = GetNativeCell(1);
+	g_fWitchFlow = num1;
 }
 
 public Plugin:myinfo = 
@@ -50,10 +63,10 @@ public Plugin:myinfo =
 	author = "Harry Potter",
 	description = "Force Enable bosses spawning on all maps, and same spawn positions for both team",
 	version = PLUGIN_VERSION,
-	url = "myself"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	//強制每一關生出tank與witch
 	g_hCvarVsBossChance[INTRO][TANK] = FindConVar("versus_tank_chance_intro");
@@ -85,72 +98,91 @@ public OnPluginStart()
 	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
 	HookEvent("round_end",		Event_RoundEnd,		EventHookMode_PostNoCopy);
 	HookEvent("witch_spawn", TS_ev_WitchSpawn);
+
+	g_hTankMapOff =  CreateConVar("l4d_versus_tank_map_off",	"l4d_river01_docks,l4d_river03_port",	"Plugin will not spawn Tank in these maps, separate by commas (no spaces). (0=All maps, Empty = none).", FCVAR_NOTIFY );
+	g_hWitchMapOff = CreateConVar("l4d_versus_witch_map_off",	"",	"Plugin will not spawn Witch in these maps, separate by commas (no spaces). (0=All maps, Empty = none).", FCVAR_NOTIFY );
+	g_hCvarWitchAvoidTank = CreateConVar("l4d_coop_boss_avoid_tank_spawn", "0", "Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
+
+	hValidTankFlows = new ArrayList(2);
+	hValidWitchFlows = new ArrayList(2);
+
+	MI_KV_Load();
 }
 
 public void OnPluginEnd()
 {
 	ResetPlugin();
+
+	delete hValidTankFlows;
+	delete hValidWitchFlows;
+	
+	MI_KV_Close();
 }
 
 public void OnAllPluginsLoaded()
 {
 	WITCHPARTY = FindConVar("l4d_multiwitch_enabled");
+	sv_cheats = FindConVar("sv_cheats");
 }
 
-char sMap[64];
+char sMap[64], g_sCurMap[64];
+bool g_bTankVaildMap, g_bWitchValidMap;
 public OnMapStart()
 {
-	GetCurrentMap(sMap, 64);
+	g_bTankVaildMap = true;
+	g_bWitchValidMap = true;
+	GetCurrentMap(g_sCurMap, 64);
+	Format(sMap, sizeof(sMap), ",%s,", g_sCurMap);
 
-	/*//強制每一關生出tank與witch
-	new iCampaign = (L4D_IsMissionFinalMap())? FINAL : (L4D_IsFirstMapInScenario())? INTRO : REGULAR;
-	//LogMessage("iCampaign: %d",iCampaign);
-	new Float:fTankFlow =  GetRandomBossFlow(iCampaign);
-	if (!IsTankProhibit()){
-		
-		fTankFlow = SpecialMapTankFlow(fTankFlow,iCampaign);
-		
-		L4D2Direct_SetVSTankToSpawnThisRound(0, true);
-		L4D2Direct_SetVSTankToSpawnThisRound(1, true);
-		L4D2Direct_SetVSTankFlowPercent(0, fTankFlow);
-		L4D2Direct_SetVSTankFlowPercent(1, fTankFlow);
-	}
-	
-	if(WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1)
+	char sCvar[512];
+	g_hTankMapOff.GetString(sCvar, sizeof(sCvar));
+	if( sCvar[0] != '\0' )
 	{
-		//LogMessage("WITCH PARTY Enable, l4d_versus_same_UnprohibitBosses.smx doesn't spawn Witch");
+		if( strcmp(sCvar, "0") == 0 )
+		{
+			g_bTankVaildMap = false;
+		}
+		else
+		{
+			Format(sCvar, sizeof(sCvar), ",%s,", sCvar);
+			if( StrContains(sCvar, sMap, false) != -1 )
+				g_bTankVaildMap = false;
+		}
 	}
-	else
+
+	sCvar = "";
+	g_hWitchMapOff.GetString(sCvar, sizeof(sCvar));
+	if( sCvar[0] != '\0' )
 	{
-		fWitchFlow = GetRandomBossFlow(iCampaign);
-		
-		fWitchFlow = SpecialMapWitchFlow(fWitchFlow,iCampaign);
-		
-		L4D2Direct_SetVSWitchToSpawnThisRound(0, true);
-		L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
-		L4D2Direct_SetVSWitchFlowPercent(0, fWitchFlow);
-		L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
+		if( strcmp(sCvar, "0") == 0 )
+		{
+			g_bWitchValidMap = false;
+		}
+		else
+		{
+			Format(sCvar, sizeof(sCvar), ",%s,", sCvar);
+			if( StrContains(sCvar, sMap, false) != -1 )
+				g_bWitchValidMap = false;
+		}
 	}
-	
-	//強制tank出生在一樣的位置
-	g_bFixed = false;
-	Tank_firstround_spawn = false;
-	ClearVec();
-	
-	//強制witch出生在一樣的位置
-	Witch_firstround_spawn = false;*/
+
+	MI_KV_Close();
+	MI_KV_Load();
+	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
+		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	}
+	KvRewind(g_hMIData);
 }
 
 public void OnMapEnd()
 {
 	ResetPlugin();
+
+	KvRewind(g_hMIData);
 }
 
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	b_IsSecondWitch = false;
-	b_KillSecondWitch = true;
-	
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
 		CreateTimer(2.0, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iRoundStart = 1;
@@ -169,44 +201,162 @@ public Action:COLD_DOWN(Handle:timer)
 
 	if (InSecondHalfOfRound())
 	{
-		if(fWitchFlow == 0.0)
+		if(g_fTankFlow <= 0.0)
+		{
+			L4D2Direct_SetVSTankFlowPercent(1, 0.0);
+			L4D2Direct_SetVSTankToSpawnThisRound(1, false);
+		}
+
+		if(g_fWitchFlow <= 0.0)
+		{
+			L4D2Direct_SetVSWitchFlowPercent(1, 0.0);
 			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
+		}
 		else
 		{
+			L4D2Direct_SetVSWitchFlowPercent(1, 0.2);
+			L4D2Direct_SetVSWitchFlowPercent(1, g_fWitchFlow);
 			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);
 			L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
-			L4D2Direct_SetVSWitchFlowPercent(1, 0.2);
-			L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
 		}
 	}
 	else
 	{
+		KvJumpToKey(g_hMIData, g_sCurMap);
+
+		hValidTankFlows.Clear();
+		hValidWitchFlows.Clear();
+		g_fTankFlow = g_fWitchFlow = 0.0;
+
 		//強制每一關生出tank與witch
 		int iCampaign = (L4D_IsMissionFinalMap())? FINAL : (L4D_IsFirstMapInScenario())? INTRO : REGULAR;
+		int iCvarMinFlow = RoundFloat(g_fCvarVsBossFlow[iCampaign][MIN] * 100);
+		int iCvarMaxFlow = RoundFloat(g_fCvarVsBossFlow[iCampaign][MAX] * 100);
+		iCvarMinFlow = L4D_GetMapValueInt("versus_boss_flow_min", iCvarMinFlow);
+		iCvarMaxFlow = L4D_GetMapValueInt("versus_boss_flow_max", iCvarMaxFlow);
 		float fSurvivorflow = GetSurCurrentFloat();
-		if (!IsTankProhibit()){
-			float fTankFlow = GetRandomBossFlow(iCampaign);
-			//LogMessage("fSurvivorflow: %.2f - fTankFlow: %.2f", fSurvivorflow, fTankFlow);
-			if ( 0.01 < fSurvivorflow < 1 && fTankFlow < fSurvivorflow) fTankFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
-			fTankFlow = SpecialMapTankFlow(fTankFlow,iCampaign);
+		if (g_bTankVaildMap == true)
+		{
+			ArrayList hBannedFlows = new ArrayList(2);
 			
+			int interval[2];
+			interval[0] = 0, interval[1] = iCvarMinFlow - 1;
+			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+			interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
+			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+		
+			KeyValues kv = new KeyValues("tank_ban_flow");
+			L4D_CopyMapSubsection(kv, "tank_ban_flow");
+			
+			if (kv.GotoFirstSubKey()) {
+				do {
+					interval[0] = kv.GetNum("min", -1);
+					interval[1] = kv.GetNum("max", -1);
+					if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+				} while (kv.GotoNextKey());
+			}
+			delete kv;
+			
+			MergeIntervals(hBannedFlows);
+			MakeComplementaryIntervals(hBannedFlows, hValidTankFlows);
+			
+			delete hBannedFlows;
+			
+			// check each array index to see if it is within a ban range
+			int iValidSpawnTotal = hValidTankFlows.Length;
+			int iTankFlow;
+			if (iValidSpawnTotal == 0) {
+				iTankFlow = -1;
+				//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow tank disabled.");
+			}
+			else {
+				iTankFlow = GetRandomIntervalNum(hValidTankFlows);
+			}
+
+			g_fTankFlow = (float(iTankFlow)/100);
+			//LogMessage("fSurvivorflow: %.3f - g_fTankFlow: %.3f", fSurvivorflow, g_fTankFlow);
+		}
+
+		if (g_fTankFlow > 0.0)
+		{
+			if ( g_fTankFlow > 0.0 && 0.01 < fSurvivorflow < 1 && g_fTankFlow < fSurvivorflow) g_fTankFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			
+			L4D2Direct_SetVSTankFlowPercent(0, g_fTankFlow);
+			L4D2Direct_SetVSTankFlowPercent(1, g_fTankFlow);
 			L4D2Direct_SetVSTankToSpawnThisRound(0, true);
 			L4D2Direct_SetVSTankToSpawnThisRound(1, true);
-			L4D2Direct_SetVSTankFlowPercent(0, fTankFlow);
-			L4D2Direct_SetVSTankFlowPercent(1, fTankFlow);
 		}
-		
-		if (!IsWitchProhibit())
+		else
 		{
-			fWitchFlow = GetRandomBossFlow(iCampaign);
-			//LogMessage("fSurvivorflow: %.2f - fWitchFlow: %.2f", fSurvivorflow, fWitchFlow);
-			if ( 0.01 < fSurvivorflow < 1 && fWitchFlow < fSurvivorflow) fWitchFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
-			fWitchFlow = SpecialMapWitchFlow(fWitchFlow,iCampaign);
+			L4D2Direct_SetVSTankFlowPercent(0, 0.0);
+			L4D2Direct_SetVSTankFlowPercent(1, 0.0);
+			L4D2Direct_SetVSTankToSpawnThisRound(0, false);
+			L4D2Direct_SetVSTankToSpawnThisRound(1, false);	
+		}
+
+		if (g_bWitchValidMap == true && !IsWitchProhibit())
+		{
+			ArrayList hBannedFlows = new ArrayList(2);
 			
+			int interval[2];
+			interval[0] = 0, interval[1] = iCvarMinFlow - 1;
+			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+			interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
+			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+		
+			KeyValues kv = new KeyValues("witch_ban_flow");
+			L4D_CopyMapSubsection(kv, "witch_ban_flow");
+			
+			if (kv.GotoFirstSubKey()) {
+				do {
+					interval[0] = kv.GetNum("min", -1);
+					interval[1] = kv.GetNum("max", -1);
+					if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+				} while (kv.GotoNextKey());
+			}
+			delete kv;
+			
+			if (GetTankAvoidInterval(interval))
+			{
+				//PrintToChatAll("[AdjustBossFlow] tank avoid (%i, %i)", interval[0], interval[1]);
+				if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+			}
+			
+			MergeIntervals(hBannedFlows);
+			MakeComplementaryIntervals(hBannedFlows, hValidWitchFlows);
+			
+			delete hBannedFlows;
+			
+			// check each array index to see if it is within a ban range
+			int iValidSpawnTotal = hValidWitchFlows.Length;
+			int iWitchFlow;
+			if (iValidSpawnTotal == 0) {
+				iWitchFlow = -1;
+				//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow witch disabled.");
+			}
+			else {
+				iWitchFlow = GetRandomIntervalNum(hValidWitchFlows);
+			}
+
+			g_fWitchFlow = (float(iWitchFlow)/100);
+			//LogMessage("fSurvivorflow: %.3f - g_fWitchFlow: %.3f", fSurvivorflow, g_fWitchFlow);
+		}
+
+		if(g_fWitchFlow > 0.0)
+		{
+			if ( 0.01 < fSurvivorflow < 1 && g_fWitchFlow < fSurvivorflow) g_fWitchFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			
+			L4D2Direct_SetVSWitchFlowPercent(0, g_fWitchFlow);
+			L4D2Direct_SetVSWitchFlowPercent(1, g_fWitchFlow);
 			L4D2Direct_SetVSWitchToSpawnThisRound(0, true);
 			L4D2Direct_SetVSWitchToSpawnThisRound(1, true);
-			L4D2Direct_SetVSWitchFlowPercent(0, fWitchFlow);
-			L4D2Direct_SetVSWitchFlowPercent(1, fWitchFlow);
+		}
+		else
+		{
+			L4D2Direct_SetVSWitchFlowPercent(0, 0.0);
+			L4D2Direct_SetVSWitchFlowPercent(1, 0.0);
+			L4D2Direct_SetVSWitchToSpawnThisRound(0, false);
+			L4D2Direct_SetVSWitchToSpawnThisRound(1, false);	
 		}
 		
 		//強制tank出生在一樣的位置
@@ -226,108 +376,12 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	ResetPlugin();
 }
 
-static float GetRandomBossFlow(int iCampaign)
-{
-	return GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], g_fCvarVsBossFlow[iCampaign][MAX]);
-}
-
-static bool IsTankProhibit()//犧牲第一關與最後一關不要生Tank
-{
-	return StrEqual(sMap, "l4d_river01_docks") || StrEqual(sMap, "l4d_river03_port")|| StrEqual(sMap, "l4d_forest03_dam");
-}
-
 static bool IsWitchProhibit()
 {
-	if(WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1)
+	if(WITCHPARTY != null && WITCHPARTY.IntValue == 1)
 		return true;
 
 	return false;
-}
-
-static Float:SpecialMapTankFlow(const Float:fFlow,iCampaign)
-{
-	new Float:newfFlow = fFlow;
-	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
-	{
-		newfFlow = GetRandomFloat(0.50, 0.55);//tank will not spawn when after 55% in this map
-	}
-	else if(StrEqual(sMap, "l4d_vs_city17_02"))
-	{
-		//tank will not spawn during elevator (74% ~ 0.83%) in this map	
-		if( 0.17 < fFlow && fFlow < 0.53)
-		{
-			newfFlow = GetRandomFloat(0.53, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium1_apartment"))
-	{
-		//tank will not spawn during elevator (24% ~ 43%) in this map
-		if( 0.24 < fFlow && fFlow < 0.43)
-		{
-			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2")) 
-	{
-		//tank will not spawn after 75% in this map
-		if( 0.75 < fFlow)
-		{
-			newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
-	{
-		//tank will not spawn during elevator (74% ~ 83%) in this map
-		if( 0.74 < fFlow && fFlow < 0.83)
-		{
-			newfFlow = GetRandomFloat(0.83, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-
-	return newfFlow;
-}
-
-static Float:SpecialMapWitchFlow(const Float:fFlow,iCampaign)
-{
-	new Float:newfFlow = fFlow;
-	if(StrEqual(sMap, "l4d_vs_airport05_runway"))
-	{
-		newfFlow = GetRandomFloat(0.50, 0.65);
-	}
-	else if(StrEqual(sMap, "l4d_vs_city17_02"))
-	{
-		//witch will not spawn during infinite horde event (17% ~ 53%) in this map	
-		if( 0.17 < fFlow && fFlow < 0.53)
-		{
-			newfFlow = GetRandomFloat(0.53, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium1_apartment"))
-	{
-		//witch will not spawn before 43% in this map (stuck in elevator)
-		if( fFlow < 0.43)
-		{
-			newfFlow = GetRandomFloat(0.43, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium4_city2"))
-	{
-		//witch will not spawn after 75% in this map
-		if( 0.75 < fFlow)
-		{
-			newfFlow = GetRandomFloat(g_fCvarVsBossFlow[iCampaign][MIN], 0.75);
-		}
-	}
-	else if(StrEqual(sMap, "l4d_vs_stadium5_stadium"))
-	{
-		//witch will not spawn during elevator (74% ~ 83%) in this map	
-		if( 0.74 < fFlow && fFlow < 0.83)
-		{
-			newfFlow = GetRandomFloat(0.83, g_fCvarVsBossFlow[iCampaign][MAX]);
-		}
-	}
-
-	return newfFlow;
 }
 
 public _UB_Common_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
@@ -348,19 +402,9 @@ public _UB_Common_CvarChange(Handle:convar, const String:oldValue[], const Strin
 
 public TS_ev_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if( (WITCHPARTY != null && GetConVarInt(WITCHPARTY) == 1) || GetConVarInt(FindConVar("sv_cheats")) == 1 ) return;	
+	if( IsWitchProhibit() || sv_cheats.IntValue == 1 ) return;	
 	
 	new iEnt = GetEventInt(event, "witchid");
-	if(StrEqual(sMap, "l4d_vs_city17_01") && !IsWitchRestore()){//issue with city17 map1, two witches spawn in this stage, kill second witch spawn
-		if(b_IsSecondWitch && b_KillSecondWitch){
-			//PrintToChatAll("kill city17_01 second witch...");
-			CreateTimer(0.1,ColdDown, iEnt);//延遲一秒檢查
-			b_KillSecondWitch = false;
-		}
-		else
-			b_IsSecondWitch = true;
-	}	
-	
 	if(InSecondHalfOfRound() == false)
 	{
 		if(Witch_firstround_spawn == false)
@@ -447,4 +491,131 @@ void ResetPlugin()
 {
 	g_iRoundStart = 0;
 	g_iPlayerSpawn = 0;
+}
+
+public int L4D_GetMapValueInt(const char[] sKey, int iDefVal)
+{
+	return KvGetNum(g_hMIData, sKey, iDefVal);
+}
+
+public void L4D_CopyMapSubsection(KeyValues hKv, const char[] sKey)
+{
+	if (KvJumpToKey(g_hMIData, sKey, false)) {
+		KvCopySubkeys(g_hMIData, hKv);
+		KvGoBack(g_hMIData);
+	}
+}
+
+void MI_KV_Load()
+{
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = CreateKeyValues("MapInfo");
+	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
+		LogError("[MI] Couldn't load MapInfo data!");
+		MI_KV_Close();
+	}
+}
+
+void MI_KV_Close()
+{
+	if (g_hMIData != null) {
+		CloseHandle(g_hMIData);
+		g_hMIData = null;
+	}
+}
+
+bool IsValidInterval(int interval[2]) {
+	return interval[0] > -1 && interval[1] >= interval[0];
+}
+
+void MergeIntervals(ArrayList merged) {
+	if (merged.Length < 2) return;
+	
+	ArrayList intervals = merged.Clone();
+	SortADTArray(intervals, Sort_Ascending, Sort_Integer);
+
+	merged.Clear();
+	
+	int current[2];
+	intervals.GetArray(0, current);
+	merged.PushArray(current);
+	
+	int intv_size = intervals.Length;
+	for (int i = 1; i < intv_size; ++i) {
+		intervals.GetArray(i, current);
+		
+		int back_index = merged.Length - 1;
+		int back_R = merged.Get(back_index, 1);
+		
+		if (back_R < current[0]) { // not coincide
+			merged.PushArray(current);
+		} else {
+			back_R = (back_R > current[1] ? back_R : current[1]); // override the right value with maximum
+			merged.Set(back_index, back_R, 1);
+		}
+	}
+	
+	delete intervals;
+}
+
+void MakeComplementaryIntervals(ArrayList intervals, ArrayList dest) {
+	int intv_size = intervals.Length;
+	if (intv_size < 2) return;
+	
+	int intv[2];
+	for (int i = 1; i < intv_size; ++i) {
+		intv[0] = intervals.Get(i-1, 1) + 1;
+		intv[1] = intervals.Get(i, 0) - 1;
+		if (IsValidInterval(intv)) dest.PushArray(intv);
+	}
+}
+
+int GetRandomIntervalNum(ArrayList aList) {
+	int total_length = 0, size = aList.Length;
+	int[] arrLength = new int[size];
+	for (int i = 0; i < size; ++i) {
+		arrLength[i] = aList.Get(i, 1) - aList.Get(i, 0) + 1;
+		total_length += arrLength[i];
+	}
+	
+	int random = Math_GetRandomInt(0, total_length-1);
+
+	for (int i = 0; i < size; ++i) {
+		if (random < arrLength[i]) {
+			return aList.Get(i, 0) + random;
+		} else {
+			random -= arrLength[i];
+		}
+	}
+	return 0;
+}
+
+bool GetTankAvoidInterval(int interval[2]) {
+	if (g_hCvarWitchAvoidTank.FloatValue == 0.0) {
+		return false;
+	}
+	
+	float flow = L4D2Direct_GetVSTankFlowPercent(0);
+	if (flow == 0.0) {
+		return false;
+	}
+	
+	interval[0] = RoundToFloor((flow * 100) - (g_hCvarWitchAvoidTank.FloatValue / 2));
+	interval[1] = RoundToCeil((flow * 100) + (g_hCvarWitchAvoidTank.FloatValue / 2));
+	
+	return true;
+}
+
+#define SIZE_OF_INT		 2147483647 // without 0
+stock int Math_GetRandomInt(int min, int max)
+{
+	int random = GetURandomInt();
+
+	if (random == 0) {
+		random++;
+	}
+
+	return RoundToCeil(float(random) / (float(SIZE_OF_INT) / float(max - min + 1))) + min - 1;
 }

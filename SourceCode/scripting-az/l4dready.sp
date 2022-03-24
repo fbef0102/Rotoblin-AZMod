@@ -194,6 +194,14 @@ public Plugin:myinfo =
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
 	CreateNative("IsInReady", Native_IsInReady);
 	CreateNative("Is_Ready_Plugin_On",Native_Is_Ready_Plugin_On);
 	CreateNative("ToggleReadyPanel",		Native_ToggleReadyPanel);
