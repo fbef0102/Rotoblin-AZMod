@@ -6,9 +6,10 @@
 
 static 		Handle:g_hEnableNoFinalFirstTank, bool:g_bEnableNoFinalFirstTank;
 
-static bool:resuce_start,bool:HasBlockFirstTank,bool:timercheck;
+static bool:resuce_start,bool:HasBlockFirstTank;
 static bool:g_bFixed,bool:Tank_firstround_spawn,Float:g_fTankData_origin[3],Float:g_fTankData_angel[3];
 static g_EnableNoFinalFirstTank_original;
+#define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 
 public Plugin:myinfo = 
 {
@@ -65,7 +66,6 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	resuce_start = false;
 	HasBlockFirstTank = false;
-	timercheck = false;
 }
 
 public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
@@ -80,18 +80,19 @@ public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 	return Plugin_Continue;
 }
 
-public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if(g_bEnableNoFinalFirstTank && resuce_start)
 	{
 		if(!HasBlockFirstTank)
 		{
-			new client = GetClientOfUserId(GetEventInt(event, "userid"));
+			int userid = GetEventInt(event, "userid");
+			int client = GetClientOfUserId(userid);
 			TeleportEntity(client,
-			Float:{0.0, 0.0, 0.0}, // Teleport to map center
+			NULL_VELOCITY, // Teleport to map center
 			NULL_VECTOR, 
 			NULL_VECTOR);
-			CreateTimer(1.5, KillFirstTank);
+			CreateTimer(1.5, KillFirstTank, userid);
 			return;
 		}
 		else
@@ -125,15 +126,13 @@ public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 	}
 	
 }
-public Action:KillFirstTank(Handle:timer)
+public Action KillFirstTank(Handle timer, int userid)
 {
-	if(timercheck) return;
-	timercheck = true;
-	
-	new iTank = IsTankInGame();
-	if(iTank && IsClientConnected(iTank) && IsClientInGame(iTank))
+	int iTank = GetClientOfUserId(userid);
+	if(iTank && IsClientInGame(iTank) && IsFakeClient(iTank) && GetClientTeam(iTank) == 3 && IsPlayerTank(iTank) && IsPlayerAlive(iTank))
 	{
-		ForcePlayerSuicide(iTank);
+		//ForcePlayerSuicide(iTank);
+		KickClient(iTank, "Rescue_first_tank");
 		CPrintToChatAll("%t","l4d_NoRescueFirstTank");
 		HasBlockFirstTank = true;
 	}

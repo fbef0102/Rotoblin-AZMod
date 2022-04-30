@@ -359,23 +359,23 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 		if(g_bBlind[client] == true)
 		{
 			g_bBlind[client] = false;
-			ToggleFreezePlayer(client, false);
+			//ToggleFreezePlayer(client, false);
 		}
 		DHookSetReturn(hReturn, newVictim);
 		return MRES_Supercede;
 	}
 
 	g_bBlind[client] = true;
-	if(GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) ToggleFreezePlayer(client, true); // stop attacking if all players are down.
-	else ToggleFreezePlayer(client, false);
+	//if(GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) ToggleFreezePlayer(client, true); // stop attacking if all players are down.
+	//else ToggleFreezePlayer(client, false);
 	return MRES_Ignored;
 }
-
+/*
 void ToggleFreezePlayer(int client, int freeze)
 {
 	SetEntityMoveType(client, freeze ? MOVETYPE_NONE : MOVETYPE_WALK);
 }
-
+*/
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
 	if(IsClientInGame(client) && IsFakeClient(client) && g_bBlind[client])

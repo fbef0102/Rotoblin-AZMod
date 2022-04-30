@@ -71,7 +71,7 @@ public Action:Vote(client, args)
 			fWitchFlow = 0.0;
 		}
 			
-		if(fTankFlow>=1 || fTankFlow<=0 || fWitchFlow>=1 || fWitchFlow<0)
+		if(fTankFlow>=1 || fTankFlow<0 || fWitchFlow>=1 || fWitchFlow<0)
 		{
 			CPrintToChat(client, "%T","l4d_bossvote1",client,"!voteboss");
 			return Plugin_Handled;

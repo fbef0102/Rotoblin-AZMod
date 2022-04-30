@@ -28,6 +28,8 @@ float g_fWitchFlow, g_fTankFlow;
 int g_iRoundStart, g_iPlayerSpawn;
 ConVar WITCHPARTY, sv_cheats;
 ConVar g_hTankMapOff, g_hWitchMapOff, g_hCvarWitchAvoidTank;
+ConVar survivor_limit;
+int survivor_limit_value;
 
 static KeyValues g_hMIData = null;
 
@@ -68,6 +70,10 @@ public Plugin:myinfo =
 
 public void OnPluginStart()
 {
+	survivor_limit = FindConVar("survivor_limit");
+	survivor_limit_value = survivor_limit.IntValue;
+	survivor_limit.AddChangeHook(ConVarChanged);
+
 	//強制每一關生出tank與witch
 	g_hCvarVsBossChance[INTRO][TANK] = FindConVar("versus_tank_chance_intro");
 	g_hCvarVsBossChance[REGULAR][TANK] = FindConVar("versus_tank_chance");
@@ -107,6 +113,11 @@ public void OnPluginStart()
 	hValidWitchFlows = new ArrayList(2);
 
 	MI_KV_Load();
+}
+
+public void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
+{
+	survivor_limit_value = survivor_limit.IntValue;
 }
 
 public void OnPluginEnd()
@@ -227,6 +238,7 @@ public Action:COLD_DOWN(Handle:timer)
 		hValidTankFlows.Clear();
 		hValidWitchFlows.Clear();
 		g_fTankFlow = g_fWitchFlow = 0.0;
+		float fSurvivorflow = GetSurCurrentFloat();
 
 		//強制每一關生出tank與witch
 		int iCampaign = (L4D_IsMissionFinalMap())? FINAL : (L4D_IsFirstMapInScenario())? INTRO : REGULAR;
@@ -234,52 +246,55 @@ public Action:COLD_DOWN(Handle:timer)
 		int iCvarMaxFlow = RoundFloat(g_fCvarVsBossFlow[iCampaign][MAX] * 100);
 		iCvarMinFlow = L4D_GetMapValueInt("versus_boss_flow_min", iCvarMinFlow);
 		iCvarMaxFlow = L4D_GetMapValueInt("versus_boss_flow_max", iCvarMaxFlow);
-		float fSurvivorflow = GetSurCurrentFloat();
-		if (g_bTankVaildMap == true)
-		{
-			ArrayList hBannedFlows = new ArrayList(2);
-			
-			int interval[2];
-			interval[0] = 0, interval[1] = iCvarMinFlow - 1;
-			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-			interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
-			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-		
-			KeyValues kv = new KeyValues("tank_ban_flow");
-			L4D_CopyMapSubsection(kv, "tank_ban_flow");
-			
-			if (kv.GotoFirstSubKey()) {
-				do {
-					interval[0] = kv.GetNum("min", -1);
-					interval[1] = kv.GetNum("max", -1);
-					if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-				} while (kv.GotoNextKey());
-			}
-			delete kv;
-			
-			MergeIntervals(hBannedFlows);
-			MakeComplementaryIntervals(hBannedFlows, hValidTankFlows);
-			
-			delete hBannedFlows;
-			
-			// check each array index to see if it is within a ban range
-			int iValidSpawnTotal = hValidTankFlows.Length;
-			int iTankFlow;
-			if (iValidSpawnTotal == 0) {
-				iTankFlow = -1;
-				//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow tank disabled.");
-			}
-			else {
-				iTankFlow = GetRandomIntervalNum(hValidTankFlows);
-			}
 
-			g_fTankFlow = (float(iTankFlow)/100);
-			//LogMessage("fSurvivorflow: %.3f - g_fTankFlow: %.3f", fSurvivorflow, g_fTankFlow);
+		if(survivor_limit_value != 1)
+		{
+			if (g_bTankVaildMap == true)
+			{
+				ArrayList hBannedFlows = new ArrayList(2);
+				
+				int interval[2];
+				interval[0] = 0, interval[1] = iCvarMinFlow - 1;
+				if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+				interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
+				if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+			
+				KeyValues kv = new KeyValues("tank_ban_flow");
+				L4D_CopyMapSubsection(kv, "tank_ban_flow");
+				
+				if (kv.GotoFirstSubKey()) {
+					do {
+						interval[0] = kv.GetNum("min", -1);
+						interval[1] = kv.GetNum("max", -1);
+						if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+					} while (kv.GotoNextKey());
+				}
+				delete kv;
+				
+				MergeIntervals(hBannedFlows);
+				MakeComplementaryIntervals(hBannedFlows, hValidTankFlows);
+				
+				delete hBannedFlows;
+				
+				// check each array index to see if it is within a ban range
+				int iValidSpawnTotal = hValidTankFlows.Length;
+				int iTankFlow;
+				if (iValidSpawnTotal == 0) {
+					iTankFlow = -1;
+					//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow tank disabled.");
+				}
+				else {
+					iTankFlow = GetRandomIntervalNum(hValidTankFlows);
+				}
+
+				g_fTankFlow = (float(iTankFlow)/100);
+				//LogMessage("fSurvivorflow: %.3f - g_fTankFlow: %.3f", fSurvivorflow, g_fTankFlow);
+			}
 		}
 
 		if (g_fTankFlow > 0.0)
 		{
-			if ( g_fTankFlow > 0.0 && 0.01 < fSurvivorflow < 1 && g_fTankFlow < fSurvivorflow) g_fTankFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			if ( g_fTankFlow > 0.0 && 0.01 < fSurvivorflow < 1 && g_fTankFlow < fSurvivorflow) g_fTankFlow = fSurvivorflow;
 			
 			L4D2Direct_SetVSTankFlowPercent(0, g_fTankFlow);
 			L4D2Direct_SetVSTankFlowPercent(1, g_fTankFlow);
@@ -294,57 +309,60 @@ public Action:COLD_DOWN(Handle:timer)
 			L4D2Direct_SetVSTankToSpawnThisRound(1, false);	
 		}
 
-		if (g_bWitchValidMap == true && !IsWitchProhibit())
+		if(survivor_limit_value != 1)
 		{
-			ArrayList hBannedFlows = new ArrayList(2);
-			
-			int interval[2];
-			interval[0] = 0, interval[1] = iCvarMinFlow - 1;
-			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-			interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
-			if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-		
-			KeyValues kv = new KeyValues("witch_ban_flow");
-			L4D_CopyMapSubsection(kv, "witch_ban_flow");
-			
-			if (kv.GotoFirstSubKey()) {
-				do {
-					interval[0] = kv.GetNum("min", -1);
-					interval[1] = kv.GetNum("max", -1);
-					if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-				} while (kv.GotoNextKey());
-			}
-			delete kv;
-			
-			if (GetTankAvoidInterval(interval))
+			if (g_bWitchValidMap == true && !IsWitchProhibit())
 			{
-				//PrintToChatAll("[AdjustBossFlow] tank avoid (%i, %i)", interval[0], interval[1]);
+				ArrayList hBannedFlows = new ArrayList(2);
+				
+				int interval[2];
+				interval[0] = 0, interval[1] = iCvarMinFlow - 1;
 				if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
-			}
+				interval[0] = iCvarMaxFlow + 1, interval[1] = 100;
+				if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
 			
-			MergeIntervals(hBannedFlows);
-			MakeComplementaryIntervals(hBannedFlows, hValidWitchFlows);
-			
-			delete hBannedFlows;
-			
-			// check each array index to see if it is within a ban range
-			int iValidSpawnTotal = hValidWitchFlows.Length;
-			int iWitchFlow;
-			if (iValidSpawnTotal == 0) {
-				iWitchFlow = -1;
-				//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow witch disabled.");
-			}
-			else {
-				iWitchFlow = GetRandomIntervalNum(hValidWitchFlows);
-			}
+				KeyValues kv = new KeyValues("witch_ban_flow");
+				L4D_CopyMapSubsection(kv, "witch_ban_flow");
+				
+				if (kv.GotoFirstSubKey()) {
+					do {
+						interval[0] = kv.GetNum("min", -1);
+						interval[1] = kv.GetNum("max", -1);
+						if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+					} while (kv.GotoNextKey());
+				}
+				delete kv;
+				
+				if (GetTankAvoidInterval(interval))
+				{
+					//PrintToChatAll("[AdjustBossFlow] tank avoid (%i, %i)", interval[0], interval[1]);
+					if (IsValidInterval(interval)) hBannedFlows.PushArray(interval);
+				}
+				
+				MergeIntervals(hBannedFlows);
+				MakeComplementaryIntervals(hBannedFlows, hValidWitchFlows);
+				
+				delete hBannedFlows;
+				
+				// check each array index to see if it is within a ban range
+				int iValidSpawnTotal = hValidWitchFlows.Length;
+				int iWitchFlow;
+				if (iValidSpawnTotal == 0) {
+					iWitchFlow = -1;
+					//PrintToChatAll("[AdjustBossFlow] Ban range covers entire flow range. Flow witch disabled.");
+				}
+				else {
+					iWitchFlow = GetRandomIntervalNum(hValidWitchFlows);
+				}
 
-			g_fWitchFlow = (float(iWitchFlow)/100);
-			//LogMessage("fSurvivorflow: %.3f - g_fWitchFlow: %.3f", fSurvivorflow, g_fWitchFlow);
+				g_fWitchFlow = (float(iWitchFlow)/100);
+				//LogMessage("fSurvivorflow: %.3f - g_fWitchFlow: %.3f", fSurvivorflow, g_fWitchFlow);
+			}
 		}
 
 		if(g_fWitchFlow > 0.0)
 		{
-			if ( 0.01 < fSurvivorflow < 1 && g_fWitchFlow < fSurvivorflow) g_fWitchFlow = GetRandomFloat(fSurvivorflow+0.05, g_fCvarVsBossFlow[iCampaign][MAX]);
+			if ( 0.01 < fSurvivorflow < 1 && g_fWitchFlow < fSurvivorflow) g_fWitchFlow = fSurvivorflow;
 			
 			L4D2Direct_SetVSWitchFlowPercent(0, g_fWitchFlow);
 			L4D2Direct_SetVSWitchFlowPercent(1, g_fWitchFlow);
@@ -402,7 +420,7 @@ public _UB_Common_CvarChange(Handle:convar, const String:oldValue[], const Strin
 
 public TS_ev_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if( IsWitchProhibit() || sv_cheats.IntValue == 1 ) return;	
+	if( IsWitchProhibit() || sv_cheats.IntValue == 1 ) return;
 	
 	new iEnt = GetEventInt(event, "witchid");
 	if(InSecondHalfOfRound() == false)
@@ -413,17 +431,18 @@ public TS_ev_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 			GetEntPropVector(iEnt, Prop_Send, "m_vecOrigin", fWitchData_origin);
 			Witch_firstround_spawn = true;
 			
-			/*for (new index; index < 3; index++){
-				PrintToChatAll("Witch first position: %f, %f",fWitchData_agnel[index], fWitchData_origin[index]);
-			}*/
+			//PrintToChatAll("Witch first position: %f, %f, %f", fWitchData_origin[0], fWitchData_origin[1], fWitchData_origin[2]);
+			//PrintToChatAll("Witch first angel: %f, %f, %f", fWitchData_agnel[0], fWitchData_agnel[1], fWitchData_agnel[2]);
 		}
 	}
 	else
 	{
 		if(Witch_firstround_spawn)
 		{
-			TeleportEntity(iEnt, fWitchData_origin, fWitchData_agnel, NULL_VECTOR);
 			Witch_firstround_spawn = false;
+			//TeleportEntity(iEnt, fWitchData_origin, fWitchData_agnel, NULL_VECTOR); //not working on sitting witch after 2022 l4d1 update
+			RemoveEntity(iEnt);
+			L4D2_SpawnWitch(fWitchData_origin, fWitchData_agnel);
 			//PrintToChatAll("轉換妹子到第一回合的位置");
 		}
 	}

@@ -18,7 +18,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_hPenalty = CreateConVar("l4d1_penalty", "720", "1 - kick clients, 0 - record players in log file, other value: ban minutes");
+	g_hPenalty = CreateConVar("l4d1_penalty", "1", "1 - kick clients, 0 - record players in log file, other value: ban minutes");
 	
 	g_iPenalty = g_hPenalty.IntValue;
 	g_hPenalty.AddChangeHook(ConVarChanged_Cvars);
@@ -46,7 +46,8 @@ public Action CheckClients(Handle timer)
 			QueryClientConVar(client, "r_drawothermodels", ClientQueryCallback_DrawModels);
 			QueryClientConVar(client, "l4d_bhop", ClientQueryCallback_l4d_bhop); //ban auto bhop from dll
 			QueryClientConVar(client, "l4d_bhop_autostrafe", ClientQueryCallback_l4d_bhop_autostrafe); //ban auto bhop from dll
-        }
+			QueryClientConVar(client, "cl_fov", ClientQueryCallback_cl_fov);
+		}
     }	
 }
 
@@ -291,6 +292,39 @@ public void ClientQueryCallback_l4d_bhop_autostrafe(QueryCookie cookie, int clie
 			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been banned for using \x04l4dbhop.dll: l4d_bhop_autostrafe\x01!", client);
 			static char reason[255];
 			FormatEx(reason, sizeof(reason), "%s", "Banned for using l4dbhop.dll");
+			
+			BanClient(client, g_iPenalty, BANFLAG_AUTHID, reason, reason);
+			ServerCommand("sm_exbanid %d \"%s\"", g_iPenalty, SteamID);
+		}
+	}
+}
+
+public void ClientQueryCallback_cl_fov(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+{	
+	if(!IsClientInGame(client)) return;
+
+	int clientCvarValue = StringToInt(cvarValue);
+
+	if (clientCvarValue > 120 || clientCvarValue < 75)
+	{
+		char t_name[MAX_NAME_LENGTH];
+		GetClientName(client,t_name,MAX_NAME_LENGTH);
+		
+		char SteamID[32];
+		GetClientAuthId(client, AuthId_Steam2, SteamID, sizeof(SteamID));
+	
+		LogToFile(path, ".:[Name: %N | STEAMID: %s | cl_fov: %d]:.", client, SteamID, clientCvarValue);
+
+		if (g_iPenalty == 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been kicked for using \x04cl_fov %d\x01!", client, clientCvarValue);
+			KickClient(client, "ConVar cl_fov violation (must be 75~120)");
+		}
+		else if (g_iPenalty > 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been banned for using \x04cl_fov %d\x01!", client, clientCvarValue);
+			static char reason[255];
+			FormatEx(reason, sizeof(reason), "%s", "Banned for using cl_fov %d (must be 75~120)", clientCvarValue);
 			
 			BanClient(client, g_iPenalty, BANFLAG_AUTHID, reason, reason);
 			ServerCommand("sm_exbanid %d \"%s\"", g_iPenalty, SteamID);

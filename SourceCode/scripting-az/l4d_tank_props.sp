@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
+#include <dhooks>
 
 #define TANK_ZOMBIE_CLASS   5
 
@@ -18,7 +19,7 @@ int iTankClient = -1;
 public Plugin:myinfo = {
 	name        = "L4D2 Tank Props,l4d1 modify by Harry",
 	author      = "Jahze & Harry Potter",
-	version     = "2.4",
+	version     = "2.5",
 	description = "Stop tank props from fading whilst the tank is alive + add Hittable Glow",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
@@ -187,13 +188,15 @@ public Action TankPropRoundReset( Handle event, const char[] name, bool dontBroa
 }
 
 public Action TankPropTankSpawn( Handle event, const char[] name, bool dontBroadcast ) {
-    if ( !tankSpawned ) {
-        UnhookTankProps();
-        ClearArray(hTankPropsHit);
-        
-        HookTankProps();
-        
-        tankSpawned = true;
+	if ( !tankSpawned ) {
+		UnhookTankProps();
+		ClearArray(hTankPropsHit);
+		
+		HookTankProps();
+
+		DHookAddEntityListener(ListenType_Created, PossibleTankPropCreated);
+		
+		tankSpawned = true;
     }    
 }
 
@@ -208,7 +211,11 @@ public Action TankDeadCheck( Handle timer ) {
 
 	if ( GetTankClient() == -1 ) {
 		UnhookTankProps();
+
+		DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
+
 		CreateTimer(3.5, FadeTankProps,_ ,TIMER_FLAG_NO_MAPCHANGE);
+
 		tankSpawned = false;
 	}
 }
@@ -416,6 +423,47 @@ void UnhookTankProps() {
     }
     
     ClearArray(hTankProps);
+}
+
+//analogue public void OnEntityCreated(int iEntity, const char[] sClassName)
+public void PossibleTankPropCreated(int iEntity, const char[] sClassName)
+{
+	if (sClassName[0] != 'p') {
+		return;
+	}
+	
+	if (strcmp(sClassName, "prop_physics") != 0) { // Hooks c11m4_terminal World Sphere
+		return;
+	}
+
+	// Use SpawnPost to just push it into the Array right away.
+	// These entities get spawned after the Tank has punched them, so doing anything here will not work smoothly.
+	SDKHook(iEntity, SDKHook_SpawnPost, Hook_PropSpawned);
+}
+
+public void Hook_PropSpawned(int iEntity)
+{
+	if (iEntity < MaxClients || !IsValidEntity(iEntity)) {
+		return;
+	}
+
+	if (FindValueInArray(hTankProps, iEntity) == -1) {
+		char sModelName[PLATFORM_MAX_PATH];
+		GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
+
+		if (StrContains(sModelName, "atlas_break_ball") != -1 || StrContains(sModelName, "forklift_brokenlift.mdl") != -1) {
+			PushArrayCell(hTankProps, iEntity);
+			PushArrayCell(hTankPropsHit, iEntity);
+
+			if(GetConVarInt(g_hCvar_tankPropsGlow) == 1)
+				CreateTankPropGlow(iEntity);
+			if(GetConVarInt(g_hCvar_tankPropsGlowSpec) == 1)
+				CreateTankPropGlowSpectator(iEntity);
+
+		} else if (StrContains(sModelName, "forklift_brokenfork.mdl") != -1) {
+			AcceptEntityInput(iEntity, "Kill");
+		}
+	}
 }
 
 int GetTankClient() {

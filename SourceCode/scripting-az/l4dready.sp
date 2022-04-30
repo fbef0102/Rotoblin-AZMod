@@ -23,7 +23,7 @@
 #define READY_VERSION "8.2"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 10.0
-#define READY_LIST_PANEL_LIFETIME 10
+#define READY_LIST_PANEL_LIFETIME 2
 #define READY_RESTART_ROUND_DELAY 5.0
 #define READY_RESTART_MAP_DELAY 2
 #define PreventSpecBlockInfectedTeamIcon_DELAY 5.0
@@ -31,7 +31,6 @@
 
 #define READY_VERSION_REQUIRED_SOURCEMOD "1.9"
 #define READY_VERSION_REQUIRED_SOURCEMOD_NONDEV 1 //1 dont allow -dev version, 0 ignore -dev version
-#define READY_VERSION_REQUIRED_LEFT4DOWNTOWN "0.4.7.5"
 
 #define L4D_TEAM_SURVIVORS 2
 #define L4D_TEAM_INFECTED 3
@@ -1130,12 +1129,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	return Plugin_Continue;	
 
 }
-/*
-public bool:IsPlayerGhost(client)
-{
-	return bool:GetEntProp(client, Prop_Send, "m_isGhost");
-}
-*/
+
 //repeatedly count down until the match goes live
 public Action:timerLiveCountCallback(Handle:timer)
 {
@@ -1227,7 +1221,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	
 
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
-		CreateTimer(0.5, PluginStart);
+		CreateTimer(0.1, PluginStart);
 	g_iRoundStart = 1;
 
 	return Plugin_Continue;
@@ -1339,7 +1333,7 @@ public Action:timerUnreadyCallback(Handle:timer)
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 { 
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
-		CreateTimer(0.5, PluginStart);
+		CreateTimer(0.1, PluginStart);
 	g_iPlayerSpawn = 1;
 
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -2436,6 +2430,15 @@ directorStop()
 	
 	//dont accidentally spawn tanks in ready mode
 	ResetConVar(FindConVar("director_force_tank"));
+
+	//kill all common
+	int common = MaxClients + 1;
+	while ((common = FindEntityByClassname(common, "infected")) != INVALID_ENT_REFERENCE)
+	{
+		if(GetEntProp(common, Prop_Data, "m_iHealth") < 0) continue;
+
+		AcceptEntityInput(common, "Kill");
+	}
 }
 
 directorStart()

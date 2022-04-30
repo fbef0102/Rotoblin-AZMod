@@ -1,7 +1,88 @@
 "MapInfo"
 {
+	"l4d_vs_hospital01_apartment"
+	{
+		"pill_limit" "0" // +1 PILL CABINET
+	}
+	"l4d_vs_hospital02_subway"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_hospital03_sewers"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_hospital04_interior"
+	{
+		"pill_limit" "1"
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"46"
+				"max"		"80"
+			}
+		}
+	}
+	"l4d_vs_hospital05_rooftop"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_garage01_alleys"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_garage02_lots"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_smalltown01_caves"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_vs_smalltown02_drainage"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_smalltown03_ranchhouse"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_smalltown04_mainstreet"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_smalltown05_houseboat"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_vs_airport01_greenhouse"
+	{
+		"pill_limit" "0"
+		"tank_ban_flow"
+		{
+			"Boomer Vomit No Horde Issue"
+			{
+				"min"		"66"
+				"max"		"82"
+			}
+		}
+	}
+	"l4d_vs_airport02_offices"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_airport03_garage"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_airport04_terminal"
+	{
+		"pill_limit" "2"
+	}
 	"l4d_vs_airport05_runway"
 	{
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Before Plane"
@@ -29,8 +110,53 @@
 			}
 		}
 	}
+	"l4d_vs_farm01_hilltop"
+	{
+		"pill_limit" "1"
+		"tank_ban_flow"
+		{
+			"Too early"
+			{
+				"min"		"0"
+				"max"		"34"
+			}
+		}
+	}
+	"l4d_vs_farm02_traintunnel"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_farm03_bridge"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_vs_farm04_barn"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_farm05_cornfield"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_river01_docks"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_river02_barge"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_river03_port"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_vs_city17_01"
+	{
+		"pill_limit" "1"
+	}
 	"l4d_vs_city17_02"
 	{
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Infinite Horde Event"
@@ -48,8 +174,41 @@
 			}
 		}
 	}
+	"l4d_vs_city17_03"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_city17_04"
+	{
+		"pill_limit" "0" // +2 PILL CABINET
+	}
+	"l4d_vs_city17_05"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_vs_deadflagblues01_city"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_deadflagblues02_library"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_deadflagblues03_arena"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_deadflagblues04_woods"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_deadflagblues05_station"
+	{
+		"pill_limit" "1"
+	}
 	"l4d_vs_stadium1_apartment"
 	{
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -67,8 +226,17 @@
 			}
 		}
 	}
+	"l4d_vs_stadium2_underground"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_vs_stadium3_city1"
+	{
+		"pill_limit" "2"
+	}
 	"l4d_vs_stadium4_city2"
 	{
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -88,6 +256,7 @@
 	}
 	"l4d_vs_stadium5_stadium"
 	{
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -105,8 +274,85 @@
 			}
 		}
 	}
+	"l4d_dbd_citylights"
+	{
+		"pill_limit" "0"  // +1 PILL CABINET
+	}
+	"l4d_dbd_anna_is_gone"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_dbd_the_mall"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_dbd_clean_up"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_dbd_new_dawn"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_deathaboard01_prison"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_deathaboard02_yard"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_deathaboard03_docks"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_deathaboard04_ship"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_deathaboard05_light"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_ihm01_forest"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_ihm02_manor"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_ihm03_underground"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_ihm04_lumberyard"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_ihm05_lakeside"
+	{
+		"pill_limit" "1"
+	}
+	"l4d_jsarena01_town"
+	{
+		"pill_limit" "0" // +1 PILL CABINET
+	}
+	"l4d_jsarena02_alley"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_jsarena03_roof"
+	{
+		"pill_limit" "2"
+	}
+	"l4d_jsarena04_arena"
+	{
+		"pill_limit" "1"
+	}
 	"l4d_149_1"
 	{
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -136,6 +382,7 @@
 	}
 	"l4d_149_2"
 	{
+		"pill_limit" "1" // +1 PILL CABINET
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -155,6 +402,7 @@
 	}
 	"l4d_149_3"
 	{
+		"pill_limit" "1" // +1 PILL CABINET
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -176,5 +424,13 @@
 				"max"		"57"
 			}
 		}
+	}
+	"l4d_149_4"
+	{
+		"pill_limit" "1" // +1 PILL CABINET
+	}
+	"l4d_149_5"
+	{
+		"pill_limit" "1"
 	}
 }

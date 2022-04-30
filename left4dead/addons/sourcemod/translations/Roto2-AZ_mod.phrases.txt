@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.3.6"
+		"en"			"Rotoblin-AZ Mod v8.3.7"
 	}
 	"Plugin_Information"
 	{
@@ -1382,7 +1382,7 @@
 	"l4d_tank_count1"
 	{
 		"#format"	"{1:i},{2:i},{3:i},{4:i},{5:i}"
-		"en"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Pounch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
+		"en"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Punch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
 		"zho"	"存活了 {green}{1}{olive}分 {green}{2}{olive}秒.(拳: {green}{3}{olive}, 石: {green}{4}{olive}, 鐵: {green}{5}{olive})"
 	}
 	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
@@ -2054,6 +2054,7 @@
 		"en"	"You can't spawn near safe room doors."
 		"zho"	"你現在不能在安全門附近復活."
 	}
+	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"Give Tank To AI"
 	{
 		"#format"	"{1:s}"
@@ -2113,8 +2114,8 @@
 	"Usage"
 	{
 		"#format"	"{1:d},{2:d},{3:s}"
-		"en"		"{default}Usage: {olive}{3}{default} <Number of slots between {olive}{1} {default}and {olive}{2}{default}>"
-		"zho"		"{default}使用方式: {olive}{3}{default} <數字介於 {olive}{1}{default} 和 {olive}{2}{default} 之間>"
+		"en"		"{default}Usage: {olive}{3}{default} (Number of slots between {olive}{1} {default}and {olive}{2}{default})"
+		"zho"		"{default}使用方式: {olive}{3}{default} (數字介於 {olive}{1}{default} 和 {olive}{2}{default} 之間)"
 	}
 	"Same as current"
 	{
@@ -2858,9 +2859,9 @@
 	}
 	"rotoblin14"
 	{
-		"#format"	"{1:s}"
-		"en"		"The game has been paused by an admin.\nOnly be unpaused with {green}{1}{default} by an adm."
-		"zho" 		"管理員強制暫停遊戲.\n管理員輸入{green}{1}{default}解除暫停"
+		"#format"	"{1:s},{2:s}"
+		"en"		"The game has been paused by an admin({lightgreen}{1}{default}).\nOnly be unpaused with {green}{2}{default} by an adm."
+		"zho" 		"管理員({lightgreen}{1}{default}) 強制暫停遊戲.\n管理員輸入 {green}{2}{default} 解除暫停"
 	}
 	"rotoblin15"
 	{
@@ -2869,8 +2870,9 @@
 	}
 	"rotoblin16"
 	{
-		"en"		"The game has been unpaused by an admin."
-		"zho"		"管理員已解除暫停"
+		"#format"	"{1:s}"
+		"en"		"The game has been unpaused by an admin({lightgreen}{1}{default})."
+		"zho"		"管理員({lightgreen}{1}{default}) 已解除暫停"
 	}
 	"rotoblin17"
 	{

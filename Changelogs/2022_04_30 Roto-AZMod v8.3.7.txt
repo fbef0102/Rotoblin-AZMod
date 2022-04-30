@@ -1,0 +1,79 @@
+﻿v8.3.7
+-Please download latest "Windows Server files" or "Linux Server files" (https://github.com/fbef0102/L4D1-Server4Dead/releases)
+-All plugins use sm v1.10 compiler
+
+------------------Delete------------------
+-plugins\l4d_climb.smx
+* Too many bugs while climbing the wall
+
+-plugins\l4d_remove_item_collision.smx
+* Restore weapons physical effect
+
+-plugins\l4d_flashlight.smx
+* No one likes flashlight :(
+
+-plugins\remove_touch_links
+* This plugin causes team change bug
+
+-plugins\l4d2_noghostcheat
+* This pliugin cause an error where survivors can not see the alive special infected model even the special infected is not on ghost state
+
+------------------New------------------
+-plugins\l4d_incap_door_fix.smx
+* Block survivors from being able to open/close doors while incapacitated/hanging.
+* Block survivors from being able to open/close doors while immobilized by hunter/smoker.
+
+-plugins\l4d_fix_finale_breakable.smx
+* Fix SI being unable to break props/walls within finale area before finale starts.
+
+------------------Change------------------
+-data\mapinfo.txt
+* control max pill limit on each map
+
+-cfg\server_classic_convar.cfg
+-cfg\server_Dark_Coop_convar.cfg
+-cfg\server_pub_convars.cfg
+-cfg\server_shared_convars.cfg
+-cfg\server_witch_party_convar.cfg
+* removed car fix including white glow
+	*Developer comment: I tried to fix invisible car from server, but it seems that hittable became laggy, hittable doesn't behave correctly and missing punch quite easily.
+
+### Map Changes(!cm) ###
+* **General:**
+  * Remove miniguns and machine guns
+  * Extra Pills
+    * Only 1 pill in cabinets
+    * On the road: 1~2 pills
+    * Final rescue area: 4 pills
+	
+### Weapon Adjustments ###
+* **Uzi** (based on Acemod/Zonemod)
+  * Damage Drop-off: 0.84->0.78 (was 0.84)
+  * Damage: 20->23 (was 22)
+  
+### Gameplay / Balance Changes ###
+* Special Infected:
+  * **Tanks:**
+    * Health
+	  - *(5v5)*: **8500** (was 9000)
+	  - *(4v4)*: **7000** (was 7500)
+	  - *(3v3)*: **5025**
+	  - *(2v2)*: **3480**
+	  - *(1v1)*: **None** (remove tank and witch in 1v1 and 1vHunters)
+	  
+  * **Hunter:**
+    * Maximum pounce damage: **35** (was 50)
+	  
+  * **Hunter:**
+	* Allow Hunters being shoved when not pouncing. (Shove fov: **50**, was 90)
+	  
+  * **Boomer:**
+    * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
+	  - *87%*: **3 Hunters + 1 Smoker** (was 90%)
+	  - *13%*: **4 Hunters** (was 10%)
+	  
+	*Developer comment: Play team work, should not reply on solo tank or hunter max 50 pounce damage, we don't want to see wipe after wipe on 10 rounds
+
+* Survivors:
+  * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
+  

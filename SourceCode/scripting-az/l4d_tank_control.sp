@@ -10,7 +10,8 @@
 
 native Is_Ready_Plugin_On();
 
-static	queuedTank, String:tankSteamId[32], Handle:hTeamTanks, Handle:hTeamFinalTanks, Handle:g_hCvarInfLimit;
+static	queuedTank, String:tankSteamId[32], Handle:hTeamTanks, Handle:hTeamFinalTanks;
+ConVar g_hCvarInfLimit, g_hCvarSurLimit;
 static		bool:IsSecondTank,bool:IsFinal;	
 static Handle:hPreviousMapTeamTanks;
 public Plugin:myinfo = {
@@ -21,7 +22,6 @@ public Plugin:myinfo = {
 };
 
 static bool:g_bCvartankcontroldisable,Handle:hCvarFlags;
-static bool:resuce_start = false;
 static String:previousmap[128];
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -62,6 +62,7 @@ public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	g_hCvarInfLimit = FindConVar("z_max_player_zombies");
+	g_hCvarSurLimit = FindConVar("survivor_limit");
 	
 	hCvarFlags = CreateConVar("tank_control_disable", "0", "if set, no Forces each player to play the tank at once,1=disabled", CVAR_FLAGS, true, 0.0, true, 1.0);
 	g_bCvartankcontroldisable = GetConVarBool(hCvarFlags);
@@ -70,7 +71,6 @@ public OnPluginStart()
 	HookEvent("player_team", TC_ev_OnTeamChange);
 	HookEvent("player_left_start_area", TC_ev_LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	HookEvent("round_start", TC_ev_RoundStart, EventHookMode_PostNoCopy);
-	HookEvent("finale_start", Event_Finale_Start);
 	
 	
 	RegConsoleCmd("sm_tank", Command_FindNexTank);
@@ -228,7 +228,6 @@ public OnMapStart()//每個地圖的第一關載入時清除所有has been tank 
 public Action:TC_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	queuedTank = 0;
-	resuce_start = false;
 	IsSecondTank = false;
 }
 
@@ -270,43 +269,26 @@ ChoseTankAndPrintWhoBecome()
 	}
 }
 
-public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
+public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStasis)
 {
-	if (IsPluginDisabled()) 
-		return Plugin_Continue;
+	if(IsPluginDisabled()) return Plugin_Continue;
 
-	if(resuce_start)
-	{
-		new Handle:BlockFirstTank = FindConVar("no_final_first_tank");
-		if(BlockFirstTank != INVALID_HANDLE)
-		{
-			if(GetConVarInt(BlockFirstTank) == 1)
-			{
-				resuce_start = false;
-				return Plugin_Continue;
-			}
-		}
-	}
-	
-	
-	if(tank_index<=0) return Plugin_Continue;
-	if (!IsFakeClient(tank_index)){
+	if(L4D2Direct_GetTankPassedCount() >= 2)
+		return Plugin_Continue;	
 
-		for (new i=1; i <= MaxClients; i++) {
+	if (tank_index && IsClientInGame(tank_index) && !IsFakeClient(tank_index)){
+		for (int i=1; i <= MaxClients; i++) {
 			if (!IsClientInGame(i))
 				continue;
 
 			if (GetClientTeam(i) == 2)
 				continue;
-
-			if(L4D2Direct_GetTankPassedCount() >= 2)
-				return Plugin_Continue;	
 				
-			decl String:tank_indexName[128];
+			static char tank_indexName[128];
 			GetClientName(tank_index,tank_indexName,128);
 			CPrintToChat(i, "%T","l4d_tank_control5",i, tank_indexName);
-			if (GetClientTeam(i) == 1)
-				continue;
+			if (GetClientTeam(i) == 1) continue;
+
 			CPrintToChat(i, "%T","l4d_tank_control6",i);
 		}
 		SetTankFrustration(tank_index, 100);
@@ -314,6 +296,17 @@ public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 
 		return Plugin_Handled;
 	}
+
+	return Plugin_Continue;
+}
+
+public void L4D_OnTryOfferingTankBot_Post(int tank_index, bool enterStasis)
+{
+	if (IsPluginDisabled()) 
+		return;
+
+	if(L4D2Direct_GetTankPassedCount() >= 1)
+		return;	
 
 	if(IsSecondTank && queuedTank<=0)//第二隻克以後
 	{
@@ -344,7 +337,6 @@ public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 		queuedTank = 0;
 	}
 	IsSecondTank = true;//已經第一隻Tank了
-	return Plugin_Continue;
 }
 
 public Action:KickBot(Handle:timer, any:client)
@@ -532,7 +524,7 @@ bool:IsPluginDisabled()
 {
 	if(g_bCvartankcontroldisable)
 		return true;
-	return GetConVarInt(g_hCvarInfLimit) == 1;
+	return (g_hCvarInfLimit.IntValue == 1 || g_hCvarSurLimit.IntValue == 1);
 }
 
 
@@ -551,9 +543,4 @@ public Action:ClearTeam_Cmd(client, args)
 	ClearArray(hPreviousMapTeamTanks);	
 	
 	ReplyToCommand(client,"[TS] %T","Tank Control has been clear and reset!",client);
-}
-
-public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	resuce_start = true;
 }

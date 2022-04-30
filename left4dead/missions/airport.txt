@@ -117,7 +117,7 @@
 				"DisplayName" "#L4D360UI_Chapter_Runway"
 				"Image" "maps/l4d_airport05_runway"
 				"VersusModifier" "2.0"
-				"VersusFinaleProgressScoreFactor" "0.75"
+				"VersusFinaleProgressScoreFactor" "0.8"
 			}
 		}	
 	

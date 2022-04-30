@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define OVERFLOW_SHIELD 8
+#define OVERFLOW_SHIELD 4
 
 int iCommonLimit;
 
@@ -37,7 +37,7 @@ public void OnMapStart()
     g_bCheckMap = false;
     GetCurrentMap(sMap, 64);
 
-    if( strcmp(sMap, "l4d_dbd_clean_up") == 0 )
+    if( strcmp(sMap, "l4d_dbd_clean_up") == 0 || strcmp(sMap, "l4d_vs_city17_02") == 0)
     {
         g_bCheckMap = true;
     }

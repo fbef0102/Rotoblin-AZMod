@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.6
+v8.3.7
 @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -136,9 +136,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
   * Remove environmental sounds and DSP + Remove microphone / speaker effects
+  * Remove miniguns and machine guns
   * Extra Pills
     * Only 1 pill in cabinets
-    * On the road: few pills (Pill density: 0.75)
+    * On the road: 1~2 pills
     * Final rescue area: 4 pills
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Blocked "this is restricted area" room where infected ghost can not even spawn
@@ -170,9 +171,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Still Spread: 0.32->0.26
   * Moveing Spread: 3.0->2.45
   * Ammo: 480->800
-  * Damage Drop-off: 0.84->0.84 (unchanged)
+  * Damage Drop-off: 0.84->0.78
   * Reload Speed: 2.23->1.75
-  * Damage: 20->22
+  * Damage: 20->23
   * Limit: 3
       
 * **Pumpshotgun**
@@ -251,7 +252,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
 * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://www.youtube.com/watch?v=z8wPy9mWLQI))
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
-* Prevents players' data in ghost mode from being sent to Survivors
 * Fixes an exploit where unlimited grenades could be created.
 * Mother fucker no collisions to fix a handful of silly collision bugs in l4d1
      * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
@@ -259,7 +259,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
      * Commons go through Witch (prevent commons from pushing witch in l4d1)
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
-* Removes touch links for player on team change to prevent same player to be affected by whatever he was "touching" before team change on his old position. ([Video](https://youtu.be/UzmRm_LcK8A))
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
 * Prevents director or map overrides of z_common_limit. Kill common if overflow.
@@ -307,9 +306,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * ignore player who is pinned by smoker & hunter.
       * change target to nearest survivor no matter anyone gets vomited.
       * AI Tank now ignores player who use minigun.
-      * if no target found, freeze infected.
+      * if no target found, infected stops m1 ability.
 	* Enable free movement (Left/Right/Crouch) on SI when M2-ing.
-	 
+	* Fix SI being unable to break props/walls within finale area before finale starts.
+
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
     * Show how long is tank alive, and tank punch/rock/car statistics once tank dead
@@ -340,11 +340,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * **If each infected player has been tank at once, random choose!**
       * **Tank player has two control chances, it won't pass!!**
     * Health
-	  - *(5v5)*: **9000**
-	  - *(4v4)*: **7500**
+	  - *(5v5)*: **8500**
+	  - *(4v4)*: **7000**
 	  - *(3v3)*: **5025**
 	  - *(2v2)*: **3480**
-	  - *(1v1)*: **2000**
+	  - *(1v1)*: **None**
     * Slay AI Tank in 1v1, 2v2 and 3v3  
     * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
 	* Ignites the rock thrown by the Tank when he is on fire.
@@ -382,7 +382,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	
   * **Hunter:**
     * Allow Bunny hop pounce (one of l4d1 original feature)
-    * Maximum pounce damage: **50**
+    * Maximum pounce damage: **35**
     * Wallkick/Backjumps
 	  - *(5v5)*: **✔**
 	  - *(4v4)*: **✔**
@@ -398,7 +398,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
     * claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
-    * Allow Hunters being shoved when not pouncing. (Shove fov: **90**)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
 	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
 	* m2 godframes after a hunter lands on the ground: 0.25s
@@ -413,8 +413,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  - *(3v3)*: **21**
 	  - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-	  - *90%*: **3 Hunters + 1 Smoker**
-	  - *10%*: **4 Hunters**
+	  - *87%*: **3 Hunters + 1 Smoker**
+	  - *13%*: **4 Hunters**
 	* Explode after 3 times shove (original: 5)
 	* Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
 	* Fixes boomer teleport whenever hes close enough to ladder
@@ -463,7 +463,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show who triggers the horde event like start final rescue, shoot alarm car, etc.
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
-  * Survivors bleed out Temp Health every **4.0s (1/2.5)** (vanilla: **0.37s (1/2.7)**)
+  * Survivors bleed out Temp Health every **4.0s** (vanilla: **3.7s**)
   * Give ammo when the weapon limit is reached
   * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
   * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
@@ -472,6 +472,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On
   * Disables the Car Alarm before survivors leave the safe room.
   * Prevent filling the clip and skipping the reload animation when taking the same weapon.
+  * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
+  * Block survivors from being able to open/close doors while incapacitated/hanging.
+  * Block survivors from being able to open/close doors while immobilized by hunter/smoker.
   
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
@@ -489,7 +492,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
 
 * Spectators(!s):
-  * **sm_spechud** toggle On/Off spechud
+  * **!spechud** toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.
   * Spectators can see the witch glow, hittable prop glow and tank rock glow.
   * Spectators can see in-game players teamchat and hear their mic voice. To close this feature, use **!hear**.
@@ -525,8 +528,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **sm_bonesaw、sm_trophy、sm_harrypotter、sm_twnumber1、sm_twno1** secret easter egg trophy ready up
 * Simply block pause commands when the server doesn't even support pausing.
 * Fix props not spawning as prop_physics when using 'give' command
-* Changes the collision from all weapons or carryables to collide only with the world and static stuff
-* Survivors can climb the wall during ready up.
 * Shows a laser for straight-flying fired projectiles during ready up.
 * Allows changing of displayed game type in server browser
 <img src="https://i.imgur.com/hbJd1Hs.png" alt="FGkLDMp.png" width="950" height = "500">

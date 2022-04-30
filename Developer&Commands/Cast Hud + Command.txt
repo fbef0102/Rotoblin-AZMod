@@ -1,0 +1,18 @@
+Left 4 Dead 1 The Neutral Casting HUD
+>>>https://www.gamemaps.com/details/20718
+
+Spec Command
+"sm_set_specspeed_multi # (default: 1.0)" 
+=> SetSpecspeed
+
+"sm_set_specspeed_increment # (default: 0.1)" 
+=> SetSpecspeedIncrement
+
+"sm_increase_specspeed" 
+=> IncreaseSpecspeed
+
+"sm_decrease_specspeed" 
+=> DecreaseSpecspeed
+
+"sm_set_vertical_increment # (default: 10.0)" 
+=> SetVerticalIncrement

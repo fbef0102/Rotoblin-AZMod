@@ -1035,7 +1035,7 @@
 	}
 	"l4d_tank_count1"
 	{
-		"pt"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Pounch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
+		"pt"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Punch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
 	}
 	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
 	"Tank (player) health remaining"
@@ -1579,7 +1579,7 @@
 	}
 	"Usage"
 	{
-		"pt"		"{default}Use: {olive}{3}{default} <Numero de slots entre {olive}{1} {default}e {olive}{2}{default}>"
+		"pt"		"{default}Use: {olive}{3}{default} (Numero de slots entre {olive}{1} {default}e {olive}{2}{default})"
 	}
 	"Same as current"
 	{
@@ -2129,7 +2129,7 @@
 	}
 	"rotoblin14"
 	{
-		"pt"		"O jogo foi pausado por um admin.\nUnpause apenas com {green}{1}{default} por um adm."
+		"pt"		"O jogo foi pausado por um admin({lightgreen}{1}{default}).\nUnpause apenas com {green}{2}{default} por um adm."
 	}
 	"rotoblin15"
 	{
@@ -2137,7 +2137,7 @@
 	}
 	"rotoblin16"
 	{
-		"pt"		"O jogo foi despausado pelo admin."
+		"pt"		"O jogo foi despausado pelo admin({lightgreen}{1}{default})."
 	}
 	"rotoblin17"
 	{

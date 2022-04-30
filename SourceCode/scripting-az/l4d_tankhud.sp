@@ -84,7 +84,7 @@ public Action:ToggleTankHudCmd(client, args)
 	
 	if(IsClientInGame(client) && IsInfected(client) && GetEntProp(client, Prop_Send, "m_zombieClass") == 5 && bTankHudActive[client])
 	{
-		PrintToChat(client, "{default}[{green}HUD{default}]{default}As a {green}Tank{default}, you won't see {lightgreen} Tank Hud{default}.");
+		CPrintToChat(client, "{default}[{green}HUD{default}] {default}As a {green}Tank{default}, you won't see {lightgreen}Tank Hud{default}.");
 	}
 }
 
@@ -109,9 +109,7 @@ public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 {
 	if(!g_bIsTankAlive)
 	{
-		CreateTimer(TANKHUD_DRAW_INTERVAL, HudDrawTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-		passCount = 1;
-		g_bIsTankAlive = true;
+		CreateTimer(3.5, PD_ev_TankSpawn_Delay, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
@@ -177,6 +175,15 @@ public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBro
 	{
 		CreateTimer(1.5, FindAnyTank, client, TIMER_FLAG_NO_MAPCHANGE);
 	}
+}
+
+public Action PD_ev_TankSpawn_Delay(Handle:timer, any:client)
+{
+	if(IsTankInGame()){
+		CreateTimer(TANKHUD_DRAW_INTERVAL, HudDrawTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+		passCount = 1;
+		g_bIsTankAlive = true;
+	}	
 }
 
 public Action:FindAnyTank(Handle:timer, any:client)

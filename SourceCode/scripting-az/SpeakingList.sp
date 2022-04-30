@@ -62,6 +62,10 @@ public void OnClientPutInServer(int client)
 			if (ClientSpeakingList[client] == 0)
 				ClientSpeakingList[client] = GetConVarInt(va_spectator_speaklist);
 		}
+		else
+		{
+			ClientSpeakingList[client] = GetConVarInt(va_spectator_speaklist);
+		}
 	}
 }
 

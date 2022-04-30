@@ -1,6 +1,5 @@
 #include <sourcemod>
 #include <sdktools>
-#include <l4d_lib>
 
 //Left4Dead Version: v1037
 #define PLUGIN_FILENAME		"l4d_QuadCaps"
@@ -15,7 +14,7 @@
 #define ZC_WITCH		4
 #define ZC_TANK			5
 #define TEAM_CLASS(%1)		(%1 == 1 ? "Smoker" : (%1 == 2 ? "Boomer" : (%1 == 3 ? "Hunter" :(%1 == 4 ? "Witch" : (%1 == 5 ? "Tank" : "None")))))
-#define OnEnterGhostCheckDelay 0.2
+#define OnEnterGhostCheckDelay 0.1
 #define KeepSITrackingCheckDelay 0.25
 #define KEEPSICHECKDELAY 0.1
 
@@ -30,6 +29,7 @@ static Hunter_Starting_Line,Smoker_Starting_Line,Boomer_Starting_Line;
 new Handle:g_hSetClass		= INVALID_HANDLE;
 new Handle:g_hCreateAbility	= INVALID_HANDLE;
 new g_oAbility			= 0;
+int g_iRoundStart, g_iPlayerSpawn;
 native IsInReady();
 native Is_Ready_Plugin_On();
 
@@ -38,7 +38,7 @@ public Plugin:myinfo =
 	name = "L4D Quad Caps Control",
 	author = "Harry Potter",
 	description = "As the name says, you dumb fuck",
-	version = "1.3",
+	version = "1.4",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -65,16 +65,17 @@ public OnPluginStart()
 	}
 	
 	HookEvent("round_start", Event_RoundStart);
+	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("round_end", Event_RoundEnd);
 	HookEvent("mission_lost", Event_RoundEnd);
-	HookEvent("finale_win", Event_RoundEnd);
+	HookEvent("finale_vehicle_leaving", Event_RoundEnd);
 	HookEvent("player_death", Event_PlayerDeath,	EventHookMode_PostNoCopy);
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	
 	HCVAR_Z_VS_SMOKER_LIMIT = FindConVar("z_versus_smoker_limit");
 	HCVAR_Z_VS_BOOMER_LIMIT = FindConVar("z_versus_boomer_limit");
 	HCVAR_Z_HUNTER_LIMIT = FindConVar("z_hunter_limit");
-	hCvar3HT1SProbability = CreateConVar("sm_3ht1s_percent_chance", "90", "X% chance of 3+1 and 100-X% remaining chance of 4ht after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
+	hCvar3HT1SProbability = CreateConVar("sm_3ht1s_percent_chance", "87", "X% chance of 3+1 and 100-X% remaining chance of 4ht after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
 	
 	CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_SMOKER_LIMIT);
 	CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_BOOMER_LIMIT);
@@ -114,6 +115,7 @@ public OnPluginEnd()
 	ResetConVar(HCVAR_Z_VS_SMOKER_LIMIT, true, true);
 	ResetConVar(HCVAR_Z_VS_BOOMER_LIMIT, true, true);
 	SetConvarDefault();
+	ResetVariable();
 	PluginDisable = false;
 }
 
@@ -122,6 +124,7 @@ public OnMapEnd()
 	ResetConVar(HCVAR_Z_VS_SMOKER_LIMIT, true, true);
 	ResetConVar(HCVAR_Z_VS_BOOMER_LIMIT, true, true);
 	SetConvarDefault();
+	ResetVariable();
 	PluginDisable = false;
 }
 
@@ -157,16 +160,38 @@ public Sub_HookGameData(String:GameDataFile[])
 		SetFailState("Error: Unable to load gamedata file, exiting.");
 }
 
-public Action:Event_RoundStart(Handle:hEvent, const String:name[], bool:dontBroadcast)
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
+		CreateTimer(0.25, PluginStart);
+	g_iRoundStart = 1;
+	hasleftstartarea = false;
+}
+
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{ 
+	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
+		CreateTimer(0.25, PluginStart);
+	g_iPlayerSpawn = 1;
+}
+
+public Action PluginStart(Handle timer)
 {
 	Sub_DebugPrint("round start event");
-	hasleftstartarea = false;
+	for(int i=1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && GetClientTeam(i) == 3 && !IsFakeClient(i) && IsPlayerGhost(i))
+		{
+			CreateTimer(OnEnterGhostCheckDelay, COLD_DOWN, GetClientUserId(i) ); // delay check since team change event is before round start event
+		}
+	}
 }
 
 public Action:Event_RoundEnd(Handle:hEvent, const String:name[], bool:dontBroadcast)
 {
 	Sub_DebugPrint("round end event");
 	SetConvarDefault();
+	ResetVariable();
 }
 
 public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
@@ -183,11 +208,11 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 	if(IsInReady()||IsPluginDisable()) return ;
 	
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsClientAndInGame(client)) return;
+	if(!client || !IsClientInGame(client)) return;
 	
 	if(GetClientTeam(client) == TEAM_INFECTED)
 	{
-		if(GetZombieClass(client) == ZC_BOOMER)
+		if(GetEntProp(client, Prop_Send, "m_zombieClass") == ZC_BOOMER)
 		{
 			new random = GetRandomInt(1, 100)
 			if (random <=Cvar3HT1SProbability)
@@ -223,19 +248,21 @@ public L4D_OnEnterGhostState(client)
 	}
 	Sub_DebugPrint("%N: OnEnterGhostState %s",client,TEAM_CLASS(GetEntProp(client, Prop_Send, "m_zombieClass")));
 	
-	CreateTimer(OnEnterGhostCheckDelay,COLD_DOWN,client); // delay check since team change event is before round start event
+	CreateTimer(OnEnterGhostCheckDelay,COLD_DOWN, GetClientUserId(client) ); // delay check since team change event is before round start event
 }
 
-public Action:COLD_DOWN(Handle:timer,any:client)
+public Action COLD_DOWN(Handle timer, int userid)
 {
-	if(!IsClientAndInGame(client)||GetClientTeam(client)!=3)	return;
+	int client = GetClientOfUserId(userid);
+	if(!client || !IsClientInGame(client) || GetClientTeam(client)!=3)	return;
 	
-	if(!Is_Ready_Plugin_On()&&!hasleftstartarea)
+	if(!Is_Ready_Plugin_On() && !hasleftstartarea)
 	{
 		Sub_DebugPrint("Is in saferoom");
 		Sub_DetermineClass(client, GetEntProp(client, Prop_Send, "m_zombieClass"));
 		return;
 	}
+
 	if(IsInReady())
 	{
 		Sub_DebugPrint("Is in Ready");
@@ -252,7 +279,7 @@ public Sub_DetermineClass(any:Client, any:ZClass)
 		new Hunter_Now_Line = 0, Smoker_Now_Line = 0, Boomer_Now_Line = 0, NeedChange = 0;
 		for(new i=1; i <= MaxClients; i++)
 		{
-			if(IsClientAndInGame(i) && IsInfected(i) && !IsFakeClient(i))
+			if(IsClientInGame(i) && GetClientTeam(i) == 3 && !IsFakeClient(i))
 			{
 				zombieclass = GetEntProp(i, Prop_Send, "m_zombieClass");
 				switch(zombieclass)
@@ -309,36 +336,39 @@ public Sub_DetermineClass(any:Client, any:ZClass)
 
 public Action:KeepSIStarting(Handle:timer,any:client)
 {
-	Sub_DebugPrint("Keep it");
-	Hunter_Starting_Line = Smoker_Starting_Line = Boomer_Starting_Line = 0;
-	new zombieclass;
-	for(new i=1; i <= MaxClients; i++)
+	if(!InSecondHalfOfRound())
 	{
-		if(IsClientAndInGame(i) && IsInfected(i) && !IsFakeClient(i))
+		Sub_DebugPrint("Keep it");
+		Hunter_Starting_Line = Smoker_Starting_Line = Boomer_Starting_Line = 0;
+		new zombieclass;
+		for(new i=1; i <= MaxClients; i++)
 		{
-			zombieclass = GetEntProp(i, Prop_Send, "m_zombieClass")
-			switch(zombieclass)
+			if(IsClientInGame(i) && GetClientTeam(i) == 3 && !IsFakeClient(i) && IsPlayerGhost(i))
 			{
-				case ZC_SMOKER:  
+				zombieclass = GetEntProp(i, Prop_Send, "m_zombieClass")
+				switch(zombieclass)
 				{
-					Smoker_Starting_Line++;
+					case ZC_SMOKER:  
+					{
+						Smoker_Starting_Line++;
+					}
+					case ZC_BOOMER:  
+					{
+						Boomer_Starting_Line++;
+					}
+					case ZC_HUNTER:  
+					{
+						Hunter_Starting_Line++;
+					}			
 				}
-				case ZC_BOOMER:  
-				{
-					Boomer_Starting_Line++;
-				}
-				case ZC_HUNTER:  
-				{
-					Hunter_Starting_Line++;
-				}			
 			}
 		}
-	}
-	Sub_DebugPrint("H: %d, S: %d, B: %d",Hunter_Starting_Line,Smoker_Starting_Line,Boomer_Starting_Line);
-	if(Smoker_Starting_Line + Boomer_Starting_Line + Hunter_Starting_Line > GetConVarInt(FindConVar("z_max_player_zombies")))	
-	{
-		Sub_DebugPrint("Error! infected players more than z_max_player_zombies");
-		CreateTimer(KeepSITrackingCheckDelay,KeepSIStarting,_); // keep checking
+		Sub_DebugPrint("H: %d, S: %d, B: %d",Hunter_Starting_Line,Smoker_Starting_Line,Boomer_Starting_Line);
+		if(Smoker_Starting_Line + Boomer_Starting_Line + Hunter_Starting_Line > GetConVarInt(FindConVar("z_max_player_zombies")))	
+		{
+			Sub_DebugPrint("Error! infected players more than z_max_player_zombies");
+			CreateTimer(KeepSITrackingCheckDelay,KeepSIStarting,_); // keep checking
+		}
 	}
 }
 
@@ -374,4 +404,15 @@ bool:InSecondHalfOfRound()
 bool:IsPluginDisable()
 {
 	return PluginDisable;
+}
+
+public bool:IsPlayerGhost(client)
+{
+	return bool:GetEntProp(client, Prop_Send, "m_isGhost");
+}
+
+void ResetVariable()
+{
+	g_iRoundStart = 0;
+	g_iPlayerSpawn = 0;
 }

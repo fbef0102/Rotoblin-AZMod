@@ -28,21 +28,20 @@
 
 #define		WA_TAG					"[WeaponAttributes]"
 
-#define NULL						-1
+#define NULL					-1
 
 #define WEAPID_PISTOL			1
 #define WEAPID_SMG				2
 #define WEAPID_PUMPSHOTGUN		3
 #define WEAPID_AUTOSHOTGUN		4
-#define WEAPID_RIFLE				5
-#define WEAPID_HUNTINGRIFLE	6
+#define WEAPID_RIFLE			5
+#define WEAPID_HUNTINGRIFLE		6
 #define WEAPID_FIRSTAIDKIT		8
 #define WEAPID_MOLOTOV			9
 #define WEAPID_PIPEBOMB			10
 #define WEAPID_PAINPILLS		12
 #define WEAPID_AMMO				29
-
-#define WEAPID_LIMIT				13
+#define WEAPID_LIMIT			13
 /*
 enum INFO
 {

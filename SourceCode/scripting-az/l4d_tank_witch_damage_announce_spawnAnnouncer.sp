@@ -45,8 +45,7 @@ new                     g_iLastTankHealth           = 0;                // Used 
 new bool:g_bIsTankAlive;
 new g_TankOtherDamage = 0;
 new g_bCvarSurvLimit;
-static bool:resuce_start = false;
-static bool:b_IsSecondWitch = false;
+bool resuce_start = false, g_bVehicleIncoming = false, b_IsSecondWitch = false;
 
 public OnMapStart()
 {
@@ -97,18 +96,20 @@ public OnPluginStart()
 	HookEvent("player_hurt",			PD_ev_PlayerHurt);
 	HookEvent("infected_hurt",		PD_ev_InfectedHurt);
 	HookEvent("player_bot_replace",	PD_ev_PlayerBotReplace);
-	HookEvent("finale_start", Event_Finale_Start);
+	HookEvent("finale_start", PD_ev_Finale_Start);
+	HookEvent("finale_escape_start", PD_ev_FinaleEscStart, EventHookMode_PostNoCopy);
 	
 	g_hTrine = CreateTrie();
 	
 	control_time=1;
 }
 
-ConVar rotoblin_enable_2v2, no_final_first_tank;
+ConVar rotoblin_enable_2v2, no_final_first_tank, no_escape_tank;
 public void OnAllPluginsLoaded()
 {
 	rotoblin_enable_2v2 = FindConVar("rotoblin_enable_2v2");
 	no_final_first_tank = FindConVar("no_final_first_tank");
+	no_escape_tank		= FindConVar("no_escape_tank");
 }
 
 public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -116,6 +117,7 @@ public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	//LogMessage("Now round_start event");
 	b_IsSecondWitch = false;
 	resuce_start = false;
+	g_bVehicleIncoming = false;
 	g_bIsTankAlive = false;
 	g_iLastTankHealth = 0;
 	g_TankOtherDamage = 0;
@@ -222,6 +224,15 @@ public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 	if(resuce_start && no_final_first_tank != null)
 	{
 		if(no_final_first_tank.IntValue == 1)
+		{
+			resuce_start = false;
+			return;
+		}
+	}
+
+	if(g_bVehicleIncoming && no_escape_tank != null)
+	{
+		if(no_escape_tank.IntValue == 1)
 		{
 			resuce_start = false;
 			return;
@@ -534,13 +545,14 @@ public Action:PD_ev_WitchKilled(Handle:event, const String:name[], bool:dontBroa
 	if (!(g_iCvarFlags & (1 << _:WITCH))) return;
 
 	new iIndex = GetWitchIndex(GetEventInt(event, "witchid"));
+	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (iIndex == NULL || !g_iTotalDamage[iIndex][WITCH]) return;
 
-	PrintDamage(iIndex, false, _, GetEventInt(event, "oneshot"));
+	PrintDamage(iIndex, false, _, GetEventInt(event, "oneshot"), client);
 	g_bNoHrCrown[iIndex] = false;
 }
 
-PrintDamage(iIndex, bool:bTankBoss, bool:bLoose = false, iCrownTech = 0)
+void PrintDamage(int iIndex, bool bTankBoss, bool bLoose = false, int iCrownTech = 0, int killer = 0)
 {
 	decl String:tankplayerName[32];
 	new bool:istankAI = false;
@@ -594,18 +606,21 @@ PrintDamage(iIndex, bool:bTankBoss, bool:bLoose = false, iCrownTech = 0)
 		}
 		else
 		{
-			if( iCrownTech==1)
-				CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_tank_witch_damage_announce_spawnAnnouncer3", sName);	
-			else if (!iCrownTech && bInGame)
+			if(killer && IsClientInGame(killer) && GetClientTeam(killer) == 2)
 			{
-				new gun = GetPlayerWeaponSlot(client, 0); //get the players primary weapon
-				if (!IsValidEdict(gun)) return; //check for validity
-				
-				decl String:currentgunname[64];
-				GetEdictClassname(gun, currentgunname, sizeof(currentgunname)); //get the primary weapon name
-		
-				if (StrEqual(currentgunname, "weapon_pumpshotgun")&&!IsIncapacitated(client))
-					CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_tank_witch_damage_announce_spawnAnnouncer4", sName);	
+				if( iCrownTech==1)
+					CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_tank_witch_damage_announce_spawnAnnouncer3", sName);	
+				else if (!iCrownTech && bInGame)
+				{
+					new gun = GetPlayerWeaponSlot(client, 0); //get the players primary weapon
+					if (!IsValidEdict(gun)) return; //check for validity
+					
+					decl String:currentgunname[64];
+					GetEdictClassname(gun, currentgunname, sizeof(currentgunname)); //get the primary weapon name
+			
+					if (StrEqual(currentgunname, "weapon_pumpshotgun")&&!IsIncapacitated(client))
+						CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_tank_witch_damage_announce_spawnAnnouncer4", sName);	
+				}
 			}
 		}
 	}
@@ -748,7 +763,12 @@ public OnConvarChange_RunAway(Handle:convar, const String:oldValue[], const Stri
 		g_bCvarRunAway = GetConVarBool(convar);
 }
 
-public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:PD_ev_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	resuce_start = true;
+}
+
+public void PD_ev_FinaleEscStart(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	g_bVehicleIncoming = true;
 }

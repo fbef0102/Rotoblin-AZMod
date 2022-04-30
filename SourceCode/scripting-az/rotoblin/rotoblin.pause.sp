@@ -59,6 +59,7 @@ new Handle:pauseDelayCvar;
 new pauseDelay;
 new Handle:deferredPauseTimer;
 bool hiddenPanel[MAXPLAYERS+1];
+char g_sAdminName[64];
 
 enum L4D2Team
 {
@@ -233,6 +234,11 @@ public _P_PauseEnable_CvarChange(Handle:convar, const String:oldValue[], const S
  */
 public Action:_P_Say_Command(client, const String:command[], args)
 {
+	if(client == SERVER_INDEX) 
+	{
+		return Plugin_Handled;
+	}
+
 	if (!g_bIsPaused) return Plugin_Continue;
 
 	decl String:buffer[128];
@@ -272,6 +278,8 @@ public Action:_P_Say_Command(client, const String:command[], args)
 		FakeClientCommand(client, "say /unready");
 		return Plugin_Handled;
 	}
+
+	if(BaseComm_IsClientGagged(client)) return Plugin_Continue;
 	
 	new team = GetClientTeam(client);
 	if(team == 1)
@@ -295,6 +303,10 @@ public Action:_P_Say_Command(client, const String:command[], args)
  */
 public Action:_P_SayTeam_Command(client, const String:command[], args)
 {
+	if(client == SERVER_INDEX) 
+	{
+		return Plugin_Handled;
+	}
 
 	if (!g_bIsPaused) return Plugin_Continue;
 
@@ -342,6 +354,8 @@ public Action:_P_SayTeam_Command(client, const String:command[], args)
 		return Plugin_Handled;
 	}
 	
+	if(BaseComm_IsClientGagged(client)) return Plugin_Continue;
+
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) != teamIndex) continue;
@@ -500,6 +514,11 @@ public Action:Unpause_Cmd(client, args)
 
 public Action:Unready_Cmd(client, args)
 {
+	if(client == SERVER_INDEX) 
+	{
+		return Plugin_Handled;
+	}
+
 	if(g_bIsUnpausing) 
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin3",client);
@@ -560,13 +579,14 @@ public Action:_P_RotoblinForcePause_Command(client, const String:command[], args
 	new flags = GetUserFlagBits(client);
 	if (!(flags & ADMFLAG_ROOT || flags & ADMFLAG_GENERIC))
 	{
-		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin13",client);
+		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin13", client);
 		return Plugin_Handled;
 	}
 	else if (!g_bIsPaused) // Is not paused
 	{
 		g_bWasForced = true; // Pause was forced so only allow admins to unpause
-		CPrintToChatAll("[{olive}TS{default}] %t","rotoblin14", "!forceunpause");
+		GetClientName(client, g_sAdminName, 64);
+		CPrintToChatAll("[{olive}TS{default}] %t","rotoblin14", g_sAdminName, "!forceunpause");
 		Pause();
 	}
 	return Plugin_Handled;
@@ -584,7 +604,8 @@ public Action:_P_RotoblinForceUnPause_Command(client, const String:command[], ar
 	
 	if (g_bIsPaused && !g_bIsUnpausing) // Is paused and not currently unpausing
 	{
-		CPrintToChatAll("[{olive}TS{default}] %t","rotoblin16");
+		GetClientName(client, g_sAdminName, 64);
+		CPrintToChatAll("[{olive}TS{default}] %t", "rotoblin16", g_sAdminName);
 		g_bIsUnpausing = true; // Set unpausing state
 		CreateTimer(1.0, _P_Unpause_Timer, client, TIMER_REPEAT); // Start unpause countdown
 	}
@@ -738,9 +759,11 @@ UpdatePanel()
 			Format(Info, 35, "->1. ★Admin: !%s", PLUGIN_FORCEUNPAUSE_COMMAND);
 		else
 			Format(Info, 35, "->1. ☆Admin: !%s", PLUGIN_FORCEUNPAUSE_COMMAND);
-		DrawPanelText(menuPanel, "Pause by Admin");	
 		
 		decl String:Notice[64];
+		FormatEx(Notice, 64, "Pause by Admin: %s", g_sAdminName);
+		DrawPanelText(menuPanel, Notice);	
+		
 		Format(Notice, 64, "%s%d:%s%d", (TimeCount/60 < 10) ? "0" : "",TimeCount/60, (TimeCount%60 < 10) ? "0" : "", TimeCount%60);
 		DrawPanelText(menuPanel, Notice);
 		
@@ -894,6 +917,11 @@ ToggleFreezePlayer(client, freeze)
 
 public Action Hide_Cmd(int client, int args)
 {
+	if(client == SERVER_INDEX) 
+	{
+		return Plugin_Handled;
+	}
+
 	if (g_bIsPaused)
 	{
 		hiddenPanel[client] = true;
@@ -906,6 +934,11 @@ public Action Hide_Cmd(int client, int args)
 
 public Action Show_Cmd(int client, int args)
 {
+	if(client == SERVER_INDEX) 
+	{
+		return Plugin_Handled;
+	}
+
 	if (g_bIsPaused)
 	{
 		hiddenPanel[client] = false;

@@ -1570,7 +1570,7 @@
 	}
 	"Usage"
 	{
-		"es"		"{default}Usage: {olive}{3}{default} <Number of slots between {olive}{1} {default}and {olive}{2}{default}>"
+		"es"		"{default}Usage: {olive}{3}{default} (Number of slots between {olive}{1} {default}and {olive}{2}{default})"
 	}
 	"Same as current"
 	{
@@ -2120,7 +2120,7 @@
 	}
 	"rotoblin14"
 	{
-		"es"		"El juego fue pausado por el Admin.\nSolo lo puede quitar {green}{1}{default} por un admin"
+		"es"		"El juego fue pausado por el Admin({lightgreen}{1}{default}).\nSolo lo puede quitar {green}{2}{default} por un admin"
 	}
 	"rotoblin15"
 	{
@@ -2128,7 +2128,7 @@
 	}
 	"rotoblin16"
 	{
-		"es"		"El juego ha sido pausado por un Admin."
+		"es"		"El juego ha sido pausado por un Admin({lightgreen}{1}{default})."
 	}
 	"rotoblin17"
 	{

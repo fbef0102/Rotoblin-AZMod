@@ -60,7 +60,8 @@ public Plugin:myinfo =
 	name = "L4D Slot Vote",
 	author = "X-Blaze & Harry Potter",
 	description = "Allow players to change server slots by using vote.",
-	version = "2.2-ds-1.2"
+	version = "2.3",
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
 
 public OnPluginStart()
@@ -69,7 +70,7 @@ public OnPluginStart()
 	g_cvarSlotsPluginEnabled = CreateConVar("sm_slot_vote_enabled", "1", "Enabled?", FCVAR_NOTIFY);
 	g_cvarSlotsAutoconf = CreateConVar("sm_slot_autoconf", "1", "Autoconfigure slots vote max|min cvars?", FCVAR_NOTIFY);
 	g_hCVarMinAllowedSlots = CreateConVar("sm_slot_vote_min", "10", "Minimum allowed number of server slots (this value must be equal or lesser than sm_slot_vote_max).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
-	g_hCVarMaxAllowedSlots = CreateConVar("sm_slot_vote_max", "25", "Maximum allowed number of server slots (this value must be equal or greater than sm_slot_vote_min).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
+	g_hCVarMaxAllowedSlots = CreateConVar("sm_slot_vote_max", "28", "Maximum allowed number of server slots (this value must be equal or greater than sm_slot_vote_min).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
 
 	g_hCVarMaxPlayersToolZ = FindConVar("sv_maxplayers");
 	g_cvarSvVisibleMaxPlayers = FindConVar("sv_visiblemaxplayers");
@@ -197,7 +198,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 			}
 			else
 			{
-				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots,"!slots");
+				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots, "!slots <number>");
 			}
 			return Plugin_Handled;
 		}
@@ -235,7 +236,7 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 			}
 			else
 			{
-				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots);
+				CPrintToChat(iClient, "%T", "Usage", iClient, g_iMinAllowedSlots, g_iMaxAllowedSlots, "!slots <number>");
 			}
 
 			return Plugin_Handled;

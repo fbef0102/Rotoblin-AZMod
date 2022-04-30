@@ -2515,7 +2515,7 @@ public Action:Map_Changer(client, args)
 							}
 							else if(StrEqual(PlayerMap, "Suicide Blitz", false))
 							{
-								MapToExecuteName = "l4d_vs_stadium1_apartments";
+								MapToExecuteName = "l4d_vs_stadium1_apartment";
 								Timer_Map_Change();	
 								return Plugin_Handled;														
 							}

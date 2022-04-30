@@ -1579,7 +1579,7 @@
 	}
 	"Usage"
 	{
-		"chi"		"{default}使用方式: {olive}{3}{default} <数字介于 {olive}{1}{default} 和 {olive}{2}{default} 之间>"
+		"chi"		"{default}使用方式: {olive}{3}{default} (数字介于 {olive}{1}{default} 和 {olive}{2}{default} 之间)"
 	}
 	"Same as current"
 	{
@@ -2129,7 +2129,7 @@
 	}
 	"rotoblin14"
 	{
-		"chi"		"管理员强制暂停游戏.\n管理员输入{green}{1}{default}解除暂停"
+		"chi"		"管理员({lightgreen}{1}{default}) 强制暂停游戏.\n管理员输入{green}{2}{default}解除暂停"
 	}
 	"rotoblin15"
 	{
@@ -2137,7 +2137,7 @@
 	}
 	"rotoblin16"
 	{
-		"chi"		"管理员已解除暂停"
+		"chi"		"管理员({lightgreen}{1}{default}) 已解除暂停"
 	}
 	"rotoblin17"
 	{

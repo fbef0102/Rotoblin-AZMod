@@ -35,6 +35,7 @@
 static 		Handle:g_hEnableNoEscTank, bool:g_bEnableNoEscTank;
 
 new			bool:g_bVehicleIncoming;
+#define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 
 public Plugin:myinfo = 
 {
@@ -50,9 +51,10 @@ public OnPluginStart()
 	g_hEnableNoEscTank	= CreateConVar("no_escape_tank", "1", "Removes tanks which spawn as the rescue vehicle arrives on finales.", _, true, 0.0, true, 1.0);
 	HookEvent("finale_escape_start", NET_ev_FinaleEscStart, EventHookMode_PostNoCopy);
 	HookEvent("round_start", 	NET_ev_RoundStart, EventHookMode_PostNoCopy);
+	HookEvent("tank_spawn", NET_ev_TankSpawn, EventHookMode_PostNoCopy);
 	
+	g_bEnableNoEscTank = GetConVarBool(g_hEnableNoEscTank);
 	HookConVarChange(g_hEnableNoEscTank, _NET_Enable_CvarChange);
-	Update_NET_EnableConVar();
 }
 
 public NET_ev_FinaleEscStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -65,14 +67,39 @@ public NET_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 	g_bVehicleIncoming = false;
 }
 
-public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
+// public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
+// {
+// 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
+// 	{
+// 		PrintToChatAll("Blocking L4D_OnSpawnTank...");
+// 		return Plugin_Handled;
+// 	}
+// 	return Plugin_Continue;
+// }
+
+public void NET_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
 	{
-		//PrintToChatAll("Blocking tank spawn...");
-		return Plugin_Handled;
+		int userid = GetEventInt(event, "userid");
+		int client = GetClientOfUserId(userid);
+		TeleportEntity(client,
+		NULL_VELOCITY, // Teleport to map center
+		NULL_VECTOR, 
+		NULL_VECTOR);
+		CreateTimer(1.5, KillEscapeTank, userid);
+		return;
 	}
-	return Plugin_Continue;
+}
+
+public Action KillEscapeTank(Handle timer, int userid)
+{
+	int iTank = GetClientOfUserId(userid);
+	if(iTank && IsClientInGame(iTank) && IsFakeClient(iTank) && GetClientTeam(iTank) == 3 && IsPlayerTank(iTank) && IsPlayerAlive(iTank))
+	{
+		//ForcePlayerSuicide(iTank);
+		KickClient(iTank, "Escape_tank");
+	}
 }
 
 public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStatis)
@@ -86,19 +113,10 @@ public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStatis)
 
 public _NET_Enable_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
 {
-	if (StrEqual(oldValue, newValue)) return;
-
-	Update_NET_EnableConVar();
-}
-
-static Update_NET_EnableConVar()
-{
 	g_bEnableNoEscTank = GetConVarBool(g_hEnableNoEscTank);
 }
-/*
-static bool:IsTankProhibit()//犧牲最後一關
+
+bool IsPlayerTank(int client)
 {
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
-	return StrEqual(sMap, "l4d_river03_port");
-}*/
+	return GetEntProp(client, Prop_Send, "m_zombieClass") == 5;
+}

@@ -22,41 +22,42 @@ Author:
 --------地圖修改--------
 1. 所有VS地圖均已解除屋頂限制
 2. 消除一些背景音或環境音樂，讓倖存者能專注特感
-3. 地圖藥丸
+3. 移除地圖上的固定機槍
+4. 地圖藥丸
  -醫療箱有一顆藥丸
  -救援區域: 四顆
- -路上: 隨機出現不固定數量 (密度: 0.75)
-4. 清除或穿透一些小型物件，使玩家能移動順暢
-5. 封鎖一些 "this is restricted area" 區域因為特感不能復活
-6. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
-7. 最終關卡路程符合救援進度
-8. 路上手槍生成密度: 3.0
-9. 子彈堆生成密度: 2.0
+ -路上: 隨機出現1~2顆數量
+5. 清除或穿透一些小型物件，使玩家能移動順暢
+6. 封鎖一些 "this is restricted area" 區域因為特感不能復活
+7. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
+8. 最終關卡路程符合救援進度
+9. 路上手槍生成密度: 3.0
+10. 子彈堆生成密度: 2.0
 
 --------武器調整--------
-[01] Uzi機槍
-1.{　0.32->0.26	   }每發子彈的彈道
-2.{　3.0->2.45　 }邊移動邊開槍的準度
-3.{　480->800　 }後備子彈
-4.{　0.84->0.84　}傷害距離遞減 (沒變)
-5.{  2.23->1.75   }裝彈速度
-6.{  20->22	   }傷害
-7.{　3　	}隊伍可拿數量
+[01] Uzi 機槍
+1.{　0.32->0.26	 } 每發子彈的彈道
+2.{　3.0->2.45　 } 邊移動邊開槍的準度
+3.{　480->800　  } 後備子彈
+4.{　0.84->0.78　} 傷害距離遞減
+5.{  2.23->1.75  } 裝彈速度
+6.{  20->23	     } 傷害
+7.{　3　		 } 隊伍可拿數量
 
-[02] pumpshotgun散彈槍
-1.{　128->96　}後備子彈
-2.{　2.5->1.5　}空中準度
-3.{　No limits　}隊伍可拿數量
+[02] pumpshotgun 散彈槍
+1.{　128->96	} 後備子彈
+2.{　2.5->1.5	} 空中準度
+3.{　無限制　	} 隊伍可拿數量
 
-[03] Hunting_Rifle狙擊槍 
-1.{   1->1.25 }彈夾完全空的裝彈時間
-2.{   1    }彈夾裝彈時間 (沒變)
-3.{   1    }撿起武器所需時間 (沒變)
-4.{   1 -> 1.8  }切換武器所需時間 (沒變)
-5.{	　1->0.2　}射速
-6.{   90->120	} 一槍對Tank的傷害
+[03] Hunting_Rifle 狙擊槍 
+1.{   1->1.25 	} 彈夾完全空的裝彈時間
+2.{   1    	  	} 彈夾裝彈時間 (沒變)
+3.{   1    	  	} 撿起武器所需時間 (沒變)
+4.{   1 -> 1.8	} 切換武器所需時間
+5.{	　1->0.2　	} 射速
+6.{   90->120 	} 一槍對Tank的傷害
 7.{	　胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
-8.{	　1　　}隊伍可拿數量
+8.{	　1　　		} 隊伍可拿數量
 
 --------插件使用--------
 [01] pounceannounce 
@@ -140,6 +141,7 @@ Author:
 
 [26] l4d_texture_manager_block 
 //踢出使用Material Hack的玩家
+//Fov只限於75~120之間
 
 [27] cannounce 
 //Replacement of standard player connected message, allows for custom join messages.
@@ -466,139 +468,131 @@ Author:
 [130] l4d_dynamic_light
 //手電筒發亮特效
 
-[131] l4d2_noghostcheat
-//防止玩家看到鬼
-
-[132] [L4D] Rock Glow
+[131] [L4D] Rock Glow
 //坦克石頭發光(只有特感與旁觀隊伍能看見)
 
-[133] l4d_target_patch
+[132] l4d_target_patch
 //特感能夠識別目標並轉移（不會重複追同一隻、不攻擊已倒地的玩家）
 
-[134] l4d_collision_adjustments (linux only)
+[133] l4d_collision_adjustments (linux only)
 //碰撞模型穿透
 //坦克石頭穿透小殭屍(還是會殺死)
 //被舌頭拉走的玩家穿透小殭屍
 //坦克石頭穿透倒地的玩家(如果即將倒地不會穿透)
 //小殭屍穿透witch(避免witch堵路)
 
-[135] l4d_pause_message
+[134] l4d_pause_message
 //如果伺服器不支援暫停功能，控制台停止刷版顯示誰暫停 誰解除暫停
 
-[136] l4d_tank_rock_ignition
+[135] l4d_tank_rock_ignition
 //Tank著火，丟出來的石頭也會著火
 
-[137] witch_prevent_target_loss
+[136] witch_prevent_target_loss
 //Witch不會失去目標
 
-[138] antisaferoomdooropen
+[137] antisaferoomdooropen
 //防止玩家不等人直接開門衝出去
 
-[139] l4d_flashlight
-//給旁觀者更好的觀看體驗
-
-[140] l4d_info_editor
+[138] l4d_info_editor
 //Modify gamemodes.txt and weapons.txt values by config instead of conflicting Game files.
 
-[141] l4d_smoker_drag_damage_interval
+[139] l4d_smoker_drag_damage_interval
 //調整Smoker舌頭拖曳的傷害與時間
 
-[142] l4d_backjump_fix
+[140] l4d_backjump_fix
 //Hunter能在自製的物件牆壁上無聲踢牆與後續彈跳
 
-[143] l4d_checkpoint_rock_patch
+[141] l4d_checkpoint_rock_patch
 //修正Tank石頭的Hitbox在安全室會變小 (我哪知道 去問Valve)
 
-[144] l4d_expertrealism
+[142] l4d_expertrealism
 //寫實模式 (看不到隊友輪廓與血量狀態)
 
-[145] left4dhooks
+[143] left4dhooks
 //Left 4 Downtown + L4D Direct
 
-[146] rotoblin-az
+[144] rotoblin-az
 //核心插件
 
-[147] l4d_mix
+[145] l4d_mix
 //team mix (!mix)
 
-[148] l4d_useful_upgrades
+[146] l4d_useful_upgrades
 //黑暗戰役輔助 雷射裝置/消音槍/夜視鏡
 
-[149] l4d2_boomer_shenanigans
+[147] l4d2_boomer_shenanigans
 //Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
 
-[150] l4d_car_alarm_hittable_fix
+[148] l4d_car_alarm_hittable_fix
 //被其他Tank能打的物件觸碰的警報車關閉警報
 
-[151] l4d_weapon_prop_give_fix
+[149] l4d_weapon_prop_give_fix
 //使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
 
-[152] l4d_unswap_empty_primary
+[150] l4d_unswap_empty_primary
 //撿到空彈夾的主武器不會自動切換到手槍
 
-[153] physics_object_pushfix
+[151] physics_object_pushfix
 //人類與特感不會再推擠物件
 
-[154] l4d_pipebomb_ignore
+[152] l4d_pipebomb_ignore
 //即使玩家丟出土製炸彈，Bot依然能開槍行動
 
-[155] l4d_climb
-//蜘蛛人爬牆插件
-
-[156] l4d_lasertag
+[153] l4d_lasertag
 //子彈彈道雷射光
 
-[157] l4d_remove_item_collision
-//所有物品與武器不會有碰撞屬性
-
-[158] noteam_nudging
+[154] noteam_nudging
 //倖存者玩家的身體不會再互推對方（Bot還是會）
 
-[159] l4d_pickup
+[155] l4d_pickup
 //右鍵傳藥丸+撿起手槍不會再自動切換
 
-[160] canbecomeghost
+[156] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
 
-[161] l4d2_block_rocketjump
+[157] l4d2_block_rocketjump
 //修正踩頭高跳
 
-[162] l4d_tongue_float_fix
+[158] l4d_tongue_float_fix
 //修正舌頭直接拉走倖存者不給機會開槍 (倖存者懸空高度的問題)
 
-[163] l4d_disable_alarm_cars
+[159] l4d_disable_alarm_cars
 //關閉警報車直到倖存者離開安全室
 
-[164] l4d_boomer_ladder_fix
+[160] l4d_boomer_ladder_fix
 //修正Boomer的體型比較容易黏在特感梯子上
 
-[165] l4d_nosecondchances
+[161] l4d_nosecondchances
 //AI取代真人玩家的特感Bot之後處死 (除非有抓到倖存者)
 
-[166] l4d_fix_deathfall_cam
+[162] l4d_fix_deathfall_cam
 //修復地圖上point_deathfall_camer與戰役下的各種"point_viewcontrol*"永久鎖住玩家鏡頭  (旁觀者與特感觀視角會卡住)
 
-[167] remove_touch_links
-//修復特感處在死亡/倒地區域內換到倖存者隊伍之後倖存者會立即死亡/倒地
-
-[168] l4d_no_m2_movement_block
+[163] l4d_no_m2_movement_block
 //特感使用右鍵抓人的時候可以左右移動並蹲下
 
-[169] disable_cameras
+[164] disable_cameras
 //防止因為地圖上的鏡頭視角錯誤造成伺服器崩潰
 
-[170] l4d_tongue_timer
+[165] l4d_tongue_timer
 //Somker在某些的情況之下增長下次發動攻擊的舌頭冷卻時間
 //1. 被人類快速救援, 2. 被Tank拳頭或石頭或車子快速解開
 
-[171] l4d_tongue_bend_fix
+[166] l4d_tongue_bend_fix
 //舌頭拉到人之後彎曲十次以內都不會斷掉
 
-[172] l4d_reload_fix
+[167] l4d_reload_fix
 //不能利用換槍快速裝滿子彈
 
-[173] l4d_commonlimit_overflow_block
+[168] l4d_commonlimit_overflow_block
 //殭屍數量超過z_common_limit上限將自動被移除 (避免地圖或導演生成太多小殭屍導致Lag)
+
+[169] l4d_incap_door_fix
+//倒地的玩家不准開關門
+//被撲到或是被拉到的玩家不准開關門
+
+[170] l4d_fix_finale_breakable
+//最後救援開始之前，特感能打破救援區域內的特感專屬牆壁與專屬物件
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
@@ -632,6 +626,7 @@ Map = 地圖難度修改
 [05] Dead Before Dawn
 [06] The Arena of the Dead
 [07] Death Aboard
+[08] One 4 Nine
 
 --------指令備忘錄--------
 [管理員專用]
@@ -665,7 +660,7 @@ Map = 地圖難度修改
 * "Respawn Player" //復活玩家在準心位置上
 * "Teleport Player" //傳送玩家在準心位置上
 
-[Everyone]
+[每個人都能使用]
 -!s,!afk,!away,!spectate 	//切換成旁觀者
 -!sur 			//成為倖存者
 -!inf 			//成為特感

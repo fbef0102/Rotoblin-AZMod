@@ -29,9 +29,9 @@ new Float:minProgress;
 new Float:aliveSince[MAXPLAYERS + 1];
 new Float:startingSurvivorCompletion;
 
-new z_max_player_zombies;
-//new survivor_limit;
-new hordeDelayChecks;
+ConVar z_max_player_zombies, survivor_limit;
+int z_max_player_zombies_value, survivor_limit_value;
+int hordeDelayChecks;
 
 new L4DSI:zombieclass[MAXPLAYERS + 1];
 native IsInPause();
@@ -45,7 +45,7 @@ public Plugin:myinfo =
 	name = "L4D2 Antibaiter",
 	author = "Visor,L4D1 modify by Harry",
 	description = "Makes you think twice before attempting to bait that shit",
-	version = "1.5",
+	version = "1.6",
 	url = "https://github.com/ConfoglTeam/ProMod"
 };
 
@@ -142,16 +142,30 @@ public Native_Antibaiter_Clear(Handle:plugin, numParams)
 
 public OnConfigsExecuted()
 {
-	z_max_player_zombies = GetConVarInt(FindConVar("z_max_player_zombies"));
-	//survivor_limit = GetConVarInt(FindConVar("survivor_limit"));
+	z_max_player_zombies = FindConVar("z_max_player_zombies");
+	survivor_limit = FindConVar("survivor_limit");
+	GetCvars();
+	z_max_player_zombies.AddChangeHook(ConVarChanged);
+	survivor_limit.AddChangeHook(ConVarChanged);
 	timerStartDelay = GetConVarFloat(hCvarTimerStartDelay);
 	hordeCountdown = GetConVarInt(hCvarHordeCountdown);
 	minProgress = GetConVarFloat(hCvarMinProgressThreshold);
 }
-	
+
+public void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+	z_max_player_zombies_value = z_max_player_zombies.IntValue;
+	survivor_limit_value = survivor_limit.IntValue;
+}
+
 public Action:AntibaiterThink(Handle:timer) 
 {
-	//new SUsedSlots = GetTeamHumanCount(2);
+	int SUsedSlots = GetTeamHumanCount(2);
 	if(IsInPause())//中途暫停 暫停倒數
 	{
 	#if DEBUG
@@ -173,10 +187,10 @@ public Action:AntibaiterThink(Handle:timer)
 	#endif
        return Plugin_Handled;
 	}
-	if (IsInReady() || IsPanicEventInProgress() || FindTank() > 0 )//|| SUsedSlots != survivor_limit)//準備 屍潮 坦克 人類真人玩家沒達到人類數量上限 初始化倒數
+	if (IsInReady() || IsPanicEventInProgress() || FindTank() > 0 || SUsedSlots < survivor_limit_value)//準備 屍潮 坦克 人類真人玩家沒達到人類數量上限 初始化倒數
 	{
 	#if DEBUG
-		PrintToChatAll("Is Ready,Panic,Tank");
+		PrintToChatAll("Is Ready, Panic, Tank, not enough survivors");
 	#endif
 		hordeDelayChecks = 0;
 		InitiateCountdown();
@@ -208,7 +222,7 @@ public Action:AntibaiterThink(Handle:timer)
 	}
 
 	// 5th SI / spectator bug workaround
-	if (eligibleZombies > z_max_player_zombies)
+	if (eligibleZombies > z_max_player_zombies_value)
 	{
 	#if DEBUG
 		PrintToChatAll("\x03[Antibaiter DEBUG] Spectator bug detected: \x04eligibleZombies\x01=\x05%d\x01, \x04z_max_player_zombies\x01=\x05%d\x01", eligibleZombies, z_max_player_zombies);
@@ -216,7 +230,7 @@ public Action:AntibaiterThink(Handle:timer)
 		return Plugin_Continue;
 	}
 
-	if (eligibleZombies == z_max_player_zombies)
+	if (eligibleZombies == z_max_player_zombies_value)
 	{
 		new Float:survivorCompletion = GetMaxSurvivorCompletion();//活著能走路的最遠的人類位置為記錄點
 		new Float:progress = Float:survivorCompletion - Float:startingSurvivorCompletion;
@@ -395,7 +409,7 @@ bool:IsPanicEventInProgress()
 		{
 			if(!panic_event_colddown)
 			{
-				CreateTimer(15.0,COLD_DOWN,_); //給予喘息空間
+				CreateTimer(25.0,COLD_DOWN,_); //給予喘息空間
 				panic_event_colddown = true;
 			}
 			return true;
@@ -438,4 +452,20 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 	
 	panic_event = true;
 	panic_event_colddown = false;
+}
+
+stock GetTeamHumanCount(team)
+{
+	new humans = 0;
+	
+	new i;
+	for(i = 1; i < MaxClients + 1; i++)
+	{
+		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == team)
+		{
+			humans++;
+		}
+	}
+	
+	return humans;
 }

@@ -3,8 +3,8 @@
 #include <multicolors>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "8.1"
-#define Info_PANEL_LIFETIME 5
+#define PLUGIN_VERSION "8.3.7"
+#define Info_PANEL_LIFETIME 10
 #define Info_PANEL_LIFETIME_2 20
 #define Info_PANEL_LIFETIME_3 30
 #define L4D_TEAM_SURVIVORS 2
@@ -81,7 +81,7 @@ public Action:SetInfo(Handle:timer)
 public Native_ShowRotoInfo(Handle:plugin, numParams)
 {
 	for (new client = 1; client <= MaxClients; client++)
-		if (IsClientConnected(client) && IsClientInGame(client)&& !IsFakeClient(client))
+		if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 1)
 				FillRotoInfo1(client);
 }
 
@@ -156,6 +156,8 @@ public FillRotoInfo1(client)
 	
 	Format(Info, sizeof(Info), "%T", "More", client);
 	DrawPanelItem(InfoHud, Info);
+	DrawPanelText(InfoHud, " ");
+	DrawPanelText(InfoHud, "0. Exit");
 	SendPanelToClient(InfoHud, client, PanelHandler1, Info_PANEL_LIFETIME);
 	CloseHandle(InfoHud);
 }
@@ -190,6 +192,8 @@ public FillRotoInfo2(client)
 	DrawPanelText(InfoHud2, "    ");
 	Format(Info, sizeof(Info), "%T", "back", client);
 	DrawPanelItem(InfoHud2, Info);
+	DrawPanelText(InfoHud2, " ");
+	DrawPanelText(InfoHud2, "0. Exit");
 	SendPanelToClient(InfoHud2, client, PanelHandler2, Info_PANEL_LIFETIME_2);
 	CloseHandle(InfoHud2);
 }
@@ -223,6 +227,8 @@ public FillRotoInfo2_2(client)
 	DrawPanelItem(InfoHud2_2, Info);
 	Format(Info, sizeof(Info), "%T", "previous", client);
 	DrawPanelItem(InfoHud2_2, Info);
+	DrawPanelText(InfoHud2_2, " ");
+	DrawPanelText(InfoHud2_2, "0. Exit");
 	SendPanelToClient(InfoHud2_2, client, PanelHandler2_2, Info_PANEL_LIFETIME_2);
 	CloseHandle(InfoHud2_2);
 }
@@ -256,6 +262,8 @@ public FillRotoInfo2_3(client)
 	DrawPanelItem(InfoHud2_3, Info);
 	Format(Info, sizeof(Info), "%T", "previous", client);
 	DrawPanelItem(InfoHud2_3, Info);
+	DrawPanelText(InfoHud2_3, " ");
+	DrawPanelText(InfoHud2_3, "0. Exit");
 	SendPanelToClient(InfoHud2_3, client, PanelHandler2_3, Info_PANEL_LIFETIME_2);
 	CloseHandle(InfoHud2_3);
 }
@@ -289,6 +297,8 @@ public FillRotoInfo2_4(client)
 	DrawPanelItem(InfoHud2_4, Info);
 	Format(Info, sizeof(Info), "%T", "previous", client);
 	DrawPanelItem(InfoHud2_4, Info);
+	DrawPanelText(InfoHud2_4, " ");
+	DrawPanelText(InfoHud2_4, "0. Exit");
 	SendPanelToClient(InfoHud2_4, client, PanelHandler2_4, Info_PANEL_LIFETIME_2);
 	CloseHandle(InfoHud2_4);
 }
@@ -314,6 +324,8 @@ public FillRotoInfo2_5(client)
 	
 	Format(Info, sizeof(Info), "%T", "previous", client);
 	DrawPanelItem(InfoHud2_5, Info);
+	DrawPanelText(InfoHud2_5, " ");
+	DrawPanelText(InfoHud2_5, "0. Exit");
 	SendPanelToClient(InfoHud2_5, client, PanelHandler2_5, Info_PANEL_LIFETIME_2);
 	CloseHandle(InfoHud2_5);
 }
@@ -339,7 +351,7 @@ public FillRotoInfo3(client)
 	DrawPanelText(InfoHud3, Info);
 	Format(Info, sizeof(Info), "+%T", "Final_Stage_balance", client);
 	DrawPanelText(InfoHud3, Info);
-	Format(Info, sizeof(Info), "+%T Harry、乘風", "Developed_by", client);
+	Format(Info, sizeof(Info), "+%T Harry", "Developed_by", client);
 	DrawPanelText(InfoHud3, Info);
 	
 	Format(Info, sizeof(Info), "%T", "Scores_calculation",client);
@@ -347,6 +359,8 @@ public FillRotoInfo3(client)
 	DrawPanelText(InfoHud3, "    ");
 	Format(Info, sizeof(Info), "%T", "back", client);
 	DrawPanelItem(InfoHud3, Info);
+	DrawPanelText(InfoHud3, " ");
+	DrawPanelText(InfoHud3, "0. Exit");
 	SendPanelToClient(InfoHud3, client, PanelHandler3, Info_PANEL_LIFETIME_3);
 	CloseHandle(InfoHud3);
 }
@@ -372,6 +386,8 @@ public FillRotoInfo3_2(client)
 
 	Format(Info, sizeof(Info), "%T", "previous", client);
 	DrawPanelItem(InfoHud3_2, Info);
+	DrawPanelText(InfoHud3_2, " ");
+	DrawPanelText(InfoHud3_2, "0. Exit");
 	SendPanelToClient(InfoHud3_2, client, PanelHandler3_2, Info_PANEL_LIFETIME_3);
 	CloseHandle(InfoHud3_2);
 }

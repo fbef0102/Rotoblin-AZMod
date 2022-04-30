@@ -2019,7 +2019,7 @@ public Action:DisposeOfCowards(Handle:timer, any:coward)
 	if (IsClientInGame(coward) && IsFakeClient(coward) && GetClientTeam(coward) == TEAM_INFECTED && !IsPlayerTank(coward) && PlayerIsAlive(coward))
 	{
 		// Check to see if the infected can be seen by the survivors. If so, kill the timer and make a new one.
-		if (CanBeSeenBySurvivors(coward) || IsTooClose(coward, z_spawn_safety_range.FloatValue) || L4D_GetSurvivorVictim(coward) != -1)
+		if (CanBeSeenBySurvivors(coward) || IsTooClose(coward, 550.0) || L4D_GetSurvivorVictim(coward) != -1)
 		{
 			FightOrDieTimer[coward] = INVALID_HANDLE;
 			FightOrDieTimer[coward] = CreateTimer(GetConVarFloat(h_idletime_b4slay), DisposeOfCowards, coward);
