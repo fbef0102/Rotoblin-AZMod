@@ -113,11 +113,33 @@ StartVote(const String:sVoteHeader[])
 	hVote.AddItem(VOTE_YES, "Yes");
 	hVote.AddItem(VOTE_NO, "No");
 	hVote.ExitButton = false;
-	hVote.DisplayVoteToAll(20);
+
+	new iTotal = 0;
+	new iPlayers[MaxClients];
+	
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
+		{
+			continue;
+		}
+		
+		iPlayers[iTotal++] = i;
+	}
+	
+	hVote.DisplayVote(iPlayers, iTotal, 20, 0);
 	
 	EmitSoundToAll("ui/beep_synthtone01.wav");
 	
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
+	for(new i=1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
+		{
+			continue;
+		}
+		
+		ClientVoteMenuSet(i,1);
+	}
 }
 
 public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2)

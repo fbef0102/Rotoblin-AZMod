@@ -1,6 +1,6 @@
 /*
 *	Infected Glow
-*	Copyright (C) 2020 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.9"
+#define PLUGIN_VERSION 		"1.11"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,12 @@
 
 ========================================================================================
 	Change Log:
+
+1.11 (05-Jun-2022)
+	- Fixed glow duration not following the burn duration. Thanks to "gongo" for reporting.
+
+1.10 (10-Apr-2022)
+	- Changed the method for fading lights in and out hopefully preventing random server crash.
 
 1.9 (03-Aug-2020)
 	- Added light fading out instead of abruptly disappearing.
@@ -67,6 +73,8 @@
 
 ======================================================================================*/
 
+// Testing: l4d_dissolve_allow 0; l4d_burn_duration_allow 0
+
 #pragma semicolon 1
 #pragma newdecls required
 
@@ -79,10 +87,17 @@
 
 
 ConVar g_hCvarAllow, g_hCvarColor, g_hCvarDist, g_hCvarInfected, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog;
-int g_iCvarInfected, g_iEntities[MAX_LIGHTS][2], g_iClassTank;
-bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2, g_bWatch;
+int g_iCvarInfected, g_iEntities[MAX_LIGHTS][2], g_iTick[MAX_LIGHTS], g_iClassTank;
+bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2, g_bFrameProcessing, g_bWatch;
 char g_sCvarCols[12];
-float g_fCvarDist;
+float g_fFaderTick[MAX_LIGHTS], g_fFaderStart[MAX_LIGHTS], g_fFaderEnd[MAX_LIGHTS], g_fCvarDist;
+Handle g_hTimer[MAX_LIGHTS];
+
+enum
+{
+	INDEX_ENTITY = 0,
+	INDEX_TARGET = 1
+}
 
 
 
@@ -137,6 +152,11 @@ public void OnPluginStart()
 	g_iClassTank = g_bLeft4Dead2 ? 9 : 6;
 }
 
+public void OnPluginEnd()
+{
+	ResetPlugin();
+}
+
 public void OnMapStart()
 {
 	g_bMapStarted = true;
@@ -154,11 +174,15 @@ void ResetPlugin()
 
 	for( int i = 0; i < MAX_LIGHTS; i++ )
 	{
-		if( IsValidEntRef(g_iEntities[i][0]) == true )
-			AcceptEntityInput(g_iEntities[i][0], "Kill");
+		delete g_hTimer[i] = null;
 
-		g_iEntities[i][0] = 0;
-		g_iEntities[i][1] = 0;
+		if( IsValidEntRef(g_iEntities[i][INDEX_ENTITY]) == true )
+		{
+			RemoveEntity(g_iEntities[i][INDEX_ENTITY]);
+		}
+
+		g_iEntities[i][INDEX_ENTITY] = 0;
+		g_iEntities[i][INDEX_TARGET] = 0;
 	}
 }
 
@@ -172,12 +196,12 @@ public void OnConfigsExecuted()
 	IsAllowed();
 }
 
-public void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	IsAllowed();
 }
 
-public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
 }
@@ -198,16 +222,12 @@ void IsAllowed()
 	if( g_bCvarAllow == false && bCvarAllow == true && bAllowMode == true )
 	{
 		g_bCvarAllow = true;
-		HookEvent("player_death", Event_Check);
-		HookEvent("player_team", Event_Check);
 	}
 
 	else if( g_bCvarAllow == true && (bCvarAllow == false || bAllowMode == false) )
 	{
 		ResetPlugin();
 		g_bCvarAllow = false;
-		UnhookEvent("player_death", Event_Check);
-		UnhookEvent("player_team", Event_Check);
 	}
 }
 
@@ -269,7 +289,7 @@ bool IsAllowedGameMode()
 	return true;
 }
 
-public void OnGamemode(const char[] output, int caller, int activator, float delay)
+void OnGamemode(const char[] output, int caller, int activator, float delay)
 {
 	if( strcmp(output, "OnCoop") == 0 )
 		g_iCurrentMode = 1;
@@ -285,37 +305,6 @@ public void OnGamemode(const char[] output, int caller, int activator, float del
 
 // ====================================================================================================
 //					EVENTS
-// ====================================================================================================
-public void Event_Check(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-
-	if( client )
-	{
-		int entity;
-
-		for( int i = 0; i < MAX_LIGHTS; i++ )
-		{
-			entity = g_iEntities[i][0];
-			if( IsValidEntRef(entity) )
-			{
-				if( GetEntPropEnt(entity, Prop_Data, "m_hMoveParent") == client )
-				{
-					AcceptEntityInput(entity, "ClearParent");
-					AcceptEntityInput(entity, "Kill");
-					g_iEntities[i][0] = 0;
-					g_iEntities[i][1] = 0;
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-
-// ====================================================================================================
-//					LIGHTS
 // ====================================================================================================
 public void OnEntityCreated(int entity, const char[] classname)
 {
@@ -334,59 +323,54 @@ public void OnEntityDestroyed(int entity)
 	{
 		entity = EntIndexToEntRef(entity);
 		int valid;
-		float vPos[3];
 
 		for( int i = 0; i < MAX_LIGHTS; i++ )
 		{
-			if( entity == g_iEntities[i][1] && IsValidEntRef(g_iEntities[i][0]) )
+			if( entity == g_iEntities[i][INDEX_TARGET] && IsValidEntRef(g_iEntities[i][INDEX_ENTITY]) )
 			{
 				int parent = GetEntPropEnt(entity, Prop_Data, "m_hMoveParent");
-				if( parent > 0 && IsValidEntity(parent) )
+				if( parent > 0 && parent <= MaxClients && IsValidEntity(parent) )
 				{
-					static char sClass[10];
-					GetEdictClassname(parent, sClass, sizeof(sClass));
+					float vVec[3];
+					GetEntPropVector(parent, Prop_Data, "m_vecVelocity", vVec);
 
-					if( strcmp(sClass, "infected") == 0 )
-					{
-						// Have to teleport flame back to world pos otherwise it disappears to 0,0,0
-						AcceptEntityInput(g_iEntities[i][0], "ClearParent");
-						GetEntPropVector(g_iEntities[i][0], Prop_Send, "m_vecOrigin", vPos);
-						TeleportEntity(g_iEntities[i][0], vPos, NULL_VECTOR, NULL_VECTOR);
-					} else {
-						// Without this the glow disappears instantly, have to re-attach to Witch/SI etc otherwise it's stuck in 1 place while the infected keeps moving
-						SetVariantString("!activator");
-						AcceptEntityInput(g_iEntities[i][0], "SetParent", parent);
-					}
+					AcceptEntityInput(g_iEntities[i][INDEX_ENTITY], "ClearParent");
+
+					delete g_hTimer[i];
+					g_hTimer[i] = CreateTimer(GetVectorLength(vVec) <= 250.0 ? 7.0 : 0.1, TimerDestroy, i);
+				} else {
+					CreateTimer(0.1, TimerDestroy, i);
 				}
-
-				AcceptEntityInput(g_iEntities[i][0], "FireUser3");
-				AcceptEntityInput(g_iEntities[i][0], "FireUser2");
-
-				g_iEntities[i][0] = 0;
-				g_iEntities[i][1] = 0;
 			}
-			else if( IsValidEntRef(g_iEntities[i][1]) == true )
+			else if( IsValidEntRef(g_iEntities[i][INDEX_TARGET]) == true )
 			{
 				valid = 1;
 			}
 		}
 
 		if( valid == 0 )
+		{
 			g_bWatch = false;
+		}
 	}
 }
 
-public Action TimerCreate(Handle timer, any target)
+
+
+// ====================================================================================================
+//					LIGHTS
+// ====================================================================================================
+Action TimerCreate(Handle timer, any target)
 {
 	if( (target = EntRefToEntIndex(target)) != INVALID_ENT_REFERENCE )
 	{
 		int client = GetEntPropEnt(target, Prop_Data, "m_hEntAttached");
 		if( client < 1 )
-			return;
+			return Plugin_Continue;
 
-		bool common;
 		static char sTemp[64];
 
+		// Validate target
 		if( client > MaxClients )
 		{
 			int infected = g_iCvarInfected & (1<<0);
@@ -395,37 +379,33 @@ public Action TimerCreate(Handle timer, any target)
 			if( infected || witch )
 			{
 				if( IsValidEntity(client) == false || IsValidEdict(client) == false )
-					return;
+					return Plugin_Continue;
 
 				GetEdictClassname(client, sTemp, sizeof(sTemp));
 
-				// if( (!infected || strcmp(sTemp, "infected")) && (!witch || strcmp(sTemp, "witch")) )
-				if( infected && strcmp(sTemp, "infected") == 0 )
-					common = true;
-				else if( witch && strcmp(sTemp, "witch") == 0 )
-					common = false;
-				else
-					return;
+				if( (infected && strcmp(sTemp, "infected") != 0) && (witch && strcmp(sTemp, "witch") != 0) )
+					return Plugin_Continue;
 			} else {
-				return;
+				return Plugin_Continue;
 			}
 		}
 		else
 		{
 			if( IsClientInGame(client) == false || GetClientTeam(client) != 3 )
-				return;
+				return Plugin_Continue;
 
 			int class = GetEntProp(client, Prop_Send, "m_zombieClass") + 1;
 			if( class == g_iClassTank ) class = 8;
 			if( !(g_iCvarInfected & (1 << class)) )
-				return;
+				return Plugin_Continue;
 		}
 
+		// Find empty index
 		int index = -1;
 
 		for( int i = 0; i < MAX_LIGHTS; i++ )
 		{
-			if( IsValidEntRef(g_iEntities[i][0]) == false )
+			if( IsValidEntRef(g_iEntities[i][INDEX_ENTITY]) == false )
 			{
 				index = i;
 				break;
@@ -433,18 +413,19 @@ public Action TimerCreate(Handle timer, any target)
 		}
 
 		if( index == -1 )
-			return;
+			return Plugin_Continue;
 
+		// Create light
 		int entity = CreateEntityByName("light_dynamic");
 		if( entity == -1)
 		{
 			LogError("Failed to create 'light_dynamic'");
-			return;
+			return Plugin_Continue;
 		}
 
 		g_bWatch = true;
-		g_iEntities[index][0] = EntIndexToEntRef(entity);
-		g_iEntities[index][1] = EntIndexToEntRef(target);
+		g_iEntities[index][INDEX_ENTITY] = EntIndexToEntRef(entity);
+		g_iEntities[index][INDEX_TARGET] = EntIndexToEntRef(target);
 
 		Format(sTemp, sizeof(sTemp), "%s 255", g_sCvarCols);
 
@@ -464,32 +445,107 @@ public Action TimerCreate(Handle timer, any target)
 
 		AcceptEntityInput(entity, "TurnOn");
 
-		int iTickRate = RoundFloat(1 / GetTickInterval());
 		float flTickInterval = GetTickInterval();
+		int iTickRate = RoundFloat(1 / flTickInterval);
 
-		// Fade in
-		for( int i = 1; i <= iTickRate; i++ )
+		// Fade
+		if( !g_bFrameProcessing )
 		{
-			Format(sTemp, sizeof(sTemp), "OnUser1 !self:distance:%f:%f:-1", (g_fCvarDist / iTickRate) * i, flTickInterval * i);
-			SetVariantString(sTemp);
-			AcceptEntityInput(entity, "AddOutput");
-		}
-		AcceptEntityInput(entity, "FireUser1");
-
-		// Fade out
-		int fade = 1;
-		if( common ) fade = 8;
-
-		for( int i = iTickRate; i > 1; --i )
-		{
-			Format(sTemp, sizeof(sTemp), "OnUser2 !self:distance:%f:%f:-1", (g_fCvarDist / iTickRate) * i, fade - flTickInterval * i);
-			SetVariantString(sTemp);
-			AcceptEntityInput(entity, "AddOutput");
+			g_bFrameProcessing = true;
+			RequestFrame(OnFrameFadeIn);
 		}
 
-		Format(sTemp, sizeof(sTemp), "OnUser3 !self:Kill::%d:-1", fade);
-		SetVariantString(sTemp);
-		AcceptEntityInput(entity, "AddOutput");
+		g_iTick[index] = 8;
+		g_fFaderEnd[index] = GetGameTime() + 9999.9;
+		g_fFaderStart[index] = GetGameTime() + flTickInterval * iTickRate + 2.0;
+		g_fFaderTick[index] = GetGameTime();
+	}
+
+	return Plugin_Continue;
+}
+
+void OnFrameFadeIn()
+{
+	g_bFrameProcessing = false;
+
+	float fDist;
+	float fTime = GetGameTime();
+	float flTickInterval = GetTickInterval();
+	int iTickRate = RoundFloat(1 / flTickInterval);
+
+	// Loop through valid ents
+	for( int i = 0; i < MAX_LIGHTS; i++ )
+	{
+		if( IsValidEntRef(g_iEntities[i][INDEX_ENTITY]) )
+		{
+			// Fade in
+			if( fTime < g_fFaderStart[i] )
+			{
+				fDist = (g_fCvarDist / iTickRate) * g_iTick[i];
+				if( fDist < g_fCvarDist )
+				{
+					g_bFrameProcessing = true;
+
+					SetVariantFloat(fDist);
+					AcceptEntityInput(g_iEntities[i][INDEX_ENTITY], "Distance");
+
+					g_iTick[i]++;
+				}
+			}
+		}
+	}
+
+	if( g_bFrameProcessing )
+	{
+		RequestFrame(OnFrameFadeIn);
+	}
+}
+
+Action TimerDestroy(Handle timer, any index)
+{
+	g_hTimer[index] = null;
+
+	if( IsValidEntRef(g_iEntities[index][INDEX_ENTITY]) )
+	{
+		g_iTick[index] = 0;
+		RequestFrame(OnFrameFadeOut, index);
+	}
+}
+
+void OnFrameFadeOut(int index)
+{
+	if( !IsValidEntRef(g_iEntities[index][INDEX_ENTITY]) )
+	{
+		g_iEntities[index][INDEX_ENTITY] = 0;
+		g_iEntities[index][INDEX_TARGET] = 0;
+		delete g_hTimer[index];
+
+		return;
+	}
+
+	float fDist;
+	float flTickInterval = GetTickInterval();
+	int iTickRate = RoundFloat(1 / flTickInterval);
+
+	fDist = (g_fCvarDist / iTickRate) * (iTickRate - g_iTick[index]);
+	g_iTick[index]++;
+
+	if( fDist > 0.0 )
+	{
+		if( fDist < g_fCvarDist )
+		{
+			SetVariantFloat(fDist);
+			AcceptEntityInput(g_iEntities[index][INDEX_ENTITY], "Distance");
+		}
+
+		RequestFrame(OnFrameFadeOut, index);
+	} else {
+		RemoveEntity(g_iEntities[index][INDEX_ENTITY]);
+
+		g_iTick[index] = 0;
+		g_iEntities[index][INDEX_ENTITY] = 0;
+		g_iEntities[index][INDEX_TARGET] = 0;
+		delete g_hTimer[index];
 	}
 }
 

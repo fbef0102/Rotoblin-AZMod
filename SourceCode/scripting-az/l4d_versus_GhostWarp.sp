@@ -1,30 +1,3 @@
-/*
- * ============================================================================
- *
- * This file is part of the Rotoblin 2 project.
- *
- *  File:			rotoblin.GhostWarp.sp
- *  Type:			Module
- *  Description:	...
- *  Credits:		Most of credits goes to Confogl (http://code.google.com/p/confogl/)
- *
- *  Copyright (C) 2012-2015 raziEiL <war4291@mail.ru>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * ============================================================================
- */
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
@@ -36,6 +9,7 @@
 
 static  bool:g_bDelay[MAXPLAYERS+1], g_iLastTarget[MAXPLAYERS+1];
 new		SurvivorIndex[MAXPLAYERS+1],SurvivorCount;
+bool DisableGhostM2Teleport[MAXPLAYERS+1];
 //native	IsInReady();
 
 new Handle:hNameToCharIDTrie;
@@ -60,10 +34,15 @@ public  OnPluginStart()
 	HookEvent("player_death", GW_ev_PlayeDeath);
 	HookEvent("round_start", event_round_start);
 	HookEvent("player_team", event_player_teamchange,EventHookMode_Pre);
-	
+	HookEvent("player_disconnect", 	Event_PlayerDisconnect, EventHookMode_Pre);
+
 	PrepTries();
 
 	RegConsoleCmd("sm_warpto", WarpTo_Cmd, "Warps to the specified survivor");
+
+	RegConsoleCmd("sm_warpm2on",	Enable_Cmd, "Enable the ghost m2 teleport");
+	RegConsoleCmd("sm_warpm2off",	Disable_Cmd, "Disable the ghost m2 teleport");
+	
 }
 
 PrepTries()
@@ -113,6 +92,32 @@ public Action:WarpTo_Cmd(client, args)
 	return Plugin_Handled;
 }
 
+public Action Disable_Cmd(int client, int args)
+{
+	if(client == 0) return Plugin_Handled;
+
+	if(GetClientTeam(client) != 3) return Plugin_Handled;
+
+	DisableGhostM2Teleport[client] = true;
+
+	CPrintToChat(client, "[{olive}TS{default}] Ghost M2 Teleport {green}Disabled.");
+
+	return Plugin_Handled;
+}
+
+public Action Enable_Cmd(int client, int args)
+{
+	if(client == 0) return Plugin_Handled;
+
+	if(GetClientTeam(client) != 3) return Plugin_Handled;
+
+	DisableGhostM2Teleport[client] = false;
+
+	CPrintToChat(client, "[{olive}TS{default}] Ghost M2 Teleport {green}Enabled.");
+
+	return Plugin_Handled;
+}
+
 stock GetClientOfCharID(characterID)
 {
 	for (new client = 1; client <= MaxClients; client++)
@@ -135,9 +140,12 @@ public Action:OnPlayerRunCmd(client, &buttons)
 {
 	if( (buttons & IN_ATTACK2) && SurvivorCount && !g_bDelay[client] && !IsFakeClient(client) && IsGhostInfected(client))
 	{
-		g_bDelay[client] = true;
-		CreateTimer(0.35, GW_t_ResetDelay, client);
-		GW_WarpToSurvivor(client);
+		if(DisableGhostM2Teleport[client] == false)
+		{
+			g_bDelay[client] = true;
+			CreateTimer(0.35, GW_t_ResetDelay, client);
+			GW_WarpToSurvivor(client);
+		}
 	}
 	return Plugin_Continue;
 }
@@ -252,4 +260,11 @@ public Action:PlayerChangeTeamCheck(Handle:timer,any:client)//跳隊到sur
 {
 	if (client && IsClientInGame(client)&& GetClientTeam(client) == L4D_TEAM_SURVIVORS)
 		MyPlugin_RebuildIndex();
+}
+
+public void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	DisableGhostM2Teleport[client] = false;
 }

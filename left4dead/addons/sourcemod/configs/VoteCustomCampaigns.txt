@@ -40,4 +40,19 @@
 		"mapinfo"		"l4d_149_1"
 		"mapname"		"古墓亡影 One 4 Nine"
 	}
+	"9"
+	{
+		"mapinfo"		"l4d_darkblood01_tanker"
+		"mapname"		"黑血 Dark Blood"
+	}
+	"10"
+	{
+		"mapinfo"		"rombu01"
+		"mapname"		"嗜血豐收啟示錄 Blood Harvest APOCALYPSE"
+	}
+	"11"
+	{
+		"mapinfo"		"l4d_noprecinct01_crash"
+		"mapname"		"84警區 Precinct 84"
+	}
 }

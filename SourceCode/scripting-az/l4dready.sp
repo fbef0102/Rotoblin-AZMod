@@ -20,7 +20,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.2"
+#define READY_VERSION "8.3.8"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 10.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -29,7 +29,7 @@
 #define PreventSpecBlockInfectedTeamIcon_DELAY 5.0
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 
-#define READY_VERSION_REQUIRED_SOURCEMOD "1.9"
+#define READY_VERSION_REQUIRED_SOURCEMOD "1.10"
 #define READY_VERSION_REQUIRED_SOURCEMOD_NONDEV 1 //1 dont allow -dev version, 0 ignore -dev version
 
 #define L4D_TEAM_SURVIVORS 2
@@ -181,6 +181,7 @@ int g_iRoundStart,g_iPlayerSpawn ;
 //timer
 Handle PlayerLeftStartTimer = null, CountDownTimer = null;
 int g_iCountDownTime, g_iCvarGameTimeBlock;
+static KeyValues g_hMIData = null;
 
 public Plugin:myinfo =
 {
@@ -402,7 +403,7 @@ public Action:eventplayer_death(Handle:event, const String:name[], bool:dontBroa
 		return;
 	}
 
-	if(g_bGameTeamSwitchBlock && IsClientInGame(client) && !IsFakeClient(client))
+	if(g_iCvarGameTimeBlock != 0 && g_bGameTeamSwitchBlock && IsClientInGame(client) && !IsFakeClient(client))
 	{
 		decl String:steamID[STEAMID_SIZE];
 		GetClientAuthId(client, AuthId_Steam2, steamID, STEAMID_SIZE);
@@ -420,9 +421,8 @@ public Action:eventplayer_death(Handle:event, const String:name[], bool:dontBroa
 
 public Action:RespawnPlayer(Handle:timer,any:client)
 {
-	if(!IsClientConnected(client) || !IsClientInGame(client) || GetClientTeam(client) != L4D_TEAM_SURVIVORS) return;
+	if(!IsClientInGame(client) || GetClientTeam(client) != L4D_TEAM_SURVIVORS) return;
 	
-	L4D_RespawnPlayer(client);
 	ReturnPlayerToSaferoom(client);
 }
 //sm_switch
@@ -524,64 +524,47 @@ stock GetTeamMaxHumans(team)
 
 public Action:Join_Survivor(client, args)	//on !survivor
 {	
-	new maxSurvivorSlots = GetTeamMaxHumans(2);
-	new survivorUsedSlots = GetTeamHumanCount(2);
-	new freeSurvivorSlots = (maxSurvivorSlots - survivorUsedSlots);
-	
+	if (client == 0) return Plugin_Handled;
+
 	if (GetClientTeam(client) == 2)			//if client is survivor
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_5",client);
 		return Plugin_Handled;
 	}
-	if (freeSurvivorSlots <= 0)
+
+	// new maxSurvivorSlots = GetTeamMaxHumans(2);
+	// new survivorUsedSlots = GetTeamHumanCount(2);
+	// new freeSurvivorSlots = (maxSurvivorSlots - survivorUsedSlots);
+	// if (freeSurvivorSlots <= 0)
+	// {
+	// 	CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_6",client);
+	// 	return Plugin_Handled;
+	// }
+	//else
+	//{
+	int bot = FindBotToTakeOver(true);
+	if (bot==0)
+	{
+		bot = FindBotToTakeOver(false);
+	}
+	if (bot==0)
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_6",client);
 		return Plugin_Handled;
 	}
-	else
-	{
-		new bot;
-		
-		for(bot = 1; 
-			bot < (MaxClients + 1) && (!IsClientConnected(bot) || !IsFakeClient(bot) || (GetClientTeam(bot) != 2));
-			bot++) {}
-		
-		if(bot == (MaxClients + 1))
-		{			
-			new String:command[] = "sb_add";
-			new flags = GetCommandFlags(command);
-			SetCommandFlags(command, flags & ~FCVAR_CHEAT);
-			
-			ServerCommand("sb_add");
-			
-			SetCommandFlags(command, flags);
-		}
-		CreateTimer(0.1, Survivor_Take_Control, client, TIMER_FLAG_NO_MAPCHANGE);
-	}
-	return Plugin_Handled;
-}
+	
 
-public Action:Survivor_Take_Control(Handle:timer, any:client)
-{
-		new localClientTeam = GetClientTeam(client);
-		new String:command[] = "sb_takecontrol";
-		new flags = GetCommandFlags(command);
-		SetCommandFlags(command, flags & ~FCVAR_CHEAT);
-		new String:botNames[][] = { "teengirl", "manager", "namvet", "biker" };
-		
-		new i = 0;
-		while((localClientTeam != 2) && i < 4)
-		{
-			FakeClientCommand(client, "sb_takecontrol %s", botNames[i]);
-			localClientTeam = GetClientTeam(client);
-			i++;
-		}
-		SetCommandFlags(command, flags);
+	L4D_SetHumanSpec(bot, client);
+	L4D_TakeOverBot(client);
+	//}
+	return Plugin_Handled;
 }
 
 
 public Action:Join_Infected(client, args)	//on !infected
 {	
+	if (client == 0) return Plugin_Handled;
+	
 	if(StrEqual(CurrentGameMode,"coop", true))
 		return Plugin_Handled;
 		
@@ -864,7 +847,7 @@ public OnAllPluginsLoaded()
 		// l4d scores plugin is NOT loaded
 		// supply these commands which would otherwise be done by the team manager
 		
-		RegAdminCmd("sm_swap", Command_PlayerSwap, ADMFLAG_BAN, "sm_swap <player1> <player2> - swap player1's and player2's teams");
+		RegAdminCmd("sm_swapplayer", Command_PlayerSwapPlayer, ADMFLAG_BAN, "sm_swap <player1> <player2> - swap player1's and player2's teams");
 		RegAdminCmd("sm_swapteams", Command_SwapTeams, ADMFLAG_BAN, "sm_swapteams - swap all the players to the opposite teams");
 	}
 }
@@ -893,11 +876,21 @@ public OnMapStart()
 	hasdirectorStart = false;
 	g_bNoSafeStartAreaMap = false;
 
-	char mapbuf[32];
-	GetCurrentMap(mapbuf, sizeof(mapbuf));
-	if (StrEqual(mapbuf, "l4d_vs_city17_01")||
-		StrEqual(mapbuf, "l4d_vs_deadflagblues01_city"))
-		g_bNoSafeStartAreaMap = true;
+	char sCurMap[64];
+	GetCurrentMap(sCurMap, 64);
+
+	MI_KV_Close();
+	MI_KV_Load();
+	if (!KvJumpToKey(g_hMIData, sCurMap)) {
+		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	} else
+	{
+		if (g_hMIData.GetNum("no_start_area", 0) == 1)
+		{
+			g_bNoSafeStartAreaMap = true;
+		}
+	}
+	MI_KV_Close();
 
 	PrefetchSound(SECRET_EGG_SOUND);
 	PrecacheSound(SECRET_EGG_SOUND,true);
@@ -1008,8 +1001,10 @@ bool:checkrealplayerinSV(client)
 
 public void OnClientPutInServer(int client)
 {
+	if(IsFakeClient(client)) return;
+
 	g_iSpectatePenaltyCounter[client] = g_iSpectatePenalty;
-	CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon,client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
 	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 		SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
@@ -1053,7 +1048,7 @@ checkStatus()
 	//count number of non-bot players in-game
 	for(i = 1; i <= MaxClients; i++)
 	{
-		if(IsClientConnected(i) && !IsFakeClient(i) && IsClientInGame(i) && GetClientTeam(i) != L4D_TEAM_SPECTATE)
+		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) != L4D_TEAM_SPECTATE)
 		{
 			humans++;
 			if(readyStatus[i]) ready++;
@@ -1494,7 +1489,7 @@ public Action:PlayerChangeTeamCheck(Handle:timer,any:client)
 			}
 			else
 			{
-				if(!hasleftsaferoom || !g_bGameTeamSwitchBlock)
+				if(!hasleftsaferoom || g_iCvarGameTimeBlock == 0 || !g_bGameTeamSwitchBlock)
 					SetArrayCell(arrayclientswitchteam, index + ARRAY_TEAM, newteam);
 				else
 				{
@@ -1761,7 +1756,7 @@ public Action:Command_Spectate(client, args)
 	{
 		g_bIsSpectating[client] = true;
 		ChangePlayerTeam(client, L4D_TEAM_INFECTED);
-		CreateTimer(0.1, Timer_Respectate, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.1, Timer_Respectate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 	
 	if(readyMode)
@@ -1892,19 +1887,26 @@ public Action:Timer_InfectedSpectate(Handle:timer, any:client)
 	return Plugin_Continue;
 }
 
-public Action:Timer_Respectate(Handle:timer, any:client)
+public Action:Timer_Respectate(Handle timer, int userid)
 {
-	ChangePlayerTeam(client, L4D_TEAM_SPECTATE);
-	g_bIsSpectating[client] = false;
+	int client = GetClientOfUserId(userid);
+	if(client && IsClientInGame(client) && !IsFakeClient(client))
+	{
+		ChangePlayerTeam(client, L4D_TEAM_SPECTATE);
+		g_bIsSpectating[client] = false;
+	}
 }
 
-public Action:Timer_PreventSpecBlockInfectedTeamIcon(Handle:timer, any:client)
+public Action Timer_PreventSpecBlockInfectedTeamIcon(Handle timer, int userid)
 {
-	if(IsClientConnected(client) && IsClientInGame(client)&& !IsFakeClient(client)&&GetClientTeam(client) == L4D_TEAM_SPECTATE)
+	int client = GetClientOfUserId(userid);
+	if(client && IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == L4D_TEAM_SPECTATE)
 	{
 		ChangePlayerTeam(client, L4D_TEAM_INFECTED);
-		CreateTimer(0.1, Timer_Respectate, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.1, Timer_Respectate, userid, TIMER_FLAG_NO_MAPCHANGE);
 	}
+
+	return Plugin_Continue;
 }
 
 public Action:WTF(client, args) //player press m
@@ -1915,7 +1917,7 @@ public Action:WTF(client, args) //player press m
 		return Plugin_Handled;
 	}
 	
-	if(g_bGameTeamSwitchBlock && hasleftsaferoom && GetClientTeam(client) != L4D_TEAM_SPECTATE) 
+	if(g_iCvarGameTimeBlock != 0 && g_bGameTeamSwitchBlock && hasleftsaferoom && GetClientTeam(client) != L4D_TEAM_SPECTATE) 
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_27",client);
 		return Plugin_Handled;
@@ -2869,11 +2871,11 @@ public Action:Command_ScanProperties(client, args)
 	
 }
 
-public Action:Command_PlayerSwap(client, args)
+public Action:Command_PlayerSwapPlayer(client, args)
 {
 	if(args < 2)
 	{
-		ReplyToCommand(client, "[TS] Usage: sm_swap <player1> <player2> - %T","ReplyToCommand7",client);
+		ReplyToCommand(client, "[TS] Usage: sm_swapplayer <player1> <player2> - %T","ReplyToCommand7",client);
 		return Plugin_Handled;
 	}
 	
@@ -3307,6 +3309,8 @@ ReturnToSaferoom(client)
 
 ReturnPlayerToSaferoom(client,bool:flagsSet = true)
 {
+	if (!IsPlayerAlive(client)) L4D_RespawnPlayer(client);
+
 	new warp_flags;
 	new give_flags;
 	if (!flagsSet)
@@ -3560,4 +3564,52 @@ void ResetTimer()
 {
 	delete PlayerLeftStartTimer;
 	delete CountDownTimer;
+}
+
+int FindBotToTakeOver(bool alive)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && IsFakeClient(i) && GetClientTeam(i)==2 && !HasIdlePlayer(i) && IsPlayerAlive(i) == alive)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+bool HasIdlePlayer(int bot)
+{
+	if(IsClientInGame(bot) && IsFakeClient(bot) && GetClientTeam(bot) == 2 && IsPlayerAlive(bot))
+	{
+		if(HasEntProp(bot, Prop_Send, "m_humanSpectatorUserID"))
+		{
+			int client = GetClientOfUserId(GetEntProp(bot, Prop_Send, "m_humanSpectatorUserID"))	;		
+			if(client > 0 && client <= MaxClients && IsClientInGame(client) && !IsFakeClient(client) && IsClientObserver(client))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void MI_KV_Load()
+{
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = CreateKeyValues("MapInfo");
+	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
+		LogError("[MI] Couldn't load MapInfo data!");
+		MI_KV_Close();
+	}
+}
+
+void MI_KV_Close()
+{
+	if (g_hMIData != null) {
+		CloseHandle(g_hMIData);
+		g_hMIData = null;
+	}
 }

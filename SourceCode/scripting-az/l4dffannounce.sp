@@ -4,9 +4,6 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <multicolors>
-#define IsWitch(%0) (g_bIsWitch[%0])
-#define MAXENTITIES 2048
-new		bool:	g_bIsWitch[MAXENTITIES];							// Membership testing for fast witch checking
 
 public Plugin:myinfo = 
 {
@@ -36,8 +33,6 @@ public OnPluginStart()
 	AnnounceType = CreateConVar("l4d_ff_announce_type", "1", "Changes how ff announce displays FF damage (1:In chat; 2: In Hint Box; 3: In center text)",FCVAR_SPONLY);
 	HookEvent("player_hurt_concise", Event_HurtConcise, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("witch_killed", Event_WitchKilled);
-	HookEvent("witch_spawn", Event_WitchSpawn);
 	HookEvent("round_start", Event_RoundStart)
 	HookEvent("player_ledge_grab", Event_ledge_grab);
 	HookEvent("revive_success", Event_revive_success);//救起倒地的or 懸掛的
@@ -212,20 +207,6 @@ public Action:AnnounceFF(Handle:timer, Handle:pack) //Called if the attacker did
 	}
 }
 
-public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	g_bIsWitch[GetEventInt(event, "witchid")] = false;
-	
-}
-public Event_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	g_bIsWitch[GetEventInt(event, "witchid")] = true;
-}
-public OnMapStart()
-{
-	for (new i = MaxClients + 1; i < MAXENTITIES; i++) g_bIsWitch[i] = false;
-}
-
 public Event_ledge_grab(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -303,4 +284,15 @@ stock IsClientAndInGame(client)
 		return IsClientInGame(client);
 	}
 	return false;
+}
+
+bool IsWitch(int entity)
+{
+    if (entity > 0 && IsValidEntity(entity) && IsValidEdict(entity))
+    {
+        static char strClassName[64];
+        GetEdictClassname(entity, strClassName, sizeof(strClassName));
+        return strcmp(strClassName, "witch", false) == 0;
+    }
+    return false;
 }

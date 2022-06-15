@@ -198,7 +198,7 @@ public Action:event_PlayerDisconnect(Handle:event, const String:name[], bool:don
 	{
 		event_PlayerDisc_CountryShow(event, name, dontBroadcast);
 		
-		OnClientDisconnect_JoinMsg();
+		if(IsClientInGame(client)) OnClientDisconnect_JoinMsg();
 	}
 	
 	
@@ -234,6 +234,8 @@ bool:IsLanIP( String:src[16] )
 
 PrintFormattedMessageToAll( client, playerjoin )//給全部人看的
 {
+	if(!IsClientInGame(client)) return;
+	
 	decl String:message[301];
 	
 	SetFormattedMessage( client );
@@ -276,17 +278,20 @@ PrintFormattedMessageToAdmins( client, playerjoin)//專屬給adm看的
 		Format( message, sizeof(message), "%s, %s",message, player_city);
 
 		
-	for (new i = 1; i <= MaxClients; i++)
+	if(IsClientInGame(client))
 	{
-		if( IsClientInGame(i) && CheckCommandAccess( i, "", ADMFLAG_GENERIC, true ) )
+		for (new i = 1; i <= MaxClients; i++)
 		{
-			if(playerjoin == 1)//玩家進來
+			if( IsClientInGame(i) && CheckCommandAccess( i, "", ADMFLAG_GENERIC, true ) )
 			{
-				CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce1",i, player, message, player_ip, STEAMID);
-			}
-			else//玩家離開
-			{
-				CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce2",i,player,dcreason,player_ip, STEAMID);
+				if(playerjoin == 1)//玩家進來
+				{
+					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce1",i, player, message, player_ip, STEAMID);
+				}
+				else//玩家離開
+				{
+					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce2",i,player,dcreason,player_ip, STEAMID);
+				}
 			}
 		}
 	}
@@ -303,6 +308,8 @@ PrintFormattedMessageToAdmins( client, playerjoin)//專屬給adm看的
 
 PrintFormattedMsgToNonAdmins( client, playerjoin )//給不是adm看的
 {
+	if(!IsClientInGame(client)) return;
+
 	decl String:message[301];
 	
 	SetFormattedMessage( client );

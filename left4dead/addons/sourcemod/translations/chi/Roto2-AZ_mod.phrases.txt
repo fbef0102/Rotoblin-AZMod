@@ -700,11 +700,11 @@
 	}
 	"game1"
 	{
-		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}正面{default}!"
+		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}正面(Heads){default}!"
 	}
 	"game2"
 	{
-		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}反面{default}!"
+		"chi"	"{olive}{1}{default} 掷出了硬币! 结果是 {green}反面(Tails){default}!"
 	}
 	"game3"
 	{

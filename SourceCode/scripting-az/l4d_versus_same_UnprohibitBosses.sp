@@ -27,7 +27,7 @@ static	bool:Tank_firstround_spawn,bool:Witch_firstround_spawn;
 float g_fWitchFlow, g_fTankFlow;
 int g_iRoundStart, g_iPlayerSpawn;
 ConVar WITCHPARTY, sv_cheats;
-ConVar g_hTankMapOff, g_hWitchMapOff, g_hCvarWitchAvoidTank;
+ConVar g_hCvarWitchAvoidTank;
 ConVar survivor_limit;
 int survivor_limit_value;
 
@@ -105,8 +105,6 @@ public void OnPluginStart()
 	HookEvent("round_end",		Event_RoundEnd,		EventHookMode_PostNoCopy);
 	HookEvent("witch_spawn", TS_ev_WitchSpawn);
 
-	g_hTankMapOff =  CreateConVar("l4d_versus_tank_map_off",	"l4d_river01_docks,l4d_river03_port",	"Plugin will not spawn Tank in these maps, separate by commas (no spaces). (0=All maps, Empty = none).", FCVAR_NOTIFY );
-	g_hWitchMapOff = CreateConVar("l4d_versus_witch_map_off",	"",	"Plugin will not spawn Witch in these maps, separate by commas (no spaces). (0=All maps, Empty = none).", FCVAR_NOTIFY );
 	g_hCvarWitchAvoidTank = CreateConVar("l4d_coop_boss_avoid_tank_spawn", "0", "Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
 
 	hValidTankFlows = new ArrayList(2);
@@ -136,51 +134,29 @@ public void OnAllPluginsLoaded()
 	sv_cheats = FindConVar("sv_cheats");
 }
 
-char sMap[64], g_sCurMap[64];
+char g_sCurMap[64];
 bool g_bTankVaildMap, g_bWitchValidMap;
 public OnMapStart()
 {
 	g_bTankVaildMap = true;
 	g_bWitchValidMap = true;
 	GetCurrentMap(g_sCurMap, 64);
-	Format(sMap, sizeof(sMap), ",%s,", g_sCurMap);
-
-	char sCvar[512];
-	g_hTankMapOff.GetString(sCvar, sizeof(sCvar));
-	if( sCvar[0] != '\0' )
-	{
-		if( strcmp(sCvar, "0") == 0 )
-		{
-			g_bTankVaildMap = false;
-		}
-		else
-		{
-			Format(sCvar, sizeof(sCvar), ",%s,", sCvar);
-			if( StrContains(sCvar, sMap, false) != -1 )
-				g_bTankVaildMap = false;
-		}
-	}
-
-	sCvar = "";
-	g_hWitchMapOff.GetString(sCvar, sizeof(sCvar));
-	if( sCvar[0] != '\0' )
-	{
-		if( strcmp(sCvar, "0") == 0 )
-		{
-			g_bWitchValidMap = false;
-		}
-		else
-		{
-			Format(sCvar, sizeof(sCvar), ",%s,", sCvar);
-			if( StrContains(sCvar, sMap, false) != -1 )
-				g_bWitchValidMap = false;
-		}
-	}
 
 	MI_KV_Close();
 	MI_KV_Load();
 	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
 		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	} else
+	{
+		if (g_hMIData.GetNum("tank_map_off", 0) == 1)
+		{
+			g_bTankVaildMap = false;
+		}
+
+		if (g_hMIData.GetNum("witch_map_off", 0) == 1)
+		{
+			g_bWitchValidMap = false;
+		}
 	}
 	KvRewind(g_hMIData);
 }
@@ -247,7 +223,7 @@ public Action:COLD_DOWN(Handle:timer)
 		iCvarMinFlow = L4D_GetMapValueInt("versus_boss_flow_min", iCvarMinFlow);
 		iCvarMaxFlow = L4D_GetMapValueInt("versus_boss_flow_max", iCvarMaxFlow);
 
-		if(survivor_limit_value != 1)
+		if(survivor_limit_value != 1 && g_bTankVaildMap == true)
 		{
 			if (g_bTankVaildMap == true)
 			{

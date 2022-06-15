@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION	"2.0"
+#define PLUGIN_VERSION	"2.1"
 
 #pragma semicolon 1
 
@@ -27,13 +27,16 @@ enum DATA
 	TANK
 }
 
+native bool HasFinalFirstTank(); //from l4d_NoRescueFirstTank.smx
+native bool HasEscapeTank(); //from l4d_NoEscapeTank.smx
+
 public Plugin:myinfo =
 {
 	name = "l4d_tank_witch_damage_announce_spawnAnnouncer",
 	author = "raziEiL [disawar1],l4d1 modify by Harry Potter",
 	description = "Bosses dealt damage announcer and Announce in chat and via a sound when a Tank/Witch has spawned",
 	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/id/raziEiL"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
 static		Handle:g_hTankHealth, Handle:g_hVsBonusHealth, Handle:g_hDifficulty, Handle:g_hGameMode, bool:g_bCvarSkipBots, g_iCvarHealth[BOSSES],
@@ -47,9 +50,17 @@ new g_TankOtherDamage = 0;
 new g_bCvarSurvLimit;
 bool resuce_start = false, g_bVehicleIncoming = false, b_IsSecondWitch = false;
 
-public OnMapStart()
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	PrecacheSound("ui/pickup_secret01.wav");
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success;
 }
 
 public OnPluginStart()
@@ -104,12 +115,15 @@ public OnPluginStart()
 	control_time=1;
 }
 
-ConVar rotoblin_enable_2v2, no_final_first_tank, no_escape_tank;
+ConVar rotoblin_enable_2v2;
 public void OnAllPluginsLoaded()
 {
 	rotoblin_enable_2v2 = FindConVar("rotoblin_enable_2v2");
-	no_final_first_tank = FindConVar("no_final_first_tank");
-	no_escape_tank		= FindConVar("no_escape_tank");
+}
+
+public OnMapStart()
+{
+	PrecacheSound("ui/pickup_secret01.wav");
 }
 
 public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -221,22 +235,16 @@ public Action:PD_t_CheckIsInf(Handle:timer, any:client)
 
 public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(resuce_start && no_final_first_tank != null)
+	if(resuce_start && HasFinalFirstTank() == false)
 	{
-		if(no_final_first_tank.IntValue == 1)
-		{
-			resuce_start = false;
-			return;
-		}
+		resuce_start = false;
+		return;
 	}
 
-	if(g_bVehicleIncoming && no_escape_tank != null)
+	if(g_bVehicleIncoming && HasEscapeTank() == false)
 	{
-		if(no_escape_tank.IntValue == 1)
-		{
-			resuce_start = false;
-			return;
-		}
+		resuce_start = false;
+		return;
 	}
 
 	if (!g_bIsTankAlive)

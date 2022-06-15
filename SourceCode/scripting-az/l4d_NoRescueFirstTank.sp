@@ -4,54 +4,84 @@
 #include <left4dhooks>
 #include <multicolors>
 
-static 		Handle:g_hEnableNoFinalFirstTank, bool:g_bEnableNoFinalFirstTank;
+ConVar g_hEnableNoFinalFirstTank;
+bool g_bEnableNoFinalFirstTank;
 
 static bool:resuce_start,bool:HasBlockFirstTank;
 static bool:g_bFixed,bool:Tank_firstround_spawn,Float:g_fTankData_origin[3],Float:g_fTankData_angel[3];
-static g_EnableNoFinalFirstTank_original;
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
+static KeyValues g_hMIData = null;
+bool g_bNoFinalFirstTankMap;
 
 public Plugin:myinfo = 
 {
 	name = "L4D Final No First Tank",
 	author = "Harry Potter",
-	description = "Final Stage except for 'The Sacrifice', No First Tank Spawn as the final rescue start and second tank spawn same position for both team",
-	version = "1.4",
+	description = "No First Tank Spawn as the final rescue start and second tank spawn same position for both team",
+	version = "1.5",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	CreateNative("HasFinalFirstTank", Native_HasFinalFirstTank);
+	return APLRes_Success;
+}
+
+public int Native_HasFinalFirstTank(Handle plugin, int numParams) {
+	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank)  return true;
+	else return false;
 }
 
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	g_hEnableNoFinalFirstTank	= CreateConVar("no_final_first_tank", "1", "Removes tanks which spawn as the rescue vehicle arrives on finales.", _, true, 0.0, true, 1.0);
+	g_hEnableNoFinalFirstTank = CreateConVar("no_final_first_tank", "1", "Removes tanks which spawn as the rescue vehicle arrives on finales.", _, true, 0.0, true, 1.0);
+	
 	HookEvent("finale_start", Event_Finale_Start);
 	HookEvent("round_start", 	Event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("tank_spawn", PD_ev_TankSpawn, EventHookMode_PostNoCopy);
 	
 	g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);
-	g_EnableNoFinalFirstTank_original = GetConVarInt(g_hEnableNoFinalFirstTank);
 	HookConVarChange(g_hEnableNoFinalFirstTank, Enable_CvarChange);
-	
 }
+
 public OnMapStart()
 {
 	//強制rescue Second tank出生在一樣的位置
 	g_bFixed = false;
 	Tank_firstround_spawn = false;
 	ClearVec();
+
+	g_bNoFinalFirstTankMap = true;
+	char sCurMap[64];
+	GetCurrentMap(sCurMap, 64);
+
+	MI_KV_Close();
+	MI_KV_Load();
+	if (!KvJumpToKey(g_hMIData, sCurMap)) {
+		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	} else
+	{
+		if (g_hMIData.GetNum("no_final_first_tank", 1) == 0)
+		{
+			g_bNoFinalFirstTankMap = false;
+		}
+	}
+	MI_KV_Close();
 }
 
 public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(IsTankProhibit()) 
-	{
-		SetConVarInt(g_hEnableNoFinalFirstTank, 0);
-		g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);
-	}
-	else
-		SetConVarInt(g_hEnableNoFinalFirstTank, g_EnableNoFinalFirstTank_original);
-	
-	if(!g_bEnableNoFinalFirstTank)  return;
+	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank)  return;
 	
 	resuce_start = true;
 	CreateTimer(0.1, On_t_Instruction);
@@ -70,7 +100,9 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 {
-	if(g_bEnableNoFinalFirstTank && resuce_start)
+	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank) return Plugin_Continue;
+
+	if(resuce_start)
 	{
 		if(!HasBlockFirstTank)
 		{
@@ -82,7 +114,9 @@ public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 
 public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-	if(g_bEnableNoFinalFirstTank && resuce_start)
+	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank) return;
+
+	if(resuce_start)
 	{
 		if(!HasBlockFirstTank)
 		{
@@ -141,16 +175,7 @@ public Enable_CvarChange(Handle:convar, const String:oldValue[], const String:ne
 {
 	if (StrEqual(oldValue, newValue)) return;
 
-	g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);
-	g_EnableNoFinalFirstTank_original = GetConVarInt(g_hEnableNoFinalFirstTank);
-}
-
-
-static bool:IsTankProhibit()//犧牲最後一關
-{
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
-	return StrEqual(sMap, "l4d_river03_port");
+	g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);\
 }
 
 IsTankInGame(exclude = 0)
@@ -172,5 +197,25 @@ static ClearVec()
 	for (new index; index < 3; index++){
 		g_fTankData_origin[index] = 0.0;
 		g_fTankData_angel[index] = 0.0;
+	}
+}
+
+void MI_KV_Load()
+{
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = CreateKeyValues("MapInfo");
+	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
+		LogError("[MI] Couldn't load MapInfo data!");
+		MI_KV_Close();
+	}
+}
+
+void MI_KV_Close()
+{
+	if (g_hMIData != null) {
+		CloseHandle(g_hMIData);
+		g_hMIData = null;
 	}
 }

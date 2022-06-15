@@ -8,35 +8,19 @@
 
 "Commands"
 {
-	"Changemap"
+	"ChangeMap"
 	{
-		"No Mercy Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_hospital01_apartment"
-		}
 		"No Mercy VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_hospital01_apartment"
-		}
-		"Death Toll Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_smalltown01_caves"
 		}
 		"Death Toll VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_smalltown01_caves"
 		}
-		"Dead Air Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_airport01_greenhouse"
-		}
 		"Dead Air VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_airport01_greenhouse"
-		}
-		"Blood Harvest Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_farm01_hilltop"
 		}
 		"Blood Harvest VS"
 		{
@@ -50,25 +34,13 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_river01_docks"
 		}
-		"City17 Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_city17_01"
-		}
 		"City17 VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_city17_01"
 		}
-		"Suicide Blitz Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_stadium1_apartment"
-		}
 		"Suicide Blitz VS"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_stadium1_apartment"
-		}
-		"Dead Flag Blue Coop"
-		{
-			"cmd" "sm_rcon changelevel l4d_deadflagblues01_city"
 		}
 		"Dead Flag Blue VS"
 		{
@@ -94,8 +66,20 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_149_1"
 		}
+		"Dark Blood"
+		{
+			"cmd" "sm_rcon changelevel l4d_darkblood01_tanker"
+		}
+		"Blood Harvest APOCALYPSE"
+		{
+			"cmd" "sm_rcon changelevel rombu01"
+		}
+		"Precinct 84"
+		{
+			"cmd" "sm_rcon changelevel l4d_noprecinct01_crash"
+		}
 	}
-	"Changemode"
+	"ChangeMode"
 	{
 		"5v5 Hardcore"
 		{

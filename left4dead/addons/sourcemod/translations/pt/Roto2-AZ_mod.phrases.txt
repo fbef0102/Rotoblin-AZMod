@@ -699,11 +699,11 @@
 	}
 	"game1"
 	{
-		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}H Cara{default}!"
+		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}H Cara(Heads){default}!"
 	}
 	"game2"
 	{	
-		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}T Coroa{default}!"
+		"pt"	"{olive}{1}{default} jogou a moeda!. Está {green}T Coroa(Tails){default}!"
 	}
 	"game3"
 	{

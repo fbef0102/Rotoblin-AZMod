@@ -71,7 +71,6 @@ public Plugin:myinfo =
 #define IsSpectator(%0) (GetClientTeam(%0) == TEAM_SPECTATOR)
 #define IsSurvivor(%0) (GetClientTeam(%0) == TEAM_SURVIVOR)
 #define IsInfected(%0) (GetClientTeam(%0) == TEAM_INFECTED)
-#define IsWitch(%0) (g_bIsWitch[%0])
 #define IsPouncing(%0) (g_bIsPouncing[%0])
 #define IsIncapped(%0) (GetEntProp(%0, Prop_Send, "m_isIncapacitated") > 0)
 #define IsBoomed(%0) ((GetEntPropFloat(%0, Prop_Send, "m_vomitStart") + 20.1) > GetGameTime())
@@ -142,7 +141,6 @@ new				g_iLastHealth[MAXPLAYERS + 1];
 new		bool:	g_bHasBoomLanded;
 new		bool:	g_bStatsCooldown[MAXPLAYERS + 1];					// Prevent spam of stats command (potential DoS vector I think)
 new		bool:	g_bHasLandedPounce[MAXPLAYERS + 1];					// Used to determine if a deadstop was 'pierced'
-new		bool:	g_bIsWitch[MAXENTITIES];							// Membership testing for fast witch checking
 new		bool:	g_bIsPouncing[MAXPLAYERS + 1];
 new		bool:	g_bShotCounted[MAXPLAYERS + 1][MAXPLAYERS +1];		// Victim - Attacker, used by playerhurt and weaponfired
 
@@ -454,7 +452,6 @@ public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 	isroundreallyend = true;
 	// In case witch is avoided
 	g_iAccumulatedWitchDamage = 0;
-	ResetWitchTracking();
 	if (g_bHasRoundEnded) return;
 	g_bHasRoundEnded = true;
 	CreateTimer(7.5, Timer_DelayedStatsPrint);
@@ -923,7 +920,6 @@ public Event_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (g_bHasRoundEnded) return;
-	g_bIsWitch[GetEventInt(event, "witchid")] = false;
 
 	new killer = GetClientOfUserId(GetEventInt(event, "userid"));
 
@@ -942,7 +938,6 @@ public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 public Event_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (g_bHasRoundEnded) return;
-	g_bIsWitch[GetEventInt(event, "witchid")] = true;
 	g_bShouldAnnounceWitchDamage = true;
 }
 
@@ -1042,7 +1037,6 @@ ClearMapStats()
 		ClearDamage(i);
 	}
 	g_iAccumulatedWitchDamage = 0;
-	ResetWitchTracking();
 }
 
 /*
@@ -1053,11 +1047,6 @@ ClearPlayerStatsAndState(client)
 	ClearDamage(client);
 }
 */
-
-ResetWitchTracking()
-{
-	for (new i = MaxClients + 1; i < MAXENTITIES; i++) g_bIsWitch[i] = false;
-}
 
 // Clear g_iDamageDealt, g_iShotsDealt, and g_iLastHealth for given client
 ClearDamage(client)
@@ -1113,4 +1102,15 @@ public Action:Award(Handle:timer, any:client)
 	}
 	
 	return Plugin_Continue;
+}
+
+bool IsWitch(int entity)
+{
+    if (entity > 0 && IsValidEntity(entity) && IsValidEdict(entity))
+    {
+        static char strClassName[64];
+        GetEdictClassname(entity, strClassName, sizeof(strClassName));
+        return strcmp(strClassName, "witch", false) == 0;
+    }
+    return false;
 }

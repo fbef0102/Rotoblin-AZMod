@@ -691,11 +691,11 @@
 	}
 	"game1"
 	{
-		"es"	"{olive}{1}{default} lanzó una moneda!. Salio {green}Cara{default}!"
+		"es"	"{olive}{1}{default} lanzó una moneda!. Salio {green}Cara(Heads){default}!"
 	}
 	"game2"
 	{
-		"es"	"{olive}{1}{default} lanzó una moneda!. Salio {green}Cruz{default}!"
+		"es"	"{olive}{1}{default} lanzó una moneda!. Salio {green}Cruz(Tails){default}!"
 	}
 	"game3"
 	{

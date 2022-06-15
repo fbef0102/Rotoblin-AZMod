@@ -31,7 +31,7 @@
 #define L4D_TEAM_SPECTATE 1
 #define L4D_TEAM_MAX_CLIENTS 4
 #define L4D_TEAM_NAME(%1) (%1 == 2 ? "Survivors" : (%1 == 3 ? "Infected" : (%1 == 1 ? "Spectators" : "Unknown")))
-#define CONFIG_SPAWNS		"data/l4d1_versus_modifier.cfg" //真正修改遊戲難度的在left4dead\missions
+#define CONFIG_MAPINFO		"data/mapinfo.txt" //真正修改遊戲難度的在left4dead\missions
 
 /*
 TODO:
@@ -742,7 +742,7 @@ Handle:OpenConfig(bool:create = true)
 {
 	// Create config if it does not exist
 	decl String:sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath), "%s", CONFIG_SPAWNS);
+	BuildPath(Path_SM, sPath, sizeof(sPath), "%s", CONFIG_MAPINFO);
 	if( !FileExists(sPath) )
 	{
 		if( create == false )
@@ -754,7 +754,7 @@ Handle:OpenConfig(bool:create = true)
 	}
 
 	// Open the jukebox config
-	new Handle:hFile = CreateKeyValues("versus");
+	new Handle:hFile = CreateKeyValues("MapInfo");
 	if( !FileToKeyValues(hFile, sPath) )
 	{
 		CloseHandle(hFile);
@@ -1664,7 +1664,7 @@ Float:CalculateScorePercent(Float:score, Float:maxbonus = -1.0)
 	if(maxbonus == -1.0)
 	{
 		new sur = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
-		maxbonus = (100+50*sur+20*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*MapVersusDifficulty ;
+		maxbonus = (100+50*sur+g_iPillScore*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*MapVersusDifficulty ;
 	}
 	return (score / maxbonus) * 100;
 }
@@ -2447,7 +2447,7 @@ CheckSurvivorProgress()
 	{
 		new Handle:PANEL = CreatePanel();
 		
-		EmitSoundToAll("ui/holdout_teamrec.wav");
+		EmitSoundToAll("ui/holdout_teamrec.wav",_,_,_,_,0.25);
 		decl String:panel_message[128];
 		Format(panel_message, sizeof(panel_message), "The Survivors have made it %d%% of the way!",survivor_progress);
 		DrawPanelText(PANEL, panel_message);

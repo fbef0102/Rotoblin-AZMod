@@ -1613,7 +1613,7 @@ public Action:Config_Changer(client, args)
 				}
 				else
 				{
-					CPrintToChatAll("[{olive}TS{default}] %t","Invalid Config."); //if sum of configs is less than 1 or more than 2, print invalid config
+					CPrintToChat(client, "[{olive}TS{default}] %t","Invalid Config.", client); //if sum of configs is less than 1 or more than 2, print invalid config
 					return Plugin_Handled;
 				}								
 				if(!Config_Requests[Opposite_Team] == false)

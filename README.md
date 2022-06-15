@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.7
+v8.3.8
 @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -47,6 +47,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Mapcyclelist: -left4dead/addons/sourcemod/data/sm_l4dvs_mapchanger.txt、sm_l4dco_mapchanger.txt
   * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
+  * Control Map Info: -left4dead/addons/sourcemod/data/mapinfo.txt
   * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * [translations](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/translation%20list.txt): -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
   > **Developer Comment:** Want to translate this config into any language? Hate to see English? contact us and we will help translate your country language in next Roto-AZ mod update.
@@ -131,8 +132,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Forcespectate player
    
 - - - -
-### Map Changes(!cm) ###
-
+### Map Changes ###
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
   * Remove environmental sounds and DSP + Remove microphone / speaker effects
@@ -145,19 +145,20 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Blocked "this is restricted area" room where infected ghost can not even spawn
   * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
-  * Pistol density: 3.0
-  * Ammo density: 2.0
   
 * **Support Custom maps:**
-  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)**
-  * City 17 (!cm c17)
-  * Suicide Blitz (!cm sb)
-  * Dead Flag Blues (!cm dfb)
-  * I Hate Mountains (!cm ihm)
-  * Dead Before Dawn (!cm dbd)
-  * The Arena of the Dead (!cm aotd)
-  * Death Aboard (!cm dab)
-  * One 4 Nine (!cm 149)
+  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)** (!votes -> Change addon map)
+  * City 17 
+  * Suicide Blitz
+  * Dead Flag Blues
+  * I Hate Mountains
+  * Dead Before Dawn
+  * The Arena of the Dead
+  * Death Aboard
+  * One 4 Nine
+  * Dark Blood
+  * Blood Harvest APOCALYPSE
+  * Precinct 84
   
 * **Nav Remake:**
   * No Mercy Map 1
@@ -281,7 +282,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
-    * Allows infected to warp to survivors (MOUSE2 or Command: **sm_warpto [#|name]**)
+    * Allows ghost infected to warp to survivors, Command: **sm_warpto [#|name]** or MOUSE2 (!warpm2off to disable, say !warpm2on to enable)
 	  - *1*: **Francis**
 	  - *2*: **Bill**
 	  - *3*: **Zoey**
@@ -309,6 +310,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * if no target found, infected stops m1 ability.
 	* Enable free movement (Left/Right/Crouch) on SI when M2-ing.
 	* Fix SI being unable to break props/walls within finale area before finale starts.
+	* No more explosion damage to the infected from entity
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -353,6 +355,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
 	* Tank burn life time: 125s (vanilla: **75**)
 	* Ghost Tank freezes and being immune to fire for a while.
+	* Fix frozen tanks, force tank player suicide when playing death animation.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -475,7 +478,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
   * Block survivors from being able to open/close doors while incapacitated/hanging.
   * Block survivors from being able to open/close doors while immobilized by hunter/smoker.
-  
+  * Prevent Sounds from playing
+    * Heartbeat
+    * Incapacitated Injury
+	
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
   * Smoker: **0s**

@@ -1,31 +1,3 @@
-/*
- * ============================================================================
- *
- * This file is part of the Rotoblin 2 project.
- *
- *  File:			rotoblin.NoEscapeTank.sp
- *  Type:			Module
- *  Description:	Remove escape tanks on final when vehicle incoming.
- *
- *  Copyright (C) 2012-2015 raziEiL <war4291@mail.ru>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * ============================================================================
- */
-
-
 #include <sourcemod>
 #include <sdktools>
 #include <left4dhooks>
@@ -42,8 +14,27 @@ public Plugin:myinfo =
 	name = "L4D Score/Team Manager",
 	author = "Harry Potter",
 	description = "No Tank Spawn as the rescue vehicle is coming",
-	version = "1.0",
-	url = "http://forums.alliedmods.net/showthread.php?t=87759"
+	version = "1.2",
+	url = "http://steamcommunity.com/profiles/76561198026784913"
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	CreateNative("HasEscapeTank", Native_HasEscapeTank);
+	return APLRes_Success;
+}
+
+public int Native_HasEscapeTank(Handle plugin, int numParams) {
+	if(!g_bEnableNoEscTank)  return true;
+	else return false;
 }
 
 public OnPluginStart()
@@ -83,12 +74,15 @@ public void NET_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 	{
 		int userid = GetEventInt(event, "userid");
 		int client = GetClientOfUserId(userid);
-		TeleportEntity(client,
-		NULL_VELOCITY, // Teleport to map center
-		NULL_VECTOR, 
-		NULL_VECTOR);
-		CreateTimer(1.5, KillEscapeTank, userid);
-		return;
+		if(client && IsClientInGame(client) && IsFakeClient(client))
+		{
+			SetEntProp(client, Prop_Send, "m_isGhost", true, 1); // become ghost
+			TeleportEntity(client,
+			NULL_VELOCITY, // Teleport to map center
+			NULL_VECTOR, 
+			NULL_VECTOR);
+			CreateTimer(0.5, KillEscapeTank, userid);
+		}
 	}
 }
 

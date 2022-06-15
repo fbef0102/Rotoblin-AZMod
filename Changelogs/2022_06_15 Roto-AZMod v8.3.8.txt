@@ -1,0 +1,31 @@
+v8.3.8
+
+------------------Delete------------------
+-data\l4d1_versus_modifier.cfg
+* merge data\mapinfo.txt
+
+------------------New------------------
+-plugins\frozen_tank_fix.smx
+* Fix frozen tanks, force tank player suicide when playing death animation.
+
+-plugins\l4d_remove_item_collision.smx
+* No more explosion damage to the infected from entity
+
+-plugins\l4d2_sound_manipulation.smx
+* Prevent Sounds from playing
+   * Heartbeat
+   * Incapacitated Injury
+
+-Support New Custom Map
+* Dark Blood
+* Blood Harvest APOCALYPSE
+* Precinct 84 
+
+------------------Change------------------
+-plugins\l4d_versus_GhostWarp.smx
+* add Command to disable/enable ghost infected warp by m2
+   * !warpm2off to disable
+   * !warpm2on to enable
+   
+-plugins\l4d_PillsHere.smx
+* delete !give command

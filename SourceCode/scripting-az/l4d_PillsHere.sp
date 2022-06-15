@@ -22,16 +22,16 @@ public Plugin:myinfo =
 	name = "[L4D] Pills Here",
 	author = "Crimson_Fox,modify by Harry",
 	description = "Gives pills to survivors who doesn't have pill",
-	version = "1.2",
-	url = "http://forums.alliedmods.net/showthread.php?p=915033"
+	version = "1.3",
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
 public OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	RegAdminCmd("sm_give", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
-	RegAdminCmd("sm_geiyao", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
+	//RegAdminCmd("sm_give", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
+	//RegAdminCmd("sm_geiyao", Command_GivePills, ADMFLAG_BAN, "Give pills to survivors");
 	RegAdminCmd("sm_geiyaoto", Command_GiveWhoPills, ADMFLAG_BAN, "Give a pill to the specificed survivor");
 	RegAdminCmd("sm_giveto", Command_GiveWhoPills, ADMFLAG_BAN, "Give a pill to the specificed survivor");	
 }

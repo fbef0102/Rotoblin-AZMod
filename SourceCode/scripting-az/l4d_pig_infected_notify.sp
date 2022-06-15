@@ -7,11 +7,7 @@
 #include <left4dhooks>
 
 #define PLUGIN_VERSION "2.4"
-#define MAXENTITIES 2048
-
 int Tankclient;
-#define IsWitch(%0) (g_bIsWitch[%0])
-bool g_bIsWitch[MAXENTITIES+1];							// Membership testing for fast witch checking
 
 public Plugin myinfo = 
 {
@@ -29,8 +25,6 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("door_open", Event_DoorOpen);
 	HookEvent("door_close", Event_DoorClose);
-	HookEvent("witch_killed", Event_WitchKilled);
-	HookEvent("witch_spawn", Event_WitchSpawn);
 }
 
 
@@ -409,20 +403,6 @@ bool PlayerIsTank(int client)
 	return false;
 }
 
-public void Event_WitchKilled(Event event, const char[] name, bool dontBroadcast)
-{
-	g_bIsWitch[GetEventInt(event, "witchid")] = false;
-	
-}
-public void Event_WitchSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	g_bIsWitch[GetEventInt(event, "witchid")] = true;
-}
-public void OnMapStart()
-{
-	for (new i = MaxClients + 1; i < MAXENTITIES; i++) g_bIsWitch[i] = false;
-}
-
 bool IsTooClose(int client, int tank)
 {
 	float fClientLocation[3], fTankLocation[3];
@@ -435,4 +415,15 @@ bool IsTooClose(int client, int tank)
 	}
 
 	return false;
+}
+
+bool IsWitch(int entity)
+{
+    if (entity > 0 && IsValidEntity(entity) && IsValidEdict(entity))
+    {
+        static char strClassName[64];
+        GetEdictClassname(entity, strClassName, sizeof(strClassName));
+        return strcmp(strClassName, "witch", false) == 0;
+    }
+    return false;
 }

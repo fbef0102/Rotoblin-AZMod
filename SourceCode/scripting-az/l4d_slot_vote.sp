@@ -308,7 +308,7 @@ public Action:Cmd_NoSpec(iClient, iArgs)
 
 	if (GetClientTeam(iClient) == 1)
 	{
-		PrintToChat(iClient, "%T", "Spectator response,",iClient);
+		PrintToChat(iClient, "%T", "Spectator response",iClient);
 		return Plugin_Handled;
 	}
 	

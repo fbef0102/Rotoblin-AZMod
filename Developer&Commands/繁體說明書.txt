@@ -17,7 +17,7 @@ Author:
 [08] Socket 3.0.1
 [09] geoipcity 1.1.2
 [10] sourcescramble 0.7.0
-[11] CollisionHooks 0.2 (linux only)
+[11] CollisionHooks 0.2
 
 --------地圖修改--------
 1. 所有VS地圖均已解除屋頂限制
@@ -31,8 +31,6 @@ Author:
 6. 封鎖一些 "this is restricted area" 區域因為特感不能復活
 7. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
 8. 最終關卡路程符合救援進度
-9. 路上手槍生成密度: 3.0
-10. 子彈堆生成密度: 2.0
 
 --------武器調整--------
 [01] Uzi 機槍
@@ -594,6 +592,16 @@ Author:
 [170] l4d_fix_finale_breakable
 //最後救援開始之前，特感能打破救援區域內的特感專屬牆壁與專屬物件
 
+[171] frozen_tank_fix
+//強制殺死已經0血量的Tank玩家（避免玩家在死亡動畫卡住）
+
+[172] l4d2_explosiondmg_prev
+//特感不會受到地圖上的爆炸傷害
+
+[173] l4d2_sound_manipulation
+//消除一些音效
+//1. 黑白心跳聲 2. 倖存者倒地的尖叫聲
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -627,6 +635,9 @@ Map = 地圖難度修改
 [06] The Arena of the Dead
 [07] Death Aboard
 [08] One 4 Nine
+[09] Dark Blood
+[10] Blood Harvest APOCALYPSE
+[11] Precinct 84
 
 --------指令備忘錄--------
 [管理員專用]
@@ -635,7 +646,6 @@ Map = 地圖難度修改
 -!addban //sm_addban <time> <steamid> [reason] //封鎖玩家
 -!ban //sm_ban <#userid|name> <minutes|0> [reason] //封鎖玩家
 -!banip //sm_banip <ip|#userid|name> <time> [reason] //封鎖玩家IP
--!give //給整隊倖存者藥丸
 -!giveto <name> //給指定的倖存者藥丸
 -!settankplayer <name> //指定一位特感玩家將成為Tank
 -!kickspec //踢出所有非adm的旁觀者
