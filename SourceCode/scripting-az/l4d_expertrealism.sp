@@ -215,14 +215,14 @@ public Action Command_HideHud(int client, int args)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
-	if(bHardCoreHUDMODE == false) return;
+	if(bHardCoreHUDMODE == false) return Plugin_Continue;
 
 	if(IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 2 && IsPlayerAlive(client) )
 	{
 		if(IsBeingPwnt(client)) //被控
 		{
 			HardCoreHideHud(client);
-			return;
+			return Plugin_Continue;
 		}
 		
 		float flVel[3];
@@ -233,7 +233,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			{
 				HardCoreShowHud(client);
 				delete g_hHideHardCoreHudTimer[client];
-				return;
+				return Plugin_Continue;
 			}
 		}
 
@@ -244,7 +244,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			{
 				HardCoreShowHud(client);
 				delete g_hHideHardCoreHudTimer[client];
-				return;
+				return Plugin_Continue;
 			}
 		}
 
@@ -274,6 +274,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 public Action Timer_CountDown(Handle timer, int client)
@@ -317,14 +319,14 @@ public void OnClientDisconnect(int client)
 	delete g_hHideHardCoreHudTimer[client];
 }
 
-public Action evtRoundStart(Event event, const char[] name, bool dontBroadcast) 
+public void evtRoundStart(Event event, const char[] name, bool dontBroadcast) 
 {
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
 		CreateTimer(TIMER_START, TimerStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iRoundStart = 1;
 }
 
-public Action evtRoundEnd (Event event, const char[] name, bool dontBroadcast) 
+public void evtRoundEnd (Event event, const char[] name, bool dontBroadcast) 
 {
 	g_iRoundStart = g_iPlayerSpawn = 0;
 	ResetTimer();
@@ -356,7 +358,10 @@ public Action TimerStart(Handle timer)
 			SetGlowClient(i, bGlow);
 		}
 	}
+
+	return Plugin_Continue;
 }
+
 public void evtPlayerTeam(Event event, const char[] name, bool dontBroadcast) 
 {
 	int userid = event.GetInt("userid");
@@ -369,7 +374,7 @@ public void evtPlayerTeam(Event event, const char[] name, bool dontBroadcast)
 public Action PlayerChangeTeamCheck(Handle timer,int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if (!client || !IsClientInGame(client) || IsFakeClient(client)) return;
+	if (!client || !IsClientInGame(client) || IsFakeClient(client)) return Plugin_Continue;
 	
 	if(GetClientTeam(client) == 2 && IsPlayerAlive(client))
 	{
@@ -381,6 +386,8 @@ public Action PlayerChangeTeamCheck(Handle timer,int userid)
 		SetHideHudClient(client, 0);
 		SetGlowClient(client, true);	
 	}
+
+	return Plugin_Continue;
 }
 
 public void	evtPlayerDeath(Event event, const char[] name, bool dontBroadcast) 

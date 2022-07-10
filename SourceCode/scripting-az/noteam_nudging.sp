@@ -40,4 +40,6 @@ public Action UpdateAvoid(Handle timer)
 		
 		SetEntPropFloat(i, Prop_Send, "m_noAvoidanceTimer", flTime + NOAVOID_ADDTIME, 1);
 	}
+
+	return Plugin_Continue;
 }

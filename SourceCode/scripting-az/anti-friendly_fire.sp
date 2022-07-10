@@ -70,7 +70,7 @@ public Action:eventPlayerHurt(Handle:event, const String:name[], bool:dontBroadc
 
 stock IsClientAndInGame(client)
 {
-	if (0 < client && client < MaxClients)
+	if (0 < client && client <= MaxClients)
 	{	
 		return IsClientInGame(client);
 	}

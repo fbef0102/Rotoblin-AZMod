@@ -170,6 +170,8 @@ public Action KillFirstTank(Handle timer, int userid)
 		CPrintToChatAll("%t","l4d_NoRescueFirstTank");
 		HasBlockFirstTank = true;
 	}
+
+	return Plugin_Continue;
 }
 public Enable_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
 {

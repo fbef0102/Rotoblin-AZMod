@@ -8,16 +8,16 @@ new Handle:hCvarChokeDamageInterrupt;
 public Smoker_OnModuleStart() {
 	 // Smoker health
     hCvarSmokerHealth = FindConVar("z_gas_health");
-    HookConVarChange(hCvarSmokerHealth, ConVarChanged:OnSmokerHealthChanged); 
+    HookConVarChange(hCvarSmokerHealth, OnSmokerHealthChanged); 
     
     // Damage required to kill a smoker that is pulling someone
     hCvarChokeDamageInterrupt = FindConVar("tongue_break_from_damage_amount"); 
     SetConVarInt(hCvarChokeDamageInterrupt, GetConVarInt(hCvarSmokerHealth)); // default 50
-    HookConVarChange(hCvarChokeDamageInterrupt, ConVarChanged:OnTongueCvarChange);    
+    HookConVarChange(hCvarChokeDamageInterrupt, OnTongueCvarChange);    
     // Delay before smoker shoots its tongue
     hCvarTongueDelay = FindConVar("smoker_tongue_delay"); 
     SetConVarFloat(hCvarTongueDelay, SMOKER_TONGUE_DELAY); // default 1.5
-    HookConVarChange(hCvarTongueDelay, ConVarChanged:OnTongueCvarChange);
+    HookConVarChange(hCvarTongueDelay, OnTongueCvarChange);
 }
 
 public Smoker_OnModuleEnd() {
@@ -26,12 +26,12 @@ public Smoker_OnModuleEnd() {
 }
 
 // Game tries to reset these cvars
-public OnTongueCvarChange() {
+public void OnTongueCvarChange(ConVar convar, const char[] oldValue, const char[] newValue) {
 	SetConVarFloat(hCvarTongueDelay, SMOKER_TONGUE_DELAY);	
 	SetConVarInt(hCvarChokeDamageInterrupt, GetConVarInt(hCvarSmokerHealth));
 }
 
 // Update choke damage interrupt to match smoker max health
-public Action:OnSmokerHealthChanged() {
+public void OnSmokerHealthChanged(ConVar convar, const char[] oldValue, const char[] newValue) {
 	SetConVarInt(hCvarChokeDamageInterrupt, GetConVarInt(hCvarSmokerHealth));
 }

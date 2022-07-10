@@ -16,14 +16,14 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	HookEvent("entity_shoved", Event_EntShoved);
-	AddNormalSoundHook(NormalSHook:HookSound_Callback); //my melee hook since they didnt include an event for it
+	AddNormalSoundHook(HookSound_Callback); //my melee hook since they didnt include an event for it
 	
 	CreateConVar("l4d_stuckzombiemeleefix_version", PLUGIN_VERSION, " Version of L4D Stuck Zombie Melee Fix on this server ", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 }
 
 new bool:MeleeDelay[MAXPLAYERS+1];
 
-public Action:HookSound_Callback(Clients[64], &NumClients, String:StrSample[PLATFORM_MAX_PATH], &Entity)
+public Action:HookSound_Callback(Clients[64], &NumClients, String:StrSample[PLATFORM_MAX_PATH], &Entity, &iChannel, &Float:fVolume, &fLevel, &iPitch, &iFlags)
 {
 	//to work only on melee sounds, its 'swish' or 'weaponswing'
 	if (StrContains(StrSample, "Swish", false) == -1) return Plugin_Continue;

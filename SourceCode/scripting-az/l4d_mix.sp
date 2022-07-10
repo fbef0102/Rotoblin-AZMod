@@ -415,7 +415,7 @@ public int Handler_SurvivorCaptainCallback(Menu menu, MenuAction action, int par
 	}
 	switch (action)
 	{
-		case 4:
+		case MenuAction_Select:
 		{
 			char item[16];
 			menu.GetItem(param2, item, 16);
@@ -427,6 +427,8 @@ public int Handler_SurvivorCaptainCallback(Menu menu, MenuAction action, int par
 			}
 		}
 	}
+
+	return 0;
 }
 
 void DisplayVoteMenuPlayerSelect()
@@ -487,7 +489,7 @@ public int Handler_PlayerSelectionCallback(Menu menu, MenuAction action, int par
 	}
 	switch (action)
 	{
-		case 4:
+		case MenuAction_Select:
 		{
 			char item[16];
 			menu.GetItem(param2, item, 16);
@@ -526,7 +528,7 @@ public int Handler_PlayerSelectionCallback(Menu menu, MenuAction action, int par
 				CPrintToChat(param1,"{default}[{olive}Mix{default}] %T","l4d_Modo_mix_mm10",param1);
 			}
 		}
-		case 16:
+		case MenuAction_End:
 		{
 			if (menu)
 			{
@@ -534,6 +536,8 @@ public int Handler_PlayerSelectionCallback(Menu menu, MenuAction action, int par
 			}
 		}
 	}
+
+	return 0;
 }
 
 public Action Timer_PlayerSelection(Handle timer)
@@ -631,7 +635,7 @@ public int Handler_InfectedCaptainCallback(Menu menu, MenuAction action, int par
 	}
 	switch (action)
 	{
-		case 4:
+		case MenuAction_Select:
 		{
 			char item[16];
 			menu.GetItem(param2, item, 16);
@@ -643,6 +647,8 @@ public int Handler_InfectedCaptainCallback(Menu menu, MenuAction action, int par
 			}
 		}
 	}
+
+	return 0;
 }
 
 void ResetCaptains()
@@ -734,17 +740,17 @@ public void CaptainVote_OnMapEnd()
 	ResetHasVoted();
 }
 
-public Action CaptainVote_Event_RoundStart(Event event, char[] name, bool dontBroadcast)
+public void CaptainVote_Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 {
 	g_CvarMixStatus.SetInt(0, false, false);
 }
 
-public Action CaptainVote_Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
+public void CaptainVote_Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
 {
 	g_CvarMixStatus.SetInt(0, false, false);
 }
 
-public int CaptainVote_OnClientDisconnect_Post(int client)
+public void OnClientDisconnect(int client)
 {
 	g_iVotesSurvivorCaptain[client] = 0;
 	g_iVotesInfectedCaptain[client] = 0;

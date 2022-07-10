@@ -21,7 +21,7 @@ ConVar g_hGodTime;
 ConVar g_hTeleCoolDownTime;
 ConVar g_hTeleVisibleThreats;
 
-bool GodTime[MAXPLAYERS + 1] = false;
+bool GodTime[MAXPLAYERS + 1] = {false};
 bool g_bRoundAlive;
 bool g_bBoomer2Tank;
 bool g_bTeleVisibleThreats;
@@ -121,7 +121,7 @@ void GetCvars()
 	g_bTeleVisibleThreats = g_hTeleVisibleThreats.BoolValue;
 }
 
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
@@ -129,7 +129,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	g_fClientTeleTime[client] = 0.0;
 }
 
-public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundAlive = false;
 
@@ -139,7 +139,7 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundAlive = false;
 }
@@ -176,6 +176,7 @@ public Action Timer_CheckNoobSi(Handle timer)
 	
 	if(!g_bRoundAlive)
 		return Plugin_Stop;
+
 	return Plugin_Continue;
 }
 
@@ -183,6 +184,8 @@ public Action Timer_RemoveGod(Handle timer, any client)
 {
 	GodTime[client] = false;
 	ResetGlow(client);
+
+	return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int client)
@@ -350,6 +353,8 @@ public Action Timer_CheckIfStuck(Handle timer, int client)
 	{
 		SDKCall(WarpToValidPositionSDKCall, client, 0);
 	}
+
+	return Plugin_Continue;
 }
 
 int GetInfectedClass(int client)

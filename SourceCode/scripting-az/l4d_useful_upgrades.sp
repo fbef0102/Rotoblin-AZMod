@@ -182,7 +182,7 @@ public void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroa
 		DisableAllUpgrades(client);
 }
 
-public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -190,13 +190,13 @@ public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if(client != 0 && IsClientInGame(client) && GetClientTeam(client) == 2 && !IsFakeClient(client)) DisableAllUpgrades(client);
 }
 
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int UserId = event.GetInt("userid");
 	int client = GetClientOfUserId(UserId);
@@ -214,6 +214,8 @@ public Action Timer_LoadCookie(Handle timer, int UserId)
 	{
 		LoadCookie(client);
 	}
+
+	return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int client)
@@ -229,6 +231,8 @@ public Action TimerAnnounce(Handle timer, int client)
 	{
 		PrintToChat(client, "%t", "INFO");
 	}
+
+	return Plugin_Continue;
 }
 
 stock void DisableAllUpgrades(int client)
@@ -317,6 +321,8 @@ public Action Timer_LoadUpgrades(Handle timer, int UserId)
 	if (client != 0 && IsClientInGame(client)) {
 		SetUpgradeBit(client);
 	}
+
+	return Plugin_Continue;
 }
 
 void SetUpgradeBit(int client)
@@ -379,6 +385,8 @@ public Action Timer_SetLaserDelayed(Handle timer, int UserId)
 		else
 			SwitchLaser(client, _, true, true);
 	}
+
+	return Plugin_Continue;
 }
 
 public Action CmdSilencer(int client, int args)

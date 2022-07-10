@@ -2,7 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-
+#include <left4dhooks>
 
 #include "includes/hardcoop_util.sp"
 #include "modules/AI_Smoker.sp"

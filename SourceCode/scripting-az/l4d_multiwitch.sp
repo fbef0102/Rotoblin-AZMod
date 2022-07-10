@@ -25,8 +25,8 @@ new Handle:	hWitchSpawnTimer;
 
 new Handle:wg_min_range;
 new Float:minRangeSquared;
-new i_Ent[2048] = -1;
-new bool:i_Ent_killed[2048] = false;
+new i_Ent[2048] = {-1};
+new bool:i_Ent_killed[2048] = {false};
 new bool:g_EndMap;
 #define NULL					-1
 
@@ -222,6 +222,8 @@ public Action:OnPlayerRunCmd(client, &buttons)
 			}
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 public WitchSpawn_Event(Handle:event, const String:name[], bool:dontBroadcast)
@@ -431,6 +433,8 @@ public Action KickWitch_Timer(Handle timer, int ref)
 			else CreateTimer(h_WitchKillTime.FloatValue,KickWitch_Timer,EntIndexToEntRef(entity),TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 bool IsValidEntRef(int entity)

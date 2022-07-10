@@ -184,6 +184,8 @@ public Action PD_ev_TankSpawn_Delay(Handle:timer, any:client)
 		passCount = 1;
 		g_bIsTankAlive = true;
 	}	
+
+	return Plugin_Continue;
 }
 
 public Action:FindAnyTank(Handle:timer, any:client)

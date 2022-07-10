@@ -227,6 +227,8 @@ public int MenuHandler_MenuList(Menu menu, MenuAction action, int param1, int pa
 			MenuClientsToSpawn(client, menu.Selection);
 		}
 	}
+
+	return 0;
 }
 
 public int NATIVE_Respawn(Handle plugin, int numParams)

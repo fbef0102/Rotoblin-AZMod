@@ -69,7 +69,7 @@ public OnPluginStart()
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	g_cvarSlotsPluginEnabled = CreateConVar("sm_slot_vote_enabled", "1", "Enabled?", FCVAR_NOTIFY);
 	g_cvarSlotsAutoconf = CreateConVar("sm_slot_autoconf", "1", "Autoconfigure slots vote max|min cvars?", FCVAR_NOTIFY);
-	g_hCVarMinAllowedSlots = CreateConVar("sm_slot_vote_min", "10", "Minimum allowed number of server slots (this value must be equal or lesser than sm_slot_vote_max).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
+	g_hCVarMinAllowedSlots = CreateConVar("sm_slot_vote_min", "9", "Minimum allowed number of server slots (this value must be equal or lesser than sm_slot_vote_max).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
 	g_hCVarMaxAllowedSlots = CreateConVar("sm_slot_vote_max", "28", "Maximum allowed number of server slots (this value must be equal or greater than sm_slot_vote_min).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
 
 	g_hCVarMaxPlayersToolZ = FindConVar("sv_maxplayers");

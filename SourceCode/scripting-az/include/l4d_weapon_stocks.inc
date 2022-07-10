@@ -63,7 +63,8 @@ enum L4D2WeaponId
     L4D2WeaponId_ThrowingRock,      // 52
     L4D2WeaponId_TurboPhysics,      // 53
     L4D2WeaponId_Ammo,              // 54
-    L4D2WeaponId_UpgradeItem        // 55
+    L4D2WeaponId_UpgradeItem,       // 55
+    L4D2WeaponId_Max
 };
 
 static const char L4D2WeaponName[L4D2WeaponId][] =
@@ -123,7 +124,8 @@ static const char L4D2WeaponName[L4D2WeaponId][] =
     "rock",                             // 52
     "physics",                          // 53
     "weapon_ammo",                      // 54
-    "upgrade_item"                      // 55
+    "upgrade_item",                     // 55
+    "weapon_max"
 };
 
 static const char L4D2WeaponWorldModel[L4D2WeaponId][] =
@@ -196,6 +198,7 @@ static const char L4D2WeaponWorldModel[L4D2WeaponId][] =
     "",
     "",
     "",
+    "",
     ""
 };
 
@@ -220,7 +223,7 @@ static const char LongWeaponNames[L4D2WeaponId][] =
     "Turret", "vomit", "splat", // 45
     "pounce", "lounge", "pull", // 48
     "choke", "rock", "physics", // 51
-    "ammo", "upgrade_item" // 54
+    "ammo", "upgrade_item", "weapon_max" // 54
 };
 
 static            StringMap    g_hWeaponNameTrie;
@@ -233,7 +236,7 @@ static            StringMap    g_hWeaponNameTrie;
  */
 stock bool L4D2_IsValidWeaponId(L4D2WeaponId weaponId)
 {
-    return weaponId >= L4D2WeaponId_None && weaponId < L4D2WeaponId;
+    return weaponId >= L4D2WeaponId_None && weaponId < L4D2WeaponId_Max;
 }
 
 /**
@@ -381,7 +384,7 @@ stock void L4D2_InitWeaponNameTrie()
     }
 
     g_hWeaponNameTrie = new StringMap();
-    for (int i = 0; i < view_as<int>(L4D2WeaponId); i++)
+    for (int i = 0; i < view_as<int>(L4D2WeaponId_Max); i++)
     {
         g_hWeaponNameTrie.SetValue(L4D2WeaponName[view_as<L4D2WeaponId>(i)], i);
     }

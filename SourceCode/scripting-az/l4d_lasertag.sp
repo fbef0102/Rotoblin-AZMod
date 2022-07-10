@@ -293,6 +293,8 @@ public Action TimerStart(Handle timer)
 	ResetPlugin();
 	if(Is_Ready_Plugin_On()) cvar_enable.SetBool(true);
 	else cvar_enable.SetBool(false);
+
+	return Plugin_Continue;
 }
 
 public void L4D_OnRoundIsLive()

@@ -17,9 +17,9 @@ public Action:Command_GeoList(client, args)
 	decl String:name[32];
 	
 	decl String:ip[16];
-	decl String:city[46];
-	decl String:region[46];
-	decl String:country[46];
+	decl String:city[45];
+	decl String:region[45];
+	decl String:country[45];
 	decl String:ccode[3];
 	decl String:ccode3[4];
 	new bool:bIsLanIp;

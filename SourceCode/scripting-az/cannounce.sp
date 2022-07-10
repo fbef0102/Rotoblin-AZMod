@@ -53,10 +53,10 @@ new Handle:g_CvarConnectDisplayType = INVALID_HANDLE;
 
 new String:player[50];
 new String:player_ip[16];
-new String:player_country[46];
+new String:player_country[45];
 new String:STEAMID[32];
-new String:player_city[46];
-new String:player_region[46];
+new String:player_city[45];
+new String:player_region[45];
 new String:player_ccode[3];
 new String:player_ccode3[4];
 /*****************************************************************

@@ -300,4 +300,6 @@ public int MenuHandler_MenuList(Menu menu, MenuAction action, int param1, int pa
 			MenuClientsToTeleport(client, menu.Selection);
 		}
 	}
+
+	return 0;
 }

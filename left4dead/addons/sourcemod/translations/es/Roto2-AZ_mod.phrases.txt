@@ -1970,6 +1970,10 @@
 	{
 		"es"		"Puntuacion del equipo {1}"
 	}
+	"l4dscores12"
+	{
+		"es"	"Set Team Scres: {1}(survs) - {2}(inf)"
+	}
 	//////////////si_class_announce.smx//////////////
 	"si_class_announce"
 	{

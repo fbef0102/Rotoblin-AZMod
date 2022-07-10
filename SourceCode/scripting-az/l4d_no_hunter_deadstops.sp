@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <left4dhooks>
 
-static const deadstopSequences[] = {60, 64, 67};
+static const int deadstopSequences[] = {60, 64, 67};
 //static const deadstopSequences2[] = {68,59};
 //踢牆:68,59
 //飛著:67,60,64
@@ -239,7 +239,7 @@ public void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast
 	}
 }
 
-public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast) 
+public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast) 
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	bIsPouncing[client] = false;

@@ -8,19 +8,11 @@
 
 public void Event_round_start_pre_entity(Event event, const char[] name, bool dontBroadcast)
 {
-    static char classes[][] = {
-        "point_viewcontrol",
-        "point_viewcontrol_survivor",
-        "point_viewcontrol_multiplayer",
-    };
-
-    for (int i = 0; i < sizeof(classes); i++) {
-        int entity = INVALID_ENT_REFERENCE;
-        while ((entity = FindEntityByClassname(entity, classes[i])) != INVALID_ENT_REFERENCE) {
-            // Invoke a "Disable" input on camera entities to free all players
-            // Doing so on round_start_pre_entity should help to not let map logic kick in too early
-            AcceptEntityInput(entity, "Disable");
-        }
+    int entity = INVALID_ENT_REFERENCE;
+    while ((entity = FindEntityByClassname(entity, "point_viewcontrol*")) != INVALID_ENT_REFERENCE) {
+        // Invoke a "Disable" input on camera entities to free all players
+        // Doing so on round_start_pre_entity should help to not let map logic kick in too early
+        AcceptEntityInput(entity, "Disable");
     }
 }
 
@@ -37,21 +29,19 @@ public void OnClientDisconnect(int client)
     
     char cls[64];
     GetEdictClassname(viewEntity, cls, sizeof(cls));
-    if (strncmp(cls, "point_viewcontrol", 17) != 0) {
-        return;
-    }
-    
-    // Matches CSurvivorCamera, CTriggerCamera
-    if (strcmp(cls[17], "_survivor") == 0 || cls[17] == '\0') {
-        // Disable entity to prevent CMoveableCamera::FollowTarget to cause a crash
-        // m_hTargetEnt EHANDLE is not checked for existence and can be NULL
-        // CBaseEntity::GetAbsAngles being called on causing a crash
-        AcceptEntityInput(viewEntity, "Disable");
-    }
-    
-    // Matches CTriggerCameraMultiplayer
-    if (strcmp(cls[17], "_multiplayer") == 0) {
-        AcceptEntityInput(viewEntity, "RemovePlayer", client);
+    if (strncmp(cls, "point_viewcontrol", 17) == 0) {
+        // Matches CSurvivorCamera, CTriggerCamera
+        if (strcmp(cls[17], "_survivor") == 0 || cls[17] == '\0') {
+            // Disable entity to prevent CMoveableCamera::FollowTarget to cause a crash
+            // m_hTargetEnt EHANDLE is not checked for existence and can be NULL
+            // CBaseEntity::GetAbsAngles being called on causing a crash
+            AcceptEntityInput(viewEntity, "Disable");
+        }
+        
+        // Matches CTriggerCameraMultiplayer
+        if (strcmp(cls[17], "_multiplayer") == 0) {
+            AcceptEntityInput(viewEntity, "RemovePlayer", client);
+        }
     }
 }
 

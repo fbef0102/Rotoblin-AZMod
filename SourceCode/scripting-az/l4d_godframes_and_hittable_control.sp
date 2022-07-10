@@ -32,7 +32,7 @@ new Float:fFakeGodframeEnd[MAXPLAYERS + 1];
 new iLastSI[MAXPLAYERS + 1];
 
 //god frame be gone
-static Float:lastSavedGodFrameBegin[MAXPLAYERS+1]			=  0.0;
+static Float:lastSavedGodFrameBegin[MAXPLAYERS+1]			=  {0.0};
 //static const		TEMP_HEALTH_ERROR_MARGIN				=    1;
 
 /********l4d2_hittable_control*******/
@@ -197,6 +197,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	return Plugin_Continue;
 }
 
+
 public event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	for (new i = 1; i <= MaxClients; i++) //clear both fake and real just because
@@ -254,10 +255,10 @@ public OnClientPutInServer(client)
 
 public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype, &weapon, Float:damageForce[3], Float:damagePosition[3])
 {
-	if (!IsValidEdict(victim) || !IsValidEdict(attacker) || !IsValidEdict(inflictor) || GetConVarInt(FindConVar("god")) == 1 ) { return Plugin_Continue; }
+	if (!IsValidEdict(inflictor) || GetConVarInt(FindConVar("god")) == 1 ) { return Plugin_Continue; }
 	
 	/********l4d2_hittable_control*******/
-	if (IsClientAndInGame(attacker)&& !IsFakeClient(attacker) && GetClientTeam(attacker) == 3 && GetEntProp(attacker, Prop_Send, "m_zombieClass") == 5 && victim == attacker && GetConVarBool(hTankSelfDamage))	{ return Plugin_Handled; }
+	if (IsClientAndInGame(attacker) && !IsFakeClient(attacker) && GetClientTeam(attacker) == 3 && GetEntProp(attacker, Prop_Send, "m_zombieClass") == 5 && victim == attacker && GetConVarBool(hTankSelfDamage))	{ return Plugin_Handled; }
 	
 	/********godframes_control*******/
 	if(GetClientTeam(victim) != 2 || !IsClientAndInGame(victim)) { return Plugin_Continue; }
@@ -393,7 +394,7 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 
 stock IsClientAndInGame(client)
 {
-	if (0 < client && client < MaxClients)
+	if (0 < client && client <= MaxClients)
 	{	
 		return IsClientInGame(client);
 	}

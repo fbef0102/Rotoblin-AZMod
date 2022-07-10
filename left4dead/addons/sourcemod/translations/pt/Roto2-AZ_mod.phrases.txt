@@ -1979,6 +1979,10 @@
 	{
 		"pt"		"A pontuação da equipe é {1}"
 	}
+	"l4dscores12"
+	{
+		"pt"	"Set Team Scres: {1}(survs) - {2}(inf)"
+	}
 	//////////////si_class_announce.smx//////////////
 	"si_class_announce"
 	{

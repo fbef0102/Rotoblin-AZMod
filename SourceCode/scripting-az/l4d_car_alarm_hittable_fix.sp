@@ -67,6 +67,8 @@ public Action OnAlarmCarTouch(int car, int entity)
 			SDKUnhook(car, SDKHook_Touch, OnAlarmCarTouch);
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 public Action DisableAlarm(Handle timer, any car)
@@ -83,6 +85,8 @@ public Action DisableAlarm(Handle timer, any car)
 	}
 
 	if (Tank != -1) SDKHooks_TakeDamage(car, Tank, Tank, 0.0);
+
+	return Plugin_Continue;
 }
 
 stock bool IsValidTank(int client) 

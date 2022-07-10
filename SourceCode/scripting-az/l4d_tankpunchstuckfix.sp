@@ -358,8 +358,3 @@ bool IsTankWeapon(int entity)
 
 	return false;
 }
-
-bool TraceFilter_NoSelf(int entity, int contentsMask, int self)
-{
-	return entity != self;
-}

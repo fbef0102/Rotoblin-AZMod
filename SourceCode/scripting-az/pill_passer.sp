@@ -55,4 +55,6 @@ public Action:OnPlayerRunCmd(client, &buttons)
 			}
 		}
 	}
+
+	return Plugin_Continue;
 }

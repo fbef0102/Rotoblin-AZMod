@@ -214,6 +214,8 @@ public Action DelaySwitchHealth(Handle hTimer, any client)
 {
 	bCantSwitchHealth[client] = false;
 	hHealth[client] = null;
+
+	return Plugin_Continue;
 }
 
 public Action WeaponCanSwitchTo(int client, int weapon)
@@ -356,9 +358,13 @@ public MRESReturn CWeaponSpawn_OnUse(int pThis, Handle hParams)
 public MRESReturn CTerrorGun_OnUsePost(Handle hParams)
 {
 	ApplyPatch(false);
+
+	return MRES_Ignored;
 }
 
 public MRESReturn CWeaponSpawn_OnUsePost(Handle hParams)
 {
 	ApplyPatch(false);
+
+	return MRES_Ignored;
 }

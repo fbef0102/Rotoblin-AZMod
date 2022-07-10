@@ -4,7 +4,7 @@
 #include <left4dhooks>
 #include <l4d_lib>
 
-#define SCORE_VERSION "8.1"
+#define SCORE_VERSION "8.3.9"
 
 #define SCORE_DEBUG 0
 #define SCORE_DEBUG_LOG 0
@@ -131,6 +131,13 @@ new bool:swapTeamsOverride;
 #endif
 native IsInReady();
 
+Menu hVote = null;
+int Votey = 0, Voten = 0;
+int score1, score2;
+#define VOTE_NO "no"
+#define VOTE_YES "yes"
+native void ClientVoteMenuSet(client,trueorfalse);//from votes3
+
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	EngineVersion test = GetEngineVersion();
@@ -178,7 +185,7 @@ public OnPluginStart()
 	RegAdminCmd("sm_swapscores", Command_SwapScores, ADMFLAG_BAN, "sm_swapscores - swap the score between the first and second team");
 	RegAdminCmd("sm_resetscores", Command_ResetScores, ADMFLAG_BAN, "sm_resetscores - reset the currently tracked campaign/map scores");
 	RegAdminCmd("sm_swapmenu", Command_SwapMenu, ADMFLAG_BAN, "sm_swapmenu - bring up a swap players menu");
-	RegAdminCmd("sm_setscore", Command_SetCampaignScores,ADMFLAG_BAN,  "sm_setscore score score");
+	RegConsoleCmd("sm_setscores", Command_SetCampaignScores, "sm_setscores <survs> <inf>");
 	
 	/*
 	* Cvars
@@ -736,6 +743,8 @@ public OnMapStart()
 	{
 		SwapScores();
 	}
+
+	VoteMenuClose();
 }
 
 Handle:OpenConfig(bool:create = true)
@@ -2082,27 +2091,28 @@ public Action:Command_ChangeTeam(client, args)
 
 public Action:Command_SetCampaignScores(client, args)
 {
-	/*
-	* 
-	* calling this it seems its very picky when we can call it
-	* 
-	* arguments are probably team: 0 or team :1 similar to getscore
-	* 
-	* but calling it at the wrong time maybe it recalculates it?
-	* 
-	* ---------
-	* wtf its gotta be stored somewhere else
-	* maybe there's an array of scores for each map?
-	* 
-	*/
+	if(client == 0 || !IsClientInGame(client)) return Plugin_Handled;
+
 	if(!IsInReady())
 	{
-		ReplyToCommand(client, "SetCampaignScores only allowed during ready-up");
+		ReplyToCommand(client, "[SM] sm_setscores <survs> <inf> only allowed during ready-up.");
 		return Plugin_Handled;
 	}
+
+	if(GetClientTeam(client) == L4D_TEAM_SPECTATE)
+	{
+		ReplyToCommand(client, "%T", "You are not in-game!", client);
+		return Plugin_Handled;
+	}
+
 	if (args < 2)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_setscore <team(2,3)> <score>");
+		ReplyToCommand(client, "[SM] Usage: sm_setscores <survs> <inf>");
+		return Plugin_Handled;
+	}
+
+	if(CanStartVotes(client) == false)
+	{
 		return Plugin_Handled;
 	}
 	
@@ -2110,36 +2120,54 @@ public Action:Command_SetCampaignScores(client, args)
 	GetCmdArg(1, arg1, 64);
 	GetCmdArg(2, arg2, 64);
 	
-	new team = StringToInt(arg1);
-	if (team <= 1 || team >=4)
+	score1 = StringToInt(arg1);
+	if (score1 < 0)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_setscore <team(2,3)> <score>");
+		ReplyToCommand(client, "[SM] Usage: sm_setscores <survs> <inf>");
 		return Plugin_Handled;
 	}
-	new score2 = StringToInt(arg2);
+	score2 = StringToInt(arg2);
 	if (score2 < 0)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_setscore <team(2,3)> <score>");
+		ReplyToCommand(client, "[SM] Usage: sm_setscores <survs> <inf>");
 		return Plugin_Handled;
 	}
 	
 	//L4D_OnSetCampaignScores(score1, score2);//這個只能set score / score
 	//L4D2Direct_SetVSCampaignScore(team, score2); //設置一個隊伍前面關卡的全部分數
 	
-	mapCounter = 1;
-	ClearArray(mapScores);
-	
-	if(team == 2)
+	if (GetUserAdmin(client) != INVALID_ADMIN_ID)
 	{
-		campaignScores[CurrentToLogicalTeam(L4D_TEAM_SURVIVORS)] = score2;
-		CPrintToChatAll("Adm({lightgreen}%N{default}) %t",client,"l4dscores10", "Survivor", score2);
+		mapCounter = 1;
+		ClearArray(mapScores);
+		campaignScores[CurrentToLogicalTeam(L4D_TEAM_SURVIVORS)] = score1;
+		campaignScores[CurrentToLogicalTeam(L4D_TEAM_INFECTED)] = score2;
+		CPrintToChatAll("{green}[{default}Score{green}] Adm({lightgreen}%N{default}) %t",client,"l4dscores10", "Survivor", score1);
+		CPrintToChatAll("{green}[{default}Score{green}] Adm({lightgreen}%N{default}) %t",client,"l4dscores10", "Infected", score2);
 	}
 	else
 	{
-		campaignScores[CurrentToLogicalTeam(L4D_TEAM_INFECTED)] = score2;
-		CPrintToChatAll("Adm({lightgreen}%N{default}) %t",client,"l4dscores10", "Infected", score2);
+		int iNumPlayers = 0;
+		for (int i=1; i<=MaxClients; i++)
+		{
+			if (!IsClientInGame(i) || IsFakeClient(i))
+			{
+				continue;
+			}
+			iNumPlayers++;
+		}
+		if (iNumPlayers < 2)
+		{
+			CPrintToChat(client, "{green}[{default}Score{green}]{default} %T %T","votes3_13",client,"Not enough players.",client, 2);
+			return Plugin_Handled;
+		}
+
+		new String:printmsg[128];
+		Format(printmsg, sizeof(printmsg), "%t","l4dscores12", score1, score2);
+
+		StartVote(printmsg);
 	}
-		
+
 	return Plugin_Handled;
 }
 
@@ -2475,4 +2503,160 @@ public ConVarChange_Cvars(Handle:convar, const String:oldValue[], const String:n
 {
 	g_iPillScore = GetConVarInt(g_hPillScore);
 	g_iKitScores = GetConVarInt(g_hKitScores);
+}
+
+StartVote(const String:sVoteHeader[])
+{
+	hVote = new Menu(Handler_VoteCallback, MENU_ACTIONS_ALL);
+	hVote.SetTitle("%s ?",sVoteHeader);
+	hVote.AddItem(VOTE_YES, "Yes");
+	hVote.AddItem(VOTE_NO, "No");
+	hVote.ExitButton = false;
+
+	new iTotal = 0;
+	new iPlayers[MaxClients];
+	
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
+		{
+			continue;
+		}
+		
+		iPlayers[iTotal++] = i;
+	}
+	
+	hVote.DisplayVote(iPlayers, iTotal, 20, 0);
+	
+	EmitSoundToAll("ui/beep_synthtone01.wav");
+	
+	for(new i=1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
+		{
+			continue;
+		}
+		
+		ClientVoteMenuSet(i,1);
+	}
+}
+
+public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2)
+{
+	//==========================
+	if(action == MenuAction_Select)
+	{
+		switch(param2)
+		{
+			case 0: 
+			{
+				Votey += 1;
+			}
+			case 1: 
+			{
+				Voten += 1;
+			}
+		}
+	}
+	else if ( action == MenuAction_Display)
+	{
+		char buffer[255];
+		Format(buffer, sizeof(buffer), "%T ?", "l4dscores12",param1, score1, score2);
+		
+		Panel panel = view_as<Panel>(param2);
+		panel.SetTitle(buffer);
+	}
+	//==========================
+	decl String:item[64], String:display[64];
+	new Float:percent, Float:limit, votes, totalVotes;
+
+	GetMenuVoteInfo(param2, votes, totalVotes);
+	GetMenuItem(menu, param1, item, sizeof(item), _, display, sizeof(display));
+	
+	if (strcmp(item, VOTE_NO) == 0 && param1 == 1)
+	{
+		votes = totalVotes - votes;
+	}
+	percent = GetVotePercent(votes, totalVotes);
+
+	limit = 0.6;
+	
+	CheckVotes();
+	if (action == MenuAction_End)
+	{
+		VoteMenuClose();
+	}
+	else if (action == MenuAction_VoteCancel && param1 == VoteCancel_NoVotes)
+	{
+		CPrintToChatAll("{default}[{olive}TS{default}] %t","No votes");
+		EmitSoundToAll("ui/beep_error01.wav");
+		CreateTimer(2.0, VoteEndDelay);
+	}	
+	else if (action == MenuAction_VoteEnd)
+	{
+		if ((strcmp(item, VOTE_YES) == 0 && FloatCompare(percent,limit) < 0 && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))
+		{
+			EmitSoundToAll("ui/beep_error01.wav");
+			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote fail.", RoundToNearest(100.0*limit), RoundToNearest(100.0*percent), totalVotes);
+			CreateTimer(2.0, VoteEndDelay);
+		}
+		else
+		{
+			CreateTimer(2.0, Timer_SetTeamScore);
+			EmitSoundToAll("ui/menu_enter05.wav");
+			CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_bossvote6");
+			CreateTimer(2.0, VoteEndDelay);
+		}
+	}
+	return 0;
+}
+
+bool:CanStartVotes(client)
+{
+ 	if(hVote  != null || IsVoteInProgress())
+	{
+		CPrintToChat(client, "{default}[{olive}TS{default}] %T","A vote is already in progress!",client);
+		return false;
+	}
+	return true;
+}
+
+CheckVotes()
+{
+	PrintHintTextToAll("%t: %i\n%t: %i","Agree", Votey,"Disagree", Voten);
+}
+
+public Action:VoteEndDelay(Handle:timer)
+{
+	Votey = 0;
+	Voten = 0;
+	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,0);
+
+	return Plugin_Continue;
+}
+
+public Action Timer_SetTeamScore(Handle:timer)
+{
+	mapCounter = 1;
+	ClearArray(mapScores);
+	campaignScores[CurrentToLogicalTeam(L4D_TEAM_SURVIVORS)] = score1;
+	campaignScores[CurrentToLogicalTeam(L4D_TEAM_INFECTED)] = score2;
+	CPrintToChatAll("{green}[{default}Score{green}] %t", "l4dscores10", "Survivor", score1);
+	CPrintToChatAll("{green}[{default}Score{green}] %t", "l4dscores10", "Infected", score2);
+
+	score1 = score2 = 0;
+	return Plugin_Continue;
+}
+
+VoteMenuClose()
+{
+	Votey = 0;
+	Voten = 0;
+	CloseHandle(hVote);
+	hVote = null;
+}
+
+Float:GetVotePercent(votes, totalVotes)
+{
+	return (float(votes) / float(totalVotes));
 }

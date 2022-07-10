@@ -72,14 +72,6 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
-		"tank_ban_flow"
-		{
-			"Boomer Vomit No Horde Issue"
-			{
-				"min"		"66"
-				"max"		"82"
-			}
-		}
 	}
 	"l4d_vs_airport02_offices"
 	{
@@ -625,18 +617,26 @@
 	}
 	"l4d_noprecinct01_crash"
 	{
-		"pill_limit" "1"
+		"pill_limit" "0" // +1 PILL CABINET
 		"VersusModifier"		"1.0"
 	}
 	"l4d_noprecinct02_train"
 	{
-		//"pill_limit" "1"  // +1 PILL CABINET
+		"pill_limit" "1"  // +1 PILL CABINET
 		"VersusModifier"		"1.25"
 	}
 	"l4d_noprecinct03_clubd"
 	{
-		//"pill_limit" "2"
+		"pill_limit" "1" // +1 PILL CABINET
 		"VersusModifier"		"1.5"
+		"tank_ban_flow"
+		{
+			"vent"
+			{
+				"min"		"55"
+				"max"		"82"
+			}
+		}
 	}
 	"l4d_noprecinct04_precinct"
 	{
@@ -644,7 +644,7 @@
 		"VersusModifier"		"2.0"
 		"tank_ban_flow"
 		{
-			"police car"
+			"trigger police car"
 			{
 				"min"		"60"
 				"max"		"75"

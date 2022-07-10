@@ -91,9 +91,13 @@ public MRESReturn CVomit_UpdateAbility(int pThis)
 	{
 		ApplyPatch(true);
 	}
+
+	return MRES_Ignored;
 }
 
 public MRESReturn CVomit_UpdateAbility_Post(int pThis)
 {
 	ApplyPatch(false);
+
+	return MRES_Ignored;
 }

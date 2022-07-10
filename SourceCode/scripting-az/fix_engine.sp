@@ -25,12 +25,9 @@ public Plugin:myinfo =
 	url = "http://steamcommunity.com/id/raziEiL"
 }
 
-enum ()
-{
-	LadderSpeedGlitch = 1,
-	NoFallDamageBug,
-	HealthBoostGlitch
-};
+#define LadderSpeedGlitch 1
+#define NoFallDamageBug 2
+#define HealthBoostGlitch 3
 
 static		Handle:g_hFixGlitchTimer[MAXPLAYERS+1], g_iHealthToRestore[MAXPLAYERS+1], g_iLastKnownHealth[MAXPLAYERS+1], Handle:g_hRestoreTimer[MAXPLAYERS+1],
 			g_bTempWarnLock[MAXPLAYERS+1], Float:g_fCvarDecayRate, bool:g_bCvarWarnEnabled, g_iCvarEngineFlags;

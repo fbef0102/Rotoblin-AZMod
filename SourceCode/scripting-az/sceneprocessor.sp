@@ -207,73 +207,77 @@ public int SP_SetScenePreDelay(Handle plugin, int numParams)
 {
 	if (numParams != 2)
 	{
-		return;
+		return 0;
 	}
 	
 	int scene = GetNativeCell(1);
 	if (!IsValidScene(scene))
 	{
-		return;
+		return 0;
 	}
 	
 	float fPreDelay = GetNativeCell(2);
 	
 	SetEntPropFloat(scene, Prop_Data, "m_flPreDelay", fPreDelay);
 	nSceneData[scene].fPreDelayData = fPreDelay;
+
+	return 0;
 }
 
-public any SP_GetScenePitch(Handle plugin, int numParams)
+public int SP_GetScenePitch(Handle plugin, int numParams)
 {
 	if (numParams == 0)
 	{
-		return 0.0;
+		return 0;
 	}
 	
 	int scene = GetNativeCell(1);
 	if (!IsValidScene(scene))
 	{
-		return 0.0;
+		return 0;
 	}
 	
-	return nSceneData[scene].fPitchData;
+	return view_as<int>(nSceneData[scene].fPitchData);
 }
 
 public int SP_SetScenePitch(Handle plugin, int numParams)
 {
 	if (numParams != 2)
 	{
-		return;
+		return 0;
 	}
 	
 	int scene = GetNativeCell(1);
 	if (!IsValidScene(scene))
 	{
-		return;
+		return 0;
 	}
 	
 	float fPitch = GetNativeCell(2);
 	
 	SetEntPropFloat(scene, Prop_Data, "m_fPitch", fPitch);
 	nSceneData[scene].fPitchData = fPitch;
+
+	return 0;
 }
 
 public int SP_CancelScene(Handle plugin, int numParams)
 {
 	if (numParams == 0)
 	{
-		return;
+		return 0;
 	}
 	
 	int scene = GetNativeCell(1);
 	if (scene < 1 || scene > 2048 || !IsValidEntity(scene))
 	{
-		return;
+		return 0;
 	}
 	
 	SceneStages ssBit = nSceneData[scene].ssDataBit;
 	if (ssBit == SceneStage_Unknown)
 	{
-		return;
+		return 0;
 	}
 	else if (ssBit == SceneStage_Started || (ssBit == SceneStage_SpawnedPost && nSceneData[scene].bInFakePostSpawn))
 	{
@@ -283,20 +287,22 @@ public int SP_CancelScene(Handle plugin, int numParams)
 	{
 		AcceptEntityInput(scene, "Kill");
 	}
+
+	return 0;
 }
 
 public int SP_PerformScene(Handle plugin, int numParams)
 {
 	if (numParams < 2)
 	{
-		return;
+		return 0;
 	}
 	
 	int client = GetNativeCell(1);
 	
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || GetClientTeam(client) != 2 || !IsPlayerAlive(client))
 	{
-		return;
+		return 0;
 	}
 	
 	static char sVocalize[MAX_VOCALIZE_LENGTH], sFile[MAX_SCENEFILE_LENGTH];
@@ -306,7 +312,7 @@ public int SP_PerformScene(Handle plugin, int numParams)
 	if (GetNativeString(2, sVocalize, MAX_VOCALIZE_LENGTH) != SP_ERROR_NONE)
 	{
 		ThrowNativeError(SP_ERROR_NATIVE, "Unknown Vocalize Parameter!");
-		return;
+		return 0;
 	}
 	
 	if (numParams >= 3)
@@ -314,7 +320,7 @@ public int SP_PerformScene(Handle plugin, int numParams)
 		if (GetNativeString(3, sFile, MAX_SCENEFILE_LENGTH) != SP_ERROR_NONE)
 		{
 			ThrowNativeError(SP_ERROR_NATIVE, "Unknown File Parameter!");
-			return;
+			return 0;
 		}
 	}
 	
@@ -334,19 +340,21 @@ public int SP_PerformScene(Handle plugin, int numParams)
 	}
 	
 	Scene_Perform(client, sVocalize, sFile, fPreDelay, fPitch, iInitiator);
+
+	return 0;
 }
 
 public int SP_PerformSceneEx(Handle plugin, int numParams)
 {
 	if (numParams < 2)
 	{
-		return;
+		return 0;
 	}
 	
 	int client = GetNativeCell(1);
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || GetClientTeam(client) != 2 || !IsPlayerAlive(client))
 	{
-		return;
+		return 0;
 	}
 	
 	static char sVocalize[MAX_VOCALIZE_LENGTH], sFile[MAX_SCENEFILE_LENGTH];
@@ -356,7 +364,7 @@ public int SP_PerformSceneEx(Handle plugin, int numParams)
 	if (GetNativeString(2, sVocalize, MAX_VOCALIZE_LENGTH) != SP_ERROR_NONE)
 	{
 		ThrowNativeError(SP_ERROR_NATIVE, "Unknown Vocalize Parameter!");
-		return;
+		return 0;
 	}
 	
 	if (numParams >= 3)
@@ -364,7 +372,7 @@ public int SP_PerformSceneEx(Handle plugin, int numParams)
 		if (GetNativeString(3, sFile, MAX_SCENEFILE_LENGTH) != SP_ERROR_NONE)
 		{
 			ThrowNativeError(SP_ERROR_NATIVE, "Unknown File Parameter!");
-			return;
+			return 0;
 		}
 	}
 	
@@ -384,6 +392,8 @@ public int SP_PerformSceneEx(Handle plugin, int numParams)
 	}
 	
 	Scene_Perform(client, sVocalize, sFile, fPreDelay, fPitch, iInitiator, true);
+
+	return 0;
 }
 
 public Plugin myinfo = 

@@ -157,7 +157,7 @@ void CvarsToType()
 	fCvarSurvivorLimpRunSpeed = hCvarSurvivorLimpRunSpeed.FloatValue;
 }
 
-public Action TankSpawn(Event event, const char[] name, bool dontBroadcast) 
+public void TankSpawn(Event event, const char[] name, bool dontBroadcast) 
 {
 	if (!tankInPlay) {
 		tankInPlay = true;
@@ -167,7 +167,7 @@ public Action TankSpawn(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public Action TankDeath(Event event, const char[] name, bool dontBroadcast)
+public void TankDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0 && IsInfected(client) && IsTank(client)) {
@@ -185,9 +185,11 @@ public Action Timer_CheckTank(Handle timer)
 			g_bIsFirstTank = false;
 		}
 	}
+
+	return Plugin_Continue;
 }
 
-public Action RoundStart(Event event, const char[] name, bool dontBroadcast)
+public void RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bIsFirstTank = true;
 	tankInPlay = false;
@@ -240,7 +242,7 @@ public void CrouchSpeedEndTouch(const char[] output, int caller, int activator, 
  * Slowdown from gunfire: Tank & SI
  *
 **/
-public Action PlayerHurt(Event event, const char[] name, bool dontBroadcast)
+public void PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0 && IsInfected(client)) {

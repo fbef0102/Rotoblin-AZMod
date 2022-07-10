@@ -7,17 +7,16 @@ Author:
 //If you have any questions, please contact me via steam, thank you!
 
 --------引擎主要--------
-[01] sourcemod 1.10-git6528
-[02] metamod  1.11-git1145
+[01] sourcemod 1.11-git6905
+[02] metamod  1.11-git1148
 [03] stripper 1.2.2-git129
 [04] l4dtoolz 1.1.0.1
-[05] DHooks 2.2.0-detours17
-[06] Tickrate Enabler 1.4
-[07] VoiceHook 3.0
-[08] Socket 3.0.1
-[09] geoipcity 1.1.2
-[10] sourcescramble 0.7.0
-[11] CollisionHooks 0.2
+[05] Tickrate Enabler 1.4
+[06] VoiceHook 3.0
+[07] Socket 3.0.1
+[08] geoipcity 1.1.2
+[09] sourcescramble 0.7.0
+[10] CollisionHooks 0.2
 
 --------地圖修改--------
 1. 所有VS地圖均已解除屋頂限制
@@ -602,6 +601,9 @@ Author:
 //消除一些音效
 //1. 黑白心跳聲 2. 倖存者倒地的尖叫聲
 
+[174] l4d_static_punch_getup
+//被Tank拳頭揮中固定起身的動畫時間
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -663,7 +665,7 @@ Map = 地圖難度修改
 -!forceunpause //管理員強制解除暫停遊戲
 -!swapto <name> <team(1,2, or 3)> //把指定的玩家強制換到指定的隊伍，1: 旁觀者, 2: 倖存陣營, 3: 特感陣營
 -!swapscores //雙方隊伍分數交換
--!setscore <team(2,3)> <score> //設定隊伍的分數，2: 倖存陣營, 3: 特感陣營
+-!setscores <survs> <inf> //設定隊伍的分數，<survs>: 倖存陣營, inf: 特感陣營 (限Ready期間)
 -!resetscores //清除雙方隊伍所有的分數 (限Ready期間)
 -!restartmap //重新該關卡
 -!admin //管理員菜單
@@ -703,9 +705,10 @@ Map = 地圖難度修改
 -!slots 			//投票改變伺服器人數上限
 -!kickspec 		//投票踢出所有非adm的旁觀者
 -!mix 			//投票Mix選隊長挑隊員 (限Ready期間)
--!shuffle			 ///投票雙方隊伍洗牌 (限Ready期間)
+-!shuffle			 //投票雙方隊伍洗牌 (限Ready期間)
 -!speaklist		//提示目前有哪些玩家使用麥克風語音 (提示位於螢幕正中央小小的字幕)
 -!voteboss <tank> <witch>		 //改變Tank與Witch的路程 (限第一回合Ready期間)
+-!setscores <survs> <inf> //設定隊伍的分數，<survs>: 倖存陣營, inf: 特感陣營 (限Ready期間)
 -!top5 			//前五名空爆Skeet高手
 -!skeets 		//顯示你的Skeet排名
 -!rank 			//顯示你的Skeet數量統計與高撲數量統計

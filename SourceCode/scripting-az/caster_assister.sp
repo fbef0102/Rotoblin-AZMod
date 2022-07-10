@@ -151,6 +151,8 @@ public Action:OnPlayerRunCmd(client, &buttons)
 			MoveUp(client, -verticalIncrement[client]);
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 stock MoveUp(client, Float:distance)

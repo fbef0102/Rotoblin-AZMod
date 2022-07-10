@@ -84,7 +84,7 @@ stock GetZombieClass(client) return GetEntProp(client, Prop_Send, "m_zombieClass
 
 stock bool:IsClientAndInGame(index)
 {
-	if (index > 0 && index < MaxClients)
+	if (index > 0 && index <= MaxClients)
 	{
 		return IsClientInGame(index);
 	}
@@ -116,15 +116,11 @@ public ConVarChange_hCvarSkipGetUpAnimation(Handle:convar, const String:oldValue
 
 public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
-	if(!IsValidEdict(victim) || !IsValidEdict(attacker) || !IsValidEdict(inflictor) || !IsValidEdict(damagetype)) { return Plugin_Continue; }
+	if(!IsValidEdict(damagetype) || !IsClientAndInGame(victim) || !IsClientAndInGame(attacker) || damage == 0.0) { return Plugin_Continue; }
 	
-	if(!IsClientAndInGame(victim) || !IsClientAndInGame(attacker) || damage == 0.0) { return Plugin_Continue; }
-	
-	//decl String:sClassname[64];
-	//GetEntityClassname(inflictor, sClassname, 64);
 	decl String:sdamagetype[64];
 	GetEdictClassname( damagetype, sdamagetype, sizeof( sdamagetype ) ) ;
-	//PrintToChatAll("victim: %d,attacker:%d ,sClassname is %s, damage is %f, sdamagetype is %s",victim,attacker,sClassname,damage,sdamagetype);
+	//PrintToChatAll("victim: %d,attacker:%d, damage is %f, sdamagetype is %s",victim,attacker,damage,sdamagetype);
 	if (GetClientTeam(attacker) == 3 && GetClientTeam(victim) == 2 && GetZombieClass(attacker) == 3)
 	{
 		if(!StrEqual(sdamagetype, "player"))//高鋪傷害sdamagetype is player
@@ -171,11 +167,6 @@ public OnClientPutInServer(client)
 {
     // hook bots spawning
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-}
-
-public OnClientDisconnect(client)
-{
-    SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
 public Action:CancelGetup(Handle:timer, any:client) {

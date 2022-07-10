@@ -64,5 +64,7 @@ public Action execConfig(Handle timer)
 			serverLoaderCounter++;
 		}
 	}
+
+	return Plugin_Continue;
 }
 

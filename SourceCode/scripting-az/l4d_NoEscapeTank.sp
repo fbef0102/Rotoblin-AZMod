@@ -94,6 +94,8 @@ public Action KillEscapeTank(Handle timer, int userid)
 		//ForcePlayerSuicide(iTank);
 		KickClient(iTank, "Escape_tank");
 	}
+
+	return Plugin_Continue;
 }
 
 public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStatis)

@@ -246,7 +246,7 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 				}
 				CreateTimer(TIP_TIMEOUT, _LHR_Tip_Timer, client);
 			}
-			_EF_DoAmmoPilesFix(client,false);
+			//_EF_DoAmmoPilesFix(client,false);
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
@@ -274,7 +274,7 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 				}
 				CreateTimer(TIP_TIMEOUT, _LHR_Tip_Timer, client);
 			}
-			_EF_DoAmmoPilesFix(client,false);
+			//_EF_DoAmmoPilesFix(client,false);
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
@@ -302,7 +302,7 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 				}
 				CreateTimer(TIP_TIMEOUT, _LHR_Tip_Timer, client);
 			}
-			_EF_DoAmmoPilesFix(client,false);
+			//_EF_DoAmmoPilesFix(client,false);
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
@@ -322,7 +322,7 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 				}
 				CreateTimer(TIP_TIMEOUT, _LHR_Tip_Timer, client);
 			}
-			_EF_DoAmmoPilesFix(client,false);
+			//_EF_DoAmmoPilesFix(client,false);
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
@@ -342,7 +342,7 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 				}
 				CreateTimer(TIP_TIMEOUT, _LHR_Tip_Timer, client);
 			}
-			_EF_DoAmmoPilesFix(client,false);
+			//_EF_DoAmmoPilesFix(client,false);
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}

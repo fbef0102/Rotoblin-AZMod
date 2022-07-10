@@ -220,9 +220,11 @@ public Action PluginStart(Handle timer)
 	InitDoorAndArea();
 	CreateTimer(1.0, DoorLockCountDown,_,TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(1.0, LeftAreaUnLock,_, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+
+	return Plugin_Continue;
 }
 
-public Action Event_DoorOpen(Event event, const char[] name, bool dontBroadcast) 
+public void Event_DoorOpen(Event event, const char[] name, bool dontBroadcast) 
 {
 	if (!bSafeRoomDoorLock && ent_safedoor > 0)
 	{
@@ -332,7 +334,7 @@ int GetSafeRoomDoor()
 
 stock bool IsClientAndInGame(int client)
 {
-	if (0 < client && client < MaxClients)
+	if (0 < client && client <= MaxClients)
 	{	
 		return IsClientInGame(client);
 	}
@@ -400,6 +402,8 @@ public Action FadeBrokenDoor(Handle timer, int ent_brokendoor)
 		SetEntityRenderFx(ent_brokendoor, RENDERFX_FADE_FAST); //RENDERFX_FADE_SLOW 3.5
 		CreateTimer(1.5, KillBrokenDoorEntity, ent_brokendoor,TIMER_FLAG_NO_MAPCHANGE);
 	}
+
+	return Plugin_Continue;
 }
 
 public Action KillBrokenDoorEntity(Handle timer, int ent_brokendoor)
@@ -408,6 +412,8 @@ public Action KillBrokenDoorEntity(Handle timer, int ent_brokendoor)
 	{
 		AcceptEntityInput(ent_brokendoor, "Kill");
 	}
+
+	return Plugin_Continue;
 }
 
 void ReturnToSaferoom(int client)

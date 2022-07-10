@@ -86,7 +86,7 @@ bool:IsValidTank(client)
 stock GetAnyClient()
 {
 	new i;
-	for (i = 1; i <= GetMaxClients(); i++)
+	for (i = 1; i <= MaxClients; i++)
 		if (IsClientConnected(i) && IsClientInGame(i) && (!IsFakeClient(i))) 
 			return i;
 	return 0;

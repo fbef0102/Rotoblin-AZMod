@@ -103,7 +103,7 @@ public void OnPluginStart()
 	//AutoExecConfig(true, "l4d_weapon_csgo_reload");
 }
 
-public Action RoundStart_Event(Event event, const char[] name, bool dontBroadcast) 
+public void RoundStart_Event(Event event, const char[] name, bool dontBroadcast) 
 {
 	for(int i = 1; i <= MaxClients; i++)
 	{

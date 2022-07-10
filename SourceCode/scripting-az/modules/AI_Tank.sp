@@ -92,7 +92,7 @@ public Action:Tank_OnPlayerRunCmd( tank, &buttons, &impulse, Float:vel[3], Float
 	return Plugin_Continue;	
 }
 
-stock Client_Push(client, Float:clientEyeAngle[3], Float:power, VelocityOverride:override[3]=VelocityOvr_None) {
+stock Client_Push(client, Float:clientEyeAngle[3], Float:power, VelocityOverride:override[3]={VelocityOvr_None}) {
 	decl Float:forwardVector[3],
 	Float:newVel[3];
 	

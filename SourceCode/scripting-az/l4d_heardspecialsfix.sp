@@ -22,7 +22,7 @@
 
 new bSmokerAlive;
 new bBoomerAlive;
-new Handle:VocalizerTimer[3]		= INVALID_HANDLE;
+new Handle:VocalizerTimer[3]		= {INVALID_HANDLE};
 
 public Plugin:myinfo =
 {

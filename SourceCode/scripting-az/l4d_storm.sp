@@ -124,14 +124,12 @@
 #define	MAX_RAIN			8
 #define	MAX_FOG				16
 
-enum ()
-{
-	STATE_OFF,
-	STATE_IDLE,
-	STATE_SURGE,
-	STATE_STORM,
-	STATE_END
-}
+#define STATE_OFF 0
+#define STATE_IDLE 1
+#define STATE_SURGE 2
+#define STATE_STORM 3
+#define STATE_END 4
+
 
 static 	Handle:g_hCvarAllow, Handle:g_hCvarModes, Handle:g_hCvarModesOff, Handle:g_hCvarModesTog, Handle:g_hCvarMixer, Handle:g_hCvarPost, Handle:g_hCvarStyle,
 		bool:g_bCvarAllow, g_iCvarMixer, Float:g_fCvarPost, g_iCvarStyle,

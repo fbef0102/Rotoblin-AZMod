@@ -40,7 +40,7 @@ public void OnPluginEnd()
 	RemoveAllWitchGlow();
 }
 
-public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	RemoveAllWitchGlow();
 }

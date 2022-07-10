@@ -1,4 +1,24 @@
-#define PLUGIN_VERSION 		"1.6"
+/*
+*	[L4D & L4D2] Fire Glow
+*	Copyright (C) 2022 Silvers
+*
+*	This program is free software: you can redistribute it and/or modify
+*	it under the terms of the GNU General Public License as published by
+*	the Free Software Foundation, either version 3 of the License, or
+*	(at your option) any later version.
+*
+*	This program is distributed in the hope that it will be useful,
+*	but WITHOUT ANY WARRANTY; without even the implied warranty of
+*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*	GNU General Public License for more details.
+*
+*	You should have received a copy of the GNU General Public License
+*	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+
+
+#define PLUGIN_VERSION 		"1.8"
 
 /*======================================================================================
 	Plugin Info:
@@ -11,6 +31,12 @@
 
 ========================================================================================
 	Change Log:
+
+1.8 (25-Mar-2022)
+	- Better fade in and out timing.
+
+1.7 (22-Mar-2022)
+	- Changed the method for fading lights in and out hopefully preventing random server crash.
 
 1.6 (12-Jul-2020)
 	- Added smoother fading of the light, thanks to "Lux" for coding in.
@@ -49,10 +75,10 @@
 
 
 ConVar g_hCvarAllow, g_hCvarColor1, g_hCvarColor2, g_hCvarDist, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog, g_hInferno;
-int g_iEntities[MAX_LIGHTS][2];
-bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2;
+int g_iEntities[MAX_LIGHTS][2], g_iTick[MAX_LIGHTS];
+bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2, g_bFrameProcessing;
 char g_sCvarCols1[12], g_sCvarCols2[12];
-float g_fCvarDist, g_fInferno;
+float g_fFaderTick[MAX_LIGHTS], g_fFaderStart[MAX_LIGHTS], g_fFaderEnd[MAX_LIGHTS], g_fCvarDist, g_fInferno;
 
 
 
@@ -91,7 +117,7 @@ public void OnPluginStart()
 	if( g_bLeft4Dead2 )
 		g_hCvarColor1 =		CreateConVar(	"l4d_fire_glow_fireworks",		"255 100 0",	"The light color for Firework Crate explosions. Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", CVAR_FLAGS );
 	g_hCvarColor2 =			CreateConVar(	"l4d_fire_glow_inferno",		"255 25 0",		"The light color for Molotov and Gascan fires. Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", CVAR_FLAGS );
-	CreateConVar(							"l4d_fire_glow_version",		PLUGIN_VERSION,	"Molotov and Gascan Glow plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar(							"l4d_fire_glow_version",		PLUGIN_VERSION,	"Fire Glow plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	AutoExecConfig(true,					"l4d_fire_glow");
 
 	g_hCvarMPGameMode = FindConVar("mp_gamemode");
@@ -251,7 +277,7 @@ public void OnEntityDestroyed(int entity)
 			{
 				if( IsValidEntRef(g_iEntities[i][0]) )
 				{
-					AcceptEntityInput(g_iEntities[i][0], "Kill");
+					RemoveEntity(g_iEntities[i][0]);
 				}
 
 				g_iEntities[i][0] = 0;
@@ -277,6 +303,7 @@ public Action TimerCreate(Handle timer, any target)
 {
 	if( (target = EntRefToEntIndex(target)) != INVALID_ENT_REFERENCE )
 	{
+		// Find index
 		int index = -1;
 
 		for( int i = 0; i < MAX_LIGHTS; i++ )
@@ -289,21 +316,24 @@ public Action TimerCreate(Handle timer, any target)
 		}
 
 		if( index == -1 )
-			return;
+			return Plugin_Continue;
 
-		char sTemp[64];
-		GetEdictClassname(target, sTemp, 2);
+		// Create light
+		static char sTemp[32];
+
 		int entity = CreateEntityByName("light_dynamic");
 		if( entity == -1)
 		{
 			LogError("Failed to create 'light_dynamic'");
-			return;
+			return Plugin_Continue;
 		}
 
 		g_iEntities[index][0] = EntIndexToEntRef(entity);
 		g_iEntities[index][1] = EntIndexToEntRef(target);
 
 		float fInfernoTime = g_fInferno;
+
+		GetEdictClassname(target, sTemp, 2);
 		if( sTemp[0] == 'i' )
 		{
 			Format(sTemp, sizeof(sTemp), "%s 255", g_sCvarCols2);
@@ -328,9 +358,22 @@ public Action TimerCreate(Handle timer, any target)
 		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 		AcceptEntityInput(entity, "TurnOn");
 
-		int iTickRate = RoundFloat(1 / GetTickInterval());
 		float flTickInterval = GetTickInterval();
+		int iTickRate = RoundFloat(1 / flTickInterval);
 
+		// Fade
+		if( !g_bFrameProcessing )
+		{
+			g_bFrameProcessing = true;
+			RequestFrame(OnFrameFade);
+		}
+
+		g_iTick[index] = 7;
+		g_fFaderEnd[index] = GetGameTime() + fInfernoTime - (flTickInterval * iTickRate);
+		g_fFaderStart[index] = GetGameTime() + flTickInterval * iTickRate + 2.0;
+		g_fFaderTick[index] = GetGameTime() - 1.0;
+
+		/* Old method (causes rare crash with too many inputs)
 		// Fade in
 		for(int i = 1; i <= iTickRate; i++)
 		{
@@ -348,11 +391,73 @@ public Action TimerCreate(Handle timer, any target)
 			AcceptEntityInput(entity, "AddOutput");
 		}
 		AcceptEntityInput(entity, "FireUser2");
+		*/
 
-		Format(sTemp, sizeof(sTemp), "OnUser3 !self:Kill::%f:-1", fInfernoTime);
+		Format(sTemp, sizeof(sTemp), "OnUser3 !self:Kill::%f:-1", fInfernoTime + 1.0);
 		SetVariantString(sTemp);
 		AcceptEntityInput(entity, "AddOutput");
 		AcceptEntityInput(entity, "FireUser3");
+	}
+
+	return Plugin_Continue;
+}
+
+void OnFrameFade()
+{
+	g_bFrameProcessing = false;
+
+	float fDist;
+	float fTime = GetGameTime();
+	float flTickInterval = GetTickInterval();
+	int iTickRate = RoundFloat(1 / flTickInterval);
+
+	// Loop through valid ents
+	for( int i = 0; i < MAX_LIGHTS; i++ )
+	{
+		if( IsValidEntRef(g_iEntities[i][0]) )
+		{
+			g_bFrameProcessing = true;
+
+			// Ready for fade on this tick
+			if( fTime > g_fFaderTick[i] )
+			{
+				// Fade in
+				if( fTime < g_fFaderStart[i] )
+				{
+					fDist = (g_fCvarDist / iTickRate) * g_iTick[i];
+					if( fDist < g_fCvarDist )
+					{
+						SetVariantFloat(fDist);
+						AcceptEntityInput(g_iEntities[i][0], "Distance");
+					}
+
+					g_iTick[i]++;
+					g_fFaderTick[i] = fTime + flTickInterval;
+				}
+				// Fade out
+				else if( fTime > g_fFaderEnd[i] )
+				{
+					fDist = (g_fCvarDist / iTickRate) * (iTickRate - g_iTick[i]);
+					if( fDist < g_fCvarDist )
+					{
+						SetVariantFloat(fDist);
+						AcceptEntityInput(g_iEntities[i][0], "Distance");
+					}
+
+					g_iTick[i]++;
+					g_fFaderTick[i] = fTime + flTickInterval;
+				}
+				else
+				{
+					g_iTick[i] = 0;
+				}
+			}
+		}
+	}
+
+	if( g_bFrameProcessing )
+	{
+		RequestFrame(OnFrameFade);
 	}
 }
 

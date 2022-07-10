@@ -10,8 +10,8 @@
 ConVar g_hCvar_tankProps, g_hCvar_tankPropsGlow, g_hCvar_tankPropsGlowSpec, g_hCvarColor;
 Handle hTankProps       = INVALID_HANDLE;
 Handle hTankPropsHit    = INVALID_HANDLE;
-int i_Ent[2048+1] = -1;
-int i_EntSpec[2048+1]= -1;
+int i_Ent[2048+1] = {-1};
+int i_EntSpec[2048+1]= {-1};
 int g_iCvarColor[3];
 bool tankSpawned;
 int iTankClient = -1;
@@ -180,14 +180,14 @@ public void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const c
 	}
 }
 
-public Action TankPropRoundReset( Handle event, const char[] name, bool dontBroadcast ) {
+public void TankPropRoundReset( Handle event, const char[] name, bool dontBroadcast ) {
     tankSpawned = false;
     
     UnhookTankProps();
     ClearArray(hTankPropsHit);
 }
 
-public Action TankPropTankSpawn( Handle event, const char[] name, bool dontBroadcast ) {
+public void TankPropTankSpawn( Handle event, const char[] name, bool dontBroadcast ) {
 	if ( !tankSpawned ) {
 		UnhookTankProps();
 		ClearArray(hTankPropsHit);
@@ -200,7 +200,7 @@ public Action TankPropTankSpawn( Handle event, const char[] name, bool dontBroad
     }    
 }
 
-public Action PD_ev_EntityKilled( Handle event, const char[] name, bool dontBroadcast )
+public void PD_ev_EntityKilled( Handle event, const char[] name, bool dontBroadcast )
 {
 	if (tankSpawned && GetEntProp((GetEventInt(event, "entindex_killed")), Prop_Send, "m_zombieClass") == 5)
 	{
@@ -218,6 +218,8 @@ public Action TankDeadCheck( Handle timer ) {
 
 		tankSpawned = false;
 	}
+
+	return Plugin_Continue;
 }
 
 public void PropDamaged(int victim, int attacker, int inflictor, float damage, int damageType) {
@@ -365,21 +367,23 @@ public void SpecTankThink(int car)
 }
 
 public Action FadeTankProps( Handle timer ) {
-    int entity;
-    for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
+	int entity;
+	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
 		entity = GetArrayCell(hTankPropsHit, i);
 		if(IsValidEdict(entity))
 		{
-            RemoveEdict(entity);
-            if (IsValidEntRef(i_Ent[entity]))
+			RemoveEdict(entity);
+			if (IsValidEntRef(i_Ent[entity]))
 				RemoveEdict(i_Ent[entity]);
 				
-            if (IsValidEntRef(i_EntSpec[entity]))
+			if (IsValidEntRef(i_EntSpec[entity]))
 				RemoveEdict(i_EntSpec[entity]);
-        }
-    }
-    
-    ClearArray(hTankPropsHit);
+		}
+	}
+
+	ClearArray(hTankPropsHit);
+
+	return Plugin_Continue;
 }
 
 bool IsTankProp( int iEntity ) {
@@ -509,7 +513,7 @@ bool IsValidEntRef(int entity)
 	return false;
 }
 
-int GetColor(char[] sTemp)
+void GetColor(char[] sTemp)
 {
 	if( StrEqual(sTemp, "") )
 	{

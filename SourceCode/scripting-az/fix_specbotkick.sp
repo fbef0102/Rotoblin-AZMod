@@ -75,11 +75,13 @@ public Action:SF_ev_PlayerTeam(Handle:event, String:event_name[], bool:dontBroad
 public Action:SF_t_CheckBots(Handle:timer)
 {
 	for (new i = 1; i <= MaxClients; i++)
-		if(IsClientConnected(i)&&IsClientInGame(i)&&!IsFakeClient(i))
+	{
+		if( IsClientInGame(i) &&!IsFakeClient(i))
 		{
 			SF_Fix();
 			break;
 		}
+	}
 }
 
 SF_Fix()

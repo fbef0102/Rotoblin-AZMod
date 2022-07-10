@@ -11,7 +11,7 @@
 
 ConVar hRockFix,hPullThrough,hRockThroughIncap,hCommonThroughWitch;
 bool bRockFix,bPullThrough,bRockThroughIncap,bCommonThroughWitch;
-bool isPulled[MAXPLAYERS + 1] = false;
+bool isPulled[MAXPLAYERS + 1] = {false};
 char sEntityCName[20];
 char sEntityCNameTwo[20];
 

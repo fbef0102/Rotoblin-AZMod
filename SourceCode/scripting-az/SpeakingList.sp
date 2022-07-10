@@ -166,4 +166,6 @@ public Action UpdateSpeaking(Handle timer)
 			}
 		}
 	}
+
+	return Plugin_Continue;
 }

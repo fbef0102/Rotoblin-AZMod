@@ -169,12 +169,12 @@ public int Native_GetString(Handle plugin, int numParams)
 	// Pointer to keyvalue for modifying
 	int pThis = GetNativeCell(1);
 	if( pThis == 0 ) pThis = g_PointerMission;
-	if( pThis == 0 ) return; // Some maps maybe invalid (due to invalid gamemode).
+	if( pThis == 0 ) return 0; // Some maps maybe invalid (due to invalid gamemode).
 
 	// Validate string
 	int len;
 	GetNativeStringLength(2, len);
-	if( len <= 0 ) return;
+	if( len <= 0 ) return 0;
 
 	// Key name to get
 	char key[MAX_STRING_LENGTH];
@@ -187,6 +187,8 @@ public int Native_GetString(Handle plugin, int numParams)
 	// Return string
 	int maxlength = GetNativeCell(4);
 	SetNativeString(3, value, maxlength);
+
+	return 0;
 }
 
 public int Native_SetString(Handle plugin, int numParams)
@@ -194,12 +196,12 @@ public int Native_SetString(Handle plugin, int numParams)
 	// Pointer to keyvalue for modifying
 	int pThis = GetNativeCell(1);
 	if( pThis == 0 ) pThis = g_PointerMission;
-	if( pThis == 0 ) return; // Some maps maybe invalid (due to invalid gamemode).
+	if( pThis == 0 ) return 0; // Some maps maybe invalid (due to invalid gamemode).
 
 	// Validate string
 	int len;
 	GetNativeStringLength(2, len);
-	if( len <= 0 ) return;
+	if( len <= 0 ) return 0;
 	GetNativeStringLength(3, len);
 
 	// Key name and value to set
@@ -222,6 +224,8 @@ public int Native_SetString(Handle plugin, int numParams)
 
 	// Set key value
 	SDKCall(SDK_KV_SetString, pThis, key, value);
+
+	return 0;
 }
 
 
@@ -373,6 +377,8 @@ public Action CmdInfoReload(int client, int args)
 public int Native_ReloadData(Handle plugin, int numParams)
 {
 	ReloadData();
+
+	return 0;
 }
 
 void ReloadData()

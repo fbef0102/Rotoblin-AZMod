@@ -122,7 +122,7 @@ public void OnClientPostAdminCheck(int client)
 	SaveMessage(msg);
 }
 
-public Action event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
+public void event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	

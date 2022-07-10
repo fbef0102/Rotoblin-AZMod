@@ -510,6 +510,8 @@ Action TimerDestroy(Handle timer, any index)
 		g_iTick[index] = 0;
 		RequestFrame(OnFrameFadeOut, index);
 	}
+
+	return Plugin_Continue;
 }
 
 void OnFrameFadeOut(int index)

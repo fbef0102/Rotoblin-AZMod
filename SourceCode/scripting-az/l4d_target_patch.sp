@@ -299,6 +299,8 @@ void DetourAddress(bool patch)
 public MRESReturn ChooseVictimPre(int client, Handle hReturn)
 {
 	// Unused but hook required to prevent crashing.
+
+	return MRES_Ignored;
 }
 
 public MRESReturn ChooseVictimPost(int client, Handle hReturn)

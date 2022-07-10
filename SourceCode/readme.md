@@ -1,5 +1,5 @@
 Roto-AZ mod plugins work @ 2017-2022 Harry
-* using sourcemod compiler v1.10-git6528
+* using sourcemod compiler v1.11-git6905
 
 Credit
 * [l4d1 roto1](https://code.google.com/archive/p/rotoblin/source)

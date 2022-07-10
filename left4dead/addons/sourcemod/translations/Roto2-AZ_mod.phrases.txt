@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.3.8"
+		"en"			"Rotoblin-AZ Mod v8.3.9"
 	}
 	"Plugin_Information"
 	{
@@ -2653,6 +2653,12 @@
 		"#format"	"{1:i}"
 		"en"		"Team score is {1}"
 		"zho"		"隊伍分數是 {1}"
+	}
+	"l4dscores12"
+	{
+		"#format"	"{1:i},{2:i}"
+		"en"	"Set Team Scres: {1}(survs) - {2}(inf)"
+		"zho"	"設置隊伍分數: {1}(倖存者) - {2}(特感)"
 	}
 	//////////////si_class_announce.smx//////////////
 	"si_class_announce"

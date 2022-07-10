@@ -1,7 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
 
-//Left4Dead Version: v1037
 #define PLUGIN_FILENAME		"l4d_QuadCaps"
 #define DEBUG 0
 #define ZC_TIMEROFFSET		0.8
@@ -38,7 +37,7 @@ public Plugin:myinfo =
 	name = "L4D Quad Caps Control",
 	author = "Harry Potter",
 	description = "As the name says, you dumb fuck",
-	version = "1.4",
+	version = "1.5",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -119,6 +118,11 @@ public OnPluginEnd()
 	PluginDisable = false;
 }
 
+public void OnMapStart()
+{	
+	Hunter_Starting_Line = Smoker_Starting_Line = Boomer_Starting_Line = 0;
+}
+
 public OnMapEnd()
 {
 	ResetConVar(HCVAR_Z_VS_SMOKER_LIMIT, true, true);
@@ -177,6 +181,12 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 
 public Action PluginStart(Handle timer)
 {
+	if(!InSecondHalfOfRound())
+	{
+		Sub_DebugPrint("Round 1");
+		return Plugin_Continue;
+	}
+
 	Sub_DebugPrint("round start event");
 	for(int i=1; i <= MaxClients; i++)
 	{
@@ -185,6 +195,8 @@ public Action PluginStart(Handle timer)
 			CreateTimer(OnEnterGhostCheckDelay, COLD_DOWN, GetClientUserId(i) ); // delay check since team change event is before round start event
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 public Action:Event_RoundEnd(Handle:hEvent, const String:name[], bool:dontBroadcast)
@@ -254,21 +266,23 @@ public L4D_OnEnterGhostState(client)
 public Action COLD_DOWN(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if(!client || !IsClientInGame(client) || GetClientTeam(client)!=3)	return;
-	
+	if(!client || !IsClientInGame(client) || GetClientTeam(client)!=3)	return Plugin_Continue;
+
 	if(!Is_Ready_Plugin_On() && !hasleftstartarea)
 	{
 		Sub_DebugPrint("Is in saferoom");
 		Sub_DetermineClass(client, GetEntProp(client, Prop_Send, "m_zombieClass"));
-		return;
+		return Plugin_Continue;
 	}
 
 	if(IsInReady())
 	{
 		Sub_DebugPrint("Is in Ready");
 		Sub_DetermineClass(client, GetEntProp(client, Prop_Send, "m_zombieClass"));
-		return;
+		return Plugin_Continue;
 	}
+
+	return Plugin_Continue;
 }
 
 public Sub_DetermineClass(any:Client, any:ZClass)

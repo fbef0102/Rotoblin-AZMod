@@ -1370,8 +1370,8 @@ public Action:Config_Changer(client, args)
 		new Client_Team		= GetClientTeam(client),
 		Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;	//getting dem client teamz. If client team is survivor, then opposite team is infected, else opposite team is survivorzor
 		
-		decl String:SurvivorCfg[128];		//gets string value of PlayerCfg when Team A requests !load
-		decl String:InfectedCfg[128];		//gets string value of PlayerCfg when Team B requests !load
+		//decl String:SurvivorCfg[128];		//gets string value of PlayerCfg when Team A requests !load
+		//decl String:InfectedCfg[128];		//gets string value of PlayerCfg when Team B requests !load
 
 		decl String:LoadIsAllowed[2];		//Temp string to get the convar value of comp_loader_allow_load 1 / 0
 		#if FULL_VERSION
@@ -1616,14 +1616,14 @@ public Action:Config_Changer(client, args)
 					CPrintToChat(client, "[{olive}TS{default}] %t","Invalid Config.", client); //if sum of configs is less than 1 or more than 2, print invalid config
 					return Plugin_Handled;
 				}								
-				if(!Config_Requests[Opposite_Team] == false)
-				{
-					SurvivorCfg = PlayerCfg;	//OppositeTeam argument string gets saved to SurvivorCfg
-				}			
-				else if(!Config_Requests[Client_Team] == true)
-				{
-					InfectedCfg = PlayerCfg;	//ClientTeam argument string gets saved to InfectedCfg
-				}
+				// if(!Config_Requests[Opposite_Team] == false)
+				// {
+				// 	SurvivorCfg = PlayerCfg;	//OppositeTeam argument string gets saved to SurvivorCfg
+				// }			
+				// else if(!Config_Requests[Client_Team] == true)
+				// {
+				// 	InfectedCfg = PlayerCfg;	//ClientTeam argument string gets saved to InfectedCfg
+				// }
 				
 				if (!TestMatchDelay(client))
 				{
@@ -2440,7 +2440,7 @@ public Action:Map_Changer(client, args)
 				}
 				else
 				{
-					CPrintToChatAll("[{olive}TS{default}] %t","Invalid Mapname.");
+					CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Mapname.", client);
 					return Plugin_Handled;
 				}								
 				if(!Map_Requests[Opposite_Team] == false)

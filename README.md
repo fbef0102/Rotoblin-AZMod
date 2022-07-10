@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.3.8
+v8.3.9
 @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -356,6 +356,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Tank burn life time: 125s (vanilla: **75**)
 	* Ghost Tank freezes and being immune to fire for a while.
 	* Fix frozen tanks, force tank player suicide when playing death animation.
+	* Fix punch get-up varying in length, along with flexible setting to it.
 	
   * **Witch:**
     * Announce in chat when a Which has spawned
@@ -401,7 +402,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
     * claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
-    * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **60**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
 	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
 	* m2 godframes after a hunter lands on the ground: 0.25s
@@ -412,7 +413,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Recharge CD: 20s (vanilla: 30s)
     * Boom Horde limit
 	  - *(5v5)*: **35**
-	  - *(4v4)*: **30**
+	  - *(4v4)*: **26**
 	  - *(3v3)*: **21**
 	  - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
@@ -428,9 +429,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Tank/Witch Spawns:
   * Force Enable bosses spawning on all maps, and same spawn positions for both team
   * **sm_boss** will print the distance percentage for the Tank and Witch spawns.
-  * *(Intro)*: **20%~85%**
-  * *(Regular)*: **10%~90%** (possible tank when leave out saferoom)
-  * *(Finale)*: **20%~85%**
+  * *(Intro)*: **20%~85%** (original: 50%~75%)
+  * *(Regular)*: **20%~85%** (original: 10%~90%)
+  * *(Finale)*: **25%~80%** (original: 25%~60%)
   * **Static Tank maps / flow Tank disabled:**
     * The Sacrifice Stage 1 (c7m1_docks)
     * The Sacrifice Stage 3 (c7m3_port)
@@ -467,7 +468,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
   * Survivors bleed out Temp Health every **4.0s** (vanilla: **3.7s**)
-  * Give ammo when the weapon limit is reached
   * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
   * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty

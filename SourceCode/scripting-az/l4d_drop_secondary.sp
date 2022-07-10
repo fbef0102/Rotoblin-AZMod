@@ -37,7 +37,7 @@ public void OnMapStart()
 	g_bPlayerPickUpWeapon = false;
 }
 
-public Action OnRoundStart(Event event, const char[] name, bool dontBroadcast)
+public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	for (int i = 0; i <= MAXPLAYERS; i++) 
 	{
@@ -166,16 +166,18 @@ public Action DelayCheck(Handle timer, int ref)
 
 	if(entity == INVALID_ENT_REFERENCE)
 	{
-		return;
+		return Plugin_Continue;
 	}
 
 	for (int i = 0; i <= MAXPLAYERS; i++) 
 	{
 		if(IsSurvivor(i) && g_PlayerSecondaryWeapons[i] == entity)
-			return;
+			return Plugin_Continue;
 	}
 
 	SafelyRemoveEdict(entity);
+
+	return Plugin_Continue;
 }
 
 int GetWeaponOwner(int weapon)

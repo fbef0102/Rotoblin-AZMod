@@ -103,7 +103,7 @@ stock GetZombieClass(client) return GetEntProp(client, Prop_Send, "m_zombieClass
 
 stock bool:IsClientAndInGame(index)
 {
-	if (index > 0 && index < MaxClients)
+	if (index > 0 && index <= MaxClients)
 	{
 		return IsClientInGame(index);
 	}

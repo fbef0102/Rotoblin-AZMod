@@ -17,7 +17,7 @@ static Handle:hPreviousMapTeamTanks;
 public Plugin:myinfo = {
 	name = "L4D Tank Control",
 	author = "Jahze, vintik, raziEiL [disawar1], Harry Potter",
-	version = "2.2",
+	version = "2.3",
 	description = "Forces each player to play the tank at least once before Map change."
 };
 
@@ -71,7 +71,7 @@ public OnPluginStart()
 	HookEvent("player_team", TC_ev_OnTeamChange);
 	HookEvent("player_left_start_area", TC_ev_LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	HookEvent("round_start", TC_ev_RoundStart, EventHookMode_PostNoCopy);
-	
+	HookEvent("player_spawn", TC_ev_PlayerSpawn);
 	
 	RegConsoleCmd("sm_tank", Command_FindNexTank);
 	RegConsoleCmd("sm_t", Command_FindNexTank);
@@ -225,6 +225,15 @@ public OnMapStart()//每個地圖的第一關載入時清除所有has been tank 
 	ClearArray(hPreviousMapTeamTanks);
 }
 
+public void TC_ev_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (client && IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 3 && IsPlayerAlive(client) && IsPlayerTank(client))
+	{
+		queuedTank = 0;
+	}
+}
+
 public Action:TC_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	queuedTank = 0;
@@ -328,13 +337,18 @@ public void L4D_OnTryOfferingTankBot_Post(int tank_index, bool enterStasis)
 		GetClientAuthId(queuedTank, AuthId_Steam2, tankSteamId, sizeof(tankSteamId));
 		
 		if(HasBeenTank(tankSteamId) == false)
-			PushArrayString(hTeamTanks, tankSteamId);
+		{
+			if(FindStringInArray(hTeamTanks, tankSteamId) == -1)
+				PushArrayString(hTeamTanks, tankSteamId);
+		}
 		if(IsFinal)
-			PushArrayString(hTeamFinalTanks, tankSteamId);
+		{
+			if(FindStringInArray(hTeamFinalTanks, tankSteamId) == -1)
+				PushArrayString(hTeamFinalTanks, tankSteamId);
+		}
 			
-		PushArrayString(hPreviousMapTeamTanks, tankSteamId);
-
-		queuedTank = 0;
+		if(FindStringInArray(hPreviousMapTeamTanks, tankSteamId) == -1)
+			PushArrayString(hPreviousMapTeamTanks, tankSteamId);
 	}
 	IsSecondTank = true;//已經第一隻Tank了
 }
@@ -360,9 +374,15 @@ public Action:CheckForAITank(Handle:timer)
 				GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId));
 
 				if(HasBeenTank(SteamId) == false)
-					PushArrayString(hTeamTanks, SteamId);
+				{
+					if(FindStringInArray(hTeamTanks, tankSteamId) == -1)
+						PushArrayString(hTeamTanks, tankSteamId);
+				}
 				if(IsFinal)
-					PushArrayString(hTeamFinalTanks, SteamId);
+				{
+					if(FindStringInArray(hTeamFinalTanks, SteamId) == -1)
+						PushArrayString(hTeamFinalTanks, SteamId);
+				}
 
 			}
 			return Plugin_Handled;
@@ -393,7 +413,8 @@ static ChooseFinalTank() {
 			continue;
 		}
 
-		PushArrayString(SteamIds, SteamId);
+		if(FindStringInArray(SteamIds, SteamId) == -1)
+			PushArrayString(SteamIds, SteamId);
 	}
 
 	if (GetArraySize(SteamIds) == 0) {//沒有人可以成為tank
@@ -447,7 +468,8 @@ static ChooseTank() {
 			continue;
 		}
 
-		PushArrayString(SteamIds, SteamId);
+		if(FindStringInArray(SteamIds, SteamId) == -1)
+			PushArrayString(SteamIds, SteamId);
 	}
 
 	if (GetArraySize(SteamIds) == 0) {//沒有人可以成為tank

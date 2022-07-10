@@ -79,6 +79,7 @@ public Action EntCheck_Timer(Handle hTimer)
 	}
 #endif
 
+	return Plugin_Continue;
 }
 
 public void RoundStart_Event(Event hEvent, const char[] name, bool dontBroadcast)
@@ -117,6 +118,8 @@ public Action RoundStartDelay_Timer(Handle hTimer)
 			#endif
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 public Action OnTransmit(int entity, int client)

@@ -356,9 +356,8 @@ LoadJukeboxes()
 
 SetPositionInfront(Float:vPos[3], const Float:vAng[3], Float:fDist)
 {
-	decl Float:vAngles[3], Float:vOrigin[3], Float:vBuffer[3];
+	decl Float:vAngles[3], Float:vBuffer[3];
 
-	vOrigin = vPos;
 	vAngles = vAng;
 	vAngles[1] += 90.0;
 

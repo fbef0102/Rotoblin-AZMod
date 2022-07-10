@@ -160,10 +160,12 @@ public void OnTeamChange(Event hEvent, const char[] name, bool dontBroadcast)
 
 public Action OnTeamChangeDelay(Handle hTimer, any userid)
 {
-	int client = GetClientOfUserId(userid);
-	if (client > 0) {
-		RegisterSettings(client);
-	}
+    int client = GetClientOfUserId(userid);
+    if (client > 0) {
+        RegisterSettings(client);
+    }
+
+    return Plugin_Continue;
 }
 
 public void OnClientSettingsChanged(int client) 
@@ -350,11 +352,11 @@ void RegisterSettings(int client)
 
 void PunishPlayer(int client, const char[] sCmdRate, const char[] sUpdateRate, const char[] sRate, const char[] sCounter, int iIndex)
 {
-    new bool:bInitialRegister = iIndex > -1 ? false : true;
+    bool bInitialRegister = iIndex > -1 ? false : true;
 
-    decl String:clientName[128];
+    char clientName[128];
     GetClientName(client,clientName,128);
-    decl String:Info[100];
+    char Info[100];
     switch (iActionUponExceed)
     {
         case 1:	// Just notify all players(zero punishment)

@@ -245,7 +245,7 @@ public Action PlayerNameCheck(Handle timer,any client)
 //function
 stock bool IsClientAndInGame(int index)
 {
-	if (index > 0 && index < MaxClients)
+	if (index > 0 && index <= MaxClients)
 	{
 		return IsClientInGame(index);
 	}
