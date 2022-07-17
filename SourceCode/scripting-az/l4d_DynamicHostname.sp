@@ -2,7 +2,7 @@
 #include <sdktools>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 
 #define		DN_TAG		"[DHostName]"
 #define		SYMBOL_LEFT		'('
@@ -17,7 +17,7 @@ public Plugin:myinfo =
 	author = "Harry Potter",
 	description = "Show what mode is it now on chinese server name with txt file",
 	version = PLUGIN_VERSION,
-	url = "myself"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
 public OnPluginStart()
@@ -35,25 +35,27 @@ public OnConfigsExecuted()
 
 ChangeServerName()
 {
+	decl String:sPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
+	
+	new Handle:file = OpenFile(sPath, "r");//讀取檔案
+	if(file == INVALID_HANDLE)
+	{
+		LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
+		CloseHandle(file);
+		return;
+	}
+	
+	decl String:readData[256];
+	if(!IsEndOfFile(file) && ReadFileLine(file, readData, sizeof(readData)))//讀一行
+	{
+		decl String:sNewName[128];
+		
+		Format(sNewName, sizeof(sNewName), "[TS] %s", readData);
+		SetConVarString(g_hHostName,sNewName);
+		
+		Format(g_sDefaultN,sizeof(g_sDefaultN),"%s",sNewName);
+	}
 
-        decl String:sPath[PLATFORM_MAX_PATH];
-        BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
-        
-        new Handle:file = OpenFile(sPath, "r");//讀取檔案
-        if(file == INVALID_HANDLE)
-		{
-			LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
-			return;
-		}
-        
-        decl String:readData[256];
-        if(!IsEndOfFile(file) && ReadFileLine(file, readData, sizeof(readData)))//讀一行
-        {
-			decl String:sNewName[128];
-			
-			Format(sNewName, sizeof(sNewName), "[TS] %s", readData);
-			SetConVarString(g_hHostName,sNewName);
-			
-			Format(g_sDefaultN,sizeof(g_sDefaultN),"%s",sNewName);
-        }
+	CloseHandle(file);
 }

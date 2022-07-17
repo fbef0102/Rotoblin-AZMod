@@ -430,8 +430,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Force Enable bosses spawning on all maps, and same spawn positions for both team
   * **sm_boss** will print the distance percentage for the Tank and Witch spawns.
   * *(Intro)*: **20%~85%** (original: 50%~75%)
-  * *(Regular)*: **20%~85%** (original: 10%~90%)
-  * *(Finale)*: **25%~80%** (original: 25%~60%)
+  * *(Regular)*: **15%~85%** (original: 10%~90%)
+  * *(Finale)*: **20%~80%** (original: 25%~60%)
   * **Static Tank maps / flow Tank disabled:**
     * The Sacrifice Stage 1 (c7m1_docks)
     * The Sacrifice Stage 3 (c7m3_port)

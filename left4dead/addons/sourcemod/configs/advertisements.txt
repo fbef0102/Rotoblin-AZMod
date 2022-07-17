@@ -42,7 +42,7 @@
     }
 	"6"
     {
-        "chat"			"{lightgreen}Based on L4D2 Acemod、Zonemod、Nextmod、L4D1 roto2"
+        "chat"			"{lightgreen}Based on L4D2 Acemod、L4D2 Zonemod、L4D1 roto2"
     }
 	"7"
     {
@@ -58,7 +58,7 @@
     }
 	"10"
     {
-        "chat"			"{lightgreen}Pass Pill With R button"
+        "chat"			"{lightgreen}Custom Map: City17、Suicide Blitz、Dead Flag Blues、I Hate Mountains"
     }
 	"11"
     {
@@ -66,7 +66,7 @@
     }
 	"12"
     {
-        "chat"			"{lightgreen}Join Our Group: ibserver"
+        "chat"			"{lightgreen}Custom Map: Dead Before Dawn、The Arena of the Dead、Death Aboard"
     }
 	"13"
     {
@@ -74,21 +74,25 @@
     }
 	"14"
     {
-        "chat"			"{lightgreen}!slots、!kickspec、!cm"
+        "chat"			"{lightgreen}Custom Map: One 4 Nine、Dark Blood、Blood Harvest APOCALYPSE、Precinct 84"
     }
 	"15"
     {
-        "chat"			"{lightgreen}!cur、!boss、!tankhud、!spechud、!scores、!ps"
+        "chat"			"{lightgreen}!slots、!kickspec、!cm"
     }
 	"16"
     {
-        "chat"			"{lightgreen}!health、!kills、!mvp、!lerps、!rates"
+        "chat"			"{lightgreen}!cur、!boss、!tankhud、!spechud、!scores、!ps"
     }
 	"17"
     {
-        "chat"			"{lightgreen}Let's play a game: !coin、!roll、!code"
+        "chat"			"{lightgreen}!health、!kills、!mvp、!lerps、!rates"
     }
 	"18"
+    {
+        "chat"			"{lightgreen}Let's play a game: !coin、!roll、!code"
+    }
+	"19"
     {
         "chat"			"{lightgreen}Multi Hunters mode: !ht、!timer"
     }

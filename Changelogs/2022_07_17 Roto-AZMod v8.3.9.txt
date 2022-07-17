@@ -25,8 +25,8 @@ v8.3.9
 
 * Tank/Witch Spawns:
   * *(Intro)*: **20%~85%** (original: 50%~75%)
-  * *(Regular)*: **20%~85%** (original: 10%~90%, was 10%~90%)
-  * *(Finale)*: **25%~80%** (original: 25%~60%, was 20%~85%)
+  * *(Regular)*: **15%~85%** (original: 10%~90%, was 10%~90%)
+  * *(Finale)*: **20%~80%** (original: 25%~60%, was 20%~85%)
 
 -plugins\l4d_QuadCaps.smx
 * Fixed zombie class error when playing hunters only mode
