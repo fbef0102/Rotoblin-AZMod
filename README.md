@@ -17,7 +17,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * Make sure your server is stopped.
   * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
 * Requirements:
-  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod v1.10 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
+  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod v1.11 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
   * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
