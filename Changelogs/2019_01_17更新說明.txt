@@ -1,0 +1,29 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins [finalefix.smx]
+//Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//多些指令提示
+
+[l4d_NoRescueFirstTank.smx]
+//優化
+
+[l4dscores.smx]
+//優化
+
+	       ***cfg***
+-left4dead\cfg 
+[rotoblin_witch_party.cfg]
+//load AI improvements
+
+[all]
+//AI support
+
+	       ***txt***
+
+

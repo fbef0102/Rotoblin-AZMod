@@ -1,0 +1,26 @@
+﻿-修改
+left4dead\addons\stripper\maps
+[others]
+//fix so many glitch spots
+
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d2_nobackjumps]
+//修正語法
+
+[l4dscores]
+//修正分數計算wiped out有問題
+
+left4dead\cfg
+[rotoblin_nob_3v3.cfg]
+[rotoblin_nob_2v2.cfg]
+[rotoblin_nob_4v4.cfg]
+//修正提示
+
+[rotoblin_hardcore_4v4_classic_map.cfg]
+[rotoblin_pub_map.cfg]
+//AI default
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//AI Hunter improve

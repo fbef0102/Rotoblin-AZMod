@@ -1,0 +1,17 @@
+﻿------------------新增------------------
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[l4d_NoRescueFirstTank.smx]
+//block Tank music when rescue first tank
+
+[l4dscores.smx]
+//1v1 2v2 3v3 5v5提示修正
+
+	       ***cfg***
+-left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//高撲上修60 (default:25, last time:50)		

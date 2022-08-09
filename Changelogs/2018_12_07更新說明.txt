@@ -1,0 +1,34 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_drop_secondary]
+//增加ready模式中死亡不會掉槍
+
+[l4d_pig_infected_notify]
+//更多豬特感提示
+
+[l4dffannounce]
+//士可殺不可辱
+
+[l4d_tank_witch_damage_announce_spawnAnnouncer]
+//加強語法
+
+[temphealthfix]
+//增加警報車判斷
+
+left4dead\addons\stripper\maps
+[l4d_vs_hospital01_apartment.cfg]
+//修正門不見而已
+
+left4dead\cfg
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//defualt AI 指令
+
+[rotoblin_pub_map.cfg]
+//defualt AI 指令
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//enlarge witch personal space
+//tank stronger
+//AI Improvement Cvars

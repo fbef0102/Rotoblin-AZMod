@@ -1,0 +1,27 @@
+﻿------------------新增------------------
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[comp_loader.smx]
+//修正非adm無法開啟投票換圖
+
+[l4d_tank_control.smx]
+//!settank <player>: adm強制該玩家當坦克
+//對應最後一關救援後如果沒有第一隻坦克則不選人
+
+[l4d2_ai_damagefix.smx]
+[l4d_drop_secondary.smx]
+[blocktrolls.smx]
+//修正錯誤
+
+	       ***txt***
+-left4dead\scripts [weapon_pumpshotgun.txt]
+//{　2.5->1.5　}空中準度
+//{  0.96->default 0.7 } 傷害距離遞減
+
+	       ***cfg***
+-left4dead\cfg [rotoblin_hardcore_4v4_map.cfg]
+//胖子噴到的殭屍數量 24/24->26/26

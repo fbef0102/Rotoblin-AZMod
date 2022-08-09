@@ -1,0 +1,24 @@
+﻿------------------新增------------------
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[l4dcompstats.smx]
+//修正Exception reported: Invalid memory access
+
+[l4dready_scrds.smx]
+//修正特感在ready模式中能復活
+
+-left4dead\addons\sourcemod\plugins\optional [l4d_multiwitch.smx]
+//修正判斷
+
+	       ***cfg***
+
+	       ***txt***
+
+	       ***nav***
+-left4dead\maps [l4d_vs_hospital01_apartment.nav]
+//回復官方路程%數
+

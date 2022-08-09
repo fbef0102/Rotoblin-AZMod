@@ -1,0 +1,115 @@
+﻿------------------新增------------------
+-left4dead\cfg
+[rotoblin_witch_party.cfg]
+[rotoblin_witch_party_map.cfg]
+//新增witch party mode config
+
+-left4dead\addons\sourcemod\plugins\optional
+-left4dead\addons\sourcemod\scripting
+[l4d_multiwitch.smx]
+//能夠一直復活多個witch的插件 並且發光給人類看到(witch party mode專用)
+
+
+-left4dead\addons\sourcemod\gamedata
+[l4dinfectedbots.txt]
+//support l4dinfectedbots.smx gamedata
+
+------------------刪除------------------
+-left4dead\cfg\sourcemod
+[l4dinfectedbots.cfg]
+//刪除自動加載指令(因為每個模式需要的指令都不同)
+
+------------------修改------------------
+-left4dead\addons\sourcemod\plugins\optional
+-left4dead\addons\sourcemod\scripting
+[l4d_superversus]
+//修正加載此插件後，人類數量限制與特感數量限制不能低於4
+
+[l4d_versus_5v5_hud]
+//沒有ready模式也能有此hud
+
+[l4dinfectedbots]
+//ready模式中不生特感
+
+[1vHunters]
+//語法簡化
+
+-left4dead\addons\sourcemod\plugins
+-left4dead\addons\sourcemod\scripting
+[l4d_witchspawnfix_whentank]
+[l4d_versus_same_UnprohibitBosses]
+//witch party mode開啟後自動卸載這兩個插件
+
+[l4dready_scrds]
+//修正語法
+
+[l4d_boss_percent]
+[l4d_versus_spechud]
+//提示: Witch Party
+
+[comp_loader]
+//新增witch party mode (!load wp/!load WP/!load witchparty/!load WitchParty)
+//修正非adm 換圖指令無法換圖
+
+[l4d_antibaiter]
+//修正亂碼出現
+
+[l4d_tank_props]
+//修正坦克給了會被插件處死的AI 並沒有讓發光的車子與道具消失
+
+[l4dffannounce]
+[l4d_tankpunchstuckfix]
+//加強判斷修正士可殺不可辱提示
+
+[huntercrouchsound]
+//語法簡化
+
+[l4dscores]
+//修正掛邊分數
+
+-left4dead\addons\sourcemod\plugins
+-left4dead\addons\sourcemod\scripting\other_script\Juan
+[l4d_witchglow]
+//修正語法
+
+-left4dead\addons\sourcemod\plugins
+-left4dead\addons\sourcemod\scripting\rotoblin_edit
+[rotoblin]
+//超過限制狙擊槍數量時     不給子彈
+//超過限制連發傘彈槍數量時 給予單發傘彈槍
+//超過限制步槍數量時       給予機槍
+
+-left4dead\cfg
+[rotoblin_hunters...]
+//sm plugins load optional/l4dinfectedbots.smx
+//1v2 1v3 1v4 1v5 2v4 2v5 3v5 不再有ready模式並且特感無玩家則新增AI hunter以提供訓練
+
+[rotoblin_hunters_3v3_map.cfg]
+//AI處死
+
+[others]
+//對應witch party config
+
+-left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//對應witch party config
+
+-left4dead\addons\stripper
+[global_filters.cfg]
+//穿透煩人卡住的小東西 保留大東西固體擋住
+
+-left4dead\addons\stripper\maps
+[l4d_vs_smalltown01_caves.cfg]
+//zonemod no hittable car
+
+[l4d_vs_airport01_greenhouse.cfg]
+//fix glitch spot
+
+-left4dead\addons\sourcemod\configs
+[matchmodes.txt]
+//新增可選擇witchparty
+
+-left4dead
+[pure_server_whitelist.txt]
+//增加很多檔案給予CRC check 這會檢查玩家檔案是否與伺服器一致防止玩家竄改槍聲音效 環境顏色等等
+//無法檢查有無那些檔案 只會檢查內容是否與伺服器一致

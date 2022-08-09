@@ -1,0 +1,50 @@
+﻿------------------新增------------------
+-left4dead\addons\sourcemod\plugins 
+[savechat.smx]
+//紀錄玩家對話聊天內容
+//檔案位在left4dead\addons\sourcemod\logs\chat
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins
+[l4d_tankpunchstuckfix.smx]
+[l4d_bw_rock_hit.smx]
+//linux and windows
+
+[l4d_Harry_Roto2-AZ_mod_info.smx]
+//優化
+
+[games.smx]
+//優化
+
+[l4d_tank_props.smx]
+//round end fix
+
+[l4d_DynamicHostname.smx]
+//%s fix
+
+[votes3.smx]
+[l4dready_scrds.smx]
+[comp_loader.smx]
+//優化翻譯
+
+[l4d_QuadCaps.smx]
+//error fix
+
+	       ***txt***
+-left4dead\addons\sourcemod\gamedata 
+[windowsorlinux.txt]
+//判別windows or linux
+
+[checkpoint-rage-control.txt]
+//linux offset fix
+
+[left4downtown.l4d.txt]
+//linux signature fix
+
+	       ***cfg***
+-left4dead\cfg\Reloadables [server_custom_convars.cfg]
+//disallow the wait command on client
+//sv_allow_wait_command 0

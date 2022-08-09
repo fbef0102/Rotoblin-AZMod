@@ -1,0 +1,17 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4dscores]
+//修正人類倒地後分數產生錯誤
+
+[l4d_Harry_Roto2-AZ_mod_info]
+//更精準的提示
+
+left4dead\cfg
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//修正指令(忘記加sm_cvar)
+
+left4dead\cfg\Reloadables
+[server_custom_convars]
+//修正指令(忘記加sm_cvar)
+

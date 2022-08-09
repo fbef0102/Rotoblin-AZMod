@@ -1,0 +1,36 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_pig_infected_notify]
+//語法判斷
+
+-新增
+left4dead\addons\sourcemod\plugins\optional
+left4dead\addons\sourcemod\scripting
+[l4dinfectedbots]
+//pub混野中新增特感bot
+
+-修改
+left4dead\cfg
+[server_1v1_convars.cfg]
+[server_custom_plugins.cfg]
+[server_plugins.cfg]
+[server_pub_plugins.cfg]
+//對應l4dinfectedbots加載
+
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//移除 smoker miss delay 指令
+
+[rotoblin_hunters_2v4_map.cfg]
+[rotoblin_hunters_2v5_map.cfg]
+[rotoblin_hunters_3v5_map.cfg]
+//增加傷害
+
+left4dead\cfg\sourcemod
+[l4dinfectedbots.cfg]
+//對應l4dinfectedbots指令
+
+left4dead\cfg\sourcemod\Reloadables
+[server_custom_convars.cfg]
+//移除 smoker miss delay 指令
+//tank Speed has been set back to 205. (survivors speed: 220, default: 210 - zonemod: 205)

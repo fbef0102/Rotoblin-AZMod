@@ -1,0 +1,32 @@
+﻿------------------新增------------------
+
+------------------刪除------------------
+
+------------------修改------------------
+	       ***插件***
+-left4dead\addons\sourcemod\plugins [l4dscores.smx]
+//分數修正
+
+[rotoblin.smx]
+//修正最後一關有額外藥丸
+
+-left4dead\addons\sourcemod\plugins\optional [1vHunters.smx]
+//指令修正
+
+[l4dinfectedbots.smx]
+//新增!ht指令: 人類決定幾個ht bot
+//新增!timer指令: 人類決定特感bot復活時間
+
+	       ***cfg***
+-left4dead\cfg  [rotoblin_hardcore_4v4_classic_map.cfg]
+-left4dead\cfg\Reloadables [server_custom_convars.cfg]
+//新增指令 no_escape_tank
+
+[others]
+//multi hunters模式
+//1.縮短救隊友跟治療自己的時間 
+//2.取消ready
+//sm_cvar survivor_revive_duration
+//sm_cvar first_aid_kit_use_duration
+
+

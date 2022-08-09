@@ -1,0 +1,90 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_godframes_and_hittable_control]
+//Witch抓你 坦克打車必定有傷害
+
+[sm_downloader]
+//提示改善
+
+[l4d_versus_spechud]
+//提示漢化
+
+[l4d2_blind_infected]
+//簡化語法
+
+[l4d_no_hunter_deadstops]
+//加強語法判斷
+
+[l4d_versus_same_UnprohibitBosses]
+[l4d2_ai_damagefix]
+[l4d2_witch_restore]
+[l4d_tank_count]
+//修正語法
+
+[l4d_tank_props]
+//新增坦克打車會發光
+
+[l4d_Harry_Roto2-AZ_mod_info]
+[l4dready_scrds]
+[l4d_versus_spechud]
+//roto-az v7.8
+
+[l4d_witchspawnfix_whentank]
+[huntercrouchsound]
+//加強語法判斷
+
+[hunter_growl_sound_fix]
+//簡化判斷
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//新增指令tongue_miss_delay: 3.2s, tongue_hit_delay: 13s 
+//新增指令l4d_tank_props 1, l4d_tank_props_glow 1
+
+left4dead\cfg
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//新增指令tongue_miss_delay: 3s, tongue_hit_delay: 15s 
+//新增指令versus_shove_hunter_fov_pouncing "45",versus_shove_hunter_fov "90"
+
+[rotoblin.cfg]
+[server_1v1_convars.cfg]
+[server_pub_convars.cfg]
+[rotoblin_hardcore_4v4_classic_map.cfg]
+[server_shared_convars.cfg]
+//修改坦克出現的路程sm_cvar versus_boss_flow_min 0.1 (原0.2), versus_boss_flow_max 0.9 (原0.85)
+//第一關與最後一關:0.20/0.85 (不變)
+//fov:90 fov_pouncing: 45 
+
+left4dead\addons\sourcemod\configs\sm_downloader
+[downloads_simple.ini]
+//傳送Witch二代禮服模組
+
+-新增
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[RandomWitch]
+//Witch 10%二代禮服
+
+[l4d_drop_secondary]
+//玩家死亡掉落第二武器(手槍)
+//ready模式中死亡不會掉落武器
+
+[l4d2_si_ffblock]
+//Disables friendly fire between infected players except Tank/Witch
+
+left4dead\models\infected
+[witch_bride.dx90.vtx]
+[witch_bride.mdl]
+[witch_bride.phy]
+[witch_bride.vtx]
+[witch_bride.vvd]
+left4dead\materials\models\infected\witch
+[witch_bride_dress.vmt]
+[witch_bride_dress.vtf]
+[witch_bride_veil.vmt]
+[witch_bride_veil.vtf]
+left4dead\materials\models\survivors\gambler
+[gambler_head_wrp.vtf]
+//Witch二代禮服模組
+

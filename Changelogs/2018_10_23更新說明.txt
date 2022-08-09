@@ -1,0 +1,26 @@
+﻿-修正
+left4dead/cfg
+rotoblin_hunters_1v4_map.cfg //推hunter範圍擴大
+rotoblin_hunters_1v4.cfg //五推
+rotoblin_hunters_1v5.cfg //五推
+rotoblin_hunters_1v5_map.cfg //推hunter範圍擴大
+
+left4dead\cfg\sourcemod
+smac.cfg //拿掉smac_wallhack指令
+
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+smac_autotrigger //偵測次數擴大
+nodeathcamskip //修正語法
+l4dready_scrds //修正語法
+l4d_tank_witch_damage_announce_spawnAnnouncer //修正語法
+
+left4dead\addons\sourcemod\configs
+matchmodes.txt //ascii編碼
+admins_simple.ini //增加乘風op
+
+-刪除
+//作弊自動錄影插件(因為一代無法錄影)
+left4dead\addons\sourcemod\recordings
+left4dead\addons\sourcemod\plugins\smac_autodemo.smx
+left4dead\cfg\sourcemod\smac_recording.cfg

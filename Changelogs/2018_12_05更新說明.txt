@@ -1,0 +1,32 @@
+﻿-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d_tank_props]
+//旁觀也能看到glow+增加指令
+
+[l4d_tank_control]
+//It now tells everyone who the Tank will be, instead of just the Infected.
+
+left4dead\cfg
+[otoblin_hunters_1v3_map.cfg]
+...
+...
+//刪除不必要指令
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//刪除不必要指令+增加Tank glow指令
+
+-新增
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4d2_nobackjumps]
+left4dead\addons\sourcemod\gamedata
+[l4d2_nobackjumps.txt]
+//不能踢牆插件強化版
+
+-刪除
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[wallkicking_block]
+//有l4d2_nobackjumps強化版

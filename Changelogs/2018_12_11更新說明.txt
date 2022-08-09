@@ -1,0 +1,68 @@
+﻿-新增
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[botpopstop]
+//Removes pills from bots if they try to use them and restores them when a human takes over.
+
+[l4d_PillsHere]
+//Gives pills to survivors who doesn't have pill
+
+[all4dead]
+//This mod allows administrators to influence what the AI director does without sv_cheats 1.
+
+-修改
+left4dead\addons\sourcemod\plugins
+left4dead\addons\sourcemod\scripting
+[l4dscores]
+//按tab 顯示hud的正確生命值獎勵 + 比例值提示
+
+[l4dready_scrds]
+//顯示雙方的分數when ready mode
+
+[l4d_antibaiter]
+//提示簡化
+
+[pounce_maxdamage]
+//修正回來最大高撲傷害
+
+[lerptracker]
+//新增sm_lerpss指令看到旁觀玩家的lerp
+
+[l4d_no_hunter_deadstops]
+//指令判斷加強
+
+[l4d_Harry_Roto2-AZ_mod_info]
+//修改提示
+
+[l4dffannounce]
+//普通感染者抓死沒提示
+
+[l4d_drop_secondary]
+//語法修正
+
+left4dead\addons\stripper\maps
+[l4d_vs_farm05_cornfield.cfg]
+//roto2 整片稻草
+
+left4dead\cfg
+[rotoblin_hardcore_4v4_classic_map.cfg]
+//original max pounce dmg
+//no_bot_use_pills 0
+
+[rotoblin_pub_map.cfg]
+//no_bot_use_pills 0
+
+[others]
+//簡化修正錯誤插件載入
+
+left4dead\cfg\sourcemod
+[smac.cfg]
+//封禁作弊狗從10分鐘改成一天內不得近來
+//this game is old! why still cheating?
+
+left4dead\cfg\Reloadables
+[server_custom_convars.cfg]
+//sm_cvar versus_shove_hunter_fov "30" (default: 90 - last time:45)
+//sm_cvar versus_shove_hunter_fov_pouncing "20" (default: 45 - last time:30)
+//上修最大高撲45 (default:25 last time:40)
+//no_bot_use_pills 1
