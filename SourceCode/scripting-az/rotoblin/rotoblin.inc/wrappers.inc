@@ -265,7 +265,7 @@ stock GetClientCountEx(bool:inGameOnly, bool:filterBots)
 	{
 		if (IsClientConnected(i) &&
 			(inGameOnly && IsClientInGame(i)) &&
-			(filterBots && !IsFakeClient(i))
+			(filterBots && !IsFakeClient(i)))
 		{
 			clients++;
 		}

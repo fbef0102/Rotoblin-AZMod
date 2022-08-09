@@ -1,131 +1,171 @@
 #include <sourcemod>
+#include <sdktools>
+#include <multicolors>
+#include <left4dhooks> 
 
-new bool:NoSpam[MAXPLAYERS + 1];
+#pragma semicolon 1
+#pragma newdecls required
 
-public Plugin:myinfo = 
+#define PLUGIN_VERSION "1.4.3"
+
+#define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
+#define ABS(%0) (((%0) < 0) ? -(%0) : (%0))
+
+bool NoSpam[MAXPLAYERS + 1];
+
+public Plugin myinfo = 
 {
 	name = "No spawn near safe room door.",
-	author = "Eyal282 ( FuckTheSchool ) & Harry Potter",
+	author = "Eyal282 ( FuckTheSchool ), Forgetest, HarryPotter",
 	description = "To prevent a player breaching safe room door with a bug, prevents him from spawning near safe room door. The minimum distance is proportionate to his speed ",
-	version = "1.4",
+	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?p=2520740"
 }
 
-new Handle:hAntiBreachConVar = INVALID_HANDLE;
-new AntiBreachConVar;
-new bool:SafeRoomDoorClosed = false;
+ConVar	hAntiBreachConVar;
+int		AntiBreachConVar;
 
-public OnPluginStart()
+// ADT Array is used instead of using a single integer.
+// In this way, we secures players from being exploit upon if the end saferoom have multiple doors of entrance, exit etc.
+ArrayList aSaferoomDoors;
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead && test != Engine_Left4Dead2 )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success; 
+}
+
+public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	// The cvar to enable the plugin. 0 = Disabled. Other values = Enabled.
-	hAntiBreachConVar = CreateConVar("l4d2_anti_breach", "1");
+	hAntiBreachConVar = CreateConVar("l4d2_anti_breach", "1", "The cvar to enable the plugin. 0 = Disabled. Other values = Enabled.");
 	
 	// To prevent waste of resources, hook the change of the console variable AntiBreach
 	HookConVarChange(hAntiBreachConVar, AntiBreachConVarChange);
 	
 	// Save the current value of l4d2_anti_breach in a variable. Main reason is to avoid wasting resources.
-	AntiBreachConVar = GetConVarInt(hAntiBreachConVar);
+	AntiBreachConVar = hAntiBreachConVar.IntValue;
 	
-	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
-	HookEvent("door_open", Event_DoorOpen, EventHookMode_Post);
-	HookEvent("door_close", Event_DoorClose, EventHookMode_Post);
+	aSaferoomDoors = new ArrayList();
+
+	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 }
 
-public Action:Event_RoundStart (Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast) 
 {
-	// We mark the safe room door as open
-	SafeRoomDoorClosed = false;
-	
+	// Use a delay function to prevent issues
+	CreateTimer(12.0, DelayRoundStart, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action DelayRoundStart(Handle timer)
+{
+	aSaferoomDoors.Clear();
+
+	int entity = L4D_GetCheckpointFirst();
+	if(entity != -1) aSaferoomDoors.Push(EntIndexToEntRef(entity));
+
+	entity = L4D_GetCheckpointLast();
+	if(entity != -1) aSaferoomDoors.Push(EntIndexToEntRef(entity));
+
 	return Plugin_Continue;
 }
 
-public Action:Event_DoorOpen (Handle:event, const String:name[], bool:dontBroadcast)
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	// if the door was a checkpoint door ...
-	new bool:checkpointdoor  = GetEventBool(event, "checkpoint");
-	
-	if (checkpointdoor == true)
-	{
-		SafeRoomDoorClosed = false;
-	}
-	
-	return Plugin_Continue;
-}
-
-public Action:Event_DoorClose(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	// if the door was a checkpoint door ...
-	new bool:checkpointdoor  = GetEventBool(event, "checkpoint");
-	
-	if (checkpointdoor == true)
-	{
-		SafeRoomDoorClosed = true;
-	}
-	
-	return Plugin_Continue;
-}
-
-public OnClientPutInServer(client)
-{
-	NoSpam[client] = false;
-}
-
-public AntiBreachConVarChange(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	AntiBreachConVar = GetConVarInt(convar);
-}
-
-public Action:OnPlayerRunCmd(SInfected, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2])
-{
-	// Player is not attacking.
-	if(!(buttons & IN_ATTACK) || !SafeRoomDoorClosed)
-		return Plugin_Continue;
-	
 	// Cvar is disabled, aborting.
 	if(AntiBreachConVar == 0)
 		return Plugin_Continue;
+
+	// Player is not attacking and no safe room door closed.
+	if(!(buttons & IN_ATTACK))
+		return Plugin_Continue;
 	
 	// Player is either a bot, not infected or not a ghost.
-	else if(GetClientTeam(SInfected) != 3 || IsFakeClient(SInfected) || GetEntProp(SInfected, Prop_Send, "m_isGhost") != 1)
+	if(GetClientTeam(client) != 3 || IsFakeClient(client) || GetEntProp(client, Prop_Send, "m_isGhost") != 1)
 		return Plugin_Continue;
 
 	// Being a ghost, the player can not spawn ( seen / close / blocked etc... )
-	else if(GetEntProp(SInfected, Prop_Send, "m_ghostSpawnState") != 0)
+	if(GetEntProp(client, Prop_Send, "m_ghostSpawnState") != 0)
 		return Plugin_Continue;
 	
-	new EntityCount = GetEntityCount();
-
-	for (new Door = MaxClients; Door < EntityCount; Door++) // https://forums.alliedmods.net/showpost.php?p=2502446&postcount=2
+	// Loops through all checkpoint doors stored in array
+	for (int i = 0; i < aSaferoomDoors.Length; ++i)
 	{
-		if (IsValidEntity(Door) && IsValidEdict(Door))
+		int door = EntRefToEntIndex(aSaferoomDoors.Get(i));
+		if ( door <= MaxClients || !IsValidEntity(door) || !IsValidEdict(door)) continue; // probably won't happen
+		
+		
+		/**	https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/game/server/BasePropDoor.h#L80
+		 *
+		 *	enum DoorState_t
+		 *	{
+		 *		DOOR_STATE_CLOSED = 0,
+		 *		DOOR_STATE_OPENING,
+		 *		DOOR_STATE_OPEN,
+		 *		DOOR_STATE_CLOSING,
+		 *		DOOR_STATE_AJAR,
+		 *	};
+		 */
+		if (GetEntProp(door, Prop_Send, "m_eDoorState") == 0) // DOOR_STATE_CLOSED
 		{
-			new String:Classname[100];
-
-			GetEdictClassname(Door, Classname, sizeof(Classname));
+			float clientOrigin[3], doorOrigin[3];
+			GetEntPropVector(client, Prop_Send, "m_vecOrigin", clientOrigin);
+			GetEntPropVector(door, Prop_Send, "m_vecOrigin", doorOrigin);
 			
-			if(strcmp(Classname, "prop_door_rotating_checkpoint") != 0 ) // Found the classname from l4d_loading: https://forums.alliedmods.net/showthread.php?p=836849
-				continue;
+			// Calculates the distance between client and the door
+			float fDistance = GetVectorDistance(clientOrigin, doorOrigin);
 			
-			new Float:SInfectedOrigin[3], Float:DoorOrigin[3], Float:SInfectedVelocity[3];
-			GetEntPropVector(SInfected, Prop_Send, "m_vecOrigin", SInfectedOrigin);
-			GetEntPropVector(Door, Prop_Send, "m_vecOrigin", DoorOrigin);
-			GetEntPropVector(SInfected, Prop_Data, "m_vecVelocity", SInfectedVelocity);
-			new Float:Speed = GetVectorLength(SInfectedVelocity);
-			new Float:Distance = GetVectorDistance(SInfectedOrigin, DoorOrigin);
+			// Player isn't close enough to the door
+			// Go next :)
+			// PrintToChatAll("%N %d %.2f",client, door, fDistance);
+			if (fDistance > 100.0) continue;
 			
-			// Player has too much speed vs distance from door.
+			float clientVelocity[3];
+			// float clientAngles[3];
+			GetEntPropVector(client, Prop_Data, "m_vecVelocity", clientVelocity);
+			// GetEntPropVector(client, Prop_Data, "m_angRotation", clientAngles);
 			
-			if(Distance < Speed / 1.5 && Distance < 100.0) // Tested and the 1.5 division will not assist the use of the bug.
+			// // Angles of moving forward(backward) and rightward(leftward)
+			// float vecFwd[3], vecRight[3];
+			// GetAngleVectors(clientAngles, vecFwd, vecRight, NULL_VECTOR);
+			
+			// float clientDist[3], vecAngles[3];
+			// SubtractVectors(doorOrigin, clientOrigin, clientDist); // Vector starts at client, ends at door
+			// GetVectorAngles(clientDist, vecAngles);
+			
+			// // Normalization to simplify calculations
+			// NormalizeVector(vecAngles, vecAngles);
+			// NormalizeVector(vecFwd, vecFwd);
+			// NormalizeVector(vecRight, vecRight);
+			
+			// // cos<v1,v2> = DotProduct(v1, v2) / Length(v1) / Length(v2)
+			// // Length of any normalized vector is ~1
+			// // Calculates cosine of the angle between the velocity direction and the distance direction
+			// float cosine = MAX(ABS(GetVectorDotProduct(vecAngles, vecFwd)), ABS(GetVectorDotProduct(vecAngles, vecRight)));
+			
+			float fSpeed = GetVectorLength(clientVelocity); // Where client will be in the next frame
+	
+			// Player is close enough and has too much speed vs distance from door.
+			// PrintToChatAll("%N %d * %.2f - %.2f = %.2f ",client, door, fDistance, fSpeed, fSpeed / 1.5);
+			if(fDistance < fSpeed / 1.5)
 			{
-				if(!NoSpam[SInfected])
+				if(!NoSpam[client])
 				{
-					PrintToChat(SInfected, "\x01[\x05TS\x01] %T","You can't spawn near safe room doors.",SInfected);
-					NoSpam[SInfected] = true;
-					CreateTimer(2.5, AllowMessageAgain, GetClientUserId(SInfected));
+					// CPrintToChatAll("{red}[{default}Exploit{red}] {olive}%N {default}tried to spawn near end saferoom door{default}.", client);
+					CPrintToChat(client, "{default}[{olive}TS{default}] %T","You can't spawn near safe room doors.", client);
+					NoSpam[client] = true;
+					CreateTimer(2.5, AllowMessageAgain, client);
 				}
 				buttons &= ~IN_ATTACK;
-				return Plugin_Continue;
+				return Plugin_Changed;
 			}
 		}
 	}
@@ -133,14 +173,19 @@ public Action:OnPlayerRunCmd(SInfected, &buttons, &impulse, Float:vel[3], Float:
 	return Plugin_Continue;
 }
 
-public Action: AllowMessageAgain(Handle Timer, int UserId)
+public Action AllowMessageAgain(Handle timer, int client)
 {
-	new SInfected = GetClientOfUserId(UserId);
-	
-	if(!IsClientInGame(SInfected))
-		return Plugin_Continue;
-	
-	NoSpam[SInfected] = false;
-	
-	return Plugin_Continue;
+    NoSpam[client] = false;
+
+    return Plugin_Continue;
+}
+
+public void OnClientPutInServer(int client)
+{
+	NoSpam[client] = false;
+}
+
+public void AntiBreachConVarChange(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	AntiBreachConVar = GetConVarInt(convar);
 }

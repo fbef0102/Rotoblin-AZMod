@@ -2,6 +2,9 @@
 // ====================================================================================================
 Change Log:
 
+1.0.3 (23-May-2022)
+    - Added delay cvar. (thanks "KadabraZz" for requesting)
+
 1.0.2 (25-January-2022)
     - Fixed plugin not working in some situations. (thanks "HarryPotter" for reporting)
 
@@ -20,7 +23,7 @@ Change Log:
 #define PLUGIN_NAME                   "[L4D1 & L4D2] Weapon Prop Give Fix"
 #define PLUGIN_AUTHOR                 "Mart"
 #define PLUGIN_DESCRIPTION            "Fix props not spawning as prop_physics when using 'give' command"
-#define PLUGIN_VERSION                "1.0.2"
+#define PLUGIN_VERSION                "1.0.3"
 #define PLUGIN_URL                    "https://forums.alliedmods.net/showthread.php?t=331053"
 
 // ====================================================================================================
@@ -78,27 +81,32 @@ public Plugin myinfo =
 // ====================================================================================================
 // Plugin Cvars
 // ====================================================================================================
-static ConVar g_hCvar_Enabled;
-static ConVar g_hCvar_PropaneCanister;
-static ConVar g_hCvar_OxygenTank;
-static ConVar g_hCvar_FireworksCrate;
-static ConVar g_hCvar_Gascan;
+ConVar g_hCvar_Enabled;
+ConVar g_hCvar_Delay;
+ConVar g_hCvar_PropaneCanister;
+ConVar g_hCvar_OxygenTank;
+ConVar g_hCvar_FireworksCrate;
+ConVar g_hCvar_Gascan;
 
 // ====================================================================================================
 // bool - Plugin Variables
 // ====================================================================================================
-static bool   g_bL4D2;
-static bool   g_bCvar_Enabled;
-static bool   g_bCvar_PropaneCanister;
-static bool   g_bCvar_OxygenTank;
-static bool   g_bCvar_FireworksCrate;
-static bool   g_bCvar_Gascan;
+bool g_bL4D2;
+bool g_bCvar_Enabled;
+bool g_bCvar_PropaneCanister;
+bool g_bCvar_OxygenTank;
+bool g_bCvar_FireworksCrate;
+bool g_bCvar_Gascan;
 
 // ====================================================================================================
 // entity - Plugin Variables
 // ====================================================================================================
-static bool   ge_bOnThinkPostHooked[MAXENTITIES+1];
-static int    ge_iType[MAXENTITIES+1];
+float g_fCvar_Delay;
+
+// ====================================================================================================
+// entity - Plugin Variables
+// ====================================================================================================
+int ge_iType[MAXENTITIES+1];
 
 // ====================================================================================================
 // Plugin Start
@@ -124,6 +132,7 @@ public void OnPluginStart()
 {
     CreateConVar("l4d_weapon_prop_give_fix_version", PLUGIN_VERSION, PLUGIN_DESCRIPTION, CVAR_FLAGS_PLUGIN_VERSION);
     g_hCvar_Enabled            = CreateConVar("l4d_weapon_prop_give_fix_enable", "1", "Enable/Disable the plugin.\n0 = Disable, 1 = Enable.", CVAR_FLAGS, true, 0.0, true, 1.0);
+    g_hCvar_Delay              = CreateConVar("l4d_weapon_prop_give_fix_delay", "0.0", "How long (in seconds) should the plugin wait to fix the prop.\n0.0 = No delay (immediately).", CVAR_FLAGS, true, 0.0);
     g_hCvar_PropaneCanister    = CreateConVar("l4d_weapon_prop_give_fix_propanecanister", "1", "Spawn weapon_propanetank as prop_physics.\n0 = OFF, 1 = ON.", CVAR_FLAGS, true, 0.0, true, 1.0);
     g_hCvar_OxygenTank         = CreateConVar("l4d_weapon_prop_give_fix_oxygentank", "1", "Spawn weapon_oxygentank as prop_physics.\n0 = OFF, 1 = ON.", CVAR_FLAGS, true, 0.0, true, 1.0);
     if (g_bL4D2)
@@ -132,6 +141,7 @@ public void OnPluginStart()
 
     // Hook plugin ConVars change
     g_hCvar_Enabled.AddChangeHook(Event_ConVarChanged);
+    g_hCvar_Delay.AddChangeHook(Event_ConVarChanged);
     g_hCvar_PropaneCanister.AddChangeHook(Event_ConVarChanged);
     g_hCvar_OxygenTank.AddChangeHook(Event_ConVarChanged);
     if (g_bL4D2)
@@ -157,7 +167,7 @@ public void OnConfigsExecuted()
 
 /****************************************************************************************************/
 
-public void Event_ConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+void Event_ConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     GetCvars();
 
@@ -166,9 +176,10 @@ public void Event_ConVarChanged(ConVar convar, const char[] oldValue, const char
 
 /****************************************************************************************************/
 
-public void GetCvars()
+void GetCvars()
 {
     g_bCvar_Enabled = g_hCvar_Enabled.BoolValue;
+    g_fCvar_Delay = g_hCvar_Delay.FloatValue;
     g_bCvar_PropaneCanister = g_hCvar_PropaneCanister.BoolValue;
     g_bCvar_OxygenTank = g_hCvar_OxygenTank.BoolValue;
     if (g_bL4D2)
@@ -179,7 +190,7 @@ public void GetCvars()
 
 /****************************************************************************************************/
 
-public void LateLoad()
+void LateLoad()
 {
     char classname[21];
     int entity;
@@ -189,7 +200,6 @@ public void LateLoad()
     while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
     {
         OnEntityCreated(entity, classname);
-        OnThinkPost(entity);
     }
 
     classname = "weapon_oxygentank";
@@ -197,7 +207,6 @@ public void LateLoad()
     while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
     {
         OnEntityCreated(entity, classname);
-        OnThinkPost(entity);
     }
 
     if (g_bL4D2)
@@ -207,7 +216,6 @@ public void LateLoad()
         while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
         {
             OnEntityCreated(entity, classname);
-            OnThinkPost(entity);
         }
     }
     else
@@ -217,7 +225,6 @@ public void LateLoad()
         while ((entity = FindEntityByClassname(entity, classname)) != INVALID_ENT_REFERENCE)
         {
             OnEntityCreated(entity, classname);
-            OnThinkPost(entity);
         }
     }
 }
@@ -226,10 +233,9 @@ public void LateLoad()
 
 public void OnEntityDestroyed(int entity)
 {
-    if (!IsValidEntityIndex(entity))
+    if (entity < 0)
         return;
 
-    ge_bOnThinkPostHooked[entity] = false;
     ge_iType[entity] = TYPE_NONE;
 }
 
@@ -237,16 +243,15 @@ public void OnEntityDestroyed(int entity)
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-    if (classname[0] != 'w' || classname[1] != 'e') // weapon_*
+    if (entity < 0)
         return;
 
-    if (ge_bOnThinkPostHooked[entity])
+    if (ge_iType[entity] != TYPE_NONE)
         return;
 
     if (StrEqual(classname, "weapon_propanetank"))
     {
         ge_iType[entity] = TYPE_PROPANECANISTER;
-        ge_bOnThinkPostHooked[entity] = true;
         SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
         return;
     }
@@ -254,7 +259,6 @@ public void OnEntityCreated(int entity, const char[] classname)
     if (StrEqual(classname, "weapon_oxygentank"))
     {
         ge_iType[entity] = TYPE_OXYGENTANK;
-        ge_bOnThinkPostHooked[entity] = true;
         SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
         return;
     }
@@ -264,7 +268,6 @@ public void OnEntityCreated(int entity, const char[] classname)
         if (StrEqual(classname, "weapon_fireworkcrate"))
         {
             ge_iType[entity] = TYPE_FIREWORKS_CRATE;
-            ge_bOnThinkPostHooked[entity] = true;
             SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
             return;
         }
@@ -274,7 +277,6 @@ public void OnEntityCreated(int entity, const char[] classname)
         if (StrEqual(classname, "weapon_gascan"))
         {
             ge_iType[entity] = TYPE_GASCAN;
-            ge_bOnThinkPostHooked[entity] = true;
             SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
             return;
         }
@@ -283,7 +285,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 
 /****************************************************************************************************/
 
-public void OnThinkPost(int entity)
+void OnThinkPost(int entity)
 {
     if (!g_bCvar_Enabled)
         return;
@@ -296,17 +298,50 @@ public void OnThinkPost(int entity)
         case TYPE_OXYGENTANK: if (!g_bCvar_OxygenTank) return;
         case TYPE_FIREWORKS_CRATE: if (!g_bCvar_FireworksCrate) return;
         case TYPE_GASCAN: if (!g_bCvar_Gascan) return;
-        default: return;
     }
 
-    if (GetEntProp(entity, Prop_Send, "m_hOwner") != -1)
+    if (GetEntPropEnt(entity, Prop_Data, "m_hOwnerEntity") != -1)
         return;
 
+    SDKUnhook(entity, SDKHook_ThinkPost, OnThinkPost);
+
+    if (g_fCvar_Delay == 0.0)
+        GetPropAttributes(entity);
+    else
+        CreateTimer(g_fCvar_Delay, TimerDelayCreateProp, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
+}
+
+/****************************************************************************************************/
+
+Action TimerDelayCreateProp(Handle timer, int entityRef)
+{
+    int entity = EntRefToEntIndex(entityRef);
+
+    if (entity == INVALID_ENT_REFERENCE)
+        return Plugin_Stop;
+
+    if (GetEntPropEnt(entity, Prop_Data, "m_hOwnerEntity") != -1)
+    {
+        SDKHook(entity, SDKHook_ThinkPost, OnThinkPost);
+        return Plugin_Stop;
+    }
+
+    GetPropAttributes(entity);
+
+    return Plugin_Handled;
+}
+
+/****************************************************************************************************/
+
+void GetPropAttributes(int entity)
+{
+    int type = ge_iType[entity];
+
     float vPos[3];
-    GetEntPropVector(entity, Prop_Send, "m_vecOrigin", vPos);
+    GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", vPos);
 
     float vAng[3];
-    GetEntPropVector(entity, Prop_Send, "m_angRotation", vAng);
+    GetEntPropVector(entity, Prop_Data, "m_angAbsRotation", vAng);
 
     AcceptEntityInput(entity, "Kill");
 
@@ -315,7 +350,7 @@ public void OnThinkPost(int entity)
 
 /****************************************************************************************************/
 
-public void CreateProp(int type, float vPos[3], float vAng[3])
+void CreateProp(int type, float vPos[3], float vAng[3])
 {
     char modelname[PLATFORM_MAX_PATH];
 
@@ -325,7 +360,6 @@ public void CreateProp(int type, float vPos[3], float vAng[3])
         case TYPE_OXYGENTANK: modelname = MODEL_OXYGENTANK;
         case TYPE_FIREWORKS_CRATE: modelname = MODEL_FIREWORKS_CRATE;
         case TYPE_GASCAN: modelname = MODEL_GASCAN;
-        default: return;
     }
 
     int entity = CreateEntityByName("prop_physics");
@@ -338,7 +372,7 @@ public void CreateProp(int type, float vPos[3], float vAng[3])
 // ====================================================================================================
 // Admin Commands
 // ====================================================================================================
-public Action CmdPrintCvars(int client, int args)
+Action CmdPrintCvars(int client, int args)
 {
     PrintToConsole(client, "");
     PrintToConsole(client, "======================================================================");
@@ -347,6 +381,7 @@ public Action CmdPrintCvars(int client, int args)
     PrintToConsole(client, "");
     PrintToConsole(client, "l4d_weapon_prop_give_fix_version : %s", PLUGIN_VERSION);
     PrintToConsole(client, "l4d_weapon_prop_give_fix_enable : %b (%s)", g_bCvar_Enabled, g_bCvar_Enabled ? "true" : "false");
+    PrintToConsole(client, "l4d_weapon_prop_give_fix_delay : %.1f", g_fCvar_Delay);
     PrintToConsole(client, "l4d_weapon_prop_give_fix_propanecanister : %b (%s)", g_bCvar_PropaneCanister, g_bCvar_PropaneCanister ? "true" : "false");
     PrintToConsole(client, "l4d_weapon_prop_give_fix_oxygentank : %b (%s)", g_bCvar_OxygenTank, g_bCvar_OxygenTank ? "true" : "false");
     if (g_bL4D2) PrintToConsole(client, "l4d_weapon_prop_give_fix_fireworkscrate : %b (%s)", g_bCvar_FireworksCrate, g_bCvar_FireworksCrate ? "true" : "false");
@@ -356,18 +391,4 @@ public Action CmdPrintCvars(int client, int args)
     PrintToConsole(client, "");
 
     return Plugin_Handled;
-}
-
-// ====================================================================================================
-// Helpers
-// ====================================================================================================
-/**
- * Validates if is a valid entity index (between MaxClients+1 and 2048).
- *
- * @param entity        Entity index.
- * @return              True if entity index is valid, false otherwise.
- */
-bool IsValidEntityIndex(int entity)
-{
-    return (MaxClients+1 <= entity <= GetMaxEntities());
 }

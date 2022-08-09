@@ -97,13 +97,13 @@
 		{
 			"name" "Dark Coop"
 		}
+	}
+	"Skeet Practice"
+	{
 		"rotoblin_witch_party"
 		{
 			"name" "Witch Party"
 		}
-	}
-	"Skeet Practice"
-	{
 		"rotoblin_hunters_1v2"
 		{
 			"name" "1v2 Hunters Only"

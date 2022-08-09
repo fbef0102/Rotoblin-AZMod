@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required //強制1.7以後的新語法
 
 #include <sourcemod>
 #include <sdkhooks>
@@ -8,61 +9,75 @@
 
 #define DEBUG 0
 
-enum L4DSI 
-{
-    ZC_None,
-    ZC_Smoker,
-    ZC_Boomer,
-    ZC_Hunter,
-    ZC_Witch,
-    ZC_Tank,
-	ZC_InvalidTeam
-};
+#define ZC_None 0
+#define ZC_Smoker 1
+#define ZC_Boomer 2
+#define ZC_Hunter 3
+#define ZC_Witch 4
+#define ZC_Tank 5
 
-new Handle:hCvarTimerStartDelay;
-new Handle:hCvarHordeCountdown;
-new Handle:hCvarMinProgressThreshold;
+ConVar hCvarTimerStartDelay;
+ConVar hCvarHordeCountdown;
+ConVar hCvarMinProgressThreshold;
 
-new Float:timerStartDelay;
-new hordeCountdown;
-new Float:minProgress;
-new Float:aliveSince[MAXPLAYERS + 1];
-new Float:startingSurvivorCompletion;
+float timerStartDelay;
+int hordeCountdown;
+float minProgress;
+float aliveSince[MAXPLAYERS + 1];
+float startingSurvivorCompletion;
 
 ConVar z_max_player_zombies, survivor_limit;
 int z_max_player_zombies_value, survivor_limit_value;
 int hordeDelayChecks;
 
-new L4DSI:zombieclass[MAXPLAYERS + 1];
-native IsInPause();
-native IsInReady();
-native Is_Ready_Plugin_On();
-static horde_timer_dealy;
-static bool:resuce_start,bool:RoundEnd,bool:panic_event,bool:hasleftstartarea,bool:panic_event_colddown,CoutDowning;
+int zombieclass[MAXPLAYERS + 1];
+native bool IsInPause();
+native bool IsInReady();
+native bool Is_Ready_Plugin_On();
+int horde_timer_dealy;
+bool resuce_start,RoundEnd,panic_event,hasleftstartarea,CoutDowning;
+Handle COLD_DOWN_Timer;
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = "L4D2 Antibaiter",
 	author = "Visor,L4D1 modify by Harry",
 	description = "Makes you think twice before attempting to bait that shit",
-	version = "1.6",
+	version = "1.7",
 	url = "https://github.com/ConfoglTeam/ProMod"
 };
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
 	CreateNative("antibaiter_clear", Native_Antibaiter_Clear);
 	return APLRes_Success;
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {
-
 	LoadTranslations("Roto2-AZ_mod.phrases");
+
+	z_max_player_zombies = FindConVar("z_max_player_zombies");
+	survivor_limit = FindConVar("survivor_limit");
 	hCvarTimerStartDelay = CreateConVar("l4d_antibaiter_delay", "15", "Delay in seconds before the antibait algorithm kicks in", FCVAR_NOTIFY);
 	hCvarHordeCountdown = CreateConVar("l4d_antibaiter_horde_timer", "60", "Countdown in seconds to the panic horde", FCVAR_NOTIFY);
 	hCvarMinProgressThreshold = CreateConVar("l4d_antibaiter_progress", "0.03", "Minimum progress the survivors must make to reset the antibaiter timer", FCVAR_NOTIFY);
 	
+	GetCvars();
+	z_max_player_zombies.AddChangeHook(ConVarChanged);
+	survivor_limit.AddChangeHook(ConVarChanged);
+	hCvarTimerStartDelay.AddChangeHook(ConVarChanged);
+	hCvarHordeCountdown.AddChangeHook(ConVarChanged);
+	hCvarMinProgressThreshold.AddChangeHook(ConVarChanged);
+
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd);
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
@@ -72,7 +87,6 @@ public OnPluginStart()
 	RoundEnd = false;
 	resuce_start = false;
 	panic_event = false;
-	panic_event_colddown = false;
 	hordeDelayChecks = 0;
 	InitiateCountdown();
 	CreateTimer(1.0, AntibaiterThink, _, TIMER_REPEAT);
@@ -81,24 +95,29 @@ public OnPluginStart()
 #endif
 }
 
-public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+public void OnMapEnd()
+{
+	ResetTimer();
+}
+
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {	
 	hasleftstartarea = false;
 	RoundEnd = false;
 	resuce_start = false;
 	panic_event = false;
-	panic_event_colddown = false;
 	hordeDelayChecks = 0;
 	InitiateCountdown();
 }
-public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {	
 	RoundEnd = true;
+	ResetTimer();
 }
 #if DEBUG
-public Action:RegisterSI(client, args)
+public Action RegisterSI(cint lient, int args)
 {
-	for (new i = 1; i <= MaxClients; i++) 
+	for (int i = 1; i <= MaxClients; i++) 
 	{
 		if (!IsInfected(i)) continue;
 		if (IsPlayerAlive(i))
@@ -107,14 +126,16 @@ public Action:RegisterSI(client, args)
 			aliveSince[i] = GetGameTime();
 		}
 	}
+
+	return Plugin_Handled;
 }
 #endif
 
-public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
+public void LeftStartAreaEvent(Event event, const char[] name, bool dontBroadcast)
 {
 	if(!Is_Ready_Plugin_On())
 	{
-		for (new i = 1; i <= MaxClients; i++) 
+		for (int i = 1; i <= MaxClients; i++) 
 		{
 			if (!IsInfected(i)) continue;
 			if (IsPlayerAlive(i))
@@ -127,9 +148,9 @@ public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
 	}
 }
 
-public Native_Antibaiter_Clear(Handle:plugin, numParams)
+public int Native_Antibaiter_Clear(Handle plugin, int numParams)
 {
-	for (new i = 1; i <= MaxClients; i++) 
+	for (int i = 1; i <= MaxClients; i++) 
 	{
 		if (!IsInfected(i)) continue;
 		if (IsPlayerAlive(i))
@@ -138,18 +159,8 @@ public Native_Antibaiter_Clear(Handle:plugin, numParams)
 			aliveSince[i] = GetGameTime();
 		}
 	}
-}
 
-public OnConfigsExecuted()
-{
-	z_max_player_zombies = FindConVar("z_max_player_zombies");
-	survivor_limit = FindConVar("survivor_limit");
-	GetCvars();
-	z_max_player_zombies.AddChangeHook(ConVarChanged);
-	survivor_limit.AddChangeHook(ConVarChanged);
-	timerStartDelay = GetConVarFloat(hCvarTimerStartDelay);
-	hordeCountdown = GetConVarInt(hCvarHordeCountdown);
-	minProgress = GetConVarFloat(hCvarMinProgressThreshold);
+	return 0;
 }
 
 public void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
@@ -161,9 +172,12 @@ void GetCvars()
 {
 	z_max_player_zombies_value = z_max_player_zombies.IntValue;
 	survivor_limit_value = survivor_limit.IntValue;
+	timerStartDelay = hCvarTimerStartDelay.FloatValue;
+	hordeCountdown = hCvarHordeCountdown.IntValue;
+	minProgress = hCvarMinProgressThreshold.FloatValue;
 }
 
-public Action:AntibaiterThink(Handle:timer) 
+public Action AntibaiterThink(Handle timer) 
 {
 	int SUsedSlots = GetTeamHumanCount(2);
 	if(IsInPause())//中途暫停 暫停倒數
@@ -197,8 +211,8 @@ public Action:AntibaiterThink(Handle:timer)
 		return Plugin_Handled;
 	}
 	
-	new eligibleZombies = 0;
-	for (new i = 1; i <= MaxClients; i++) 
+	int eligibleZombies = 0;
+	for (int i = 1; i <= MaxClients; i++) 
 	{
 		if (!IsInfected(i) || IsFakeClient(i)) continue;
 		if (IsPlayerAlive(i))//全體特感活著(靈魂也算)並超過15秒才開始記錄路程與倒數15秒
@@ -232,8 +246,8 @@ public Action:AntibaiterThink(Handle:timer)
 
 	if (eligibleZombies == z_max_player_zombies_value)
 	{
-		new Float:survivorCompletion = GetMaxSurvivorCompletion();//活著能走路的最遠的人類位置為記錄點
-		new Float:progress = Float:survivorCompletion - Float:startingSurvivorCompletion;
+		float survivorCompletion = GetMaxSurvivorCompletion();//活著能走路的最遠的人類位置為記錄點
+		float progress = survivorCompletion - startingSurvivorCompletion;
 		if (progress <= minProgress
 			&& hordeDelayChecks >= RoundToNearest(timerStartDelay))//全體特感活著並超過15秒,路程小於0.03 並已再超過15秒
 		{
@@ -247,7 +261,7 @@ public Action:AntibaiterThink(Handle:timer)
 			#endif
 				if (horde_timer_dealy==0)//倒數已到 引發屍潮
 				{
-					for (new i = 1; i <= MaxClients; i++)
+					for (int i = 1; i <= MaxClients; i++)
 					{
 						if (IsClientInGame(i) && !IsFakeClient(i))
 						{
@@ -263,7 +277,7 @@ public Action:AntibaiterThink(Handle:timer)
 				}
 				else
 				{
-					for (new i = 1; i <= MaxClients; i++)
+					for (int i = 1; i <= MaxClients; i++)
 					{
 						if (IsClientInGame(i) && !IsFakeClient(i))
 						{
@@ -301,10 +315,11 @@ public Action:AntibaiterThink(Handle:timer)
 			InitiateCountdown();
 		}
 	}
-	return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
-public L4D_OnEnterGhostState(client)
+public void L4D_OnEnterGhostState(int client)
 {
 	zombieclass[client] = GetZombieClass(client);
 	aliveSince[client] = GetGameTime();
@@ -314,12 +329,12 @@ public L4D_OnEnterGhostState(client)
 /** Horde/countdown functions **/
 /*******************************/
 
-InitiateCountdown()
+void InitiateCountdown()
 {
 	horde_timer_dealy = hordeCountdown;
 	if(CoutDowning)
 	{
-		for (new i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i) && !IsFakeClient(i))
 			{
@@ -330,39 +345,37 @@ InitiateCountdown()
 	CoutDowning = false;
 }
 
-LaunchHorde()
+void LaunchHorde()
 {
 	//PrintToChatAll("\x01[\x05TS\x01] \x05倖存者 \x01龜點不前進, 自動引發 \x03屍潮\x01!");
-	new client = -1;
-	for (new i = 1; i <= MaxClients; i++)
+	int anyclient = GetRandomClient();
+	if(anyclient > 0)
 	{
-		if (IsClientInGame(i) && !IsFakeClient(i))
-		{
-			client = i;
-			break;
-		}
+		char sCommand[16];
+		strcopy(sCommand, sizeof(sCommand), "z_spawn");
+		int flags = GetCommandFlags(sCommand);
+		SetCommandFlags(sCommand, flags & ~FCVAR_CHEAT);
+		FakeClientCommand(anyclient, "z_spawn mob auto"); // This won't affect director panic event/map event/alarm car/boomer horde, and can call it multi times to spawn multi hordes
+		FakeClientCommand(anyclient, "z_spawn mob auto"); // horde twice
+		SetCommandFlags(sCommand, flags);
 	}
-	if (client != -1)
-	{
-		new String:command[] = "director_force_panic_event";
-		new flags = GetCommandFlags(command);
-		SetCommandFlags(command, flags & ~FCVAR_CHEAT);
-		FakeClientCommand(client, command);
-		SetCommandFlags(command, flags);
-	}
+
+	panic_event = true;
+	delete COLD_DOWN_Timer;
+	COLD_DOWN_Timer = CreateTimer(50.0, COLD_DOWN); //給予喘息空間
 }
 
 /************/
 /** Stocks **/
 /************/
 
-Float:GetMaxSurvivorCompletion()//以人類目前沒有倒地不懸掛還活著站的玩家位置為基底
+float GetMaxSurvivorCompletion()//以人類目前沒有倒地不懸掛還活著站的玩家位置為基底
 {
-	new Float:flow = 0.0;
-	for (new i = 1; i <= MaxClients; i++)
+	float flow = 0.0;
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		// Prevent rushers from convoluting the logic
-		if (IsSurvivor(i) && IsPlayerAlive(i) && !IsIncapped(i)&& !GetEntProp(i, Prop_Send, "m_isHangingFromLedge"))
+		if (IsSurvivor(i) && IsPlayerAlive(i) && !L4D_IsPlayerIncapacitated(i) && !L4D_IsPlayerHangingFromLedge(i))
 		{
 			flow = MAX(flow, L4D2Direct_GetFlowDistance(i));
 		}
@@ -370,28 +383,23 @@ Float:GetMaxSurvivorCompletion()//以人類目前沒有倒地不懸掛還活著�
 	return (flow / L4D2Direct_GetMapMaxFlowDistance());
 }
 
-bool:IsSurvivor(client)
+bool IsSurvivor(int client)
 {
 	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 2;
 }
 
-bool:IsInfected(client)
+bool IsInfected(int client)
 {
 	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 3;
 }
 
-L4DSI:GetZombieClass(client)
+int GetZombieClass(int client)
 {
-	return L4DSI:GetEntProp(client, Prop_Send, "m_zombieClass");
-}
-
-bool:IsIncapped(client)
-{
-	return bool:GetEntProp(client, Prop_Send, "m_isIncapacitated");
+	return GetEntProp(client, Prop_Send, "m_zombieClass");
 }
 
 // director_force_panic_event & car alarms etc.
-bool:IsPanicEventInProgress()
+bool IsPanicEventInProgress()
 {
 	if (resuce_start)
 		return true;
@@ -407,10 +415,10 @@ bool:IsPanicEventInProgress()
 		}
 		else //屍潮結束之時
 		{
-			if(!panic_event_colddown)
+			if(COLD_DOWN_Timer == null)
 			{
-				CreateTimer(25.0,COLD_DOWN,_); //給予喘息空間
-				panic_event_colddown = true;
+				delete COLD_DOWN_Timer;
+				COLD_DOWN_Timer = CreateTimer(25.0, COLD_DOWN); //給予喘息空間
 			}
 			return true;
 		}
@@ -420,15 +428,17 @@ bool:IsPanicEventInProgress()
 }
 
 
-public Action:COLD_DOWN(Handle:timer,any:client)
+public Action COLD_DOWN(Handle timer)
 {
 	panic_event = false;
-	panic_event_colddown = false;
+
+	COLD_DOWN_Timer = null;
+	return Plugin_Continue;
 }
 
-FindTank() 
+int FindTank() 
 {
-	for (new i = 1; i <= MaxClients; i++) 
+	for (int i = 1; i <= MaxClients; i++) 
 	{
 		if (IsInfected(i) && GetZombieClass(i) == ZC_Tank && IsPlayerAlive(i))
 			return i;
@@ -437,28 +447,28 @@ FindTank()
 	return -1;
 }
 
-public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_Finale_Start(Event event, const char[] name, bool dontBroadcast)
 {
 	resuce_start = true;
 }
 
-public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
+public void Event_create_panic_event(Event event, const char[] name, bool dontBroadcast)
 {
 	
 	#if DEBUG
-		new client = GetClientOfUserId( GetEventInt(event, "userid") );
+		int client = GetClientOfUserId( GetEventInt(event, "userid") );
 		PrintToChatAll("----------------Panic Event: %N--------------------",client);
 	#endif
 	
 	panic_event = true;
-	panic_event_colddown = false;
+	delete COLD_DOWN_Timer;
 }
 
-stock GetTeamHumanCount(team)
+stock int GetTeamHumanCount(int team)
 {
-	new humans = 0;
+	int humans = 0;
 	
-	new i;
+	int i;
 	for(i = 1; i < MaxClients + 1; i++)
 	{
 		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == team)
@@ -468,4 +478,9 @@ stock GetTeamHumanCount(team)
 	}
 	
 	return humans;
+}
+
+void ResetTimer()
+{
+	delete COLD_DOWN_Timer;
 }

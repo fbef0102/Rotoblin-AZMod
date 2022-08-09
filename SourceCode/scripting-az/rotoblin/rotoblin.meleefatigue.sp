@@ -66,7 +66,7 @@ static const MAX_EXISTING_FATIGUE					= 3;
 
 static const Float:MELEE_DURATION					= 0.6;
 
-static bool:soundHookDelay[MAXPLAYERS+1] 			= false;
+static bool:soundHookDelay[MAXPLAYERS+1] 			= {false};
 
 static			g_iDebugChannel						= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]	= "MeleeFatigue";
@@ -127,7 +127,7 @@ public _MF_OnPluginEnabled()
 {
 	UpdateNonFatiguedMeleePenalty();
 	
-	AddNormalSoundHook(NormalSHook:HookSound_Callback);
+	AddNormalSoundHook(HookSound_Callback);
 	HookConVarChange(g_hNonFatiguedMeleePenalty_CVAR, _MF_MeleePenalty_CvarChange);	
 	DebugPrintToAllEx("Module is now loaded");
 }
@@ -139,7 +139,7 @@ public _MF_OnPluginEnabled()
  */
 public _MF_OnPluginDisabled()
 {	
-	RemoveNormalSoundHook(NormalSHook:HookSound_Callback);
+	RemoveNormalSoundHook(HookSound_Callback);
 	UnhookConVarChange(g_hNonFatiguedMeleePenalty_CVAR, _MF_MeleePenalty_CvarChange);	
 	
 	DebugPrintToAllEx("Module is now unloaded");
@@ -169,7 +169,7 @@ public _MF_OnPluginDisabled()
  * @param Entity		The entity that triggered the sound.  
  * @returns				event status
  */
-public Action:HookSound_Callback(Clients[64], &NumClients, String:StrSample[PLATFORM_MAX_PATH], &Entity)
+public Action:HookSound_Callback(int Clients[64], int &iNumClients, char StrSample[PLATFORM_MAX_PATH], int &Entity, int &iChannel, float &fVolume, int &fLevel, int &iPitch, int &iFlags)
 {
 	// Only execute if appropriate.  
 	

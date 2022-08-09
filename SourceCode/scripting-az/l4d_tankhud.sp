@@ -143,7 +143,10 @@ public Action:HudDrawTimer(Handle:hTimer)
 		for (new i = 1; i <= MaxClients; i++) 
 		{
 
-			if (!bTankHudActive[i] || !IsClientConnected(i) || IsFakeClient(i) || IsSurvivor(i) || IsClientVoteMenu(i) || IsClientInfoMenu(i) || IsInPause() )
+			if (!bTankHudActive[i] || !IsClientInGame(i) || IsFakeClient(i) || IsSurvivor(i) || IsClientVoteMenu(i) || IsClientInfoMenu(i) || IsInPause() )
+				continue;
+
+			if (GetClientMenu(i) != MenuSource_None)
 				continue;
 			
 			if(IsSpectator(i) && IsClientSpecHud(i))

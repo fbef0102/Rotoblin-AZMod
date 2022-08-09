@@ -1,69 +1,102 @@
+/*
+//-------------------------------------------------------------------------------------------------------------------
+// Version 1: Prevents Survivors from picking up Players in the following situations:
+//-------------------------------------------------------------------------------------------------------------------
+// - Incapped Player is taking Spit Damage.
+// - Players doing the pick-up gets hit by the Tank (Punch or Rock)
+//
+//-------------------------------------------------------------------------------------------------------------------
+// Version 1.1: Prevents Survivors from switching from their current item to another without client requesting so:
+//-------------------------------------------------------------------------------------------------------------------
+// - Player no longer switches to pills when a teammate passes them pills through "M2".
+// - Player picks up a Secondary Weapon while not on their Secondary Weapon. (Dual Pistol will force a switch though)
+// - Added CVars for Pick-ups/Switching Item
+//
+//-------------------------------------------------------------------------------------------------------------------
+// Version 1.2: Added Client-side Flags so that players can choose whether or not to make use of the Server's flags.
+//-------------------------------------------------------------------------------------------------------------------
+// - Welp, there's only one change.. so yeah. Enjoy!
+//
+//-------------------------------------------------------------------------------------------------------------------
+// Version 2.0: Added way to detect Dual Pistol pick-up and block so.
+//-------------------------------------------------------------------------------------------------------------------
+// - Via hacky memory patch. 
+//
+//-------------------------------------------------------------------------------------------------------------------
+// Version 3.0: General rework and dualies patch review
+//-------------------------------------------------------------------------------------------------------------------
+// - Should be perfect now? (hurray)
+//
+//-------------------------------------------------------------------------------------------------------------------
+// DONE:
+//-------------------------------------------------------------------------------------------------------------------
+// - Be a nice guy and less lazy, allow the plugin to work flawlessly with other's peoples needs.. It doesn't require much attention.
+// - Find cleaner methods to detect and handle functions.
+*/
+
 #pragma semicolon 1
 #pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
+#define L4D2UTIL_STOCKS_ONLY
 #include <l4d_weapon_stocks>
 #include <multicolors>
 #include <dhooks>
 #include <sourcescramble>
+#include <clientprefs>
 
-
-#define FLAGS_SWITCH_PISTOL               1
+#define FLAGS_SWITCH_PISTOL                1
 #define FLAGS_SWITCH_PILLS                2
 
 #define TEAM_SURVIVOR                     2
 #define TEAM_INFECTED                     3
 
+#define DMG_TYPE_SPIT (DMG_RADIATION|DMG_ENERGYBEAM)
+
 #define GAMEDATA_FILE "l4d_pickup"
-#define KEY_CTERRORGUN_USE "CTerrorGun_Use"
-#define KEY_CTERRORGUN_USE_WINDOWS "CTerrorGun_Use_Windows"
-#define KEY_CWEAPONSPAWN_USE "CWeaponSpawn::Use"
-#define PATCH_STOPHOLSTER "EquipSecondWeapon_StopHolster"
-#define PATCH_SETACTIVEWEAPON "EquipSecondWeapon_SetActiveWeapon"
-#define PATCH_DEPLOY "EquipSecondWeapon_Deploy"
+#define COOKIE_NAME "l4d_pickup_switch_cookie"
+#define KEY_FUNCTION "CTerrorGun::EquipSecondWeapon"
+#define KEY_FUNCTION_2 "CTerrorGun::RemoveSecondWeapon"
+#define KEY_PATCH_SURFIX "__SkipWeaponDeploy"
 
 bool
 	bLateLoad,
-	bCantSwitchHealth[MAXPLAYERS + 1],
-	bSwitchFlags[MAXPLAYERS + 1];
+	bCantSwitchHealth[MAXPLAYERS+1],
+	bCantSwitchSecondary[MAXPLAYERS+1],
+	bPreventValveSwitch[MAXPLAYERS+1];
 	
-Handle
-	hHealth[MAXPLAYERS + 1];
-
-ConVar
-	hSwitchFlags;
-
 int
+	iSwitchFlags[MAXPLAYERS+1],
 	SwitchFlags;
 
-bool
-	g_bLinux;
-
 MemoryPatch
-	g_hPatch_StopHolster,
-	g_hPatch_SetActiveWeapon,
-	g_hPatch_Deploy;
+	g_hPatch;
+
+Cookie 
+	g_hSwitchCookie;
 
 public Plugin myinfo = 
 {
-	name = "L4D Pick-up Changes",
-	author = "Sir, Forgetest, l4d1 port by Harry", //Update syntax A1m`
+	name = "L4D2 Pick-up Changes",
+	author = "Sir, Forgetest, Harry", //Update syntax A1m`
 	description = "Alters a few things regarding picking up/giving items and incapped Players.",
-	version = "1.2.3",
-	url = "https://github.com/SirPlease/L4D2-Competitive-Rework/"
+	version = "3.1",
+	url = "https://github.com/Target5150/MoYu_Server_Stupid_Plugins"
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	EngineVersion test = GetEngineVersion();
-	
-	if( test != Engine_Left4Dead )
+	switch (GetEngineVersion())
 	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
-		return APLRes_SilentFailure;
+		case Engine_Left4Dead: {}
+		default:
+		{
+			strcopy(error, err_max, "Plugin supports only Left 4 Dead 1");
+			return APLRes_SilentFailure;
+		}
 	}
-	
+
 	bLateLoad = late;
 	return APLRes_Success;
 }
@@ -71,105 +104,63 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	LoadSDK();
-
-	hSwitchFlags = CreateConVar("pickup_switch_flags", "3", "Flags for Switching from current item (1:Pistol, 2: Passed Pills)", _, true, 0.0, true, 3.0);
-
-	SwitchFlags = hSwitchFlags.IntValue;
 	
-	HookConVarChange(hSwitchFlags, CVarChanged);
-
+	ConVar cv = CreateConVar("pickup_switch_flags", "3", "Flags for Switching from current item (1:Pistols, 2: Passed Pills)", _, true, 0.0, true, 3.0);
+	SwitchCVarChanged(cv, "", "");
+	cv.AddChangeHook(SwitchCVarChanged);
+	
+	InitSwitchCookie();
+	
 	RegConsoleCmd("sm_secondary", ChangeSecondaryFlags);
-
-	if (bLateLoad) {
-		for (int i = 1; i <= MaxClients; i++) {
-			HookValidClient(i, true);
-			bSwitchFlags[i] = true;
-		}
-	}
+	
+	if (bLateLoad) LateLoad();
 }
 
 void LoadSDK()
 {
-	Handle conf = LoadGameConfigFile(GAMEDATA_FILE);
+	GameData conf = new GameData(GAMEDATA_FILE);
 	if (conf == null)
 		SetFailState("Missing gamedata \"" ... GAMEDATA_FILE ..."\"");
 	
-	int offset = GameConfGetOffset(conf, "OS");
-	if (offset == -1)
-		SetFailState("Failed to find offset \"OS\"");
+	DynamicDetour hDetour = DynamicDetour.FromConf(conf, KEY_FUNCTION);
+	if (!hDetour)
+		SetFailState("Missing detour setup \""...KEY_FUNCTION..."\"");
+	if (!hDetour.Enable(Hook_Pre, DTR_OnEquipSecondWeapon))
+		SetFailState("Failed to pre-detour \""...KEY_FUNCTION..."\"");
+	if (!hDetour.Enable(Hook_Post, DTR_OnEquipSecondWeapon_Post))
+		SetFailState("Failed to post-detour \""...KEY_FUNCTION..."\"");
 	
-	g_bLinux = (offset == 1);
-	
-	SetupDetours(conf);
-	
-	g_hPatch_StopHolster = MemoryPatch.CreateFromConf(conf, PATCH_STOPHOLSTER);
-	if (!g_hPatch_StopHolster || !g_hPatch_StopHolster.Validate())
-		SetFailState("Failed to validate memory patch \"" ... PATCH_STOPHOLSTER ... "\"");
-	
-	g_hPatch_SetActiveWeapon = MemoryPatch.CreateFromConf(conf, PATCH_SETACTIVEWEAPON);
-	if (!g_hPatch_SetActiveWeapon || !g_hPatch_SetActiveWeapon.Validate())
-		SetFailState("Failed to validate memory patch \"" ... PATCH_SETACTIVEWEAPON ... "\"");
-	
-	g_hPatch_Deploy = MemoryPatch.CreateFromConf(conf, PATCH_DEPLOY);
-	if (!g_hPatch_Deploy || !g_hPatch_Deploy.Validate())
-		SetFailState("Failed to validate memory patch \"" ... PATCH_DEPLOY ... "\"");
+	hDetour = DynamicDetour.FromConf(conf, KEY_FUNCTION_2);
+	if (!hDetour)
+		SetFailState("Missing detour setup \""...KEY_FUNCTION_2..."\"");
+
+	if (!hDetour.Enable(Hook_Pre, DTR_OnRemoveSecondWeapon_Ev))
+		SetFailState("Failed to pre-detour \""...KEY_FUNCTION_2..."\"");
+
+	g_hPatch = MemoryPatch.CreateFromConf(conf, KEY_FUNCTION...KEY_PATCH_SURFIX);
+	if (!g_hPatch.Validate())
+		SetFailState("Failed to validate memory patch \""...KEY_FUNCTION...KEY_PATCH_SURFIX..."\"");
 	
 	delete conf;
 }
 
-void SetupDetours(Handle conf)
+void InitSwitchCookie()
 {
-	Handle hDetour = DHookCreateFromConf(
-							conf,
-							(g_bLinux ? KEY_CTERRORGUN_USE : KEY_CTERRORGUN_USE_WINDOWS)
-					);
-	
-	if (!hDetour)
-		SetFailState("Failed to create setup detour for \"%s\"", (g_bLinux ? KEY_CTERRORGUN_USE : KEY_CTERRORGUN_USE_WINDOWS));
-	
-	if (!DHookEnableDetour(hDetour, false, CTerrorGun_OnUse)
-		|| !DHookEnableDetour(hDetour, true, CTerrorGun_OnUsePost)
-	) {
-		SetFailState("Failed to enable detour \"%s\"", (g_bLinux ? KEY_CTERRORGUN_USE : KEY_CTERRORGUN_USE_WINDOWS));
-	}
-	
-	hDetour = DHookCreateFromConf(conf, KEY_CWEAPONSPAWN_USE);
-	
-	if (!hDetour)
-		SetFailState("Failed to create setup detour for \"" ... KEY_CWEAPONSPAWN_USE ... "\"");
-	
-	if (!DHookEnableDetour(hDetour, false, CWeaponSpawn_OnUse)
-		|| !DHookEnableDetour(hDetour, true, CWeaponSpawn_OnUsePost)
-	) {
-		SetFailState("Failed to enable detour \"" ... KEY_CWEAPONSPAWN_USE ... "\"");
+	if ((g_hSwitchCookie = Cookie.Find(COOKIE_NAME)) == null)
+	{
+		g_hSwitchCookie = new Cookie(COOKIE_NAME,
+								"Flags for Switching from current item for every client.",
+								CookieAccess_Public);
 	}
 }
 
-void ApplyPatch(bool patch)
+void LateLoad()
 {
-	static bool patched = false;
-	if (patch && !patched)
-	{
-		if (!g_hPatch_StopHolster.Enable())
-			SetFailState("Failed to enable memory patch \"" ... PATCH_STOPHOLSTER ... "\"");
-		
-		if (!g_hPatch_SetActiveWeapon.Enable())
-			SetFailState("Failed to enable memory patch \"" ... PATCH_SETACTIVEWEAPON ... "\"");
-		
-		if (!g_hPatch_Deploy.Enable())
-			SetFailState("Failed to enable memory patch \"" ... PATCH_DEPLOY ... "\"");
-		
-		patched = true;
-	}
-	else if (!patch && patched)
-	{
-		g_hPatch_StopHolster.Disable();
-		g_hPatch_SetActiveWeapon.Disable();
-		g_hPatch_Deploy.Disable();
-		
-		patched = false;
-	}
+	for (int i = 1; i <= MaxClients; i++)
+		if (IsClientInGame(i))
+			OnClientPutInServer(i);
 }
+
 
 /* ---------------------------------
 //                                 |
@@ -179,24 +170,29 @@ void ApplyPatch(bool patch)
 public void OnClientPutInServer(int client)
 {
 	HookValidClient(client, true);
-	bSwitchFlags[client] = true;
+	
+	if (!QuerySwitchCookie(client, iSwitchFlags[client]))
+	{
+		iSwitchFlags[client] = SwitchFlags;
+	}
 }
 
-public void OnClientDisconnect_Post(int client)
+public void OnClientDisconnect(int client)
 {
-	KillActiveTimers(client);
 	HookValidClient(client, false);
+	
+	if (!IsFakeClient(client))
+		SetSwitchCookie(client, iSwitchFlags[client]);
 }
 
-
-public Action ChangeSecondaryFlags(int client, int args)
+Action ChangeSecondaryFlags(int client, int args)
 {
-	if (IsValidClient(client)) {
-		if (bSwitchFlags[client] == false) {
-			bSwitchFlags[client] = true;
+	if (client && IsClientInGame(client)) {
+		if (iSwitchFlags[client] == 0) {
+			iSwitchFlags[client] = SwitchFlags;
 			CPrintToChat(client, "{blue}[{default}ItemSwitch{blue}] {default}Auto Switch to Pistol/Pills on pick-up/given: {blue}OFF");
 		} else {
-			bSwitchFlags[client] = false;
+			iSwitchFlags[client] = 0;
 			CPrintToChat(client, "{blue}[{default}ItemSwitch{blue}] {default}Auto Switch to Pistol/Pills on pick-up/given: {blue}ON");
 		}
 	}
@@ -209,102 +205,106 @@ public Action ChangeSecondaryFlags(int client, int args)
 //       Yucky Timer Method~       |
 //                                 |
 // -------------------------------*/
-
-public Action DelaySwitchHealth(Handle hTimer, any client)
+void DelaySwitchHealth(any client)
 {
 	bCantSwitchHealth[client] = false;
-	hHealth[client] = null;
-
-	return Plugin_Continue;
 }
 
-public Action WeaponCanSwitchTo(int client, int weapon)
+void DelaySwitchSecondary(any client)
 {
-	if (!IsValidEntity(weapon)) {
+	bCantSwitchSecondary[client] = false;
+}
+
+void DelayValveSwitch(any client)
+{
+	bPreventValveSwitch[client] = false;
+}
+
+Action WeaponCanSwitchTo(int client, int weapon)
+{
+	L4D2WeaponId wep = L4D2_GetWeaponId(weapon);
+	
+	if (wep == L4D2WeaponId_None) {
 		return Plugin_Continue;
 	}
 
-	char sWeapon[64];
-	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon)); 
-	L4D2WeaponId wep = L4D2_GetWeaponIdByWeaponName(sWeapon);
-
 	// Health Items.
-	if (bSwitchFlags[client] && SwitchFlags & FLAGS_SWITCH_PILLS && wep == L4D2WeaponId_PainPills && bCantSwitchHealth[client]) {
+	if ((iSwitchFlags[client] & FLAGS_SWITCH_PILLS) && wep == L4D2WeaponId_PainPills && bCantSwitchHealth[client]) {
+		return Plugin_Stop;
+	}
+	
+	//Weapons.
+	if ((iSwitchFlags[client] & FLAGS_SWITCH_PISTOL) && wep == L4D2WeaponId_Pistol && bCantSwitchSecondary[client]) {
 		return Plugin_Stop;
 	}
 	
 	return Plugin_Continue;
 }
 
-public Action WeaponEquip(int client, int weapon)
+Action WeaponEquip(int client, int weapon)
 {
-	if (!IsValidEntity(weapon)) {
+	// New Weapon
+	L4D2WeaponId wep = L4D2_GetWeaponId(weapon);
+
+	if (wep == L4D2WeaponId_None) {
 		return Plugin_Continue;
 	}
-
-	// New Weapon
-	char sWeapon[64]; 
-	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon)); 
-	L4D2WeaponId wep = L4D2_GetWeaponIdByWeaponName(sWeapon);
+	
+	// Weapon Currently Using
+	int active_weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	L4D2WeaponId wepname = L4D2_GetWeaponId(active_weapon);
 
 	// Health Items.
 	if (wep == L4D2WeaponId_PainPills) {
 		bCantSwitchHealth[client] = true;
-		hHealth[client] = CreateTimer(0.1, DelaySwitchHealth, client);
+		RequestFrame(DelaySwitchHealth, client);
 	}
+	// Also Check if Survivor is incapped to make sure no issues occur (Melee players get given a pistol for example)
+	else if (!IsPlayerIncapacitated(client) && !bPreventValveSwitch[client]) {
+		// New Weapon is a Secondary?
+		if (wep == L4D2WeaponId_Pistol)
+		{
+			// Is Currently used Weapon a Secondary?
+			if (wepname == L4D2WeaponId_Pistol) {
+				return Plugin_Continue;
+			}
+			
+			bCantSwitchSecondary[client] = true;
+			RequestFrame(DelaySwitchSecondary, client);
+		}
+	}
+	return Plugin_Continue;
+}
 
+Action WeaponDrop(int client, int weapon)
+{
+	// Weapon Dropping
+	L4D2WeaponId wep = L4D2_GetWeaponId(weapon);
+
+	if (wep == L4D2WeaponId_None) {
+		return Plugin_Continue;
+	}
+	// Weapon Currently Using
+	int active_weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	L4D2WeaponId wepname = L4D2_GetWeaponId(active_weapon);
+
+	// Check if Player is Alive/Incapped and just dropped his secondary for a different one
+	if (!IsPlayerIncapacitated(client) && IsPlayerAlive(client))  {
+		if ((wep == L4D2WeaponId_Pistol) && (wepname == L4D2WeaponId_Pistol)) {
+			bPreventValveSwitch[client] = true;
+			RequestFrame(DelayValveSwitch, client);
+		}
+	}
 	return Plugin_Continue;
 }
 
 
 /* ---------------------------------
 //                                 |
-//        Stocks, Functions        |
-//                                 |
-// -------------------------------*/
-bool IsValidClient(int client)
-{
-	return (client > 0 && client <= MaxClients && IsClientInGame(client));
-}
-
-void KillActiveTimers(int client)
-{
-	delete hHealth[client];
-	
-	hHealth[client] = null;
-	bCantSwitchHealth[client] = false;
-	bSwitchFlags[client] = false;
-}
-
-void HookValidClient(int client, bool Hook)
-{
-	if (IsValidClient(client)) {
-		if (Hook) {
-			SDKHook(client, SDKHook_WeaponCanSwitchTo, WeaponCanSwitchTo);
-			SDKHook(client, SDKHook_WeaponEquip, WeaponEquip);
-		} else {
-			SDKUnhook(client, SDKHook_WeaponCanSwitchTo, WeaponCanSwitchTo);
-			SDKUnhook(client, SDKHook_WeaponEquip, WeaponEquip);
-		}
-	}
-}
-
-/* ---------------------------------
-//                                 |
-//          Cvar Changes!          |
-//                                 |
-// -------------------------------*/
-public void CVarChanged(ConVar cvar, const char[] oldValue, const char[] newValue)
-{
-	SwitchFlags = hSwitchFlags.IntValue;
-}
-
-/* ---------------------------------
-//                                 |
 //       Dualies Workaround        |
 //                                 |
 // -------------------------------*/
-stock bool IsSwitchingToDualCase(int client, int weapon)
+bool IsSwitchingToDualCase(int client, int weapon)
 {
 	if (!IsValidEdict(weapon))
 		return false;
@@ -316,7 +316,12 @@ stock bool IsSwitchingToDualCase(int client, int weapon)
 	if (clsname[0] != 'w')
 		return false;
 	
-	if (strncmp(clsname[7], "pistol", 6) != 0)
+	if (strcmp(clsname[6], "_spawn") == 0)
+	{
+		if (GetEntProp(weapon, Prop_Send, "m_weaponID") != 1) // L4D2WeaponId_Pistol
+			return false;
+	}
+	else if (strncmp(clsname[6], "_pistol", 7) != 0)
 	{
 		return false;
 	}
@@ -331,40 +336,105 @@ stock bool IsSwitchingToDualCase(int client, int weapon)
 	return strcmp(clsname, "weapon_pistol") == 0 && !GetEntProp(secondary, Prop_Send, "m_hasDualWeapons");
 }
 
-public MRESReturn CTerrorGun_OnUse(int pThis, Handle hParams)
+MRESReturn DTR_OnEquipSecondWeapon(int weapon, DHookReturn hReturn)
 {
-	int client = DHookGetParam(hParams, ( g_bLinux ? 1 : 2));
+	int client = GetEntPropEnt(weapon, Prop_Send, "m_hOwner");
+	if (client == -1 || !IsClientInGame(client))
+		return MRES_Ignored;
 	
-	if (bSwitchFlags[client] && SwitchFlags & FLAGS_SWITCH_PISTOL && IsSwitchingToDualCase(client, pThis))
+	if (~iSwitchFlags[client] & FLAGS_SWITCH_PISTOL)
+		return MRES_Ignored;
+	
+	if (!IsSwitchingToDualCase(client, weapon))
+		return MRES_Ignored;
+	
+	g_hPatch.Enable();
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_OnEquipSecondWeapon_Post(int weapon, DHookReturn hReturn)
+{
+	g_hPatch.Disable();
+	return MRES_Ignored;
+}
+
+// prevent setting viewmodel and next attack time
+MRESReturn DTR_OnRemoveSecondWeapon_Ev(int weapon, DHookReturn hReturn)
+{
+	if (!GetEntProp(weapon, Prop_Send, "m_hasDualWeapons"))
+		return MRES_Ignored;
+	
+	int client = GetEntPropEnt(weapon, Prop_Send, "m_hOwner");
+	if (client == -1 || !IsClientInGame(client))
+		return MRES_Ignored;
+	
+	int active_weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (active_weapon == -1 || active_weapon == weapon)
+		return MRES_Ignored;
+	
+	if (~iSwitchFlags[client] & FLAGS_SWITCH_PISTOL)
+		return MRES_Ignored;
+	
+	SetEntProp(weapon, Prop_Send, "m_isDualWielding", 0);
+	SetEntProp(weapon, Prop_Send, "m_hasDualWeapons", 0);
+	
+	int clip = GetEntProp(weapon, Prop_Send, "m_iClip1");
+	SetEntProp(weapon, Prop_Send, "m_iClip1", clip / 2);
+	
+	hReturn.Value = 1;
+	return MRES_Supercede;
+}
+
+
+/* ---------------------------------
+//                                 |
+//        Stocks, Functions        |
+//                                 |
+// -------------------------------*/
+bool QuerySwitchCookie(int client, int &val)
+{
+	char buffer[8] = "";
+	g_hSwitchCookie.Get(client, buffer, sizeof(buffer));
+	if (strlen(buffer) > 0)
 	{
-		ApplyPatch(true);
+		val = StringToInt(buffer);
+		return true;
 	}
 	
-	return MRES_Ignored;
+	return false;
 }
 
-public MRESReturn CWeaponSpawn_OnUse(int pThis, Handle hParams)
+void SetSwitchCookie(int client, int val)
 {
-	int client = DHookGetParam(hParams, 1);
+	char buffer[8];
+	IntToString(val, buffer, sizeof(buffer));
+	g_hSwitchCookie.Set(client, buffer);
+}
 
-	if (bSwitchFlags[client] && SwitchFlags & FLAGS_SWITCH_PISTOL && IsSwitchingToDualCase(client, pThis))
-	{
-		ApplyPatch(true);
+void HookValidClient(int client, bool Hook)
+{
+	if (Hook) {
+		SDKHook(client, SDKHook_WeaponCanSwitchTo, WeaponCanSwitchTo);
+		SDKHook(client, SDKHook_WeaponEquip, WeaponEquip);
+		SDKHook(client, SDKHook_WeaponDrop, WeaponDrop);
+	} else {
+		SDKUnhook(client, SDKHook_WeaponCanSwitchTo, WeaponCanSwitchTo);
+		SDKUnhook(client, SDKHook_WeaponEquip, WeaponEquip);
+		SDKUnhook(client, SDKHook_WeaponDrop, WeaponDrop);
 	}
-	
-	return MRES_Ignored;
 }
 
-public MRESReturn CTerrorGun_OnUsePost(Handle hParams)
+/* ---------------------------------
+//                                 |
+//          Cvar Changes!          |
+//                                 |
+// -------------------------------*/
+void SwitchCVarChanged(ConVar cvar, const char[] oldValue, const char[] newValue)
 {
-	ApplyPatch(false);
-
-	return MRES_Ignored;
+	SwitchFlags = cvar.IntValue;
 }
 
-public MRESReturn CWeaponSpawn_OnUsePost(Handle hParams)
+bool IsPlayerIncapacitated(int client)
 {
-	ApplyPatch(false);
-
-	return MRES_Ignored;
+	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated", 1));
 }

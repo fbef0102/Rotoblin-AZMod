@@ -20,9 +20,9 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.3.8"
+#define READY_VERSION "8.4.0"
 #define READY_LIVE_COUNTDOWN 2
-#define READY_UNREADY_HINT_PERIOD 10.0
+#define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
 #define READY_RESTART_ROUND_DELAY 5.0
 #define READY_RESTART_MAP_DELAY 2
@@ -153,7 +153,6 @@ native GetSurCurrent();
 native PrintBossPercents();
 native ChoseTankPrintWhoBecome();
 native OpenSpectatorsListenMode();
-native RebuildIndex();//From l4d_versus_GhostWarp.smx
 native GiveSurAllPills();
 native ShowRotoInfo();
 native UnScramble_KeepTeams();
@@ -1224,6 +1223,8 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 
 public Action PluginStart(Handle timer)
 {
+	ResetVariable();
+
 	if(PlayerLeftStartTimer == null) PlayerLeftStartTimer = CreateTimer(1.0, Timer_PlayerLeftStart, _, TIMER_REPEAT);
 
 	//currently automating campaign restart before going live?
@@ -1320,7 +1321,7 @@ public Action:timerUnreadyCallback(Handle:timer)
 			}
 		}
 	}
-	if(change == 4) change = -1;
+	if(change == 9) change = -1;
 	++change;DrawReadyPanelList();
 	return Plugin_Continue;
 }
@@ -2225,15 +2226,35 @@ DrawReadyPanelList()
 		}
 		case 2:
 		{
-			Format(Notice, 64, "● Command: !load - change match", HostName);
+			Format(Notice, 64, "● Cmd: !load - change match", HostName);
 		}
 		case 3:
 		{
-			Format(Notice, 64, "● Command: !votes - vote menu", HostName);
+			Format(Notice, 64, "● Cmd: !votes - vote menu", HostName);
 		}
 		case 4:
 		{
-			Format(Notice, 64, "● Command: !info - information", HostName);
+			Format(Notice, 64, "● Cmd: !info - information", HostName);
+		}
+		case 5:
+		{
+			Format(Notice, 64, "● Cmd: !slots # - change server slots", HostName);
+		}
+		case 6:
+		{
+			Format(Notice, 64, "● Cmd: !show / !hide - Display Panel", HostName);
+		}
+		case 7:
+		{
+			Format(Notice, 64, "● Cmd: !setscores <survs> <inf> - Set Team Score", HostName);
+		}
+		case 8:
+		{
+			Format(Notice, 64, "● Cmd: !voteboss <tank> <witch> - Change Boss Percents", HostName);
+		}
+		case 9:
+		{
+			Format(Notice, 64, "● Cmd: !lerps - Check Players' lerps", HostName);
 		}
 	}
 	DrawPanelText(panel, Notice);
@@ -3031,7 +3052,6 @@ RoundIsLive()
 	readyOff();
 	CPrintToChatAll("{default}[{olive}TS{default}] {blue}%t{default}: {green}%d%%","Survivor_Current", GetSurCurrent());
 	GiveSurAllPills();
-	RebuildIndex();
 	Keep_SI_Starting();
 	antibaiter_clear();
 	PrintBossPercents();

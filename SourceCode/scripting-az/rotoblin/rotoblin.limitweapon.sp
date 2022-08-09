@@ -39,13 +39,13 @@
 
 static	const	String:	WEAPON_HUNTING_RIFLE[]			= "weapon_hunting_rifle";
 static	const	String:	WEAPON_AUTOSHOTGUN[]			= "weapon_autoshotgun";
-static	const	String:	WEAPON_AUTOSHOTGUN_SPAWN[]		= "weapon_autoshotgun_spawn";
+//static	const	String:	WEAPON_AUTOSHOTGUN_SPAWN[]		= "weapon_autoshotgun_spawn";
 static	const	String:	WEAPON_RIFLE[]					= "weapon_rifle";
-static	const	String:	WEAPON_RIFLE_SPAWN[]			= "weapon_rifle_spawn";
+//static	const	String:	WEAPON_RIFLE_SPAWN[]			= "weapon_rifle_spawn";
 static	const	String:	WEAPON_PUMPSHOTGUN[]			= "weapon_pumpshotgun";
-static	const	String:	WEAPON_PUMPSHOTGUN_SPAWN[]		= "weapon_pumpshotgun_spawn";
+//static	const	String:	WEAPON_PUMPSHOTGUN_SPAWN[]		= "weapon_pumpshotgun_spawn";
 static	const	String:	WEAPON_SMG[]					= "weapon_smg";
-static	const	String:	WEAPON_SMG_SPAWN[]				= "weapon_smg_spawn";
+//static	const	String:	WEAPON_SMG_SPAWN[]				= "weapon_smg_spawn";
 
 static			Handle:	g_hLimitHuntingRifle_Cvar 		= INVALID_HANDLE;
 static			Handle: g_hLimitAutoShotgun_Cvar	    = INVALID_HANDLE;
@@ -110,8 +110,8 @@ public _LHR_OnPluginEnabled()
 	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _LHR_OnClientPutInServer);
 	HookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _LHR_OnClientDisconnect);
 
-	HookEvent("spawner_give_item", _LHR_SpawnerGiveItem);
-	HookEvent("player_use", _LHR_PlayerUse);
+	//HookEvent("spawner_give_item", _LHR_SpawnerGiveItem);
+	//HookEvent("player_use", _LHR_PlayerUse);
 
 	for (new client = 1; client <= MaxClients; client++)
 	{
@@ -134,8 +134,8 @@ public _LHR_OnPluginDisabled()
 	UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _PS_OnClientPutInServer);
 	UnhookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _LHR_OnClientDisconnect);
 
-	UnhookEvent("spawner_give_item", _LHR_SpawnerGiveItem);
-	UnhookEvent("player_use", _LHR_PlayerUse);
+	//UnhookEvent("spawner_give_item", _LHR_SpawnerGiveItem);
+	//UnhookEvent("player_use", _LHR_PlayerUse);
 
 	for (new client = 1; client <= MaxClients; client++)
 	{
@@ -263,9 +263,13 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 					{
 						if (g_iLimitPumpShotgun == -1 || g_iLimitPumpShotgun > GetActiveWeapons(WEAPON_PUMPSHOTGUN)) 
 						{
-							CheatCommandEx(client,"give", "pumpshotgun");
+							if(!IsFakeClient(client)) CheatCommandEx(client,"give", "pumpshotgun");
 							RemoveEntity(weapon);
 						}
+					}
+					else
+					{
+						_EF_DoAmmoPilesFix(client,false);
 					}
 				}
 				else
@@ -291,9 +295,13 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 					{
 						if (g_iLimitSmg == -1 || g_iLimitSmg > GetActiveWeapons(WEAPON_SMG)) 
 						{
-							CheatCommandEx(client,"give", "smg");
+							if(!IsFakeClient(client)) CheatCommandEx(client,"give", "smg");
 							RemoveEntity(weapon);
 						}
+					}
+					else
+					{
+						_EF_DoAmmoPilesFix(client,false);
 					}
 				}
 				else
@@ -379,47 +387,47 @@ static GetActiveWeapons(const String:WEAPON_NAME[])
 	return count;
 }
 
-public void _LHR_SpawnerGiveItem(Event event, const char[] name, bool dontBroadcast)
-{
-	int weapon = event.GetInt("spawner");
+// public void _LHR_SpawnerGiveItem(Event event, const char[] name, bool dontBroadcast)
+// {
+// 	int weapon = event.GetInt("spawner");
 
-	if(weapon > MaxClients && IsValidEntity(weapon))
-	{
-		static char classname[128];
-		GetEdictClassname(weapon, classname, sizeof(classname));
-		//LogMessage("%d %s", weapon, classname);
-		if(StrEqual(classname, WEAPON_RIFLE_SPAWN)){
-			if (GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle && g_iLimitRifle >=0) // If ammount of active hunting rifles are at the limit
-			{
-				ReplaceEntity(weapon, WEAPON_SMG_SPAWN, "models/w_models/weapons/w_smg_uzi.mdl", 5);
-			}
-		}
-		else if(StrEqual(classname, WEAPON_AUTOSHOTGUN_SPAWN)){
-			if (GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun && g_iLimitAutoShotgun >=0) // If ammount of active hunting rifles are at the limit
-			{
-				ReplaceEntity(weapon, WEAPON_PUMPSHOTGUN_SPAWN, "models/w_models/weapons/w_shotgun.mdl", 5);
-			}
-		}
-	}
-}
+// 	if(weapon > MaxClients && IsValidEntity(weapon))
+// 	{
+// 		static char classname[128];
+// 		GetEdictClassname(weapon, classname, sizeof(classname));
+// 		//LogMessage("%d %s", weapon, classname);
+// 		if(StrEqual(classname, WEAPON_RIFLE_SPAWN)){
+// 			if (GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle && g_iLimitRifle >=0) // If ammount of active hunting rifles are at the limit
+// 			{
+// 				ReplaceEntity(weapon, WEAPON_SMG_SPAWN, "models/w_models/weapons/w_smg_uzi.mdl", 5);
+// 			}
+// 		}
+// 		else if(StrEqual(classname, WEAPON_AUTOSHOTGUN_SPAWN)){
+// 			if (GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun && g_iLimitAutoShotgun >=0) // If ammount of active hunting rifles are at the limit
+// 			{
+// 				ReplaceEntity(weapon, WEAPON_PUMPSHOTGUN_SPAWN, "models/w_models/weapons/w_shotgun.mdl", 5);
+// 			}
+// 		}
+// 	}
+// }
 
-public void _LHR_PlayerUse(Event event, const char[] name, bool dontBroadcast)
-{
-	int weapon = GetEventInt(event, "targetid");
-	if (!IsWeaponSpawnEx(weapon)) return;
+// public void _LHR_PlayerUse(Event event, const char[] name, bool dontBroadcast)
+// {
+// 	int weapon = GetEventInt(event, "targetid");
+// 	if (!IsWeaponSpawnEx(weapon)) return;
 
-	if(GetEntProp(weapon, Prop_Send, "m_weaponID") == WEAPID_RIFLE){
-		//LogMessage("%d %d", GetEntProp(weapon, Prop_Send, "m_weaponID"), g_iLimitRifle);
-		if (GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle && g_iLimitRifle >=0) // If ammount of active hunting rifles are at the limit
-		{
-			ReplaceEntity(weapon, WEAPON_SMG_SPAWN, "models/w_models/weapons/w_smg_uzi.mdl", 5);
-		}
-	}
-	else if(GetEntProp(weapon, Prop_Send, "m_weaponID") == WEAPID_AUTOSHOTGUN){
-		//LogMessage("%d %d", GetEntProp(weapon, Prop_Send, "m_weaponID"), g_iLimitAutoShotgun);
-		if (GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun && g_iLimitAutoShotgun >=0) // If ammount of active hunting rifles are at the limit
-		{
-			ReplaceEntity(weapon, WEAPON_PUMPSHOTGUN_SPAWN, "models/w_models/weapons/w_shotgun.mdl", 5);
-		}
-	}
-}
+// 	if(GetEntProp(weapon, Prop_Send, "m_weaponID") == WEAPID_RIFLE){
+// 		//LogMessage("%d %d", GetEntProp(weapon, Prop_Send, "m_weaponID"), g_iLimitRifle);
+// 		if (GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle && g_iLimitRifle >=0) // If ammount of active hunting rifles are at the limit
+// 		{
+// 			ReplaceEntity(weapon, WEAPON_SMG_SPAWN, "models/w_models/weapons/w_smg_uzi.mdl", 5);
+// 		}
+// 	}
+// 	else if(GetEntProp(weapon, Prop_Send, "m_weaponID") == WEAPID_AUTOSHOTGUN){
+// 		//LogMessage("%d %d", GetEntProp(weapon, Prop_Send, "m_weaponID"), g_iLimitAutoShotgun);
+// 		if (GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun && g_iLimitAutoShotgun >=0) // If ammount of active hunting rifles are at the limit
+// 		{
+// 			ReplaceEntity(weapon, WEAPON_PUMPSHOTGUN_SPAWN, "models/w_models/weapons/w_shotgun.mdl", 5);
+// 		}
+// 	}
+// }

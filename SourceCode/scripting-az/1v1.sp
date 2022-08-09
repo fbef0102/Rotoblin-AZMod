@@ -41,6 +41,7 @@ public OnPluginStart()
 	HookEvent("lunge_pounce", PlayerLunge_Pounce_Event);
 	HookEvent("player_spawn",		Event_PlayerSpawn,	EventHookMode_PostNoCopy);
 	HookEvent("player_death",		Event_PlayerDeath,	EventHookMode_PostNoCopy);
+	HookEvent("tank_spawn",			Event_TankSpawn,		EventHookMode_PostNoCopy);
 }
 
 public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
@@ -59,6 +60,7 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 		}
 	}
 }
+
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -97,6 +99,28 @@ public Action:Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 			CPrintToChat(victim, "[{olive}TS 1v1{default}] You don't have to be mad...");
 		}
 	}
+}
+
+public void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int userid = event.GetInt("userid");
+	int client = GetClientOfUserId(userid);
+	if(client && IsClientInGame(client) && IsFakeClient(client))
+	{
+		CreateTimer(0.5, Timer_KillTank, userid, TIMER_FLAG_NO_MAPCHANGE);
+	}
+}
+
+Action Timer_KillTank (Handle timer, int userid)
+{
+	int client = GetClientOfUserId(userid);
+	if(client && IsClientInGame(client) && IsFakeClient(client) && GetClientTeam(client) == 3 && GetZombieClass(client) == 5)
+	{
+		ForcePlayerSuicide(client);
+		CPrintToChatAll("[{olive}TS 1v1{default}] {green}Tank{default} has been killed!");
+	}
+
+	return Plugin_Continue;
 }
 
 stock GetZombieClass(client) return GetEntProp(client, Prop_Send, "m_zombieClass");

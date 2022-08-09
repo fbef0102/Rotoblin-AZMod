@@ -2,22 +2,22 @@
 {
 	"l4d_vs_hospital01_apartment"
 	{
-		"pill_limit" "0" // +1 PILL CABINET
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 	}
 	"l4d_vs_hospital02_subway"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"l4d_vs_hospital03_sewers"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_vs_hospital04_interior"
 	{
-		"pill_limit" "1"
+		"pill_limit" "2"
 		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
@@ -50,12 +50,12 @@
 	}
 	"l4d_vs_smalltown02_drainage"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"l4d_vs_smalltown03_ranchhouse"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_vs_smalltown04_mainstreet"
@@ -75,12 +75,12 @@
 	}
 	"l4d_vs_airport02_offices"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"l4d_vs_airport03_garage"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_vs_airport04_terminal"
@@ -134,12 +134,12 @@
 	}
 	"l4d_vs_farm02_traintunnel"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"l4d_vs_farm03_bridge"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_vs_farm04_barn"
@@ -204,7 +204,7 @@
 	}
 	"l4d_vs_city17_04"
 	{
-		"pill_limit" "0" // +2 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.6"
 	}
 	"l4d_vs_city17_05"
@@ -240,7 +240,7 @@
 	}
 	"l4d_vs_stadium1_apartment"
 	{
-		"pill_limit" "2"
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
@@ -313,7 +313,7 @@
 	}
 	"l4d_dbd_citylights"
 	{
-		"pill_limit" "0"  // +1 PILL CABINET
+		"pill_limit" "1"
 		"VersusModifier"		"1.1"
 	}
 	"l4d_dbd_anna_is_gone"
@@ -323,7 +323,7 @@
 	}
 	"l4d_dbd_the_mall"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
@@ -344,32 +344,32 @@
 	}
 	"l4d_dbd_clean_up"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.6"
 	}
 	"l4d_dbd_new_dawn"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"2.0"
 	}
 	"l4d_deathaboard01_prison"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 	}
 	"l4d_deathaboard02_yard"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.2"
 	}
 	"l4d_deathaboard03_docks"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_deathaboard04_ship"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.6"
 	}
 	"l4d_deathaboard05_light"
@@ -384,17 +384,17 @@
 	}
 	"l4d_ihm02_manor"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"l4d_ihm03_underground"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 	}
 	"l4d_ihm04_lumberyard"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.5"
 	}
 	"l4d_ihm05_lakeside"
@@ -404,17 +404,17 @@
 	}
 	"l4d_jsarena01_town"
 	{
-		"pill_limit" "0" // +1 PILL CABINET
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 	}
 	"l4d_jsarena02_alley"
 	{
-		"pill_limit" "2"
+		"pill_limit" "1"
 		"VersusModifier"		"1.25"
 	}
 	"l4d_jsarena03_roof"
 	{
-		"pill_limit" "2"
+		"pill_limit" "1"
 		"VersusModifier"		"1.5"
 	}
 	"l4d_jsarena04_arena"
@@ -455,7 +455,7 @@
 	}
 	"l4d_149_2"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.2"
 		"tank_ban_flow"
 		{
@@ -476,7 +476,7 @@
 	}
 	"l4d_149_3"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 		"tank_ban_flow"
 		{
@@ -502,7 +502,7 @@
 	}
 	"l4d_149_4"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.7"
 	}
 	"l4d_149_5"
@@ -525,7 +525,7 @@
 	}
 	"l4d_darkblood02_engine"
 	{
-		"pill_limit" "1"  // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.25"
 		"tank_ban_flow"
 		{
@@ -581,12 +581,12 @@
 	}
 	"rombu02"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 	}
 	"rombu03"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 		"tank_ban_flow"
 		{
@@ -617,17 +617,17 @@
 	}
 	"l4d_noprecinct01_crash"
 	{
-		"pill_limit" "0" // +1 PILL CABINET
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 	}
 	"l4d_noprecinct02_train"
 	{
-		"pill_limit" "1"  // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.25"
 	}
 	"l4d_noprecinct03_clubd"
 	{
-		"pill_limit" "1" // +1 PILL CABINET
+		"pill_limit" "2"
 		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{

@@ -43,6 +43,14 @@ public Plugin:myinfo =
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
+	EngineVersion test = GetEngineVersion();
+
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
 	CreateNative("Keep_SI_Starting", Native_KeepSIStarting);
 	return APLRes_Success;
 }
@@ -55,13 +63,6 @@ public Native_KeepSIStarting(Handle:plugin, numParams)
 public OnPluginStart()
 {
 	Sub_HookGameData(PLUGIN_FILENAME);
-	
-	decl String:sGame[256];
-	GetGameFolderName(sGame, sizeof(sGame));
-	if (!StrEqual(sGame, "left4dead", false))
-	{
-		SetFailState("Plugin 'Quad Control' supports Left 4 Dead 1 only!");
-	}
 	
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -271,21 +272,21 @@ public Action COLD_DOWN(Handle timer, int userid)
 	if(!Is_Ready_Plugin_On() && !hasleftstartarea)
 	{
 		Sub_DebugPrint("Is in saferoom");
-		Sub_DetermineClass(client, GetEntProp(client, Prop_Send, "m_zombieClass"));
+		Sub_DetermineClass(client);
 		return Plugin_Continue;
 	}
 
 	if(IsInReady())
 	{
 		Sub_DebugPrint("Is in Ready");
-		Sub_DetermineClass(client, GetEntProp(client, Prop_Send, "m_zombieClass"));
+		Sub_DetermineClass(client);
 		return Plugin_Continue;
 	}
 
 	return Plugin_Continue;
 }
 
-public Sub_DetermineClass(any:Client, any:ZClass)
+public void Sub_DetermineClass(int Client)
 {
 	if(IsPlayerGhost(Client))
 	{

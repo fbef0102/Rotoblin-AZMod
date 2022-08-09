@@ -206,6 +206,9 @@ public Action:HudDrawTimer(Handle:hTimer)
 	{
 		if (!b5v5HudActive[i] || !IsInfected(i) || IsFakeClient(i) || !g_bLeftStartRoom)
 			continue;
+
+		if (GetClientMenu(i) != MenuSource_None)
+			continue;
 			
 		SendPanelToClient(h5v5Hud, i, Dummy5v5HudHandler, 3);
 	}

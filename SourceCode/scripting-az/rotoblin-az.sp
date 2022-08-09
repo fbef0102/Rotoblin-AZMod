@@ -54,7 +54,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.3.9"								// Version
+#define PLUGIN_VERSION			"8.4.0"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
@@ -79,7 +79,6 @@
 #include "rotoblin/rotoblin.inc/debug.inc"
 #include "rotoblin/rotoblin.inc/eventmanager.inc"
 #include "rotoblin/rotoblin.inc/cmdmanager.inc"
-#include "rotoblin/rotoblin.inc/clientindexes.inc"
 #include "rotoblin/rotoblin.inc/tankmanager.inc"
 #include "rotoblin/rotoblin.inc/wrappers.inc"
 #include "rotoblin/rotoblin.inc/weapon_attributes.inc"
@@ -171,7 +170,6 @@ public OnPluginStartEx()
 	 * To disable certain module, simply comment out the line. */
 
 	_H_TankManager_OnPluginStart();
-	_H_ClientIndexes_OnPluginStart();
 	_H_CommandManager_OnPluginStart();
 	
 	_HealthControl_OnPluginStart();

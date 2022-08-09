@@ -980,7 +980,7 @@ public ConVarVersusCoop(Handle:convar, const String:oldValue[], const String:new
 	else
 	{
 		SetConVarInt(FindConVar("vs_max_team_switches"), 1);
-		SetConVarInt(FindConVar("sb_all_bot_team"), 0);
+		//SetConVarInt(FindConVar("sb_all_bot_team"), 0);
 	}
 }
 
@@ -990,10 +990,10 @@ public ConVarCoopVersus(Handle:convar, const String:oldValue[], const String:new
 	{
 		SetConVarInt(FindConVar("sb_all_bot_team"), 1);
 	}
-	else
-	{
-		SetConVarInt(FindConVar("sb_all_bot_team"), 0);
-	}
+	// else
+	// {
+	// 	SetConVarInt(FindConVar("sb_all_bot_team"), 0);
+	// }
 }
 
 TweakSettings()
@@ -1157,8 +1157,8 @@ public Action:evtRoundStart(Handle:event, const String:name[], bool:dontBroadcas
 	SetConVarFlags(FindConVar("z_max_player_zombies"), flags & ~FCVAR_NOTIFY);
 	
 	// When the game starts, stop the bots till a player joins
-	if (!b_LeftSaveRoom)
-		SetConVarInt(FindConVar("sb_stop"), 1);
+	//if (!b_LeftSaveRoom)
+	//	SetConVarInt(FindConVar("sb_stop"), 1);
 	
 	// Added a delay to setting MaxSpecials so that it would set correctly when the server first starts up
 	CreateTimer(0.4, MaxSpecialsSet);
@@ -1171,7 +1171,7 @@ public Action:evtRoundStart(Handle:event, const String:name[], bool:dontBroadcas
 		
 		// This little part is needed because some events just can't execute when another round starts.
 		
-		SetConVarInt(FindConVar("sb_stop"), 0);
+		//SetConVarInt(FindConVar("sb_stop"), 0);
 		
 		if (GameMode == 2 && GetConVarBool(h_VersusCoop))
 		{
@@ -1293,7 +1293,7 @@ public Action:evtPlayerFirstSpawned(Handle:event, const String:name[], bool:dont
 			SetConVarInt(FindConVar("sb_all_bot_team"), 1);
 		}
 		
-		SetConVarInt(FindConVar("sb_stop"), 0);
+		//SetConVarInt(FindConVar("sb_stop"), 0);
 	}
 	
 	#if DEBUGCLIENTS
@@ -2367,7 +2367,7 @@ public OnClientDisconnect(client)
 		}
 		// Set sb_all_bot_team to 0
 		
-		SetConVarInt(FindConVar("sb_all_bot_team"), 0);
+		//SetConVarInt(FindConVar("sb_all_bot_team"), 0);
 		
 		// This I set in because the panel was never originally designed for multiple gamemodes.
 		CreateTimer(5.0, HUDReset);

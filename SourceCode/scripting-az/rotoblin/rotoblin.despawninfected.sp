@@ -48,7 +48,7 @@ static	const	Float:	MIN_COMMON_LIFETIME					= 15.0;
 static 	const	Float:	NEAR_SAFEROOM_DISTANCE				= 1000.0;
 
 static			Handle:	g_hCommonTimer						= INVALID_HANDLE;
-static			Float:	g_fCommonLifetime[MAX_EDICTS+1]	= 0.0;
+static			Float:	g_fCommonLifetime[MAX_EDICTS+1]		= {0.0};
 static					g_iCommonSpawnQueue					= 0;
 static			Float:	g_fLastLowestSurvivorFlow			= 0.0;
 
@@ -152,7 +152,7 @@ public _DI_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
  */
 public Action:_DI_Check_Timer(Handle:timer)
 {
-	if (!SurvivorCount || !IsServerProcessing()) return Plugin_Continue; // If no survivors or server is empty, return plugin_continue
+	if (!IsServerProcessing()) return Plugin_Continue; // If no survivors or server is empty, return plugin_continue
 
 	new Float:lastSurvivorFlow = 0.0;
 	new Float:firstSurvivorFlow = 0.0;
@@ -160,20 +160,23 @@ public Action:_DI_Check_Timer(Handle:timer)
 	new bool:foundOne = false;
 	new firstSurvivor = 0;
 
-	for (new i = 0; i < SurvivorCount; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
-		checkAgainst = L4D2Direct_GetFlowDistance(SurvivorIndex[i]);
-
-		if (checkAgainst < lastSurvivorFlow || lastSurvivorFlow == 0.0)
+		if(IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i))
 		{
-			lastSurvivorFlow = checkAgainst;
-			foundOne = true;
-		}
+			checkAgainst = L4D2Direct_GetFlowDistance(i);
 
-		if (checkAgainst > firstSurvivorFlow || firstSurvivorFlow == 0.0)
-		{
-			firstSurvivorFlow = checkAgainst;
-			firstSurvivor = SurvivorIndex[i];
+			if (checkAgainst < lastSurvivorFlow || lastSurvivorFlow == 0.0)
+			{
+				lastSurvivorFlow = checkAgainst;
+				foundOne = true;
+			}
+
+			if (checkAgainst > firstSurvivorFlow || firstSurvivorFlow == 0.0)
+			{
+				firstSurvivorFlow = checkAgainst;
+				firstSurvivor = i;
+			}
 		}
 	}
 
@@ -259,9 +262,11 @@ static DespawningCommons(Float:lastSurvivorFlow, firstSurvivor)
 
 	decl Float:commonFlow, Float:vOrigin[3];
 	
-	new entity = -1;
+	new entity = MaxClients + 1;
 	while ((entity = FindEntityByClassname(entity, CLASSNAME_INFECTED)) != INVALID_ENT_REFERENCE)
 	{
+		if(!IsValidEntity(entity)) continue;
+
 		if (g_fCommonLifetime[entity] == 0.0) continue;
 
 		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", vOrigin);
@@ -279,7 +284,7 @@ static DespawningCommons(Float:lastSurvivorFlow, firstSurvivor)
 		if (IsVisibleToSurvivors(entity)) continue; // Common is visible to the survivors, continue
 
 		// Remove common and add to respawn queue
-		SafelyRemoveEdict(entity);
+		RemoveEntity(entity);
 
 		if (g_iCommonSpawnQueue < 1)
 		{
@@ -287,7 +292,7 @@ static DespawningCommons(Float:lastSurvivorFlow, firstSurvivor)
 		}
 		g_iCommonSpawnQueue++;
 
-		DebugPrintToAllEx("Despawned common %i and added to the respawn queue", entity);
+		//PrintToChatAll("Despawned common %i and added to the respawn queue", entity);
 	}
 }
 
@@ -318,11 +323,12 @@ static bool:IsNearEndSafeRoom(client)
  */
 static bool:IsVisibleToSurvivors(entity) // loops alive Survivors and checks entity for being visible
 {
-	if (!SurvivorCount) return false; // No survivors alive, return
-
-	for (new i = 0; i < SurvivorCount; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsVisibleTo(SurvivorIndex[i], entity)) return true;
+		if(IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i))
+		{
+			if (IsVisibleTo(i, entity)) return true;
+		}
 	}
 
 	return false;

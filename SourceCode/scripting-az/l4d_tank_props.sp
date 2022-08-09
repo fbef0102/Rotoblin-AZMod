@@ -8,6 +8,9 @@
 #define TANK_ZOMBIE_CLASS   5
 
 ConVar g_hCvar_tankProps, g_hCvar_tankPropsGlow, g_hCvar_tankPropsGlowSpec, g_hCvarColor;
+ConVar sv_tankpropfade;
+bool g_bCvar_tankProps, g_bCvar_tankPropsGlow, g_bCvar_tankPropsGlowSpec;
+
 Handle hTankProps       = INVALID_HANDLE;
 Handle hTankPropsHit    = INVALID_HANDLE;
 int i_Ent[2048+1] = {-1};
@@ -19,17 +22,33 @@ int iTankClient = -1;
 public Plugin:myinfo = {
 	name        = "L4D2 Tank Props,l4d1 modify by Harry",
 	author      = "Jahze & Harry Potter",
-	version     = "2.5",
+	version     = "2.6",
 	description = "Stop tank props from fading whilst the tank is alive + add Hittable Glow",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success;
+}
+
 public void OnPluginStart() {
+	sv_tankpropfade = FindConVar("sv_tankpropfade");
+	
 	g_hCvar_tankProps = CreateConVar("l4d_tank_props", "1", "Prevent tank props from fading whilst the tank is alive", FCVAR_NOTIFY);
 	g_hCvar_tankPropsGlow = CreateConVar("l4d_tank_props_glow", "1", "Show Hittable Glow for inf team whilst the tank is alive", FCVAR_NOTIFY);
-	g_hCvar_tankPropsGlowSpec = CreateConVar( "l4d2_tank_prop_glow_spectators", "1", "Spectators can see the glow too", FCVAR_NOTIFY);
-	g_hCvarColor =	CreateConVar("l4d2_tank_prop_glow_color", "255 0 0", "Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", FCVAR_NOTIFY);
+	g_hCvar_tankPropsGlowSpec = CreateConVar( "l4d_tank_prop_glow_spectators", "1", "Spectators can see the glow too", FCVAR_NOTIFY);
+	g_hCvarColor =	CreateConVar("l4d_tank_prop_render_color", "255 0 0", "Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue. (-1 -1 -1: disable)", FCVAR_NOTIFY);
 	
+	GetCvars();
 	g_hCvar_tankProps.AddChangeHook(TankPropsChange);
 	g_hCvar_tankPropsGlow.AddChangeHook(TankPropsGlowChange);
 	g_hCvar_tankPropsGlowSpec.AddChangeHook(TankPropsGlowSpecChange);
@@ -50,13 +69,10 @@ public void OnMapEnd()
 }
 
 void PluginEnable() {
-	SetConVarBool(FindConVar("sv_tankpropfade"), false);
+	sv_tankpropfade.SetBool(false);
 	
 	hTankProps = CreateArray();
 	hTankPropsHit = CreateArray();
-	char sColor[16];
-	g_hCvarColor.GetString(sColor, sizeof(sColor));
-	GetColor(sColor);
 	
 	HookEvent("round_start", TankPropRoundReset);
 	HookEvent("tank_spawn", TankPropTankSpawn);
@@ -73,12 +89,11 @@ void PluginEnable() {
 }
 
 void PluginDisable() {
-	SetConVarBool(FindConVar("sv_tankpropfade"), true);
+	sv_tankpropfade.SetBool(true);
 	
 	UnhookEvent("round_start", TankPropRoundReset);
 	UnhookEvent("tank_spawn", TankPropTankSpawn);
 	UnhookEvent("entity_killed",		PD_ev_EntityKilled);
-	
 	
 	int entity;
 	
@@ -101,11 +116,8 @@ void PluginDisable() {
 }
 
 public void ConVarChanged_Glow( Handle cvar, const char[] oldValue, const char[] newValue )  {
-	char sColor[16];
-	g_hCvarColor.GetString(sColor, sizeof(sColor));
-	GetColor(sColor);
-
-	if(!tankSpawned) return;
+	
+	GetCvars();
 
 	int entity;
 
@@ -126,18 +138,20 @@ public void ConVarChanged_Glow( Handle cvar, const char[] oldValue, const char[]
 }
 
 public void TankPropsChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
-    if ( StringToInt(newValue) == 0 ) {
-        PluginDisable();
-    }
-    else {
-        PluginEnable();
-    }
+	GetCvars();
+
+	if ( g_bCvar_tankProps == false ) {
+		PluginDisable();
+	}
+	else {
+		PluginEnable();
+	}
 }
 
 public void TankPropsGlowChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
-	if(StrEqual(newValue,oldValue)) return;
-	
-	if ( StringToInt(newValue) == 0 ) {
+	GetCvars();
+
+	if ( !g_bCvar_tankPropsGlow ) {
 		int entity;
 		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
 			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
@@ -146,7 +160,7 @@ public void TankPropsGlowChange( Handle cvar, const char[] oldValue, const char[
 					RemoveEdict(entity);
 			}
 		}
-    }
+	}
 	else
 	{
 		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
@@ -158,9 +172,9 @@ public void TankPropsGlowChange( Handle cvar, const char[] oldValue, const char[
 }
 
 public void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
-	if(StrEqual(newValue,oldValue)) return;
+	GetCvars();
 	
-	if ( StringToInt(newValue) == 0) {
+	if ( g_bCvar_tankPropsGlowSpec == false) {
 		int entity;
 		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
 			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
@@ -178,6 +192,17 @@ public void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const c
 			}
 		}
 	}
+}
+
+void GetCvars()
+{
+	g_bCvar_tankProps = g_hCvar_tankProps.BoolValue;
+	g_bCvar_tankPropsGlow = g_hCvar_tankPropsGlow.BoolValue;
+	g_bCvar_tankPropsGlowSpec = g_hCvar_tankPropsGlowSpec.BoolValue;
+
+	char sColor[16];
+	g_hCvarColor.GetString(sColor, sizeof(sColor));
+	GetColor(sColor, g_iCvarColor);
 }
 
 public void TankPropRoundReset( Handle event, const char[] name, bool dontBroadcast ) {
@@ -227,9 +252,9 @@ public void PropDamaged(int victim, int attacker, int inflictor, float damage, i
 		if ( FindValueInArray(hTankPropsHit, victim) == -1 ) {
 			PushArrayCell(hTankPropsHit, victim);
 
-			if(GetConVarInt(g_hCvar_tankPropsGlow) == 1)
+			if(g_bCvar_tankPropsGlow)
 				CreateTankPropGlow(victim);
-			if(GetConVarInt(g_hCvar_tankPropsGlowSpec) == 1)
+			if(g_bCvar_tankPropsGlowSpec)
 				CreateTankPropGlowSpectator(victim);
 		}
 	}
@@ -275,22 +300,20 @@ void CreateTankPropGlow(int car)
 	
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
-	SetEntityRenderMode( entity, RENDER_GLOW );
-	SetEntityRenderColor (entity, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2],255 );
-	
+	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SetVariantString("!activator");
+	AcceptEntityInput(entity, "SetParent", car); 
+
 	i_Ent[car] = EntIndexToEntRef(entity);
-	SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
+	//SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 
-	SetEntityRenderMode( car, RENDER_TRANSCOLOR );
-	SetEntityRenderColor (car, 0, 0, 0, 5 );
+	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
+	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
+	SetEntityRenderColor (car, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2], 255);
 }
 
-public Action Hook_SetTransmit(int entity, int client)
-{
-	return Plugin_Handled;
-}
-
-public void TankThink(int car)
+/*
+void TankThink(int car)
 {
 	int entity = i_Ent[car];
 	if (IsValidEntRef(entity))
@@ -306,6 +329,7 @@ public void TankThink(int car)
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
+*/
 
 void CreateTankPropGlowSpectator(int car)
 {
@@ -343,13 +367,15 @@ void CreateTankPropGlowSpectator(int car)
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
 	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SetVariantString("!activator");
+	AcceptEntityInput(entity, "SetParent", car); 
 
 	i_EntSpec[car] = EntIndexToEntRef(entity);
 
-	SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
+	//SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
 }
-
-public void SpecTankThink(int car)
+/*
+void SpecTankThink(int car)
 {
 	int entity = i_EntSpec[car];
 	if (IsValidEntRef(entity))
@@ -365,7 +391,7 @@ public void SpecTankThink(int car)
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
-
+*/
 public Action FadeTankProps( Handle timer ) {
 	int entity;
 	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
@@ -459,9 +485,9 @@ public void Hook_PropSpawned(int iEntity)
 			PushArrayCell(hTankProps, iEntity);
 			PushArrayCell(hTankPropsHit, iEntity);
 
-			if(GetConVarInt(g_hCvar_tankPropsGlow) == 1)
+			if(g_bCvar_tankPropsGlow)
 				CreateTankPropGlow(iEntity);
-			if(GetConVarInt(g_hCvar_tankPropsGlowSpec) == 1)
+			if(g_bCvar_tankPropsGlowSpec)
 				CreateTankPropGlowSpectator(iEntity);
 
 		} else if (StrContains(sModelName, "forklift_brokenfork.mdl") != -1) {
@@ -513,13 +539,13 @@ bool IsValidEntRef(int entity)
 	return false;
 }
 
-void GetColor(char[] sTemp)
+void GetColor(char[] sTemp, int[] iColor)
 {
 	if( StrEqual(sTemp, "") )
 	{
-		g_iCvarColor[0] = 0;
-		g_iCvarColor[1] = 0;
-		g_iCvarColor[2] = 0;
+		iColor[0] = 0;
+		iColor[1] = 0;
+		iColor[2] = 0;
 	}
 
 	char sColors[3][4];
@@ -527,12 +553,12 @@ void GetColor(char[] sTemp)
 
 	if( color != 3 )
 	{
-		g_iCvarColor[0] = 0;
-		g_iCvarColor[1] = 0;
-		g_iCvarColor[2] = 0;
+		iColor[0] = 0;
+		iColor[1] = 0;
+		iColor[2] = 0;
 	}
 
-	g_iCvarColor[0] = StringToInt(sColors[0]);
-	g_iCvarColor[1] = StringToInt(sColors[1]);
-	g_iCvarColor[2] = StringToInt(sColors[2]);
+	iColor[0] = StringToInt(sColors[0]);
+	iColor[1] = StringToInt(sColors[1]);
+	iColor[2] = StringToInt(sColors[2]);
 }

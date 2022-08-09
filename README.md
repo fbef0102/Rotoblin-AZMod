@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
-v8.3.9
-@ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
+v8.4.0
+CopyRight @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
 * [Developer](https://github.com/fbef0102/Rotoblin-AZMod/tree/master/Developer%26Commands)
@@ -112,12 +112,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
   <img src="https://i.imgur.com/IMVp3NI.jpg" alt="IMVp3NI.jpg" width="750" height = "400">
   
-  * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
-  <img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
-  
 * Skeet Practice
   * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
   <img src="https://i.imgur.com/ycHlIRZ.jpg" alt="ycHlIRZ.jpg" width="750" height = "400">
+  
+  * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
+  <img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
       
 - - - -
 ### Votes Menu(!votes) ###
@@ -138,13 +138,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove environmental sounds and DSP + Remove microphone / speaker effects
   * Remove miniguns and machine guns
   * Extra Pills
-    * Only 1 pill in cabinets
+    * Limit 1 pill in cabinets, but the pill is not fixed spawn
     * On the road: 1~2 pills
     * Final rescue area: 4 pills
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
-  * Blocked "this is restricted area" room where infected ghost can not even spawn
   * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
+  * Remove item spawns in bad locations or excessive density in a location
   
 * **Support Custom maps:**
   > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)** (!votes -> Change addon map)
@@ -244,8 +244,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Prevents people from blocking players who climb on the ladder including tank.
 * Spectators stay spectator on map change.
 * Forces all players on the right team after map/campaign/match change"
-* Fixed a l4d1 valve bug that you can not see the real hittable car hitbox when tank punches them, details [here](https://forums.alliedmods.net/showthread.php?t=312447)
-     > **Developer Comment:** This often happened in l4d1, players can not find the toy to hit it after the first punch .. until after several seconds it reappears in its place. Add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see.
 * Fixed players using bunnyhop to increase their MaxSpeed.
 * Fixed second team having different SI spawns on round start.
      * Spawns for the first hit are announced once round starts.
@@ -263,6 +261,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
 * Prevents director or map overrides of z_common_limit. Kill common if overflow.
+* Remove restricted time between panic events (90s)
 
 - - - -
 ### Gameplay / Balance Changes ###
@@ -311,6 +310,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Enable free movement (Left/Right/Crouch) on SI when M2-ing.
 	* Fix SI being unable to break props/walls within finale area before finale starts.
 	* No more explosion damage to the infected from entity
+	* Fixed infected unable to break the rescue door
+	* remove restricted area where infected ghost unable to spawn inside the info_survivor_rescue room/area
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -322,7 +323,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
 	<img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
 	
-    * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players can see, and add Shadow Model color which attaches to the real hittable hitbox so that everyone including survivors can see. 
+	* When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
 	<img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
     
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
@@ -361,7 +362,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **Witch:**
     * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
-    * Enlarge witch personal space
+    * Enlarge witch personal space: 500 (vanilla: 100)
+    * Enlarge witch flashlight range: 750 (vanilla: 400)
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
 	<img src="https://i.imgur.com/RKAuCjY.jpg" alt="RKAuCjY.jpg" width="750" height = "400">
@@ -379,6 +381,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fix tongue instant choking survivors.
 	* Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
 	* Fix unexpected tongue breaks for \"bending too many times\".
+	* Fix infected teammate blocking tongue chasing.
 	* Smoker's ability recharge cooldown
 	  - *After a successful hit*: 15s -> 13s
 	  - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
@@ -402,7 +405,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
     * claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
-    * Allow Hunters being shoved when not pouncing. (Shove fov: **60**)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
 	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
 	* m2 godframes after a hunter lands on the ground: 0.25s
@@ -481,6 +484,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Prevent Sounds from playing
     * Heartbeat
     * Incapacitated Injury
+  * Reviving cancels reloading to fix that weapon has jammed and misfired (stupid bug exists for more than 10 years)
 	
 * Precise control over invulnerability (god frames)
   * Hunter: **1.8s**
@@ -513,6 +517,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	 
 - - - -
 ### Miscellaneous ###
+* Add glow effect to items in "Skeet Practice" mode
+	* Survivor can see pills、kits、weapons、ammo
+	* Infected can see hittable objects、alarm car
 * **sm_info**/**sm_harry** will help you to search many useful commands
 * **!pause** will directly pause the game without another team's agreement (No !fpause)
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode

@@ -36,9 +36,9 @@ enum HEALTH_STYLE
 {
 	REPLACE_NO_KITS = 0, // Don't replace any medkits with pills
 	REPLACE_ALL_KITS = 1, // Replace all medkits with pills
-	REPLACE_ALL_BUT_FINALE_KITS = 2, // Replace all medkits besides finale medkits
-	SAFEROOM_AND_FINALE_PILLS_ONLY = 3, // Replace the saferoom and finale kits with pills and remove all other pills/kits
-	ZONEMOD_PILLS = 4 // Replace all medkits with pills, only remove saferoom kits
+	REPLACE_ALL_BUT_FINALE_KITS = 2, // Replace all medkits with pills except the finale medkits
+	SAFEROOM_AND_FINALE_PILLS_ONLY = 3, // Replace the finale kits with pills and remove all other pills/kits
+	ZONEMOD_PILLS = 4 // Replace all medkits with pills, only remove saferoom kits (use data/mapinfo to control pill limit)
 }
 // --------------------
 //       Private
@@ -50,7 +50,7 @@ static	const	String:	CONVERT_PILLS_VS_CVAR[]		= "director_vs_convert_pills"; // 
 static	const	String:	FIRST_AID_KIT_CLASSNAME[]		= "weapon_first_aid_kit_spawn";
 static	const	String:	PAIN_PILLS_CLASSNAME[]			= "weapon_pain_pills_spawn";
 static	const	String:	MODEL_PAIN_PILLS[]				= "w_models/weapons/w_eq_painpills.mdl";
-static 	const 	String: MODEL_FIRST_AID_KIT[]			= "w_models/weapons/w_eq_medkit.mdl";
+//static 	const 	String: MODEL_FIRST_AID_KIT[]			= "w_models/weapons/w_eq_medkit.mdl";
 
 static	const	Float:	REPLACE_DELAY					= 0.1; // Short delay on OnEntityCreated before replacing
 
@@ -67,10 +67,14 @@ static	const	String:	DEBUG_CHANNEL_NAME[]		= "HealthControl";
 static Float:SurvivorStart[3];
 static g_iPlayerSpawn, g_iRoundStart;
 static bool g_bIsRound1Over;
+int g_iFinalPills[16];
+int g_iSaferoomKits[4];
 
 // Item lists for tracking/decoding/etc
 enum ItemList {
-	IL_PainPills,
+	IL_None = -1,
+	IL_PainPills = 0,
+	IL_Max
 };
 
 // Names for cvars, kv, descriptions
@@ -79,27 +83,28 @@ enum ItemNames {
 	IN_shortname,	
 	IN_longname, 	
 	IN_officialname, 	
-	IN_modelname 
+	IN_modelname,
+	IN_Max
 };
 
-static const String:g_sItemNames[view_as<int>(ItemList)][view_as<int>(ItemNames)][] =
+static const String:g_sItemNames[view_as<int>(IL_Max)][view_as<int>(IN_Max)][] =
 {
 	{ "pills", "pain pills", "pain_pills", "painpills" },
 };
 
 // For spawn entires adt_array
-enum ItemTracking {
-	IT_entity,
-	Float:IT_origins,
-	Float:IT_origins1,
-	Float:IT_origins2,
-	Float:IT_angles,
-	Float:IT_angles1,
-	Float:IT_angles2
-};
+enum struct ItemTracking {
+	int IT_entity;
+	float IT_origins;
+	float IT_origins1;
+	float IT_origins2;
+	float IT_angles;
+	float IT_angles1;
+	float IT_angles2;
+}
 
 // ADT Array Handle for actual item spawns
-static Handle:g_hItemSpawns[view_as<int>(ItemList)];
+ArrayList g_hItemSpawns[view_as<int>(IL_Max)];
 static KeyValues g_hMIData = null;
 
 // **********************************************
@@ -136,9 +141,9 @@ public _HealthControl_OnPluginStart()
 	DebugPrintToAllEx("Module is now setup");
 
 	// Create item spawns array;
-	for (new i = 0; i < _:ItemList; i++)
+	for (new i = 0; i < view_as<int>(IL_Max); i++)
 	{
-		g_hItemSpawns[i] = CreateArray(_:ItemTracking); 
+		g_hItemSpawns[i] = new ArrayList(sizeof(ItemTracking)); 
 	}
 
 	MI_KV_Load();
@@ -203,9 +208,9 @@ char g_sCurMap[64];
 public _HC_OnMapStart()
 {
 	g_bIsRound1Over = false;
-	for (new i = 0; i < _:ItemList; i++)
+	for (new i = 0; i < view_as<int>(IL_Max); i++)
 	{
-		ClearArray(g_hItemSpawns[i]);
+		g_hItemSpawns[i].Clear();
 	}
 
 	GetCurrentMap(g_sCurMap, 64);
@@ -292,6 +297,7 @@ static Action:TimerStart(Handle:timer)
 	}
 	
 	//LogMessage("Round start - Running health control - Final map: %d", g_bIsFinale);
+	UpdateStartingHealthItems();
 
 	if(g_iHealthStyle == ZONEMOD_PILLS)
 	{
@@ -307,7 +313,6 @@ static Action:TimerStart(Handle:timer)
 		}
 	}
 
-	UpdateStartingHealthItems();
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	HookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	g_bHaveRunRoundStart = true;
@@ -338,14 +343,7 @@ public _HC_OnEntityCreated(entity, const String:classname[])
 	{						
 		new entRef = EntIndexToEntRef(entity);
 		CreateTimer(REPLACE_DELAY, _HC_RemoveItem_Delayed_Timer, entRef);
-	} 	
-	/*else if(( g_iHealthStyle == ZONEMOD_PILLS)&& 
-		StrEqual(classname, PAIN_PILLS_CLASSNAME) && g_bIsFinale)
-	{
-		int random = GetRandomInt(1,100);
-		new entRef = EntIndexToEntRef(entity);
-		CreateTimer(REPLACE_DELAY, _HC_RemoveItem_Delayed_Timer, entRef);
-	}*/
+	}
 	else if(StrEqual(classname, FIRST_AID_KIT_CLASSNAME) && ShouldReplaceKitWithPills()) 
 	{		
 		new entRef = EntIndexToEntRef(entity);
@@ -444,20 +442,19 @@ static UpdateStartingHealthItems()
 	}
 	*/
 	
-	decl SaferoomKits[4];
 	DebugPrintToAllEx("Updating starting health items.");
-	if (g_iHealthStyle == ZONEMOD_PILLS||g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)//only remove saferoom medkits
+	if (g_iHealthStyle == ZONEMOD_PILLS||g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)//remove saferoom medkits
 	{
 		//find where the survivors start so we know which medkits to replace,
 		FindSurvivorStart();
 		//and remove the medkits
-		RemoveMedkits(SaferoomKits);
+		RemoveMedkits();
 	}
 	
 	if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS || g_iHealthStyle == REPLACE_ALL_KITS) 
 	{
 		FindSurvivorStart();
-		ReplaceSafeRoomMedkits(SaferoomKits);
+		ReplaceSafeRoomMedkits();
 	}
 	
 	new k =0;
@@ -465,57 +462,74 @@ static UpdateStartingHealthItems()
 	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
 	if(g_bIsFinale)//救援關四顆藥丸符合當前人類數量
 	{
-		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY /*|| g_iHealthStyle == ZONEMOD_PILLS*/)
+		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
+		{
 			RemoveAllPills();
+		}
+
+		if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) 
+		{
+			return;
+		}
+
+		for(int i = 0; i < 16; i++)
+		{
+			g_iFinalPills[i] = 0;
+		}
 
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
 			if(!IsValidEntity(entity) || !IsValidEdict(entity))
 				continue;	
 			
-			if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部醫療包變成藥丸
+			if(IsInSafeRoom(entity))
+				continue;
+
+			//decl Float:entityPos[3];
+			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+			//LogMessage("KITS here3 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
+			//醫療包變成藥丸
+			if(pillsleft<=0)
 			{
-				//decl Float:entityPos[3];
-				//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-				//LogMessage("KITS here3 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
-				if(k==1&&g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) {ReplaceEntity(entity, FIRST_AID_KIT_CLASSNAME, MODEL_FIRST_AID_KIT, 1);return;}
-				if(pillsleft<=0)
-					RemoveEdict(entity);
-				else if(pillsleft>=5)
-					{ReplaceKitWithPills(entity);ReplaceKitWithPills(entity);}
-				else
-					ReplaceKitWithPills(entity);
-				pillsleft--;
-				k++;
+				RemoveEdict(entity);
 			}
+			else if(pillsleft>=5)
+			{
+				g_iFinalPills[k++] = ReplaceKitWithPills(entity);
+				g_iFinalPills[k++] = ReplaceKitWithPills(entity);
+			}
+			else
+			{
+				g_iFinalPills[k++] = ReplaceKitWithPills(entity);
+			}
+
+			pillsleft--;
+			g_iFinalPills[k++] = entity;
 		}
-		
-		return;
 	}
-	
-	
-	//非救援關 移除所有kits
-	if(g_iHealthStyle != REPLACE_ALL_BUT_FINALE_KITS)
+	else //非救援關
 	{
+		// Then, if we're using the hardcore setting, remove all pills from the map
+		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
+		{		
+			RemoveAllPills();
+		}
+
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
 			if(!IsValidEntity(entity))
 				continue;
+
+			if(IsInSafeRoom(entity))
+				continue;
 			
 			//decl Float:entityPos[3];
 			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-			//LogMessage("KITS here2 %d: %f %f %f: %d,%d,%d,%d",entity,entityPos[0],entityPos[1],entityPos[2],SaferoomKits[0],SaferoomKits[1],SaferoomKits[2],SaferoomKits[3]);
-			if(!(entity==SaferoomKits[0]||entity==SaferoomKits[1]||entity==SaferoomKits[2]||entity==SaferoomKits[3]))//全部非起始安全室的醫療包移除
-			{
-				SafelyRemoveEdict(entity);
-			}
+			//LogMessage("KITS here2 %d: %f %f %f: %d,%d,%d,%d",entity,entityPos[0],entityPos[1],entityPos[2],g_iSaferoomKits[0],g_iSaferoomKits[1],g_iSaferoomKits[2],g_iSaferoomKits[3]);
+
+			if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY) SafelyRemoveEdict(entity);
+			else ReplaceKitWithPills(entity);
 		}
-	}
-				
-	// Then, if we're using the hardcore setting, remove all pills from the map
-	if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
-	{		
-		RemoveAllPills();
 	}
 }
 
@@ -615,14 +629,16 @@ bool ShouldReplaceKitWithPills()
  * @param entity the medkit entity to be considered for replacement
  * @noreturn				
  */
-static ReplaceKitWithPills(entity)
+static int ReplaceKitWithPills(entity)
 {	
 	new result = ReplaceEntity(entity, PAIN_PILLS_CLASSNAME, MODEL_PAIN_PILLS, 1);
 	if (!result)
 	{
 		ThrowError("Failed to replace medkit with pills! Entity %i", entity);
 	}
-	DebugPrintToAllEx("Medkit (entity %i) replaced with pills (entity %i)", entity, result);	
+	
+	DebugPrintToAllEx("Medkit (entity %i) replaced with pills (entity %i)", entity, result);
+	return result;	
 }
 
 /**
@@ -644,20 +660,12 @@ public FindSurvivorStart()
 {
 	new EntityCount = GetEntityCount();
 	new String:EdictClassName[128];
-	new Float:Location[3];
 	//Search entities for either a locked saferoom door,
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	int ent_safedoor_check = L4D_GetCheckpointFirst();
+	if (ent_safedoor_check != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
-		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if ((StrContains(EdictClassName, "prop_door_rotating_checkpoint", false) != -1) && (GetEntProp(i, Prop_Send, "m_bLocked")==1))
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				SurvivorStart = Location;
-				return;
-			}
-		}
+		GetEntPropVector(ent_safedoor_check, Prop_Send, "m_vecOrigin", SurvivorStart);
+		return;
 	}
 	//or a survivor start point.
 	for (new i = MaxClients + 1; i <= EntityCount; i++)
@@ -667,20 +675,19 @@ public FindSurvivorStart()
 			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
 			if (StrContains(EdictClassName, "info_survivor_position", false) != -1)
 			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				SurvivorStart = Location;
+				GetEntPropVector(i, Prop_Send, "m_vecOrigin", SurvivorStart);
 				return;
 			}
 		}
 	}
 }
 
-public RemoveMedkits(SaferoomKits[4])
+public RemoveMedkits()
 {
-	SaferoomKits[0] = -1;
-	SaferoomKits[1] = -1;
-	SaferoomKits[2] = -1;
-	SaferoomKits[3] = -1;
+	g_iSaferoomKits[0] = -1;
+	g_iSaferoomKits[1] = -1;
+	g_iSaferoomKits[2] = -1;
+	g_iSaferoomKits[3] = -1;
 	
 	new k = 0;
 	new EntityCount = GetEntityCount();
@@ -719,19 +726,19 @@ public RemoveMedkits(SaferoomKits[4])
 				if (GetVectorDistance(NearestMedkit, Location, false) < 400)
 				{			
 					AcceptEntityInput(i, "Kill");
-					SaferoomKits[k++] = i;
+					g_iSaferoomKits[k++] = i;
 				}
 			}
 		}
 	}
 }
 
-public ReplaceSafeRoomMedkits(SaferoomKits[4])
+public void ReplaceSafeRoomMedkits()
 {
-	SaferoomKits[0] = -1;
-	SaferoomKits[1] = -1;
-	SaferoomKits[2] = -1;
-	SaferoomKits[3] = -1;
+	g_iSaferoomKits[0] = -1;
+	g_iSaferoomKits[1] = -1;
+	g_iSaferoomKits[2] = -1;
+	g_iSaferoomKits[3] = -1;
 	
 	new k = 0;
 	new EntityCount = GetEntityCount();
@@ -772,10 +779,7 @@ public ReplaceSafeRoomMedkits(SaferoomKits[4])
 					//decl Float:entityPos[3];
 					//GetEntPropVector(i, Prop_Send, "m_vecOrigin", entityPos);	
 					//LogMessage("saferoom KIT here %d: %f %f %f",i,entityPos[0],entityPos[1],entityPos[2]);	
-					if(!(k==3 && g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS))
-						ReplaceKitWithPills(i);
-					SaferoomKits[k++] = i;
-					
+					g_iSaferoomKits[k++] = i;
 				}
 			}
 		}
@@ -799,27 +803,28 @@ void EnumAndElimPillSpawns()
 	RemoveToLimits();
 }
 
-int curitem[view_as<int>(ItemTracking)];
 static EnumeratePillSpawns()
 {
 	//LogMessage("EnumeratePillSpawns()");
 
-	new ItemList:itemindex;
+	ItemTracking curitem;
+	ItemList itemindex;
 	float origins[3], angles[3];
 	new psychonic = GetEntityCount();
+
+	KvJumpToKey(g_hMIData, g_sCurMap);
+	int mylimit = KvGetNum(g_hMIData, "pill_limit", 2);
+	KvRewind(g_hMIData);
+
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
 		if(IsValidEntity(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
-			if(itemindex >= ItemList:0 /* && !IsEntityInSaferoom(i) */ )
+			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
 			{
-				if(IsInCabinet(i)) continue;
-
-				KvJumpToKey(g_hMIData, g_sCurMap);
-
-				int mylimit = KvGetNum(g_hMIData, "pill_limit", 2);
-				KvRewind(g_hMIData);
+				//if(IsInCabinet(i)) continue;
+				if(IsInFinalArea(i)) continue;
 
 				if(mylimit == 0)
 				{
@@ -835,21 +840,21 @@ static EnumeratePillSpawns()
 					//LogMessage("[IT] Found an instance of item %s (%d)", g_sItemNames[itemindex][IN_longname], itemindex);
 				
 					// Store entity, angles, origin
-					curitem[IT_entity]=i;
+					curitem.IT_entity=i;
 					GetEntPropVector(i, Prop_Send, "m_vecOrigin", origins);
 					GetEntPropVector(i, Prop_Send, "m_angRotation", angles);
 
 					//LogMessage("[IT] Saving spawn #%d at %.02f %.02f %.02f", GetArraySize(g_hItemSpawns[itemindex]), origins[0], origins[1], origins[2]);
 
-					curitem[IT_origins]=origins[0];
-					curitem[IT_origins1]=origins[1];
-					curitem[IT_origins2]=origins[2];
-					curitem[IT_angles]=angles[0];
-					curitem[IT_angles1]=angles[1];
-					curitem[IT_angles2]=angles[2];
+					curitem.IT_origins=origins[0];
+					curitem.IT_origins1=origins[1];
+					curitem.IT_origins2=origins[2];
+					curitem.IT_angles=angles[0];
+					curitem.IT_angles1=angles[1];
+					curitem.IT_angles2=angles[2];
 					
 					// Push this instance onto our array for that item
-					PushArrayArray(g_hItemSpawns[itemindex], curitem[0]);
+					g_hItemSpawns[itemindex].PushArray(curitem);
 				}
 			}
 		}
@@ -858,28 +863,29 @@ static EnumeratePillSpawns()
 
 static RemoveToLimits()
 {
-	new curlimit;
-	for(new itemidx = 0; itemidx < _:ItemList; itemidx++)
-	{
-		KvJumpToKey(g_hMIData, g_sCurMap);
+	ItemTracking curitem;
 
-		int curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
-		if (curlimit >0)
+	KvJumpToKey(g_hMIData, g_sCurMap);
+	int curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
+
+	for(new itemidx = 0; itemidx < view_as<int>(IL_Max); itemidx++)
+	{
+		if (curlimit > 0)
 		{
 			// Kill off item spawns until we've reduced the item to the limit
-			while(GetArraySize(g_hItemSpawns[itemidx]) > curlimit)
+			while(g_hItemSpawns[itemidx].Length > curlimit)
 			{
 				// Pick a random
-				new killidx = GetURandomIntRange(0, GetArraySize(g_hItemSpawns[itemidx])-1);
+				new killidx = GetURandomIntRange(0, g_hItemSpawns[itemidx].Length-1);
 				
-				//LogMessage("[IT] Killing randomly chosen %s (%d) #%d", g_sItemNames[itemidx][IN_longname], itemidx, killidx);
+				//LogMessage("[IT] Killing randomly chosen %s #%d", g_sItemNames[itemidx][IN_longname], killidx);
 
-				GetArrayArray(g_hItemSpawns[itemidx], killidx, curitem[0]);
-				if(IsValidEntity(curitem[IT_entity]) && !AcceptEntityInput(curitem[IT_entity], "kill"))
+				g_hItemSpawns[itemidx].GetArray(killidx, curitem);
+				if(IsValidEntity(curitem.IT_entity) && !AcceptEntityInput(curitem.IT_entity, "kill"))
 				{
 					LogError("[IT] Error killing instance of item %s", g_sItemNames[itemidx][IN_longname]);
 				}
-				RemoveFromArray(g_hItemSpawns[itemidx],killidx);
+				g_hItemSpawns[itemidx].Erase(killidx);
 			}
 		}
 		// If limit is 0, they're already dead. If it's negative, we kill nothing.
@@ -903,9 +909,10 @@ static KillRegisteredItems()
 		if(IsValidEntity(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
-			if(itemindex >= ItemList:0 /* && !IsEntityInSaferoom(i) */ )
+			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
 			{
-				if(IsInCabinet(i)) continue;
+				//if(IsInCabinet(i)) continue;
+				if(IsInFinalArea(i)) continue;
 
 				// Kill items we're tracking;
 				if(!AcceptEntityInput(i, "kill"))
@@ -919,26 +926,27 @@ static KillRegisteredItems()
 
 static SpawnItems()
 {
+	ItemTracking curitem;
 	decl Float:origins[3], Float:angles[3];
 	new arrsize;
 	new itement;
 	decl String:sModelname[PLATFORM_MAX_PATH];
 	int wepid;
-	for(new itemidx = 0; itemidx < _:ItemList; itemidx++)
+	for(new itemidx = 0; itemidx < view_as<int>(IL_Max); itemidx++)
 	{
 		Format(sModelname, sizeof(sModelname), "models/w_models/weapons/w_eq_%s.mdl", g_sItemNames[itemidx][IN_modelname]);
-		arrsize = GetArraySize(g_hItemSpawns[itemidx]);
+		arrsize = g_hItemSpawns[itemidx].Length;
 		for(new idx = 0; idx < arrsize; idx++)
 		{
-			GetArrayArray(g_hItemSpawns[itemidx], idx, curitem[0]);
+			g_hItemSpawns[itemidx].GetArray(idx, curitem);
 
-			origins[0]=curitem[IT_origins];
-			origins[1]=curitem[IT_origins1];
-			origins[2]=curitem[IT_origins2];
+			origins[0]=curitem.IT_origins;
+			origins[1]=curitem.IT_origins1;
+			origins[2]=curitem.IT_origins2;
 
-			angles[0]=curitem[IT_angles];
-			angles[1]=curitem[IT_angles1];
-			angles[2]=curitem[IT_angles2];
+			angles[0]=curitem.IT_angles;
+			angles[1]=curitem.IT_angles1;
+			angles[2]=curitem.IT_angles2;
 
 			wepid = GetWeaponIDFromItemList(ItemList:itemidx);
 			
@@ -955,10 +963,9 @@ static SpawnItems()
 	}
 }
 
-static ItemList:GetItemIndexFromEntity(entity)
+static ItemList GetItemIndexFromEntity(entity)
 {
-	static String:classname[128];
-	new ItemList:index;
+	static char classname[128];
 	GetEdictClassname(entity, classname, sizeof(classname));
 	
 	if(StrEqual(classname, PAIN_PILLS_CLASSNAME))
@@ -966,17 +973,7 @@ static ItemList:GetItemIndexFromEntity(entity)
 		return IL_PainPills;
 	}
 	
-	return ItemList:-1;
-}
-
-// Produces the lookup trie for weapon spawn entities
-//		to translate to our ADT array of spawns
-static Handle:CreateItemListTrie()
-{
-	new Handle:mytrie = CreateTrie();
-	SetTrieValue(mytrie, PAIN_PILLS_CLASSNAME, IL_PainPills);
-	SetTrieValue(mytrie, "weapon_pain_pills", IL_PainPills);
-	return mytrie;
+	return ItemList:IL_None;
 }
 
 stock GetURandomIntRange(min, max)
@@ -996,12 +993,36 @@ static int GetWeaponIDFromItemList(ItemList:id)
 	return -1;
 }
 
-bool IsInCabinet(int pill)
+stock bool IsInCabinet(int pill)
 {
 	//LogMessage("%d - spawnflags: %d", pill, GetEntProp(pill, Prop_Data, "m_spawnflags"));
 
 	if(GetEntProp(pill, Prop_Data, "m_spawnflags") == 32770)
 		return true;
+
+	return false;
+}
+
+bool IsInFinalArea(int pill)
+{
+	for(int i = 0; i < 16; i++)
+	{
+		if(g_iFinalPills[i] == pill)
+			return true;
+	}
+
+	return false;
+}
+
+bool IsInSafeRoom(int kit)
+{
+	if(kit==g_iSaferoomKits[0] ||
+	kit==g_iSaferoomKits[1] ||
+	kit==g_iSaferoomKits[2] ||
+	kit==g_iSaferoomKits[3])
+	{
+		return true;
+	}
 
 	return false;
 }

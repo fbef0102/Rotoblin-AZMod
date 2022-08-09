@@ -2604,7 +2604,7 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 		{
 			CreateTimer(2.0, Timer_SetTeamScore);
 			EmitSoundToAll("ui/menu_enter05.wav");
-			CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_bossvote6");
+			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote pass.");
 			CreateTimer(2.0, VoteEndDelay);
 		}
 	}

@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
+#include <left4dhooks>
 #define DEBUG 0
 
 #define L4D_TEAM_INFECTED  3
@@ -42,7 +43,7 @@ public Plugin myinfo =
 	name = "start saferoom door anti open by noobs in l4d1",
 	author = "Harry Potter",
 	description = "as the name says, you dumb fuck",
-	version = "1.0",
+	version = "1.1",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -312,24 +313,11 @@ public Action LeftAreaUnLock(Handle timer)
 
 int GetSafeRoomDoor()
 {
-	int ent_safedoor_check = -1;
-	while ((ent_safedoor_check = FindEntityByClassname(ent_safedoor_check, SAFEDOOR_CLASS)) != -1)
-	{
-		int spawn_flags;
-		char model[255];
-		GetEntPropString(ent_safedoor_check, Prop_Data, "m_ModelName", model, sizeof(model));
-		spawn_flags = GetEntProp(ent_safedoor_check, Prop_Data, "m_spawnflags");
+	int ent_safedoor_check = L4D_GetCheckpointFirst();
+	if (ent_safedoor_check == -1) return -1;
 
-		#if DEBUG
-			LogMessage("entity: %d, Model: %s, spawn_flags: %d",ent_safedoor_check,model,spawn_flags);
-		#endif
-		if (((strcmp(model, SAFEDOOR_MODEL_EXIT_01) == 0) && ((spawn_flags == 8192) || (spawn_flags == 0))) || ((strcmp(model, SAFEDOOR_MODEL_EXIT_02) == 0) && ((spawn_flags == 8192) || (spawn_flags == 0))))
-		{
-			DispatchKeyValue(ent_safedoor_check, "spawnflags", "40960");
-			return ent_safedoor_check;
-		}
-	}
-	return -1;
+	DispatchKeyValue(ent_safedoor_check, "spawnflags", "40960");
+	return ent_safedoor_check;
 }
 
 stock bool IsClientAndInGame(int client)

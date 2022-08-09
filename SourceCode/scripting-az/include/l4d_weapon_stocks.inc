@@ -348,7 +348,7 @@ stock int L4D2_GetWeaponNameByWeaponId(L4D2WeaponId weaponId, char[] dest, int d
  */
 stock L4D2WeaponId L4D2_GetWeaponId(int weapon)
 {
-    if (weapon <= 0) return L4D2WeaponId_None;
+    if (weapon <= MaxClients || !IsValidEntity(weapon)) return L4D2WeaponId_None;
 
     char classname[64];
     if (!GetEdictClassname(weapon, classname, sizeof(classname)))

@@ -232,10 +232,11 @@ static bool:IsGhostTooCloseToSurvivors(client)
 	decl Float:fVector[3];
 	GetClientAbsOrigin(client, ghostOrigin);
 
-	for (new i = 0; i < SurvivorCount; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (SurvivorIndex[i] <= 0 || !IsClientInGame(SurvivorIndex[i]) || !IsPlayerAlive(SurvivorIndex[i])) continue;
-		GetClientAbsOrigin(SurvivorIndex[i], survivorOrigin);
+		if (!IsClientInGame(i) || GetClientTeam(i) != 2 || !IsPlayerAlive(i)) continue;
+		
+		GetClientAbsOrigin(i, survivorOrigin);
 
 		MakeVectorFromPoints(ghostOrigin, survivorOrigin, fVector);
 

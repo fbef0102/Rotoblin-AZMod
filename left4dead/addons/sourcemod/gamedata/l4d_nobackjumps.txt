@@ -4,10 +4,10 @@
 	{
 		"Offsets"
 		{
-			"CLunge_ActivateAbility"
+			"CBaseAbility::ActivateAbility"
 			{
-				"windows"	"188"
 				"linux"		"189"
+				"windows"	"188"
 			}
 		}
 	}

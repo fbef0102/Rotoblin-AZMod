@@ -23,13 +23,13 @@ Author:
 2. 消除一些背景音或環境音樂，讓倖存者能專注特感
 3. 移除地圖上的固定機槍
 4. 地圖藥丸
- -醫療箱有一顆藥丸
+ -醫療箱限制一顆藥丸但不一定會出現
  -救援區域: 四顆
  -路上: 隨機出現1~2顆數量
 5. 清除或穿透一些小型物件，使玩家能移動順暢
-6. 封鎖一些 "this is restricted area" 區域因為特感不能復活
-7. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
-8. 最終關卡路程符合救援進度
+6. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
+7. 最終關卡路程符合救援進度
+8. 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
 
 --------武器調整--------
 [01] Uzi 機槍
@@ -228,7 +228,6 @@ Author:
 [54] l4d_tank_props
 //Tank打過的玩具在Tank還活著時候不會消失
 //Tank打過的玩具在Tank還活著時候會發光
-//Tank打過的玩具在Tank還活著時候新增殘影微透明顏色模型解決所有人看不到車子的問題
 
 [55] l4d_witchglow
 //witch 會發亮給特感隊伍知道
@@ -603,6 +602,22 @@ Author:
 
 [174] l4d_static_punch_getup
 //被Tank拳頭揮中固定起身的動畫時間
+
+[175] l4d_tongue_block_fix
+//舌頭不會被隊友身體擋住
+
+[176] l4d_versus_rescue_door_fix
+//特感能打破 救援房間/區域 的門
+//靈魂特感可以在 救援房間/區域 內復活
+
+[177] l4d_panic_event_timer_remove
+//移除屍潮冷卻90秒時間限制(可以一次觸發多個機關事件或警報車)
+
+[178] l4d_panic_event_timer_remove
+//在資源物品上新增光圈 (練習模式用)
+
+[179] l4d_revive_reload_interrupt
+//解決裝子彈的時候拯救隊友會卡彈的問題
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

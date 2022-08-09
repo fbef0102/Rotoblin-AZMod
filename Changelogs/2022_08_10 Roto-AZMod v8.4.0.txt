@@ -1,0 +1,56 @@
+v8.4.0
+-Please download latest "Windows Server files" or "Linux Server files" (SourceMod 1.11-git6905 + MetaMod 1.11-git1148)
+-All plugins use sm v1.11 compiler
+
+------------------New------------------
+-gamedata\l4d_tongue_block_fix.txt
+-plugins\l4d_tongue_block_fix.smx
+* Fix infected teammate blocking tongue chasing.
+
+-gamedata\l4d_versus_rescue_door_fix.txt
+-plugins\l4d_versus_rescue_door_fix.smx
+* Fixed infected unable to break the rescue door
+* Remove restricted area where infected ghost unable to spawn inside the info_survivor_rescue room/area
+
+-plugins\l4d_panic_event_timer_remove
+* Remove restricted time between panic events (90s)
+
+-plugins\l4d_revive_reload_interrupt
+* Reviving cancels reloading to fix that weapon has jammed and misfired (stupid bug exists for more than 10 years)
+
+-data\l4d1_glow_item.cfg
+-plugins\optional\l4d1_glow_item.smx
+* Add a white outline glow effect to items on the map
+
+------------------Delete------------------
+None
+
+------------------Change------------------
+* **General:**
+  * Extra Pills
+    * Limit 1 pill in cabinets, but the pill is not fixed spawn
+	
+### Gameplay / Balance Changes ###
+* Special Infected:
+  * **Hunter:**
+	* Allow Hunters being shoved when not pouncing. (Shove fov: **50**, was 60)
+	
+  * **Tanks:**
+	* When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
+	
+  * **Witch:**
+    * Enlarge witch personal space: 500 (vanilla: 100)
+    * Enlarge witch flashlight range: 750 (vanilla: 400)
+	
+-stripper\Roto-AZMod\maps\
+* restore some rescue doors
+* some small rooms are still blocked
+* Remove item spawns in bad locations or excessive density in a location
+* add extra pills that are more visible to survivors
+
+-cfg\server_1vHunters_load_plugins.cfg
+-cfg\server_unload_optional_plugins.cfg
+-cfg\server_witch_party_plugins.cfg
+* Add glow effect to items in "Skeet Practice" mode
+	* Survivor can see pills、kits、weapons、ammo
+	* Infected can see hittable objects、alarm car

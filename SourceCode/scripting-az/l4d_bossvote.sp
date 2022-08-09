@@ -27,7 +27,7 @@ public Plugin:myinfo =
 	author = "Visor, Harry Potter",
 	version = "1.2",
 	description = "Vote for percentage",
-	url = "https://github.com/Attano/Equilibrium"
+	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
 
 public OnPluginStart()
