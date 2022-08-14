@@ -12,7 +12,9 @@
 new Votey = 0;
 new Voten = 0;
 new String:ReadyMode[64];
-new String:kickplayername[MAX_NAME_LENGTH];
+int kickplayer_userid;
+new String:kickplayer_name[MAX_NAME_LENGTH];
+new String:kickplayer_SteamId[MAX_NAME_LENGTH];
 new String:forcespectateplayername[MAX_NAME_LENGTH];
 new String:votesmaps[MAX_NAME_LENGTH];
 new String:votesmapsname[64];
@@ -43,7 +45,7 @@ enum voteType
     alltalk,
 	alltalk2,
 	restartmap,
-	swap,
+	kick,
 	map,
 	map2,
 	forcespectate,
@@ -126,6 +128,7 @@ public OnPluginStart()
 	g_hCvarPlayerLimit = CreateConVar("sm_vote_player_limit", "2", "Minimum # of players in game to start the vote", FCVAR_NOTIFY);
 	g_hKickImmueAccess = CreateConVar("l4d_vote_Kick_immue_access_flag", "z", "Players with these flags have kick immune. (Empty = Everyone, -1: Nobody)", FCVAR_NOTIFY);
 
+	GetCvars();
 	g_hKickImmueAccess.AddChangeHook(ConVarChanged_Cvars);
 
 	HookEvent("round_start", event_Round_Start);
@@ -614,7 +617,7 @@ CreateVoteKickMenu(client)
 	SetMenuTitle(menu, Info);
 	for(new i = 1;i <= MaxClients; i++)
 	{
-		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i)==team)
+		if(IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == team || GetClientTeam(i) == 1) )
 		{
 			Format(playerid,sizeof(playerid),"%i",GetClientUserId(i));
 			if(GetClientName(i,name,sizeof(name)))
@@ -623,6 +626,7 @@ CreateVoteKickMenu(client)
 			}
 		}		
 	}
+
 	SetMenuExitBackButton(menu, true);
 	SetMenuExitButton(menu, true);
 	DisplayMenu(menu, client, MENU_TIME);	
@@ -637,23 +641,34 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 		player = GetClientOfUserId(player);
 		if(player && IsClientInGame(player))
 		{
-			if(HasAccess(player, g_sKickImmueAccesslvl))
+			if (player == param1)
 			{
-				CPrintToChat(param1, "{default}[{olive}TS{default}] %T", "votes3_19", param1);
-				CPrintToChat(player, "{default}[{olive}TS{default}] %T", "votes3_20", player, param1);
+				CPrintToChatAll("{default}[{olive}TS{default}] Kick yourself? choose again");
 				CreateVoteKickMenu(param1);
 			}
-			else
+			else 
 			{
-				kickplayername = name;
-				DisplayVoteKickMenu(param1);
+				if(HasAccess(player, g_sKickImmueAccesslvl))
+				{
+					CPrintToChat(param1, "{default}[{olive}TS{default}] %T", "votes3_19", param1);
+					CPrintToChat(player, "{default}[{olive}TS{default}] %T", "votes3_20", player, param1);
+					CreateVoteKickMenu(param1);
+				}
+				else
+				{
+					kickplayer_userid = GetClientUserId(player);
+					kickplayer_name = name;
+					GetClientAuthId(player, AuthId_Steam2,kickplayer_SteamId, sizeof(kickplayer_SteamId));
+					DisplayVoteKickMenu(param1);
+				}
 			}
 		}
 		else
 		{
 			CPrintToChatAll("{default}[{olive}TS{default}] %t", "votes3_18");
 			CreateVoteKickMenu(param1);
-		}		
+		}
+
 	}
 	else if ( action == MenuAction_Cancel)
 	{
@@ -678,16 +693,17 @@ public DisplayVoteKickMenu(client)
 	{
 		decl String:SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
-		LogMessage("%N(%s) starts a vote: kick %s",  client, SteamId,kickplayername);//紀錄在log文件
-		CPrintToChatAll("{default}[{olive}TS{default}]{olive} %N {default}%t: {blue}%t %s", client,"starts a vote", "Kick player",kickplayername);
+		LogMessage("%N(%s) starts a vote: kick %s(%s)",  client, SteamId, kickplayer_name, kickplayer_SteamId);//紀錄在log文件
+		CPrintToChatAll("{default}[{olive}TS{default}]{olive} %N {default}%t: {blue}%t %s", client,"starts a vote", "Kick player", kickplayer_name);
 		
 		for(new i=1; i <= MaxClients; i++) 
-			ClientVoteMenu[i] = true;
+			if (IsClientInGame(i) && !IsFakeClient(i))
+				ClientVoteMenu[i] = true;
 		
-		g_voteType = voteType:swap;
+		g_voteType = voteType:kick;
 		
 		g_hVoteMenu = new Menu(Handler_VoteCallback, MENU_ACTIONS_ALL);
-		g_hVoteMenu.SetTitle("%T: %s?","Kick player",LANG_SERVER,kickplayername);
+		g_hVoteMenu.SetTitle("%T: %s?","Kick player",LANG_SERVER,kickplayer_name);
 		g_hVoteMenu.AddItem(VOTE_YES, "Yes");
 		g_hVoteMenu.AddItem(VOTE_NO, "No");
 		g_hVoteMenu.ExitButton = false;
@@ -798,7 +814,6 @@ public DisplayVoteMapsMenu(client)
 	}
 	if(CanStartVotes(client))
 	{
-	
 		decl String:SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: change map %s",  client, SteamId,votesmapsname);//紀錄在log文件
@@ -901,7 +916,7 @@ public DisplayVoteforcespectateMenu(client)
 		CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t %s{default}, %t", client, "starts a vote","Forcespectate player",forcespectateplayername,"only their team can vote");
 		
 		for(new i=1; i <= MaxClients; i++) 
-			if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == iTeam)
+			if (IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == iTeam)
 				ClientVoteMenu[i] = true;
 		
 		g_voteType = voteType:forcespectate;
@@ -916,19 +931,16 @@ public DisplayVoteforcespectateMenu(client)
 		
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if (!IsClientConnected(i) || !IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) != iTeam)
+			if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) != iTeam)
 			{
 				continue;
 			}
 			
 			iPlayers[iTotal++] = i;
+			EmitSoundToClient(i,"ui/beep_synthtone01.wav");
 		}
 		
 		g_hVoteMenu.DisplayVote(iPlayers, iTotal, 20, 0);
-		
-		for (new i=1; i<=MaxClients; i++)
-			if(IsClientConnected(i)&&IsClientInGame(i)&&!IsFakeClient(i)&&GetClientTeam(i) == iTeam)
-				EmitSoundToClient(i,"ui/beep_synthtone01.wav");
 	}
 	return;
 }
@@ -975,9 +987,9 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 			{
 				Format(buffer, sizeof(buffer), "%T: %s?", "Change map", param1,votesmapsname);
 			}
-			case (voteType:swap):
+			case (voteType:kick):
 			{
-				Format(buffer, sizeof(buffer), "%T: %s?","Kick player", param1,kickplayername);
+				Format(buffer, sizeof(buffer), "%T: %s?","Kick player", param1,kickplayer_name);
 			}
 			case (voteType:forcespectate):
 			{
@@ -1154,7 +1166,7 @@ bool:CanStartVotes(client)
 	//list of players
 	for (new i=1; i<=MaxClients; i++)
 	{
-		if (!IsClientInGame(i) || IsFakeClient(i) || !IsClientConnected(i))
+		if (!IsClientInGame(i) || IsFakeClient(i))
 		{
 			continue;
 		}
@@ -1198,11 +1210,14 @@ public Action:COLD_DOWN(Handle:timer,any:client)
 			CPrintToChatAll("[{olive}TS{default}] %t","votes3_14",votesmapsname);
 			LogMessage("Vote to change map %s %s pass",votesmaps,votesmapsname);
 		}
-		case (voteType:swap):
+		case (voteType:kick):
 		{
-			CPrintToChatAll("[{olive}TS{default}] %t","votes3_15", kickplayername);
-			ServerCommand("sm_kick \"%s\" ", kickplayername);				
-			LogMessage(" Vote to kick %s pass",kickplayername);
+			CPrintToChatAll("[{olive}TS{default}] %t","votes3_15", kickplayer_name);
+			LogMessage("Vote to kick %s pass",kickplayer_name);
+
+			int player = GetClientOfUserId(kickplayer_userid);
+			if(player && IsClientInGame(player)) KickClient(player, "You have been kicked due to vote");				
+			ServerCommand("sm_addban 10 \"%s\" \"You have been kicked due to vote\" ", kickplayer_SteamId);
 		}
 		case (voteType:forcespectate):
 		{
@@ -1210,7 +1225,7 @@ public Action:COLD_DOWN(Handle:timer,any:client)
 			if(forcespectateid && IsClientInGame(forcespectateid)) 
 			{
 				CPrintToChatAll("[{olive}TS{default}] %t","votes3_16", forcespectateplayername);									
-				LogMessage(" Vote to forcespectate %s pass",forcespectateplayername);
+				LogMessage("Vote to forcespectate %s pass",forcespectateplayername);
 				ChangeClientTeam(forcespectateid, 1);
 				CreateTimer(1.0, Timer_forcespectate, forcespectateid, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			}
@@ -1287,7 +1302,7 @@ public bool HasAccess(int client, char[] g_sAcclvl)
 
 	// check permissions
 	int iFlag = GetUserFlagBits(client);
-	if ( iFlag & ReadFlagString(g_sAcclvl) || iFlag & ADMFLAG_ROOT )
+	if ( iFlag & ReadFlagString(g_sAcclvl))
 	{
 		return true;
 	}

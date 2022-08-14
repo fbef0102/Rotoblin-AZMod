@@ -21,3 +21,7 @@ None
 -gamedata\l4d_pickup.txt
 -plugins\l4d_pickup.smx
 * Auto Switch to Weapons/Pills (was Pistols/pills) on pick-up/given is now Off, type !secondary to turn On
+
+-plugins\votes3.smx
+* Fix Vote kick not working at all, all says immune.
+* The player would be banned for 10 mins if get vote-kicked.
