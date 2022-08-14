@@ -9,7 +9,7 @@
 public Plugin myinfo =
 {
         name = "L4D(2) Admin Reserved Slots",
-        author = "fenghf & HarryPotter",
+        author = "HarryPotter",
         description = "As the name says, you dumb fuck!",
         version = PLUGIN_VERSION,
         url = "https://steamcommunity.com/id/HarryPotter_TW/"
@@ -40,9 +40,23 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
+        if (bLate)
+        {
+                for (int i = 1; i <= MaxClients; i++)
+                {
+                        if (IsClientInGame(i) && !IsFakeClient(i) && g_iCvarReservedSlots > 0)
+                        {
+                                if(HasAccess(i, g_sAccessAcclvl)) g_bHasAcces[i] = true;
+                        }
+                }
+        }
+}
+
+public void OnAllPluginsLoaded()
+{
         L4dtoolzExtension = FindConVar("sv_maxplayers");
         if(L4dtoolzExtension == null)
-                SetFailState("Could not find ConVar \"sv_maxplayers\".");
+                SetFailState("Could not find ConVar \"sv_maxplayers\". Go to install L4dtoolz: https://github.com/Accelerator74/l4dtoolz/releases");
 
         sv_visiblemaxplayers = FindConVar("sv_visiblemaxplayers");
         if(sv_visiblemaxplayers == null)
@@ -51,6 +65,7 @@ public void OnPluginStart()
         g_hCvarReservedSlots = CreateConVar("l4d_reservedslots_adm", "1", "Reserved how many slots for Admin. 預留多少位置給管理員加入. (0=關閉 Off)", CVAR_FLAGS, true, 0.0);
         g_hAccess = CreateConVar("l4d_reservedslots_flag", "z", "Players with these flags have access to use admin reserved slots. (Empty = Everyone, -1: Nobody)", CVAR_FLAGS);
         g_hHideSlots = CreateConVar("l4d_reservedslots_hide", "1", "If set to 1, reserved slots will hidden (subtracted 'l4d_reservedslots_adm' from the max slot 'sv_maxplayers')", CVAR_FLAGS, true, 0.0, true, 1.0);
+        AutoExecConfig(true, "l4d_reservedslots");
 
         GetCvars();
         L4dtoolzExtension.AddChangeHook(ConVarChanged_Cvars);
@@ -58,19 +73,6 @@ public void OnPluginStart()
         g_hCvarReservedSlots.AddChangeHook(ConVarChanged_Cvars);
         g_hAccess.AddChangeHook(ConVarChanged_Cvars);
         g_hHideSlots.AddChangeHook(ConVarChanged_Cvars);
-
-        AutoExecConfig(true, "l4d_reservedslots");
-
-	if (bLate)
-	{
-		for (int i = 1; i <= MaxClients; i++)
-		{
-			if (IsClientInGame(i) && !IsFakeClient(i) && g_iCvarReservedSlots > 0)
-			{
-				if(HasAccess(i, g_sAccessAcclvl)) g_bHasAcces[i] = true;
-			}
-		}
-	}
 }
 
 public void OnPluginEnd()
@@ -92,6 +94,7 @@ public void OnConfigsExecuted()
 public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
         GetCvars();
+        CheckHiddenSlots();
 }
 
 void GetCvars()
@@ -100,8 +103,6 @@ void GetCvars()
         g_iCvarReservedSlots = g_hCvarReservedSlots.IntValue;
         g_hAccess.GetString(g_sAccessAcclvl, sizeof(g_sAccessAcclvl));
         g_bHideSlots = g_hHideSlots.BoolValue;
-
-        CheckHiddenSlots();
 }
 
 public void OnClientDisconnect_Post(int client)

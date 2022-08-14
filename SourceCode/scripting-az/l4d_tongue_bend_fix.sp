@@ -36,7 +36,8 @@ public void OnPluginStart()
 	DynamicDetour hDetour = DynamicDetour.FromConf(conf, KEY_UPDATEBEND);
 	if (!hDetour) SetFailState("Missing signature \""...KEY_UPDATEBEND..."\"");
 	if (!hDetour.Enable(Hook_Post, DTR_OnUpdateBend_Post)) SetFailState("Failed to post-detour \""...KEY_UPDATEBEND..."\"");
-	
+	delete hDetour;
+
 	delete conf;
 	
 	g_cvExceptions = CreateConVar("tongue_bend_exception_flag",

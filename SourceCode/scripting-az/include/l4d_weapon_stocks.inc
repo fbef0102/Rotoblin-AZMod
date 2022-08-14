@@ -6,6 +6,18 @@
 #include <sourcemod>
 #include <sdktools>
 
+enum L4D2WeaponSlot
+{
+    L4D2WeaponSlot_None,              // 0
+    L4D2WeaponSlot_Primary,
+    L4D2WeaponSlot_Secondary,
+    L4D2WeaponSlot_Throwable,
+    L4D2WeaponSlot_HeavyHealthItem,
+    L4D2WeaponSlot_LightHealthItem,
+
+    L4D2WeaponSlot_Size //6 size
+}
+
 enum L4D2WeaponId
 {
     L4D2WeaponId_None,              // 0
@@ -406,4 +418,35 @@ stock int GetLongWeaponName(L4D2WeaponId weaponId, char[] dest, int destlen)
     }
 
     return strcopy(dest, destlen, LongWeaponNames[weaponId]);
+}
+
+/**
+ * Get the player weapon slot used by the given WeaponId.
+ * 
+ * @param wepid     WeaponId to get the slot for.
+ * @return Slot number (0-4) or -1 for invalid WeaponId or no slot
+ */
+stock L4D2WeaponSlot GetSlotFromWeaponId(L4D2WeaponId wep)
+{
+    if(wep == L4D2WeaponId_Smg ||
+        wep == L4D2WeaponId_Pumpshotgun ||
+        wep == L4D2WeaponId_Autoshotgun ||
+        wep == L4D2WeaponId_Rifle ||
+        wep == L4D2WeaponId_HuntingRifle)
+        return L4D2WeaponSlot_Primary;
+
+    else if(wep == L4D2WeaponId_Pistol)
+        return L4D2WeaponSlot_Secondary;
+
+    else if(wep == L4D2WeaponId_Molotov ||
+        wep == L4D2WeaponId_PipeBomb)
+        return L4D2WeaponSlot_Throwable;
+
+    else if(wep == L4D2WeaponId_FirstAidKit)
+        return L4D2WeaponSlot_HeavyHealthItem;
+        
+    else if(wep == L4D2WeaponId_PainPills)
+        return L4D2WeaponSlot_LightHealthItem;
+
+    return L4D2WeaponSlot_None;	
 }

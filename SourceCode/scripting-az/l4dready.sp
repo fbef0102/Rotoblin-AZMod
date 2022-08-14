@@ -20,7 +20,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.4.0"
+#define READY_VERSION "8.4.1"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -833,6 +833,7 @@ public Action:ratesCooldownTimer(Handle:timer, any:client)	//ZACK
 	return Plugin_Stop;
 }
 
+ConVar sv_maxplayers;
 public OnAllPluginsLoaded()
 {	
 	if(FindConVar("l4d_team_manager_ver") != INVALID_HANDLE)
@@ -849,6 +850,10 @@ public OnAllPluginsLoaded()
 		RegAdminCmd("sm_swapplayer", Command_PlayerSwapPlayer, ADMFLAG_BAN, "sm_swap <player1> <player2> - swap player1's and player2's teams");
 		RegAdminCmd("sm_swapteams", Command_SwapTeams, ADMFLAG_BAN, "sm_swapteams - swap all the players to the opposite teams");
 	}
+
+	sv_maxplayers = FindConVar("sv_maxplayers");
+	if(sv_maxplayers == null)
+		SetFailState("Could not find ConVar \"sv_maxplayers\".");
 }
 
 new bool:insidePluginEnd = false;
@@ -2222,7 +2227,7 @@ DrawReadyPanelList()
 		}
 		case 1:
 		{
-			Format(Notice, 64, "● Slots: %d/%d - %s round", RealplayerinSV(), GetConVarInt(FindConVar("sv_maxplayers")), (InSecondHalfOfRound)? "2nd": "1st");
+			Format(Notice, 64, "● Slots: %d/%d - %s round", RealplayerinSV(), sv_maxplayers.IntValue, (InSecondHalfOfRound)? "2nd": "1st");
 		}
 		case 2:
 		{

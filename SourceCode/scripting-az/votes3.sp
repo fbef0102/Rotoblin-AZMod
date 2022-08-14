@@ -62,7 +62,7 @@ public Plugin:myinfo =
 	author = "fenghf,l4d1 modify by Harry Potter and JJ",
 	description = "Votes Commands",
 	version = "1.8",
-	url = "http://bbs.3dmgame.com/l4d"
+	url = "https://steamcommunity.com/profiles/76561198026784913/"
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)

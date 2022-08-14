@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.4.0
+v8.4.1
 CopyRight @ 2017-2022 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 * [繁體中文說明版](https://github.com/fbef0102/Rotoblin-AZMod/blob/master/Developer%26Commands/繁體說明書.txt)
@@ -118,6 +118,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
   * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
   <img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
+  
+  > **Developer Comment:** Add glow effect to items in "Skeet Practice" mode, which helps players quickly get familiar with the maps
+  > * Survivor can see pills、kits、weapons、ammo
+  > * Infected can see hittable objects、alarm car
       
 - - - -
 ### Votes Menu(!votes) ###
@@ -146,25 +150,26 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Make distance score correspond to final rescue event progress
   * Remove item spawns in bad locations or excessive density in a location
   
-* **Support Custom maps:**
-  > **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)** (!votes -> Change addon map)
-  * City 17 
-  * Suicide Blitz
-  * Dead Flag Blues
-  * I Hate Mountains
-  * Dead Before Dawn
-  * The Arena of the Dead
-  * Death Aboard
-  * One 4 Nine
-  * Dark Blood
-  * Blood Harvest APOCALYPSE
-  * Precinct 84
-  
 * **Nav Remake:**
   * No Mercy Map 1
   * No Mercy Map 4
   * Dead Air Map 1
   * Death Toll Map 5
+  
+* **Support Custom maps:** (!votes -> Change addon map)
+  * **[Download Link](https://github.com/fbef0102/Rotoblin-AZMod/releases/latest)** 
+    * City 17 
+    * Suicide Blitz
+    * Dead Flag Blues
+    * I Hate Mountains
+    * Dead Before Dawn
+    * The Arena of the Dead
+    * Death Aboard
+    * One 4 Nine
+    * Dark Blood
+    * Blood Harvest APOCALYPSE
+    * Precinct 84
+  * In some custom maps, fix the wrong .wav sound coming from common infected when been shot
 
 - - - -
 ### Weapon Adjustments ###
@@ -475,7 +480,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
   * Prevents small push effect between survior players, bots still get pushed.
-  * Auto Switch to Pistol/Pills on pick-up/given is now Off, type !secondary to turn On
+  * Auto Switch to Weapons/Pills on pick-up/given is now Off, type !secondary to turn On
   * Disables the Car Alarm before survivors leave the safe room.
   * Prevent filling the clip and skipping the reload animation when taking the same weapon.
   * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
@@ -517,9 +522,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	 
 - - - -
 ### Miscellaneous ###
-* Add glow effect to items in "Skeet Practice" mode
-	* Survivor can see pills、kits、weapons、ammo
-	* Infected can see hittable objects、alarm car
 * **sm_info**/**sm_harry** will help you to search many useful commands
 * **!pause** will directly pause the game without another team's agreement (No !fpause)
 * Lerp is capped between 0ms and 100ms Player in Server. Lerp must be 0.0~67.0 in some mode

@@ -1,0 +1,23 @@
+v8.4.1
+
+------------------New------------------
+-plugins\l4d_addon_map_common_sound_fix.smx
+* In some custom maps, fix the wrong .wav sound coming from common infected when been shot
+
+-stripper\Roto-AZMod\maps\l4d_vs_hospital04_interior.cfg
+* Add difficult path on hospital top floor
+
+-stripper\Roto-AZMod\maps\l4d_vs_city17_02.cfg
+* Nerf ladder pounce damage (instant incap => 20~40 damage)
+
+------------------Delete------------------
+None
+
+------------------Change------------------
+-gamedata\l4d_panic_event_timer_remove.txt
+-plugins\l4d_panic_event_timer_remove.smx
+* Hotfix. Director count down wild pointer error that crashes the server in linux system
+
+-gamedata\l4d_pickup.txt
+-plugins\l4d_pickup.smx
+* Auto Switch to Weapons/Pills (was Pistols/pills) on pick-up/given is now Off, type !secondary to turn On

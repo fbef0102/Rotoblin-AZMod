@@ -541,7 +541,7 @@ Author:
 //倖存者玩家的身體不會再互推對方（Bot還是會）
 
 [155] l4d_pickup
-//右鍵傳藥丸+撿起手槍不會再自動切換
+//右鍵傳藥丸+撿起手槍與武器與不會再自動切換 (輸入!secondary 開啟/關閉)
 
 [156] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
@@ -618,6 +618,9 @@ Author:
 
 [179] l4d_revive_reload_interrupt
 //解決裝子彈的時候拯救隊友會卡彈的問題
+
+[180] l4d_addon_map_common_sound_fix
+//在某些三方圖當中，修正普通殭屍被子彈擊中會發出錯誤的音效 (譬如: 打雷聲、木箱破碎聲)
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

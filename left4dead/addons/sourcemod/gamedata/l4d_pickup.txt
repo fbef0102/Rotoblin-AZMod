@@ -46,6 +46,7 @@
 				}
 			}
 		}
+		
 		"Signatures"
 		{
 			/**
@@ -72,13 +73,8 @@
 			 * CTerrorGun::RemoveSecondWeapon()
 			 *
 			 * How to find on Windows:
-			 * 1a. Search for the "Player.PickupWeapon" string.
-			 * 2a. One of the functions that references that string should be this function.
-			 *
-			 * 1b. Find the function's offsets with asherkin's VTable dump.
-			 * 2b. Use IDA to get the VTable dump for the "CTerrorGun" class on Windows.
-			 * 3b. Compare your dump's offsets with asherkin's dump's offsets to find the target function.
-			 * 4b. Look for the target function in the Windows binary.
+			 * 1. Go to the vtable of function "CTerrorGun::EquipSecondWeapon()"
+			 * 2. The function right under that is what we find.
 			 **/
 			"CTerrorGun::RemoveSecondWeapon"
 			{

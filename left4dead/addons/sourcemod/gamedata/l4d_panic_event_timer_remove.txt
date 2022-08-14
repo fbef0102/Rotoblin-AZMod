@@ -1,0 +1,14 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"mob_CooldownTimer"
+			{
+				"linux"		"1656"
+				"windows"	"1660"
+			}
+		}
+	}
+}
