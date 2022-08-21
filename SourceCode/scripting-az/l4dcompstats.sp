@@ -245,6 +245,7 @@ public OnMapStart()
 public Action:Timer_DelayedStatsPrint(Handle:timer)
 {
 	PrintMVPAndTeamStats(0);
+	PrintConsoleStats();
 }
 
 public PrintMVPAndTeamStats(iclient)
@@ -1113,4 +1114,248 @@ bool IsWitch(int entity)
         return strcmp(strClassName, "witch", false) == 0;
     }
     return false;
+}
+
+// Spectators: Print survivor stats & infected stats
+// Survivors: Print survivor stats
+// Infected: Print infected stats
+public PrintConsoleStats()
+{
+	CreateTimer(0.1, Timer_PrintSurvivorStatsHeader);
+	CreateTimer(0.2, Timer_PrintSurvivorStatsBody);
+	CreateTimer(0.3, Timer_PrintSurvivorStatsFooter);
+	CreateTimer(0.4, Timer_PrintInfectedStatsHeader);
+	CreateTimer(0.5, Timer_PrintInfectedStatsBody);
+	CreateTimer(0.6, Timer_PrintInfectedStatsFooter);
+}
+
+public Action:Timer_PrintSurvivorStatsHeader(Handle:timer)
+{
+	new const maxlength = 1024;
+	decl String:buf[maxlength];
+	Format(buf, maxlength, "\n|----------------------------------------------- SURVIVOR STATS -----------------------------------------------|\n");
+	Format(buf, maxlength, "%s| NAME                 | SIK  | SID    | CI   | DS  | Skeets         | SA  | BS  | FF   | DFC  | Pounces Eaten |\n", buf);
+	Format(buf, maxlength, "%s|----------------------|------|--------|------|-----|----------------|-----|-----|------|------|---------------|", buf);
+	PrintToTeamConsole(FLAG_SPECTATOR | FLAG_SURVIVOR, buf);
+}
+
+public Action:Timer_PrintSurvivorStatsBody(Handle:timer)
+{
+	int val;
+	int lows_highs[view_as<int>(STATS_MAX)][2];
+	// Initialize lows_highs
+	for (int i = 0; i < view_as<int>(STATS_MAX); i++)
+	{
+		lows_highs[i][0] = 9999999;
+		lows_highs[i][1] = -1;
+	}
+
+	// Calculate actual lows_highs values
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || !IsSurvivor(i)) continue;
+		for (int j = 0; j < view_as<int>(STATS_MAX); j++)
+		{
+			if (j == view_as<int>(TeamSkeets)) continue;
+			else if (j == view_as<int>(FullSkeets))
+			{ // Store the total skeets value in fullskeets, just for checking lows_highs
+				val = g_iMapStats[i][FullSkeets] + g_iMapStats[i][TeamSkeets];
+			}
+			else
+			{
+				val = g_iMapStats[i][j];
+			}
+			if (val < lows_highs[j][0]) lows_highs[j][0] = val;
+			if (val > lows_highs[j][1]) lows_highs[j][1] = val;
+		}
+	}
+
+	new const max_name_len = 20;
+	new const s_len = 15;
+	decl String:name[MAX_NAME_LENGTH];
+	decl String:sikills[s_len], String:sidamage[s_len], String:cikills[s_len], String:deadstops[s_len];
+	decl String:skeets[s_len], String:skeetassists[s_len], String:boomershutdowns[s_len];
+	decl String:ff[s_len], String:cidamage[s_len], String:pounceseaten[s_len];
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || !IsSurvivor(i)) continue;
+		GetClientName(i, name, sizeof(name));
+		name[max_name_len] = 0;
+		val = g_iMapStats[i][SIKills];
+		Format(sikills, s_len, "%s%d", GetModifierChar(val, SIKills), val);
+
+		val = g_iMapStats[i][SIDamage];
+		Format(sidamage, s_len, "%s%d", GetModifierChar(val, SIDamage), val);
+
+		val = g_iMapStats[i][CIKills];
+		Format(cikills, s_len, "%s%d", GetModifierChar(val, CIKills), val);
+
+		val = g_iMapStats[i][Deadstops];
+		Format(deadstops, s_len, "%s%d", GetModifierChar(val, Deadstops), val);
+
+		val = g_iMapStats[i][FullSkeets] + g_iMapStats[i][TeamSkeets];
+		Format(skeets, s_len, "%s%d (%dF/%dT)", GetModifierChar(val, FullSkeets), val,
+													g_iMapStats[i][FullSkeets], g_iMapStats[i][TeamSkeets]);
+
+		val = g_iMapStats[i][SkeetAssists];
+		Format(skeetassists, s_len, "%s%d", GetModifierChar(val, SkeetAssists), val);
+
+		val = g_iMapStats[i][BoomerShutdowns];
+		Format(boomershutdowns, s_len, "%s%d", GetModifierChar(val, BoomerShutdowns), val);
+
+		val = g_iMapStats[i][FF];
+		Format(ff, s_len, "%s%d", GetModifierCharReversed(val, FF), val);
+
+		val = g_iMapStats[i][CIDamageTaken];
+		Format(cidamage, s_len, "%s%d", GetModifierCharReversed(val, CIDamageTaken), val);
+
+		val = g_iMapStats[i][PouncesEaten];
+		Format(pounceseaten, s_len, "%s%d (%d DPs)", GetModifierCharReversed(val, PouncesEaten), val, g_iMapStats[i][DPsEaten]);
+
+		PrintToTeamConsole(FLAG_SPECTATOR | FLAG_SURVIVOR,
+			"| %20s | %4s | %6s | %4s | %3s | %14s | %3s | %3s | %4s | %4s | %13s |",
+			name,
+			sikills,
+			sidamage,
+			cikills,
+			deadstops,
+			skeets,
+			skeetassists,
+			boomershutdowns,
+			ff,
+			cidamage,
+			pounceseaten);
+	}
+}
+
+public Action:Timer_PrintSurvivorStatsFooter(Handle:timer)
+{
+	new const maxlength = 1024;
+	decl String:buf[maxlength];
+	Format(buf, maxlength, "\nLegend:\n");
+	Format(buf, maxlength, "%s  %s = Best  %s = Worst\n", buf, HIGHCHAR, LOWCHAR);
+	Format(buf, maxlength, "%s  SIK     - Special Infected killed\n", buf);
+	Format(buf, maxlength, "%s  SID     - Damage dealt to Special Infected\n", buf);
+	Format(buf, maxlength, "%s  CI      - Common infected killed\n", buf);
+	Format(buf, maxlength, "%s  DS      - Deadstops landed\n", buf);
+	Format(buf, maxlength, "%s  Skeets  - Total number of skeets (# full skeets/# team skeets)\n", buf);
+	Format(buf, maxlength, "%s  SA      - Skeets assisted\n", buf);
+	Format(buf, maxlength, "%s  BS      - Boomer shutdowns\n", buf);
+	Format(buf, maxlength, "%s  FF      - Friendly Fire\n", buf);
+	Format(buf, maxlength, "%s  DFC     - Damage from common infected\n", buf);
+	PrintToTeamConsole(FLAG_SPECTATOR | FLAG_SURVIVOR, buf);
+}
+
+public Action:Timer_PrintInfectedStatsHeader(Handle:timer)
+{
+	new const maxlength = 1024;
+	decl String:buf[maxlength];
+	Format(buf, maxlength, "\n|----------------------------------- INFECTED STATS -----------------------------------|\n");
+	Format(buf, maxlength, "%s| NAME                 | Dmg   | Pounce Success            | Boomer Success            |\n", buf);
+	Format(buf, maxlength, "%s|----------------------|-------|---------------------------|---------------------------|", buf);
+//| Name | *1291 | *100% (10L (2DP)/10S/10D) | *100% (10A/13F/10V/10P) |
+	PrintToTeamConsole(FLAG_SPECTATOR | FLAG_INFECTED, buf);
+}
+
+public Action:Timer_PrintInfectedStatsBody(Handle:timer)
+{
+	new dmg_low = 99999999;
+	new dmg_high = -1;
+	new pounces_low = 99999999;
+	new pounces_high = -1;
+	new booms_low = 99999999;
+	new booms_high = -1;
+
+	decl val, i;
+	new bool:has_printed;
+
+	for (i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || !IsInfected(i) || IsFakeClient(i)) continue;
+		val = g_iMapStats[i][DamageDealtAsSI];
+		if (val < dmg_low) dmg_low = val;
+		if (val > dmg_high) dmg_high = val;
+
+		val = g_iMapStats[i][PouncesLanded];
+		if (val < pounces_low) pounces_low = val;
+		if (val > pounces_high) pounces_high = val;
+
+		val = g_iMapStats[i][BoomSuccesses];
+		if (val < booms_low) booms_low = val;
+		if (val > booms_high) booms_high = val;
+	}
+
+	new const max_name_len = 20;
+	new const s_len = 30;
+	decl String:name[MAX_NAME_LENGTH];
+	decl String:dmg[s_len], String:pounce_success[s_len], String:boomer_success[s_len];
+
+	for (i = 1; i <= MaxClients; i++)
+	{
+		// No infected bot stats...
+		if (!IsClientInGame(i) || !IsInfected(i) || IsFakeClient(i)) continue;
+		GetClientName(i, name, sizeof(name));
+		name[max_name_len] = 0;
+
+		val = g_iMapStats[i][DamageDealtAsSI];
+		Format(dmg, s_len, "%s%d",
+			val == dmg_high ? HIGHCHAR:val == dmg_low ? LOWCHAR:"",
+			val);
+
+		val = g_iMapStats[i][PouncesLanded];
+		Format(pounce_success, s_len, "%s%d/%d (%d DPs/%d S/%d DS)",
+			val == pounces_high ? HIGHCHAR:val == pounces_low ? LOWCHAR:"",
+			val,
+			val + g_iMapStats[i][Skeeted] + g_iMapStats[i][Deadstopped],
+			g_iMapStats[i][DPsLanded],
+			g_iMapStats[i][Skeeted],
+			g_iMapStats[i][Deadstopped]);
+
+		val = g_iMapStats[i][BoomSuccesses];
+		Format(boomer_success, s_len, "%s%d/%d (%d Vomit/%d Proxy)",
+			val == booms_high ? HIGHCHAR:val == booms_low ? LOWCHAR:"",
+			val,
+			g_iMapStats[i][BoomAttempts],
+			g_iMapStats[i][BoomedSurvivorsByVomit],
+			g_iMapStats[i][BoomedSurvivorsByProxy]);
+
+		PrintToTeamConsole(FLAG_SPECTATOR | FLAG_INFECTED,
+			"| %20s | %5s | %25s | %25s |",
+			name,
+			dmg,
+			pounce_success,
+			boomer_success);
+
+		has_printed = true;
+	}
+
+	if (!has_printed)
+	{
+		PrintToTeamConsole(FLAG_SPECTATOR | FLAG_INFECTED, "No infected found.");
+	}
+}
+
+public Action:Timer_PrintInfectedStatsFooter(Handle:timer)
+{
+	new const maxlength = 1024;
+	decl String:buf[maxlength];
+	Format(buf, maxlength, "\nLegend:\n");
+	Format(buf, maxlength, "%s   Dmg              - Damage dealt to non-incapped survivors\n", buf);
+	Format(buf, maxlength, "%s   Pounce Success   - DP = Damage Pounce, S = Skeeted, DS = Deadstop\n", buf);
+	PrintToTeamConsole(FLAG_SPECTATOR | FLAG_INFECTED, buf);
+}
+
+PrintToTeamConsole(teamflag, const String:format[], any:...)
+{
+	decl String:buffer[1024];
+
+	for(new i = 1;i <= MaxClients;i++)
+	{
+		if(IsClientInGame(i) && (!teamflag || teamflag & (1 << GetClientTeam(i))))
+		{
+			VFormat(buffer, sizeof(buffer), format, 3);
+			PrintToConsole(i, buffer);
+		}
+	}
 }
