@@ -4,11 +4,12 @@ v8.4.1
 -plugins\l4d_addon_map_common_sound_fix.smx
 * In some custom maps, fix the wrong .wav sound coming from common infected when been shot
 
--stripper\Roto-AZMod\maps\l4d_vs_hospital04_interior.cfg
-* Add difficult path on hospital top floor
-
--stripper\Roto-AZMod\maps\l4d_vs_city17_02.cfg
-* Nerf ladder pounce damage (instant incap => 20~40 damage)
+-stripper\Roto-AZMod\maps
+* (No Mercy Map 4) Add difficult path on hospital top floor
+* (City 17 Map 2) Nerf ladder pounce damage (instant incap => 20~40 damage)
+* (Dead Before Dawn Map 2) Extend Destroy the Barricade event (from 25s -> 60s)
+* (One 4 Nine Map 2) Extend First Gate Open event (from 25s -> 60s)
+* (One 4 Nine Map 3) Extend door open event (from 0s => 30s)
 
 ------------------Delete------------------
 None
@@ -17,6 +18,18 @@ None
 -gamedata\l4d_panic_event_timer_remove.txt
 -plugins\l4d_panic_event_timer_remove.smx
 * Hotfix. Director count down wild pointer error that crashes the server in linux system
+
+-plugins\l4dcompstats.smx
+* PrintConsoleStats Back
+
+-plugins\l4d_versus_specListener.smx
+* Fixed sm_hear not working
+
+-plugins\comp_loader.smx
+* Add more change map command
+	* !cm db (Dark Blood)
+	* !cm bha (Blood Harvest APOCALYPSE)
+	* !cm p84 (Precinct 84)
 
 -gamedata\l4d_pickup.txt
 -plugins\l4d_pickup.smx

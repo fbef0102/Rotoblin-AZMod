@@ -5,7 +5,7 @@
 
 #pragma semicolon 1
 #define PLUGIN_VERSION "1.5"
-#define TANKHUD_DRAW_INTERVAL   0.5
+#define TANKHUD_DRAW_INTERVAL   0.3
 #define CLAMP(%0,%1,%2) (((%0) > (%2)) ? (%2) : (((%0) < (%1)) ? (%1) : (%0)))
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 #define MIN(%0,%1) (((%0) < (%1)) ? (%0) : (%1))
@@ -30,7 +30,7 @@ public Plugin:myinfo =
 	author = "Harry Potter",
 	description = "Show tank hud for spectators and show tank frustration for inf team",
 	version = PLUGIN_VERSION,
-	url = "myself"
+	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
 
 public OnPluginStart()
@@ -146,8 +146,8 @@ public Action:HudDrawTimer(Handle:hTimer)
 			if (!bTankHudActive[i] || !IsClientInGame(i) || IsFakeClient(i) || IsSurvivor(i) || IsClientVoteMenu(i) || IsClientInfoMenu(i) || IsInPause() )
 				continue;
 
-			if (GetClientMenu(i) != MenuSource_None)
-				continue;
+			// if (GetClientMenu(i) != MenuSource_None)
+			// 	continue;
 			
 			if(IsSpectator(i) && IsClientSpecHud(i))
 				continue;
@@ -155,7 +155,7 @@ public Action:HudDrawTimer(Handle:hTimer)
 			if( IsInfected(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == 5)//Tank自己不顯示
 				continue;
 
-			SendPanelToClient(TankHud, i, DummyTankHudHandler, 3);
+			SendPanelToClient(TankHud, i, DummyTankHudHandler, 1);
 		}
 		
 		CloseHandle(TankHud);

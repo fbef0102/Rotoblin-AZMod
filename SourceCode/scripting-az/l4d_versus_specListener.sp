@@ -16,7 +16,7 @@
 
 static bool:bListionActive[MAXPLAYERS + 1];
 native Is_Ready_Plugin_On();
-#define PLUGIN_VERSION "3.1"
+#define PLUGIN_VERSION "3.2"
 new Handle:hspecListener_enable;
 new bool:specListener_enable;
 
@@ -24,7 +24,7 @@ public Plugin:myinfo =
 {
 	name = "SpecLister",
 	author = "waertf & bear modded by bman, l4d1 versus port by harry",
-	description = "Allows spectator listen others team voice for l4d",
+	description = "Allows spectator listen others team voice and see others team chat for l4d",
 	version = PLUGIN_VERSION,
 	url = "http://forums.alliedmods.net/showthread.php?t=95474"
 }
@@ -77,7 +77,7 @@ public Native_OpenSpectatorsListenMode(Handle:plugin, numParams) {
 	specListener_enable = GetConVarBool(hspecListener_enable);
 	HookConVarChange(hspecListener_enable, ConVarChange_hspecListener_enable);
 	
-	//Spectators hear Team_Chat
+	//Spectators see Team_Chat
 	RegConsoleCmd("say_team", Command_SayTeam);
 	
 	if(specListener_enable)
@@ -196,7 +196,7 @@ public Action:Command_SayTeam(client, args)
 	{
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if (IsClientInGame(i) && GetClientTeam(i) == TEAM_SPEC)
+			if (IsClientInGame(i) && GetClientTeam(i) == TEAM_SPEC && bListionActive[i])
 			{
 				switch (senderteam)	//Format the color different depending on team
 				{

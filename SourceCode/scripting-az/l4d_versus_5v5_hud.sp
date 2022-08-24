@@ -210,7 +210,7 @@ public Action:HudDrawTimer(Handle:hTimer)
 		if (GetClientMenu(i) != MenuSource_None)
 			continue;
 			
-		SendPanelToClient(h5v5Hud, i, Dummy5v5HudHandler, 3);
+		SendPanelToClient(h5v5Hud, i, Dummy5v5HudHandler, 1);
 	}
 	CloseHandle(h5v5Hud);
 	return Plugin_Continue;

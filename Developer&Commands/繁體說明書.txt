@@ -760,3 +760,6 @@ Map = 地圖難度修改
 * dab (Death Aboard)
 * aotd (The Arena of the Dead)
 * 149 (One 4 Nine)
+* db (Dark Blood)
+* bha (Blood Harvest APOCALYPSE)
+* p84 (Precinct 84)

@@ -1935,6 +1935,7 @@ public Action:Map_Changer(client, args)
 		#if CUSTOM_CONFIGS
 		static char mapInfo3[MAPINFPMAXLEN];
 		static char mapInfo4[MAPINFPMAXLEN];
+		static char mapInfo5[MAPINFPMAXLEN];
 		//static char mapInfo5[MAPINFPMAXLEN];
 		#endif
 		static char mapInfo9[MAPINFPMAXLEN];
@@ -1982,6 +1983,15 @@ public Action:Map_Changer(client, args)
 		Format(mapInfo4, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo4);
 		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm 149              | Change Map to One 4 Nine          |\n",mapInfo4);
 		Format(mapInfo4, MAPINFPMAXLEN, "%s| !cm one4nine         |                                   |",mapInfo4);
+		Format(mapInfo5, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm db               | Change Map to Dark Blood          |\n",mapInfo5);
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm dark blood       |                                   |\n",mapInfo5);
+		Format(mapInfo5, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo5)
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm bha              | Change Map to Blood Harvest APOCALYPSE|\n",mapInfo5);
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm bloodharvestapocalypse|                              |\n",mapInfo5);
+		Format(mapInfo5, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo5)
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm p84              | Change Map to Precinct 84         |\n",mapInfo5);
+		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm precinct 84      |                                   |",mapInfo5);
 		#endif		
 		Format(mapInfo9, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
 		if(isAdmin == true) Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel all requests               |\n", mapInfo9);
@@ -2000,6 +2010,7 @@ public Action:Map_Changer(client, args)
 			#if CUSTOM_CONFIGS
 			PrintToConsole(client, mapInfo3);
 			PrintToConsole(client, mapInfo4);
+			PrintToConsole(client, mapInfo5);
 			//PrintToConsole(client, mapInfo5);
 			#endif
 			PrintToConsole(client, mapInfo9);
@@ -2035,6 +2046,9 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsTheArenaoftheDead = 0;
 		new AdminValueIsDeathAboard = 0;
 		new AdminValueIsOne4Nine = 0;
+		new AdminValueIsDB = 0;
+		new AdminValueIsBHA = 0;
+		new AdminValueIsP84 = 0;
 		#endif
 		new AdminValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
 				
@@ -2068,13 +2082,20 @@ public Action:Map_Changer(client, args)
 		else if((StrEqual(Admin_Map, "deathaboard", false))) AdminValueIsDeathAboard = 1;
 		else if((StrEqual(Admin_Map, "149", false))) AdminValueIsOne4Nine = 1;
 		else if((StrEqual(Admin_Map, "one4nine", false))) AdminValueIsOne4Nine = 1;
+		else if(StrEqual(Admin_Map, "db", false)) AdminValueIsDB = 1;
+		else if((StrEqual(Admin_Map, "darkblood", false))) AdminValueIsDB = 1;
+		else if(StrEqual(Admin_Map, "bha", false)) AdminValueIsBHA = 1;
+		else if((StrEqual(Admin_Map, "bloodharvestapocalypse", false))) AdminValueIsBHA = 1;
+		else if(StrEqual(Admin_Map, "p84", false)) AdminValueIsP84 = 1;
+		else if((StrEqual(Admin_Map, "precinct84", false))) AdminValueIsP84 = 1;
 		#endif
 
 		AdminValueSumOfMaps = AdminValueIsNM + AdminValueIsDT + AdminValueIsBH + AdminValueIsDA + AdminValueIsSA + AdminValueIsCC;
 		#if CUSTOM_CONFIGS
 		AdminValueSumOfMaps += AdminValueIsC17 + AdminValueIsSB + AdminValueIsIHateMountain +
 				AdminValueIsDeadFlagBlues + AdminValueIsDeadBeforeDawn + AdminValueIsTheArenaoftheDead + 
-				AdminValueIsDeathAboard + AdminValueIsOne4Nine;//calculate the sum of all the config value integers
+				AdminValueIsDeathAboard + AdminValueIsOne4Nine + AdminValueIsDB + AdminValueIsBHA +
+				AdminValueIsP84;//calculate the sum of all the config value integers
 		#endif
 		if(AdminValueSumOfMaps == 1)
 		{	
@@ -2233,6 +2254,39 @@ public Action:Map_Changer(client, args)
 				Admin_Cancel_Lite();
 				return Plugin_Handled;
 			}
+			else if(AdminValueIsDB == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_darkblood01_tanker";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dark Blood");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsBHA == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "rombu01";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest APOCALYPSE");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
+			else if(AdminValueIsP84 == 1)
+			{
+				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+				adminMapActive = true;
+				AdminMapToExecuteName = "l4d_noprecinct01_crash";
+				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Precinct 84");
+				CampaignchangeDelayed();
+				Admin_Cancel_Lite();
+				return Plugin_Handled;
+			}
 			#endif
 		}
 		else
@@ -2288,6 +2342,9 @@ public Action:Map_Changer(client, args)
 				new ValueIsTheArenaoftheDead = 0;
 				new ValueIsDeathAboard = 0;
 				new ValueIsOne4Nine = 0;
+				new ValueIsDB = 0;
+				new ValueIsBHA = 0;
+				new ValueIsP84 = 0;
 				#endif
 				
 				new ValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
@@ -2322,6 +2379,12 @@ public Action:Map_Changer(client, args)
 				else if((StrEqual(PlayerMap, "deathaboard", false))) ValueIsDeathAboard = 1;
 				else if((StrEqual(PlayerMap, "149", false))) ValueIsOne4Nine = 1;
 				else if((StrEqual(PlayerMap, "one4nine", false))) ValueIsOne4Nine = 1;
+				else if(StrEqual(PlayerMap, "db", false)) ValueIsDB = 1;
+				else if((StrEqual(PlayerMap, "darkblood", false))) ValueIsDB = 1;
+				else if(StrEqual(PlayerMap, "bha", false)) ValueIsBHA = 1;
+				else if((StrEqual(PlayerMap, "bloodharvestapocalypse", false))) ValueIsBHA = 1;
+				else if(StrEqual(PlayerMap, "p84", false)) ValueIsP84 = 1;
+				else if((StrEqual(PlayerMap, "precinct84", false))) ValueIsP84 = 1;
 				#endif
 
 				
@@ -2329,7 +2392,7 @@ public Action:Map_Changer(client, args)
 				#if CUSTOM_CONFIGS
 				ValueSumOfMaps += ValueIsC17 + ValueIsSB + ValueIsIHateMountain + ValueIsDeadFlagBlues + 
 					ValueIsDeadBeforeDawn + ValueIsTheArenaoftheDead + ValueIsDeathAboard +
-					ValueIsOne4Nine;//calculate the sum of all the config value integers
+					ValueIsOne4Nine + ValueIsDB + ValueIsBHA + ValueIsP84;//calculate the sum of all the config value integers
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2435,6 +2498,21 @@ public Action:Map_Changer(client, args)
 					{
 						PlayerMap = "One 4 Nine";
 						PlayerMapChat = "149";
+					}
+					else if(ValueIsDB == 1)
+					{
+						PlayerMap = "Dark Blood";
+						PlayerMapChat = "DB";
+					}
+					else if(ValueIsBHA == 1)
+					{
+						PlayerMap = "Blood Harvest APOCALYPSE";
+						PlayerMapChat = "BHA";
+					}
+					else if(ValueIsP84 == 1)
+					{
+						PlayerMap = "Precinct 84";
+						PlayerMapChat = "P84";
 					}
 					#endif
 				}
@@ -2555,13 +2633,31 @@ public Action:Map_Changer(client, args)
 								Timer_Map_Change();	
 								return Plugin_Handled;														
 							}
+							else if(StrEqual(PlayerMap, "Dark Blood", false))
+							{
+								MapToExecuteName = "l4d_darkblood01_tanker";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Blood Harvest APOCALYPSE", false))
+							{
+								MapToExecuteName = "rombu01";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Precinct 84", false))
+							{
+								MapToExecuteName = "l4d_noprecinct01_crash";
+								Timer_Map_Change();	
+								return Plugin_Handled;														
+							}
 							#endif
 						}
 						else
 						{
-								CPrintToChatAll("[{olive}TS{default}] %t","Map Mismatch.");	//if SurvivorCfg != InfectedCfg, then..
-								Map_Requests[Client_Team] = false;
-								return Plugin_Handled;
+							CPrintToChatAll("[{olive}TS{default}] %t","Map Mismatch.");	//if SurvivorCfg != InfectedCfg, then..
+							Map_Requests[Client_Team] = false;
+							return Plugin_Handled;
 						}
 					}
 				}
