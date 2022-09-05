@@ -11,15 +11,14 @@ public Plugin:myinfo =
 	author = "Frustian",
 	description = "Adds Friendly Fire Announcements + pig survivor notify",
 	version = "1.8",
-	url = ""
+	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
 //cvar handles
-new Handle:FFenabled;
-new Handle:AnnounceType
+ConVar FFenabled;
+ConVar AnnounceType
 //Various global variables
 new DamageCache[MAXPLAYERS+1][MAXPLAYERS+1]; //Used to temporarily store Friendly Fire Damage between teammates
-new Handle:FFTimer[MAXPLAYERS+1]; //Used to be able to disable the FF timer when they do more FF
-new bool:FFActive[MAXPLAYERS+1]; //Stores whether players are in a state of friendly firing teammates
+Handle FFTimer[MAXPLAYERS+1]; //Used to be able to disable the FF timer when they do more FF //Stores whether players are in a state of friendly firing teammates
 static bool:ClientHasDown[MAXPLAYERS + 1];
 static bool:ClientGrabLedge[MAXPLAYERS + 1];
 native bool:IsTankPounchClient(client);//From l4d_tankpunchstuckfix
@@ -39,6 +38,23 @@ public OnPluginStart()
 	HookEvent("player_bot_replace", OnBotSwap);
 	HookEvent("bot_player_replace", OnBotSwap);
 	HookEvent("player_spawn", OnPlayerSpawn);
+	HookEvent("player_incapacitated_start", Event_IncapacitatedStart);
+
+	HookEvent("round_end",				Event_RoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
+	HookEvent("map_transition", 		Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
+	HookEvent("mission_lost", 			Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors wipe out in coop mode (also triggers round_end)
+	HookEvent("finale_vehicle_leaving", Event_RoundEnd,		EventHookMode_PostNoCopy); //final map final rescue vehicle leaving  (does not trigger round_end)
+	
+}
+
+public void OnMapEnd()
+{
+	ResetTimer();
+}
+
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
+{
+	ResetTimer();
 }
 
 public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -125,22 +141,56 @@ public Action:Event_HurtConcise(Handle:event, const String:name[], bool:dontBroa
 	if (!GetConVarInt(FFenabled) || attacker > MaxClients || attacker < 1 || !IsClientConnected(attacker) || !IsClientInGame(attacker) || IsFakeClient(attacker) || GetClientTeam(attacker) != 2 || !IsClientInGame(victim) || !IsClientConnected(victim) || GetClientTeam(victim) != 2)
 		return;  //if director_ready_duration is 0, it usually means that the game is in a ready up state like downtown1's ready up mod.  This allows me to disable the FF messages in ready up.
 	new damage = GetEventInt(event, "dmg_health");
-	if (FFActive[attacker])  //If the player is already friendly firing teammates, resets the announce timer and adds to the damage
+	if (FFTimer[attacker] != null)  //If the player is already friendly firing teammates, resets the announce timer and adds to the damage
 	{
-		new Handle:pack;
 		DamageCache[attacker][victim] += damage;
-		KillTimer(FFTimer[attacker]);
-		FFTimer[attacker] = CreateDataTimer(1.0, AnnounceFF, pack);
-		WritePackCell(pack,attacker);
+		delete FFTimer[attacker];
+		FFTimer[attacker] = CreateTimer(1.0, AnnounceFF, attacker);
 	}
 	else //If it's the first friendly fire by that player, it will start the announce timer and store the damage done.
 	{
 		DamageCache[attacker][victim] = damage;
-		new Handle:pack;
-		FFActive[attacker] = true;
-		FFTimer[attacker] = CreateDataTimer(1.0, AnnounceFF, pack);
-		WritePackCell(pack,attacker);
+		delete FFTimer[attacker];
+		FFTimer[attacker] = CreateTimer(1.0, AnnounceFF, attacker);
 		for (new i = 1; i < 19; i++)
+		{
+			if (i != attacker && i != victim)
+			{
+				DamageCache[attacker][i] = 0;
+			}
+		}
+	}
+}
+
+public void Event_IncapacitatedStart(Event event, const char[] name, bool dontBroadcast) 
+{
+	int victim = GetClientOfUserId(event.GetInt("userid"));
+	int attacker = GetClientOfUserId(event.GetInt("attacker"));
+
+	if (FFenabled.BoolValue == false || 
+	attacker == victim ||
+	attacker > MaxClients || 
+	attacker < 1 || 
+	!IsClientInGame(attacker) || 
+	IsFakeClient(attacker) || 
+	GetClientTeam(attacker) != 2 || 
+	!IsClientInGame(victim) || 
+	GetClientTeam(victim) != 2)
+		return;  
+
+	int damage = GetClientHealth(victim) + RoundToFloor(GetTempHealth(victim));
+	if (FFTimer[attacker] != null)  //If the player is already friendly firing teammates, resets the announce timer and adds to the damage
+	{
+		DamageCache[attacker][victim] += damage;
+		delete FFTimer[attacker];
+		FFTimer[attacker] = CreateTimer(1.0, AnnounceFF, attacker);
+	}
+	else //If it's the first friendly fire by that player, it will start the announce timer and store the damage done.
+	{
+		DamageCache[attacker][victim] = damage;
+		delete FFTimer[attacker];
+		FFTimer[attacker] = CreateTimer(1.0, AnnounceFF, attacker);
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (i != attacker && i != victim)
 			{
@@ -159,13 +209,11 @@ public Action:COLD_DOWN(Handle:timer,any:victim)
 	}
 }
 
-public Action:AnnounceFF(Handle:timer, Handle:pack) //Called if the attacker did not friendly fire recently, and announces all FF they did
+public Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not friendly fire recently, and announces all FF they did
 {
 	decl String:victim[128];
 	decl String:attacker[128];
-	ResetPack(pack);
-	new attackerc = ReadPackCell(pack);
-	FFActive[attackerc] = false;
+
 	if (IsClientInGame(attackerc) && IsClientConnected(attackerc) && !IsFakeClient(attackerc))
 		GetClientName(attackerc, attacker, sizeof(attacker));
 	else
@@ -205,6 +253,9 @@ public Action:AnnounceFF(Handle:timer, Handle:pack) //Called if the attacker did
 			DamageCache[attackerc][i] = 0;
 		}
 	}
+
+	FFTimer[attackerc] = null;
+	return Plugin_Continue;
 }
 
 public Event_ledge_grab(Handle:event, const String:name[], bool:dontBroadcast)
@@ -295,4 +346,24 @@ bool IsWitch(int entity)
         return strcmp(strClassName, "witch", false) == 0;
     }
     return false;
+}
+
+stock float GetTempHealth(int client)
+{
+	static float fCvarDecayRate = -1.0;
+
+	if (fCvarDecayRate == -1.0)
+		fCvarDecayRate = FindConVar("pain_pills_decay_rate").FloatValue;
+
+	float fTempHealth = GetEntPropFloat(client, Prop_Send, "m_healthBuffer");
+	fTempHealth -= (GetGameTime() - GetEntPropFloat(client, Prop_Send, "m_healthBufferTime")) * fCvarDecayRate;
+	return fTempHealth < 0.0 ? 0.0 : fTempHealth;
+}
+
+void ResetTimer()
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		delete FFTimer[i];
+	}
 }
