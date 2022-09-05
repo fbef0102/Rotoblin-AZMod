@@ -55,5 +55,8 @@ public void OnPluginStart()
 
 void Event_CreatePanicEvent(Event event, const char[] name, bool dontBroadcast)
 {
-	StoreToAddress(L4D_GetPointer(POINTER_DIRECTOR) + CDirector__m_mobCooldownTimer + COUNTDOWNTIMER_OFFS_TIMESTAMP, view_as<int>(-1.0), NumberType_Int32);
+	CountdownTimer timer = view_as<CountdownTimer>(L4D_GetPointer(POINTER_DIRECTOR) + CDirector__m_mobCooldownTimer);
+	CTimer_Start(timer, 1.0);
+
+	//StoreToAddress(L4D_GetPointer(POINTER_DIRECTOR) + CDirector__m_mobCooldownTimer + COUNTDOWNTIMER_OFFS_TIMESTAMP, view_as<int>(-1.0), NumberType_Int32);
 }

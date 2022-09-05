@@ -51,7 +51,7 @@ public _2vs2Mod_OnPluginStart()
 	HookPublicEvent(EVENT_ONPLUGINENABLE, _2V2_OnPluginEnabled);
 	HookPublicEvent(EVENT_ONPLUGINDISABLE, _2V2_OnPluginDisabled);
 
-	g_bIsModEnabled_Cvar = CreateConVarEx("enable_2v2", "0", "Sets whether 2vs2 mod is enabled", FCVAR_NOTIFY);
+	g_bIsModEnabled_Cvar = CreateConVarEx("enable_2v2", "0", "If 1, Slay AI Tank after human tank player loses control", FCVAR_NOTIFY);
 	if (g_bIsModEnabled_Cvar == INVALID_HANDLE) ThrowError("Unable to create 2vs2mod cvar!");
 	g_bIsModEnabled = GetConVarBool(g_bIsModEnabled_Cvar);
 	AddConVarToReport(g_bIsModEnabled_Cvar); // Add to report status module
@@ -69,7 +69,7 @@ public _2V2_OnPluginEnabled()
 {
 	g_bIsModEnabled = GetConVarBool(g_bIsModEnabled_Cvar);
 	HookConVarChange(g_bIsModEnabled_Cvar, _2V2_Enable_CvarChange);
-	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _2V2_OnClientPutInServer);
+	//HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _2V2_OnClientPutInServer);
 
 	HookEvent("tank_frustrated", OnTankFrustrated, EventHookMode_Post);
 	
@@ -85,7 +85,7 @@ public _2V2_OnPluginDisabled()
 {
 	UnhookConVarChange(g_bIsModEnabled_Cvar, _2V2_Enable_CvarChange);
 
-	UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _2V2_OnClientPutInServer);
+	//UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _2V2_OnClientPutInServer);
 
 	DebugPrintToAllEx("Module is now unloaded");
 }
@@ -128,6 +128,7 @@ public Action:_2V2_TankPassedCheckDelay(Handle:timer)
  * @param client		Client index.
  * @noreturn
  */
+/*
 public _2V2_OnClientPutInServer(client)
 {
 	if (!g_bIsModEnabled || !client || !IsFakeClient(client)) return; // Only deal with bots
@@ -135,7 +136,7 @@ public _2V2_OnClientPutInServer(client)
 	DebugPrintToAllEx("Client %i was put in server", client);
 	CreateTimer(0.1, _2V2_SlayInfectedBot, client, TIMER_FLAG_NO_MAPCHANGE);
 }
-
+*/
 /**
  * Called when the slay bot timer interval has elapsed.
  * 
@@ -143,6 +144,7 @@ public _2V2_OnClientPutInServer(client)
  * @param client		Client index to slay.
  * @noreturn
  */
+/*
 public Action:_2V2_SlayInfectedBot(Handle:timer, any:client)
 {
 	if (!g_bIsModEnabled || !client || !IsClientInGame(client) || !IsFakeClient(client) || GetClientTeam(client) != 3) return Plugin_Continue;
@@ -170,7 +172,7 @@ public Action:_2V2_SlayInfectedBot(Handle:timer, any:client)
 	}
 	return Plugin_Continue;
 }
-
+*/
 /**
  * Called when the kick bot timer interval has elapsed.
  * 

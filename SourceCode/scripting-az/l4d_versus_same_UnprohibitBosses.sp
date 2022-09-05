@@ -27,7 +27,7 @@ static	bool:Tank_firstround_spawn,bool:Witch_firstround_spawn;
 float g_fWitchFlow, g_fTankFlow;
 int g_iRoundStart, g_iPlayerSpawn;
 ConVar WITCHPARTY, sv_cheats;
-ConVar g_hCvarWitchAvoidTank;
+ConVar g_hCvarWitchAvoidTank, g_hCvarBossDisable;
 ConVar survivor_limit;
 int survivor_limit_value;
 
@@ -105,7 +105,8 @@ public void OnPluginStart()
 	HookEvent("round_end",		Event_RoundEnd,		EventHookMode_PostNoCopy);
 	HookEvent("witch_spawn", TS_ev_WitchSpawn);
 
-	g_hCvarWitchAvoidTank = CreateConVar("l4d_coop_boss_avoid_tank_spawn", "0", "Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
+	g_hCvarWitchAvoidTank = CreateConVar("l4d_boss_avoid_tank_spawn", "0", "Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
+	g_hCvarBossDisable = CreateConVar("sm_1_survivor_boss_disable", "1", "If 1, Disable Tank/Witch Spawn when survivor limit is 1.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	hValidTankFlows = new ArrayList(2);
 	hValidWitchFlows = new ArrayList(2);
@@ -223,7 +224,7 @@ public Action:COLD_DOWN(Handle:timer)
 		iCvarMinFlow = L4D_GetMapValueInt("versus_boss_flow_min", iCvarMinFlow);
 		iCvarMaxFlow = L4D_GetMapValueInt("versus_boss_flow_max", iCvarMaxFlow);
 
-		if(survivor_limit_value != 1 && g_bTankVaildMap == true)
+		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
 		{
 			if (g_bTankVaildMap == true)
 			{
@@ -285,7 +286,7 @@ public Action:COLD_DOWN(Handle:timer)
 			L4D2Direct_SetVSTankToSpawnThisRound(1, false);	
 		}
 
-		if(survivor_limit_value != 1)
+		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
 		{
 			if (g_bWitchValidMap == true && !IsWitchProhibit())
 			{

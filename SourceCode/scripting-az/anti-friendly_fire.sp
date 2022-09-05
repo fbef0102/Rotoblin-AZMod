@@ -67,8 +67,6 @@ public void OnPluginStart()
 	g_hDamageShield.AddChangeHook(ConVarChanged_Cvars);
 	g_hIncapProtect.AddChangeHook(ConVarChanged_Cvars);
 
-	AutoExecConfig(true, "anti-friendly_fire");
-
 	HookEvent("player_hurt", Event_Hurt);
 	HookEvent("player_incapacitated_start", Event_IncapacitatedStart);
 

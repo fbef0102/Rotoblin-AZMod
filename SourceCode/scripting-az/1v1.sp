@@ -21,7 +21,7 @@
 #include <sdktools>
 #include <multicolors>
 
-new Handle:hCvarDmgThreshold;
+ConVar hCvarDmgThreshold, hCvarBossDisable;
 new bool:haspounced;
 
 public Plugin:myinfo =
@@ -29,19 +29,21 @@ public Plugin:myinfo =
 	name = "1v1 TS",
 	author = "Blade + Confogl Team, Tabun, Visor, l4d1 port and modify by Harry",
 	description = "A plugin designed to support 1v1.",
-	version = "0.4",
+	version = "0.5",
 	url = "https://github.com/Attano/Equilibrium"
 };
 
 public OnPluginStart()
 {      
 	hCvarDmgThreshold = CreateConVar("sm_1v1_dmgthreshold", "24", "Amount of damage done (at once) before SI suicides.", FCVAR_NOTIFY, true, 1.0);
+	hCvarBossDisable = CreateConVar("sm_1v1_boss_disable", "1", "If 1, Disable Tank/Witch Spawn in 1v1.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookEvent("player_hurt", Event_PlayerHurt, EventHookMode_Post);
 	HookEvent("lunge_pounce", PlayerLunge_Pounce_Event);
 	HookEvent("player_spawn",		Event_PlayerSpawn,	EventHookMode_PostNoCopy);
 	HookEvent("player_death",		Event_PlayerDeath,	EventHookMode_PostNoCopy);
 	HookEvent("tank_spawn",			Event_TankSpawn,		EventHookMode_PostNoCopy);
+	HookEvent("witch_spawn",		WitchSpawn_Event,		EventHookMode_PostNoCopy);
 }
 
 public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
@@ -103,6 +105,8 @@ public Action:Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 
 public void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!hCvarBossDisable.BoolValue) return;
+
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 	if(client && IsClientInGame(client) && IsFakeClient(client))
@@ -123,6 +127,26 @@ Action Timer_KillTank (Handle timer, int userid)
 	return Plugin_Continue;
 }
 
+public void WitchSpawn_Event(Event event, const char[] name, bool dontBroadcast)
+{
+	if(!hCvarBossDisable.BoolValue) return;
+
+	int WitchID = GetEventInt(event, "witchid");
+	if (WitchID <= MaxClients || !IsValidEntity(WitchID)) return;
+	
+	CreateTimer(0.5 , KickWitch_Timer, EntIndexToEntRef(WitchID), TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action KickWitch_Timer(Handle timer, int ref)
+{
+	if(IsValidEntRef(ref))
+	{
+		AcceptEntityInput(ref, "kill"); //remove witch
+	}
+
+	return Plugin_Continue;
+}
+
 stock GetZombieClass(client) return GetEntProp(client, Prop_Send, "m_zombieClass");
 
 stock bool:IsClientAndInGame(index)
@@ -131,5 +155,12 @@ stock bool:IsClientAndInGame(index)
 	{
 		return IsClientInGame(index);
 	}
+	return false;
+}
+
+bool IsValidEntRef(int entity)
+{
+	if( entity && EntRefToEntIndex(entity) != INVALID_ENT_REFERENCE )
+		return true;
 	return false;
 }

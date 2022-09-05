@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "args": ["${relativeFile}"], 
+    "windows": 
+    { 
+        "command": "${workspaceRoot}\\compile.exe" 
+    },
+    "problemMatchers": [],
+    "tasks": [],
+    "group": {
+        "kind": "build",
+        "isDefault": true
+    }
+} 

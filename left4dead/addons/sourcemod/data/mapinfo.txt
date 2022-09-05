@@ -332,6 +332,11 @@
 				"min"		"44"
 				"max"		"63"
 			}
+			"Crank Event"
+			{
+				"min"		"69"
+				"max"		"73"
+			}
 		}
 		"witch_ban_flow"
 		{
@@ -339,6 +344,11 @@
 			{
 				"min"		"44"
 				"max"		"63"
+			}
+			"Crank Event"
+			{
+				"min"		"69"
+				"max"		"73"
 			}
 		}
 	}

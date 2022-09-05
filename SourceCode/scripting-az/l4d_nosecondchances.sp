@@ -16,7 +16,9 @@ static const char L4D1_SI_Victim_NetProps[][] = {
 	""
 };
 
-ConVar g_hBotKickDelay = null;
+ConVar g_hBotKickDelay, g_hBotPinKickEnable;
+bool g_bBotPinKickEnable;
+float g_fBotKickDelay;
 
 public Plugin myinfo = 
 {
@@ -31,7 +33,24 @@ public void OnPluginStart()
 {
 	HookEvent("player_bot_replace", PlayerBotReplace); // bot replaces player
 	
-	g_hBotKickDelay = CreateConVar("bot_kick_delay", "0.1", "How long should we wait before kicking infected bots?", _, true, 0.0, true, 30.0);
+	g_hBotKickDelay = CreateConVar("bot_kick_delay", "0.1", "How long should we wait before kicking infected bots? (-1: Disable)", _, true, -1.0, true, 30.0);
+	g_hBotPinKickEnable = CreateConVar("bot_kick_capped_check", "1", "If 1, Do not kick infected bots if they already capped the survivor (pounced/pulled)", _, true, 0.0, true, 1.0);
+
+	GetCvars();
+	g_hBotKickDelay.AddChangeHook(ConVarChanged_Cvars);
+	g_hBotPinKickEnable.AddChangeHook(ConVarChanged_Cvars);
+
+}
+
+public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+	g_fBotKickDelay = g_hBotKickDelay.FloatValue;
+	g_bBotPinKickEnable = g_hBotPinKickEnable.BoolValue;
 }
 
 public void PlayerBotReplace(Event hEvent, const char[] eName, bool dontBroadcast)
@@ -40,12 +59,17 @@ public void PlayerBotReplace(Event hEvent, const char[] eName, bool dontBroadcas
 	int iBot = GetClientOfUserId(iUserID);
 
 	if (IsClientInGame(iBot) && GetClientTeam(iBot) == TEAM_INFECTED && IsFakeClient(iBot)) {
-		float fDelay = g_hBotKickDelay.FloatValue;
-		if (fDelay >= 0.0) {
-			CreateTimer(fDelay, Timer_KillBotDelay, iUserID, TIMER_FLAG_NO_MAPCHANGE);
-		} else if (ShouldBeKicked(iBot)) {
-			ForcePlayerSuicide(iBot);
-			//CreateTimer(1.0, _KickInfectedBot, iUserID);
+		if (g_fBotKickDelay >= 0.0) {
+			CreateTimer(g_fBotKickDelay, Timer_KillBotDelay, iUserID, TIMER_FLAG_NO_MAPCHANGE);
+		} 
+		else if (g_fBotKickDelay == 0.0) {
+			if(ShouldBeKicked(iBot)) {
+				ForcePlayerSuicide(iBot);
+				//CreateTimer(1.0, _KickInfectedBot, iUserID);
+			}
+		}
+		else if (g_fBotKickDelay < 0.0){
+			return;
 		}
 	}
 }
@@ -55,6 +79,8 @@ bool ShouldBeKicked(int iBot) //When a spawned Infected Player disconnects, chan
 	int iZombieClassType = GetEntProp(iBot, Prop_Send, "m_zombieClass");
 	
 	if (iZombieClassType == ZC_TANK) return false;
+
+	if(!g_bBotPinKickEnable) return true;
 
 	if (strlen(L4D1_SI_Victim_NetProps[iZombieClassType]) != 0 && GetEntPropEnt(iBot, Prop_Send, L4D1_SI_Victim_NetProps[iZombieClassType]) != -1) {
 		return false;
