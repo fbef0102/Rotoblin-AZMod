@@ -81,13 +81,13 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 	{
 		if(!IsFakeClient(victim))//真人特感 player
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS]{default} %T","l4d_pig_infected2",i);
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS]{default} %T","l4d_pig_infected3",i);
 		}
@@ -124,7 +124,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 			
 		if(GetEntProp(victim, Prop_Send, "m_zombieClass") == 5)//Tank suicide
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 			{
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
@@ -142,7 +142,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 
 			static char victimName[128];
 			GetClientName(victim,victimName,128);			
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 			{
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
@@ -155,7 +155,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 	}
 	else if (attacker==0 && victim == 0 && StrEqual(victimname,"Witch"))//Witch自己不知怎的自殺了
 	{
-		for (new i = 1; i < MaxClients; i++)
+		for (new i = 1; i <= MaxClients; i++)
 			if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected4",i);
 	}
@@ -172,7 +172,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 		else if(StrEqual(weapon,"prop_car_alarm"))
 			Format(Tank_weapon, sizeof(Tank_weapon), "Alarm-Car");
 			
-		for (new i = 1; i < MaxClients; i++)
+		for (new i = 1; i <= MaxClients; i++)
 			if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 			{
 				SetGlobalTransTarget(i);
@@ -225,7 +225,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 				else if(victimzombieclass == 1||victimzombieclass == 3)//Tank kill teammates S.I. (Hunter,Smoker)	
 				{
 					if(!IsFakeClient(victim))//真人SI player
-					{	for (new i = 1; i < MaxClients; i++)
+					{	for (new i = 1; i <= MaxClients; i++)
 							if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 							{
 								SetGlobalTransTarget(i);
@@ -234,7 +234,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 					}
 					else
 					{
-						for (new i = 1; i < MaxClients; i++)
+						for (new i = 1; i <= MaxClients; i++)
 							if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 							{
 								SetGlobalTransTarget(i);
@@ -290,7 +290,7 @@ public Action Timer_TankKillBoomerCheck(Handle timer, Handle h_Pack)
 	{
 		if(!IsFakeClient(client))//真人SI player
 		{	
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
 					SetGlobalTransTarget(i);
@@ -299,7 +299,7 @@ public Action Timer_TankKillBoomerCheck(Handle timer, Handle h_Pack)
 		}
 		else	
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
 					SetGlobalTransTarget(i);
@@ -311,7 +311,7 @@ public Action Timer_TankKillBoomerCheck(Handle timer, Handle h_Pack)
 	{
 		if(!IsFakeClient(client))//真人SI player
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
 					SetGlobalTransTarget(i);
@@ -320,7 +320,7 @@ public Action Timer_TankKillBoomerCheck(Handle timer, Handle h_Pack)
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 				{
 					SetGlobalTransTarget(i);
@@ -343,13 +343,13 @@ public Action Timer_BoomerSuicideCheck(Handle timer, any client)
 	if(Tankclient<0 || !IsClientInGame(Tankclient))
 	{
 		if(!IsFakeClient(client))//真人boomer player
-		{	for (new i = 1; i < MaxClients; i++)
+		{	for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected11",i,clientName);
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected12",i);
 		}
@@ -359,13 +359,13 @@ public Action Timer_BoomerSuicideCheck(Handle timer, any client)
 	if (L4D_IsPlayerStaggering(Tankclient) && IsTooClose(client, Tankclient))//tank在暈眩 by 自殺的boomer
 	{
 		if(!IsFakeClient(client))//真人boomer player
-		{	for (new i = 1; i < MaxClients; i++)
+		{	for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected13",i,clientName);
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected14",i);
 		}
@@ -373,13 +373,13 @@ public Action Timer_BoomerSuicideCheck(Handle timer, any client)
 	else
 	{
 		if(!IsFakeClient(client))//真人boomer player
-		{	for (new i = 1; i < MaxClients; i++)
+		{	for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected11",i,clientName);
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 					CPrintToChat(i,"{green}[TS] %T","l4d_pig_infected12",i);
 		}

@@ -84,7 +84,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		if(ClientGrabLedge[victim])//掛邊
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{default}[{olive}TS{default}] %T","fell from top floor.",i,victimName);
 		}
@@ -101,7 +101,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		if(GetClientTeam(victim) == 2 && victim != attacker)//友傷
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{default}[{olive}TS{default}] %T","player kill teammate",i,attackerName, victimName);
 		}
@@ -218,7 +218,7 @@ public Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker d
 		GetClientName(attackerc, attacker, sizeof(attacker));
 	else
 		attacker = "Disconnected Player";
-	for (new i = 1; i < MaxClients; i++)
+	for (new i = 1; i <= MaxClients; i++)
 	{
 		if (DamageCache[attackerc][i] != 0 && attackerc != i)
 		{

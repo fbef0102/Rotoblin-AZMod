@@ -17,7 +17,7 @@ public OnPluginStart()
 
 public FinaleEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	for (new i = 1; i < MaxClients; i++)
+	for (new i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerIncap(i))
 		{

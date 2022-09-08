@@ -62,7 +62,7 @@ public Action L4D_OnEnterGhostStatePre(int client)
 
 		static char lastHumanTank_Name[128];
 		GetClientName(client, lastHumanTank_Name, 128);
-		for (int j = 1; j < MaxClients; j++)
+		for (int j = 1; j <= MaxClients; j++)
 			if (IsClientInGame(j) && IsClientConnected(j) && !IsFakeClient(j) && (GetClientTeam(j) == 1 || GetClientTeam(j) == 3))
 				CPrintToChat(j,"{default}[{olive}TS{default}] %T","Give Tank To AI",j,lastHumanTank_Name);
 		

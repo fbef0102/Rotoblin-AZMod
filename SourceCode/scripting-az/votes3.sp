@@ -7,7 +7,6 @@
 #define SCORE_DELAY_EMPTY_SERVER 3.0
 #define VOTE_NO "no"
 #define VOTE_YES "yes"
-#define L4D_MAXCLIENTS_PLUS1 (MaxClients+1)
 #define MENU_TIME 20
 new Votey = 0;
 new Voten = 0;

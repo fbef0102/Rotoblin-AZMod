@@ -72,7 +72,7 @@ public OnPluginStart()
 	
     // hook when loading late
 	if(bLateLoad){
-		for (new i = 1; i < MaxClients + 1; i++) {
+		for (new i = 1; i <= MaxClients ; i++) {
 			if (IsClientAndInGame(i)) {
                 SDKHook(i, SDKHook_OnTakeDamage, OnTakeDamage);
             }
@@ -113,14 +113,13 @@ public ConVarChange_hCvarSkipGetUpAnimation(Handle:convar, const String:oldValue
 		CvarSkipGetUpAnimation = StringToInt(newValue);
 }
 
-
-public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
+public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if(!IsValidEdict(damagetype) || !IsClientAndInGame(victim) || !IsClientAndInGame(attacker) || damage == 0.0) { return Plugin_Continue; }
+	if(!IsValidEntity(inflictor) || !IsClientAndInGame(victim) || !IsClientAndInGame(attacker) || damage == 0.0) { return Plugin_Continue; }
 	
-	decl String:sdamagetype[64];
-	GetEdictClassname( damagetype, sdamagetype, sizeof( sdamagetype ) ) ;
-	//PrintToChatAll("victim: %d,attacker:%d, damage is %f, sdamagetype is %s",victim,attacker,damage,sdamagetype);
+	static char sdamagetype[64];
+	GetEntityClassname( damagetype, sdamagetype, sizeof( sdamagetype ) ) ;
+	//PrintToChatAll("victim: %d,attacker:%d, damage is %f, inflictor is %s",victim,attacker,damage,sdamagetype);
 	if (GetClientTeam(attacker) == 3 && GetClientTeam(victim) == 2 && GetZombieClass(attacker) == 3)
 	{
 		if(!StrEqual(sdamagetype, "player"))//高鋪傷害sdamagetype is player
@@ -165,7 +164,6 @@ public Action:ColdDown(Handle:timer, any:attacker) {
 
 public OnClientPutInServer(client)
 {
-    // hook bots spawning
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 

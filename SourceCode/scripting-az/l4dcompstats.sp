@@ -963,7 +963,7 @@ public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Action:Timer_GroundedCheck(Handle:timer, any:client)
 {
-	if (!IsClientInGame(client) || IsGrounded(client))
+	if ( !IsClientInGame(client) || !IsPlayerAlive(client) || GetClientTeam(client) != 3 || GetEntProp(client, Prop_Send, "m_zombieClass") != ZC_HUNTER || IsGrounded(client) || IsOnLadder(client) )
 	{
 		g_bIsPouncing[client] = false;
 		KillTimer(timer);
@@ -1083,6 +1083,11 @@ public ClientValue2DSortDesc(x[], y[], const array[][], Handle:data)
 bool:IsGrounded(client)
 {
 	return (GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) > 0;
+}
+
+bool IsOnLadder(int entity)
+{
+    return GetEntityMoveType(entity) == MOVETYPE_LADDER;
 }
 
 public Action:Award(Handle:timer, any:client)

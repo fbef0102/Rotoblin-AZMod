@@ -152,7 +152,7 @@ stock GetFlowDistToSurvivors(const Float:pos[3]) {
 		return -1;
 	}
 	
-	for ( new j = 0; j < MaxClients; j++ ) {
+	for ( new j = 0; j <= MaxClients; j++ ) {
 		if ( IsSurvivor(j) && IsPlayerAlive(j) ) {
 			new Float:origin[3];
 			new flow_dist;
@@ -211,7 +211,7 @@ stock GetClosestSurvivor( Float:referencePos[3], excludeSurvivor = -1 ) {
 
 	GetClientAbsOrigin( closestSurvivor, survivorPos );
 	new iClosestAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );
-	for (new client = 1; client < MaxClients; client++) {
+	for (new client = 1; client <= MaxClients; client++) {
 		if( IsSurvivor(client) && IsPlayerAlive(client) && client != excludeSurvivor ) {
 			GetClientAbsOrigin( client, survivorPos );
 			new iAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );			
@@ -314,7 +314,7 @@ stock bool:IsBotHunter(client) {
 // @return: the number of a particular special infected class alive in the game
 stock CountSpecialInfectedClass(ZombieClass:targetClass) {
     new count = 0;
-    for (new i = 1; i < MaxClients; i++) {
+    for (new i = 1; i <= MaxClients; i++) {
         if ( IsBotInfected(i) && IsPlayerAlive(i) && !IsClientInKickQueue(i) ) {
             new playerClass = GetEntProp(i, Prop_Send, "m_zombieClass");
             if (playerClass == _:targetClass) {
@@ -328,7 +328,7 @@ stock CountSpecialInfectedClass(ZombieClass:targetClass) {
 // @return: the total special infected bots alive in the game
 stock CountSpecialInfectedBots() {
     new count = 0;
-    for (new i = 1; i < MaxClients; i++) {
+    for (new i = 1; i <= MaxClients; i++) {
         if (IsBotInfected(i) && IsPlayerAlive(i)) {
             count++;
         }

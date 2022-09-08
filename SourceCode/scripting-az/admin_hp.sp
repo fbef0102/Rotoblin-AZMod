@@ -47,7 +47,7 @@ public Action restore_hp(int client, int args){
 		return Plugin_Handled;
 	}
 	
-	for( int i = 1; i < MaxClients; i++ ) {
+	for( int i = 1; i <= MaxClients; i++ ) {
 		if (IsClientInGame(i) && GetClientTeam(i)==L4D_TEAM_SURVIVOR && IsPlayerAlive(i))
 			CheatCommand(i);
 	}

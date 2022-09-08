@@ -182,7 +182,7 @@ public Event_PlayerPounced(Handle:event, const String:name[], bool:dontBroadcast
 			StrCat(pounceLine,sizeof(pounceLine),distanceBuffer);
 		}
 
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i) && !IsFakeClient(i))
 			{

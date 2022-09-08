@@ -96,7 +96,7 @@ public Action:Event_Round_End(Handle:event, const String:name[], bool:dontBroadc
     }
     
     // get steamids
-    for (new i = 1; i < MaxClients; i++) 
+    for (new i = 1; i <= MaxClients; i++) 
     {
         if (!IsClientInGame(i)) continue;
         if (GetClientTeam(i) != 1) continue;

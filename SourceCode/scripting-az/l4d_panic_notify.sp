@@ -56,7 +56,7 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 			finaltriggernum++;
 			if(finaltriggernum == 2)
 			{
-				for (new i = 1; i < MaxClients; i++)
+				for (new i = 1; i <= MaxClients; i++)
 					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 						CPrintToChat(i,"{green}[TS] %N %T",client,"l4d_panic_notify1",i); 
 				alreadytrigger = true;
@@ -64,7 +64,7 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 		}
 		else
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify1",i); 
 			alreadytrigger = true;
@@ -81,42 +81,42 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 		GetCurrentMap(mapbuf, sizeof(mapbuf));
 		if(StrEqual(targetname, "washer_lift_button2") && StrEqual(mapbuf, "l4d_vs_hospital03_sewers"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i); 
 			alreadytrigger = true;
 		}
 		else if (StrEqual(targetname, "button_safedoor_PANIC") && StrEqual(mapbuf, "l4d_vs_smalltown03_ranchhouse"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i); 
 			alreadytrigger = true;
 		}
 		else if (iEntid == 1197 && StrEqual(mapbuf, "l4d_vs_city17_04")) 
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i); 
 			alreadytrigger = true;
 		} 
 		else if (StrEqual(targetname, "van_button") && StrEqual(mapbuf, "l4d_jsarena02_alley"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i);  
 			alreadytrigger = true;
 		}
 		else if (StrEqual(targetname, "tower_window_0_button") && StrEqual(mapbuf, "l4d_ihm02_manor"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i); 
 			alreadytrigger = true;
 		}
 		else if (StrEqual(targetname, "finale_start") && StrEqual(mapbuf, "l4d_dbd_new_dawn"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify1",i); 
 			alreadytrigger = true;
@@ -135,28 +135,28 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 		#endif
 		if (iEntid == 62 && StrEqual(mapbuf, "l4d_vs_city17_02"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify3",i);  
 			alreadytrigger = true;
 		}
 		else if (iEntid == 703 &&StrEqual(mapbuf, "l4d_vs_deadflagblues02_library"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify3",i);  
 			alreadytrigger = true;
 		}
 		else if (iEntid == 204 &&StrEqual(mapbuf, "l4d_vs_farm02_traintunnel"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify3",i); 
 			alreadytrigger = true;
 		}
 		else if (iEntid == 607 &&StrEqual(mapbuf, "l4d_jsarena01_town"))
 		{
-			for (new i = 1; i < MaxClients; i++)
+			for (new i = 1; i <= MaxClients; i++)
 				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 					CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify3",i); 
 			alreadytrigger = true;
@@ -171,7 +171,7 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 		PrintToChatAll("Panic Event: %N",client);
 	#endif
 	if(client&&IsClientConnected(client) && IsClientInGame(client)&& !IsFakeClient(client))
-	{	for (new i = 1; i < MaxClients; i++)
+	{	for (new i = 1; i <= MaxClients; i++)
 			if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 				CPrintToChat(i,"{green}[TS] {olive}%N %T",client,"l4d_panic_notify2",i);
 	}
@@ -183,14 +183,14 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 			GetCurrentMap(mapbuf, sizeof(mapbuf));
 			if(StrEqual(mapbuf, "l4d_river02_barge"))
 			{
-				for (new i = 1; i < MaxClients; i++)
+				for (new i = 1; i <= MaxClients; i++)
 					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 						CPrintToChat(i,"{green}[TS] %T","l4d_panic_notify4",i); 
 				return ;
 			}
 			else if(StrEqual(mapbuf, "l4d_deathaboard04_ship"))
 			{
-				for (new i = 1; i < MaxClients; i++)
+				for (new i = 1; i <= MaxClients; i++)
 					if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
 						CPrintToChat(i,"{green}[TS] %T","l4d_panic_notify5",i); 
 				return;

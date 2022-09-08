@@ -473,7 +473,7 @@ public void PossibleTankPropCreated(int iEntity, const char[] sClassName)
 
 public void Hook_PropSpawned(int iEntity)
 {
-	if (iEntity < MaxClients || !IsValidEntity(iEntity)) {
+	if (iEntity <= MaxClients || !IsValidEntity(iEntity)) {
 		return;
 	}
 

@@ -174,7 +174,7 @@ public Action:WitchSpawn_Timer(Handle:timer)
 	if (bEnabled  && witchSpawnCount < MaxWitchAllowed)
 	{
 		float vecPos[3];
-		for (new i = 1; i < MaxClients; i++)
+		for (new i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i))
 			{
