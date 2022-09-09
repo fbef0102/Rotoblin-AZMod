@@ -778,13 +778,13 @@ public Action:Console_Ht(client, args)
 	if(IsInteger(arg1))
 	{
 		new newlimit = StringToInt(arg1);
-		if(newlimit>15)
+		if(newlimit>20)
 		{
 			ReplyToCommand(client, "[TS] why you need so many hunter bots?");
 		}
-		else if (newlimit<=0)
+		else if (newlimit<0)
 		{
-			ReplyToCommand(client, "[TS] why no hunter bots?");
+			ReplyToCommand(client, "[TS] Wrong number?");
 		}
 		else if(newlimit!=HunterLimit)
 		{

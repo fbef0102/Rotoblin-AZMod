@@ -117,12 +117,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 {
 	if(!IsValidEntity(inflictor) || !IsClientAndInGame(victim) || !IsClientAndInGame(attacker) || damage == 0.0) { return Plugin_Continue; }
 	
-	static char sdamagetype[64];
-	GetEntityClassname( damagetype, sdamagetype, sizeof( sdamagetype ) ) ;
-	//PrintToChatAll("victim: %d,attacker:%d, damage is %f, inflictor is %s",victim,attacker,damage,sdamagetype);
+	static char inflictorClassName[64];
+	GetEntityClassname( inflictor, inflictorClassName, sizeof( inflictorClassName ) ) ;
+	//PrintToChatAll("victim: %d,attacker:%d, damage is %f, inflictor is %s, damagetype: %d",victim,attacker,damage, inflictorClassName, damagetype);
 	if (GetClientTeam(attacker) == 3 && GetClientTeam(victim) == 2 && GetZombieClass(attacker) == 3)
 	{
-		if(!StrEqual(sdamagetype, "player"))//高鋪傷害sdamagetype is player
+		if(damagetype & DMG_CLUB) //撲人與抓傷type is DMG_CLUB, 高撲傷害type is DMG_CRUSH
 		{
 			new hasvictim = GetEntPropEnt(attacker, Prop_Send, "m_pounceVictim");
 			if(hasvictim>0 && hasvictim == victim) //已經撲人
