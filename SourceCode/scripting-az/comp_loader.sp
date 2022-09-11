@@ -35,48 +35,48 @@ public Plugin:myinfo =
 }
 
 //plugin setup
-new Handle:CompLoaderEnabled			= INVALID_HANDLE;
-new Handle:CompLoaderAllowLoad			= INVALID_HANDLE;
+ConVar CompLoaderEnabled			= null;
+ConVar CompLoaderAllowLoad			= null;
 #if FULL_VERSION
-new Handle:CompLoaderAllowHuntersOnly	= INVALID_HANDLE;
+	ConVar CompLoaderAllowHuntersOnly	= null;
 #endif
-new Handle:CompLoaderAllowMap			= INVALID_HANDLE;
-new Handle:CompLoader4v4ClassicConfig			= INVALID_HANDLE;
-new Handle:CompLoader5v5Config			= INVALID_HANDLE;
-new Handle:CompLoader4v4Config			= INVALID_HANDLE;
-new Handle:CompLoader3v3Config			= INVALID_HANDLE;
-new Handle:CompLoader2v2Config			= INVALID_HANDLE;
+ConVar CompLoaderAllowMap			= null;
+ConVar CompLoader4v4ClassicConfig			= null;
+ConVar CompLoader4v4PubConfig			= null;
+ConVar CompLoader4v4PubHubtersConfig			= null;
+ConVar CompLoader5v5Config			= null;
+ConVar CompLoader4v4Config			= null;
+ConVar CompLoader3v3Config			= null;
+ConVar CompLoader2v2Config			= null;
 #if FULL_VERSION
-new Handle:CompLoader5v5HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader4v4HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader3v3HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader2v2HuntersConfig	= INVALID_HANDLE;
+	ConVar CompLoader5v5HuntersConfig	= null;
+	ConVar CompLoader4v4HuntersConfig	= null;
+	ConVar CompLoader3v3HuntersConfig	= null;
+	ConVar CompLoader2v2HuntersConfig	= null;
 #if NO_BOOMER_CFG
-new Handle:CompLoader5v5NobConfig	= INVALID_HANDLE;
-new Handle:CompLoader4v4NobConfig		= INVALID_HANDLE;
-new Handle:CompLoader3v3NobConfig		= INVALID_HANDLE;
-new Handle:CompLoader2v2NobConfig		= INVALID_HANDLE;
+	ConVar CompLoader5v5NobConfig	= null;
+	ConVar CompLoader4v4NobConfig		= null;
+	ConVar CompLoader3v3NobConfig		= null;
+	ConVar CompLoader2v2NobConfig		= null;
 #endif
-new Handle:CompLoader1v1HuntersConfig	= INVALID_HANDLE;
-
-new Handle:CompLoader1v2HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader1v3HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader1v4HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader1v5HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader2v3HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader2v4HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader2v5HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader3v4HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader3v5HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoader4v5HuntersConfig	= INVALID_HANDLE;
-new Handle:CompLoaderWitchPartyConfig   = INVALID_HANDLE;
-new Handle:CompLoaderDarkCoopConfig		= INVALID_HANDLE;
-
+	ConVar CompLoader1v1HuntersConfig	= null;
+	ConVar CompLoader1v2HuntersConfig	= null;
+	ConVar CompLoader1v3HuntersConfig	= null;
+	ConVar CompLoader1v4HuntersConfig	= null;
+	ConVar CompLoader1v5HuntersConfig	= null;
+	ConVar CompLoader2v3HuntersConfig	= null;
+	ConVar CompLoader2v4HuntersConfig	= null;
+	ConVar CompLoader2v5HuntersConfig	= null;
+	ConVar CompLoader3v4HuntersConfig	= null;
+	ConVar CompLoader3v5HuntersConfig	= null;
+	ConVar CompLoader4v5HuntersConfig	= null;
+	ConVar CompLoaderWitchPartyConfig   = null;
+	ConVar CompLoaderDarkCoopConfig		= null;
 #else
-new Handle:CompLoader1v1Config			= INVALID_HANDLE;
+	ConVar CompLoader1v1Config			= null;
 #endif
-new Handle:CompLoaderLoadActive			= INVALID_HANDLE;
-new Handle:CompLoaderMapActive			= INVALID_HANDLE;
+ConVar CompLoaderLoadActive			= null;
+ConVar CompLoaderMapActive			= null;
 
 //global integers and strings used on map start
 new FirstMapVersus;
@@ -92,12 +92,12 @@ static bool: bIsL4DscoresLoaded = false;		//controls the printing of the team or
 static bool: bIsRotoblinLoaded = false;			//controls the printing of the rotoblin controlled cvars
 static g_votedelay;
 #define VOTEDELAY_TIME 60
-new Handle:g_hCvarPlayerLimit;
+ConVar g_hCvarPlayerLimit;
 //new Handle:g_hVote;
 #define MATCHMODES_PATH		"configs/matchmodes.txt"
 new String:g_sCfg[32];
 Menu g_hMatchVote = null;
-new Handle:g_hModesKV = INVALID_HANDLE;
+new Handle:g_hModesKV = null;
 native ClientVoteMenuSet(client,trueorfalse);//from votes3
 new Votey = 0;
 new Voten = 0;
@@ -105,6 +105,43 @@ new Voten = 0;
 #define VOTE_YES "yes"
 new Handle:g_Cvar_Limits;
 new String:PlayerCfg[128];			//Initial string after !load
+
+char cfg5v5[128];
+char cfg4v4classic[128];
+char cfg4v4Pub[128];
+char cfg4v4PubHuters[128];
+char cfg4v4[128];
+char cfg3v3[128];
+char cfg2v2[128];
+#if FULL_VERSION
+	char cfg5v5hunters[128];
+	char cfg4v4hunters[128];
+	char cfg3v3hunters[128];
+	char cfg2v2hunters[128];
+#endif
+#if NO_BOOMER_CFG
+	char cfg5v5Nob[128];
+	char cfg4v4Nob[128];
+	char cfg3v3Nob[128];
+	char cfg2v2Nob[128];
+#endif
+#if FULL_VERSION
+	char cfg1v1hunters[128];
+	char cfg1v2hunters[128];
+	char cfg1v3hunters[128];
+	char cfg1v4hunters[128];
+	char cfg1v5hunters[128];
+	char cfg2v3hunters[128];
+	char cfg2v4hunters[128];
+	char cfg2v5hunters[128];
+	char cfg3v4hunters[128];
+	char cfg3v5hunters[128];
+	char cfg4v5hunters[128];
+	char cfgwitchparty[128];
+	char cfgdarkcoop[128];
+#else
+	char cfg1v1[128];
+#endif
 
 public OnPluginStart()
 {
@@ -118,48 +155,50 @@ public OnPluginStart()
 		SetFailState("Plugin supports Left 4 Dead only.");
 	CompLoaderEnabled				= CreateConVar("comp_loader_enabled", "0", "Enable comp_loader to exec config on first maps.", FCVAR_NOTIFY);
 	#if FULL_VERSION	
-	CompLoaderAllowLoad				= CreateConVar("comp_loader_allow_load", "1", "Allow players to use the !load command.", FCVAR_NOTIFY);
-	CompLoaderAllowHuntersOnly		= CreateConVar("comp_loader_allow_hunters_only", "1", "Allow players to load 1v1, and hunter only 4v4 3v3 2v2.", FCVAR_NOTIFY);
-	CompLoaderAllowMap				= CreateConVar("comp_loader_allow_map", "1", "Allow players to use the !changemap(!cm) command.", FCVAR_NOTIFY);
+		CompLoaderAllowLoad				= CreateConVar("comp_loader_allow_load", "1", "Allow players to use the !load command.", FCVAR_NOTIFY);
+		CompLoaderAllowHuntersOnly		= CreateConVar("comp_loader_allow_hunters_only", "1", "Allow players to load hunter only config.", FCVAR_NOTIFY);
+		CompLoaderAllowMap				= CreateConVar("comp_loader_allow_map", "1", "Allow players to use the !changemap(!cm) command.", FCVAR_NOTIFY);
 	#else
-	CompLoaderAllowMap				= CreateConVar("comp_loader_allow_map", "1", "Allow players to use the !changemap(!cm) command.", FCVAR_NOTIFY);
-	CompLoaderAllowLoad				= CreateConVar("comp_loader_allow_load", "1", "Allow players to use the !load command.", FCVAR_NOTIFY);
+		CompLoaderAllowMap				= CreateConVar("comp_loader_allow_map", "1", "Allow players to use the !changemap(!cm) command.", FCVAR_NOTIFY);
+		CompLoaderAllowLoad				= CreateConVar("comp_loader_allow_load", "1", "Allow players to use the !load command.", FCVAR_NOTIFY);
 	#endif
 	//CompLoaderConfig				= CreateConVar("comp_loader_config", "4v4", "Type of config to be loaded, 4v4 / 3v3 / 2v2 / 1v1.");	//needs to be removed
 	//CompLoaderConfigHuntersOnly		= CreateConVar("comp_loader_config_hunters_only", "0", "1 = Hunters only, 0 = Normal .");	//needs to be removed
-	CompLoader5v5Config				= CreateConVar("comp_loader_5v5_config", "rotoblin_hardcore_5v5.cfg", "Name of the 5v5 config.");
-	CompLoader4v4Config				= CreateConVar("comp_loader_4v4_config", "rotoblin_hardcore_4v4.cfg", "Name of the 4v4 config.");
-	CompLoader4v4ClassicConfig		= CreateConVar("comp_loader_4v4_classic_config", "rotoblin_hardcore_4v4_classic.cfg", "Name of the 4v4 classic config.");
-	CompLoader3v3Config				= CreateConVar("comp_loader_3v3_config", "rotoblin_hardcore_3v3.cfg", "Name of the 3v3 config.");
-	CompLoader2v2Config				= CreateConVar("comp_loader_2v2_config", "rotoblin_hardcore_2v2.cfg", "Name of the 2v2 config.");
+	CompLoader5v5Config				= CreateConVar("comp_loader_5v5_config", "rotoblin_hardcore_5v5.cfg", "Name of the 5v5 config. (Empty=Disable)");
+	CompLoader4v4Config				= CreateConVar("comp_loader_4v4_config", "rotoblin_hardcore_4v4.cfg", "Name of the 4v4 config. (Empty=Disable)");
+	CompLoader4v4ClassicConfig		= CreateConVar("comp_loader_4v4_classic_config", "rotoblin_hardcore_4v4_classic.cfg", "Name of the 4v4 classic config. (Empty=Disable)");
+	CompLoader4v4PubConfig			= CreateConVar("comp_loader_4v4_pub_config", "rotoblin_pub.cfg", "Name of the 4v4 pub config. (Empty=Disable)");
+	CompLoader4v4PubHubtersConfig	= CreateConVar("comp_loader_4v4_pub_hunter_config", "rotoblin_pub_hunters.cfg", "Name of the 4v4 pub hunters config. (Empty=Disable)");
+	CompLoader3v3Config				= CreateConVar("comp_loader_3v3_config", "rotoblin_hardcore_3v3.cfg", "Name of the 3v3 config. (Empty=Disable)");
+	CompLoader2v2Config				= CreateConVar("comp_loader_2v2_config", "rotoblin_hardcore_2v2.cfg", "Name of the 2v2 config. (Empty=Disable)");
 	#if FULL_VERSION
-	CompLoader5v5HuntersConfig		= CreateConVar("comp_loader_5v5_hunters_only", "rotoblin_hunters_5v5.cfg", "Name of the 5v5 Hunters only config.");
-	CompLoader4v4HuntersConfig		= CreateConVar("comp_loader_4v4_hunters_only", "rotoblin_hunters_4v4.cfg", "Name of the 4v4 Hunters only config.");
-	CompLoader3v3HuntersConfig		= CreateConVar("comp_loader_3v3_hunters_only", "rotoblin_hunters_3v3.cfg", "Name of the 3v3 Hunters only config.");
-	CompLoader2v2HuntersConfig		= CreateConVar("comp_loader_2v2_hunters_only", "rotoblin_hunters_2v2.cfg", "Name of the 2v2 Hunters only config.");
-	#if NO_BOOMER_CFG
-	CompLoader5v5NobConfig			= CreateConVar("comp_loader_5v5_no_boomer", "rotoblin_nob_5v5.cfg", "Name of the 4v4 No Boomer config.");
-	CompLoader4v4NobConfig			= CreateConVar("comp_loader_4v4_no_boomer", "rotoblin_nob_4v4.cfg", "Name of the 4v4 No Boomer config.");
-	CompLoader3v3NobConfig			= CreateConVar("comp_loader_3v3_no_boomer", "rotoblin_nob_3v3.cfg", "Name of the 3v3 No Boomer config.");
-	CompLoader2v2NobConfig			= CreateConVar("comp_loader_2v2_no_boomer", "rotoblin_nob_2v2.cfg", "Name of the 2v2 No Boomer config.");
+		CompLoader5v5HuntersConfig		= CreateConVar("comp_loader_5v5_hunters_only", "rotoblin_hunters_5v5.cfg", "Name of the 5v5 Hunters only config. (Empty=Disable)");
+		CompLoader4v4HuntersConfig		= CreateConVar("comp_loader_4v4_hunters_only", "rotoblin_hunters_4v4.cfg", "Name of the 4v4 Hunters only config. (Empty=Disable)");
+		CompLoader3v3HuntersConfig		= CreateConVar("comp_loader_3v3_hunters_only", "rotoblin_hunters_3v3.cfg", "Name of the 3v3 Hunters only config. (Empty=Disable)");
+		CompLoader2v2HuntersConfig		= CreateConVar("comp_loader_2v2_hunters_only", "rotoblin_hunters_2v2.cfg", "Name of the 2v2 Hunters only config. (Empty=Disable)");
 	#endif
-	CompLoader1v1HuntersConfig		= CreateConVar("comp_loader_1v1_hunters_only", "rotoblin_hunters_1v1.cfg", "Name of the 1v1 Hunters only config.");
-	
-	CompLoader1v2HuntersConfig		= CreateConVar("comp_loader_1v2_hunters_only", "rotoblin_hunters_1v2.cfg", "Name of the 1v2 Hunters only config.");
-	CompLoader1v3HuntersConfig	= CreateConVar("comp_loader_1v3_hunters_only", "rotoblin_hunters_1v3.cfg", "Name of the 1v3 Hunters only config.");
-	CompLoader1v4HuntersConfig	= CreateConVar("comp_loader_1v4_hunters_only", "rotoblin_hunters_1v4.cfg", "Name of the 1v4 Hunters only config.");
-	CompLoader1v5HuntersConfig	= CreateConVar("comp_loader_1v5_hunters_only", "rotoblin_hunters_1v5.cfg", "Name of the 1v5 Hunters only config.");
-	CompLoader2v3HuntersConfig	= CreateConVar("comp_loader_2v3_hunters_only", "rotoblin_hunters_2v3.cfg", "Name of the 2v3 Hunters only config.");
-	CompLoader2v4HuntersConfig	= CreateConVar("comp_loader_2v4_hunters_only", "rotoblin_hunters_2v4.cfg", "Name of the 2v4 Hunters only config.");
-	CompLoader2v5HuntersConfig	= CreateConVar("comp_loader_2v5_hunters_only", "rotoblin_hunters_2v5.cfg", "Name of the 2v5 Hunters only config.");
-	CompLoader3v4HuntersConfig	= CreateConVar("comp_loader_3v4_hunters_only", "rotoblin_hunters_3v4.cfg", "Name of the 3v4 Hunters only config.");
-	CompLoader3v5HuntersConfig	= CreateConVar("comp_loader_3v5_hunters_only", "rotoblin_hunters_3v5.cfg", "Name of the 3v5 Hunters only config.");
-	CompLoader4v5HuntersConfig	= CreateConVar("comp_loader_4v5_hunters_only", "rotoblin_hunters_4v5.cfg", "Name of the 4v5 Hunters only config.");
-	CompLoaderWitchPartyConfig	= CreateConVar("comp_loader_witch_Party_config", "rotoblin_witch_party.cfg", "Name of the Witch Party config.");
-	CompLoaderDarkCoopConfig	= CreateConVar("comp_loader_Dark_Coop_config", "rotoblin_Dark_Coop.cfg", "Name of the Witch Party config.");
-
+	#if NO_BOOMER_CFG
+			CompLoader5v5NobConfig			= CreateConVar("comp_loader_5v5_no_boomer", "rotoblin_nob_5v5.cfg", "Name of the 4v4 No Boomer config. (Empty=Disable)");
+			CompLoader4v4NobConfig			= CreateConVar("comp_loader_4v4_no_boomer", "rotoblin_nob_4v4.cfg", "Name of the 4v4 No Boomer config. (Empty=Disable)");
+			CompLoader3v3NobConfig			= CreateConVar("comp_loader_3v3_no_boomer", "rotoblin_nob_3v3.cfg", "Name of the 3v3 No Boomer config. (Empty=Disable)");
+			CompLoader2v2NobConfig			= CreateConVar("comp_loader_2v2_no_boomer", "rotoblin_nob_2v2.cfg", "Name of the 2v2 No Boomer config. (Empty=Disable)");
+	#endif
+	#if FULL_VERSION
+		CompLoader1v1HuntersConfig	= CreateConVar("comp_loader_1v1_hunters_only", "rotoblin_hunters_1v1.cfg", "Name of the 1v1 Hunters only config. (Empty=Disable)");
+		CompLoader1v2HuntersConfig	= CreateConVar("comp_loader_1v2_hunters_only", "rotoblin_hunters_1v2.cfg", "Name of the 1v2 Hunters only config. (Empty=Disable)");
+		CompLoader1v3HuntersConfig	= CreateConVar("comp_loader_1v3_hunters_only", "rotoblin_hunters_1v3.cfg", "Name of the 1v3 Hunters only config. (Empty=Disable)");
+		CompLoader1v4HuntersConfig	= CreateConVar("comp_loader_1v4_hunters_only", "rotoblin_hunters_1v4.cfg", "Name of the 1v4 Hunters only config. (Empty=Disable)");
+		CompLoader1v5HuntersConfig	= CreateConVar("comp_loader_1v5_hunters_only", "rotoblin_hunters_1v5.cfg", "Name of the 1v5 Hunters only config. (Empty=Disable)");
+		CompLoader2v3HuntersConfig	= CreateConVar("comp_loader_2v3_hunters_only", "rotoblin_hunters_2v3.cfg", "Name of the 2v3 Hunters only config. (Empty=Disable)");
+		CompLoader2v4HuntersConfig	= CreateConVar("comp_loader_2v4_hunters_only", "rotoblin_hunters_2v4.cfg", "Name of the 2v4 Hunters only config. (Empty=Disable)");
+		CompLoader2v5HuntersConfig	= CreateConVar("comp_loader_2v5_hunters_only", "rotoblin_hunters_2v5.cfg", "Name of the 2v5 Hunters only config. (Empty=Disable)");
+		CompLoader3v4HuntersConfig	= CreateConVar("comp_loader_3v4_hunters_only", "rotoblin_hunters_3v4.cfg", "Name of the 3v4 Hunters only config. (Empty=Disable)");
+		CompLoader3v5HuntersConfig	= CreateConVar("comp_loader_3v5_hunters_only", "rotoblin_hunters_3v5.cfg", "Name of the 3v5 Hunters only config. (Empty=Disable)");
+		CompLoader4v5HuntersConfig	= CreateConVar("comp_loader_4v5_hunters_only", "rotoblin_hunters_4v5.cfg", "Name of the 4v5 Hunters only config. (Empty=Disable)");
+		CompLoaderWitchPartyConfig	= CreateConVar("comp_loader_witch_Party_config", "rotoblin_witch_party.cfg", "Name of the Witch Party config. (Empty=Disable)");
+		CompLoaderDarkCoopConfig	= CreateConVar("comp_loader_Dark_Coop_config", "rotoblin_Dark_Coop.cfg", "Name of the Dark Coop config. (Empty=Disable)");
 	#else
-	CompLoader1v1Config				= CreateConVar("comp_loader_1v1_config", "rotoblin_hardcore_1v1.cfg", "Name of the 1v1 config.");
+		CompLoader1v1Config				= CreateConVar("comp_loader_1v1_config", "rotoblin_hardcore_1v1.cfg", "Name of the 1v1 config. (Empty=Disable)");
 	#endif
 	CompLoaderLoadActive			= CreateConVar("comp_loader_load_active", "0", "");
 	CompLoaderMapActive				= CreateConVar("comp_loader_map_active", "0", "");
@@ -171,7 +210,44 @@ public OnPluginStart()
 		
 	HookConVarChange(CompLoaderLoadActive, ConVarChange_CompLoaderLoadActive);
 	HookConVarChange(CompLoaderMapActive, ConVarChange_CompLoaderMapActive);
-	
+
+	GetCvars();
+	CompLoader5v5Config.AddChangeHook(ChangeVars);
+	CompLoader4v4Config.AddChangeHook(ChangeVars);
+	CompLoader4v4ClassicConfig.AddChangeHook(ChangeVars);
+	CompLoader4v4PubConfig.AddChangeHook(ChangeVars);
+	CompLoader4v4PubHubtersConfig.AddChangeHook(ChangeVars);
+	CompLoader3v3Config.AddChangeHook(ChangeVars);
+	CompLoader2v2Config.AddChangeHook(ChangeVars);
+	#if FULL_VERSION
+		CompLoader5v5HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader4v4HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader3v3HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader2v2HuntersConfig.AddChangeHook(ChangeVars);
+	#endif
+	#if NO_BOOMER_CFG
+			CompLoader5v5NobConfig.AddChangeHook(ChangeVars);
+			CompLoader4v4NobConfig.AddChangeHook(ChangeVars);
+			CompLoader3v3NobConfig.AddChangeHook(ChangeVars);
+			CompLoader2v2NobConfig.AddChangeHook(ChangeVars);
+	#endif
+	#if FULL_VERSION
+		CompLoader1v1HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader1v2HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader1v3HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader1v4HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader1v5HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader2v3HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader2v4HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader2v5HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader3v4HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader3v5HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoader4v5HuntersConfig.AddChangeHook(ChangeVars);
+		CompLoaderWitchPartyConfig.AddChangeHook(ChangeVars);
+		CompLoaderDarkCoopConfig.AddChangeHook(ChangeVars);
+	#else
+		CompLoader1v1Config.AddChangeHook(ChangeVars);
+	#endif
 	//register cmds
 	RegConsoleCmd("sm_load", Config_Changer, "Request to load or forceload a config.");
 	RegConsoleCmd("sm_match", Config_Changer, "Request to match or forcematch a config.");
@@ -193,6 +269,51 @@ public OnPluginStart()
 	{
 		SetFailState("Couldn't load matchmodes.txt!");
 	}	
+}
+
+public void ChangeVars(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+	GetConVarString(CompLoader5v5Config, cfg5v5, 128);
+	GetConVarString(CompLoader4v4Config, cfg4v4, 128);
+	GetConVarString(CompLoader4v4ClassicConfig, cfg4v4classic, 128);
+	GetConVarString(CompLoader4v4PubConfig, cfg4v4Pub, 128);
+	GetConVarString(CompLoader4v4PubHubtersConfig, cfg4v4PubHuters, 128);
+	GetConVarString(CompLoader3v3Config, cfg3v3, 128);
+	GetConVarString(CompLoader2v2Config, cfg2v2, 128);
+	#if FULL_VERSION
+		GetConVarString(CompLoader5v5HuntersConfig, cfg5v5hunters, 128);
+		GetConVarString(CompLoader4v4HuntersConfig, cfg4v4hunters, 128);
+		GetConVarString(CompLoader3v3HuntersConfig, cfg3v3hunters, 128);
+		GetConVarString(CompLoader2v2HuntersConfig, cfg2v2hunters, 128);
+	#endif
+	#if NO_BOOMER_CFG
+		GetConVarString(CompLoader5v5NobConfig, cfg5v5Nob, 128);
+		GetConVarString(CompLoader4v4NobConfig, cfg4v4Nob, 128);
+		GetConVarString(CompLoader3v3NobConfig, cfg3v3Nob, 128);
+		GetConVarString(CompLoader2v2NobConfig, cfg2v2Nob, 128);
+	#endif
+	#if FULL_VERSION
+		GetConVarString(CompLoader1v1HuntersConfig, cfg1v1hunters, 128);
+		GetConVarString(CompLoader1v2HuntersConfig, cfg1v2hunters, 128);
+		GetConVarString(CompLoader1v3HuntersConfig, cfg1v3hunters, 128);
+		GetConVarString(CompLoader1v4HuntersConfig, cfg1v4hunters, 128);
+		GetConVarString(CompLoader1v5HuntersConfig, cfg1v5hunters, 128);
+		GetConVarString(CompLoader2v3HuntersConfig, cfg2v3hunters, 128);
+		GetConVarString(CompLoader2v4HuntersConfig, cfg2v4hunters, 128);
+		GetConVarString(CompLoader2v5HuntersConfig, cfg2v5hunters, 128);
+		GetConVarString(CompLoader3v4HuntersConfig, cfg3v4hunters, 128);
+		GetConVarString(CompLoader3v5HuntersConfig, cfg3v5hunters, 128);
+		GetConVarString(CompLoader4v5HuntersConfig, cfg4v5hunters, 128);
+		GetConVarString(CompLoaderWitchPartyConfig, cfgwitchparty, 128);
+		GetConVarString(CompLoaderDarkCoopConfig  , cfgdarkcoop  , 128);
+	#else
+		GetConVarString(CompLoader1v1Config, cfg1v1, 128);
+	#endif
 }
 
 //Config_changer & Map_Changer
@@ -564,7 +685,7 @@ public Action:Timer_Load_Requests_Timeout(Handle:timer)
 			Config_Requests[TEAM_INFECTED] = false;
 			CPrintToChatAll("[{olive}TS{default}] !load %t","request timed out.");
 			numberOfLoadTimers = 0;
-			SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+			SetConVarInt(CompLoaderLoadActive, 0);
 		}
 		else 
 		{
@@ -595,7 +716,7 @@ public Action:Timer_Map_Requests_Timeout(Handle:timer)
 			Map_Requests[TEAM_INFECTED] = false;
 			CPrintToChatAll("[{olive}TS{default}] !changemap(!cm) %t","request timed out.");
 			numberOfMapTimers = 0;
-			SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+			SetConVarInt(CompLoaderMapActive, 0);
 		}
 		else 
 		{
@@ -632,42 +753,41 @@ Admin_Cancel(client)
 	
 	if ((Config_Requests[TEAM_SURVIVOR] || Config_Requests[TEAM_INFECTED]) && (!Map_Requests[TEAM_SURVIVOR] && !Map_Requests[TEAM_INFECTED]))
 	{
-			Config_Requests[TEAM_SURVIVOR] = false;
-			Config_Requests[TEAM_INFECTED] = false;
-			adminCancel = true;
-			adminMapActive = false;
-			adminLoadActive = false;
-			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", localAdminName,"canceled the command request.","!load");
-			SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-			CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
-			SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-			return;
+		Config_Requests[TEAM_SURVIVOR] = false;
+		Config_Requests[TEAM_INFECTED] = false;
+		adminCancel = true;
+		adminMapActive = false;
+		adminLoadActive = false;
+		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", localAdminName,"canceled the command request.","!load");
+		SetConVarInt(CompLoaderLoadActive, 0);
+		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+		return;
 	}
 	if ((!Config_Requests[TEAM_SURVIVOR] && !Config_Requests[TEAM_INFECTED]) && (Map_Requests[TEAM_SURVIVOR] || Map_Requests[TEAM_INFECTED]))
 	{
-			Map_Requests[TEAM_SURVIVOR] = false;
-			Map_Requests[TEAM_INFECTED] = false;
-			adminCancel = true;
-			adminMapActive = false;
-			adminLoadActive = false;
-			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %s", localAdminName,"canceled the command request.","!map");
-			SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-			CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
-			return;
+		Map_Requests[TEAM_SURVIVOR] = false;
+		Map_Requests[TEAM_INFECTED] = false;
+		adminCancel = true;
+		adminMapActive = false;
+		adminLoadActive = false;
+		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %s", localAdminName,"canceled the command request.","!map");
+		SetConVarInt(CompLoaderMapActive, 0);
+		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+		return;
 	}
 	else
 	{
-			Config_Requests[TEAM_SURVIVOR] = false;
-			Config_Requests[TEAM_INFECTED] = false;
-			Map_Requests[TEAM_SURVIVOR] = false;
-			Map_Requests[TEAM_INFECTED] = false;
-			adminCancel = true;
-			adminMapActive = false;
-			adminLoadActive = false;
-			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s %t", localAdminName,"canceled all requests.");
-			SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-			SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-			CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+		Config_Requests[TEAM_SURVIVOR] = false;
+		Config_Requests[TEAM_INFECTED] = false;
+		Map_Requests[TEAM_SURVIVOR] = false;
+		Map_Requests[TEAM_INFECTED] = false;
+		adminCancel = true;
+		adminMapActive = false;
+		adminLoadActive = false;
+		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s %t", localAdminName,"canceled all requests.");
+		SetConVarInt(CompLoaderMapActive, 0);
+		SetConVarInt(CompLoaderLoadActive, 0);
+		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
 	}
 	return;
 }
@@ -754,17 +874,12 @@ public Action:Config_Changer(client, args)
 		#if FULL_VERSION
 		new bool:isHunterAllowed = false;
 		#endif
-		
-		new allowLoadInt = GetConVarInt(CompLoaderAllowLoad);
-		#if FULL_VERSION
-		new allowHunterInt = GetConVarInt(CompLoaderAllowHuntersOnly);
-		#endif
-		
+	
 		if (id == true) isAdmin = true;
 		
-		if (allowLoadInt == 1) isLoadAllowed = true;
+		isLoadAllowed = GetConVarBool(CompLoaderAllowLoad);
 		#if FULL_VERSION
-		if (allowHunterInt == 1) isHunterAllowed = true;
+			isHunterAllowed = GetConVarBool(CompLoaderAllowHuntersOnly);
 		#endif
 		
 		if (isAdmin == false && isLoadAllowed == false)
@@ -772,101 +887,81 @@ public Action:Config_Changer(client, args)
 			ReplyToCommand(client, "[TS] %T","command is disabled.",client,"!load");
 			return Plugin_Handled;
 		}
-		decl String:cfg5v5[128];
-		decl String:cfg4v4classic[128];
-		decl String:cfg4v4[128];
-		decl String:cfg3v3[128];
-		decl String:cfg2v2[128];
-		#if FULL_VERSION
-		decl String:cfg5v5hunters[128];
-		decl String:cfg4v4hunters[128];
-		decl String:cfg3v3hunters[128];
-		decl String:cfg2v2hunters[128];
-		decl String:cfg1v1hunters[128];
-		
-		decl String:cfg1v2hunters[128];
-		decl String:cfg1v3hunters[128];
-		decl String:cfg1v4hunters[128];
-		decl String:cfg1v5hunters[128];
-		decl String:cfg2v3hunters[128];
-		decl String:cfg2v4hunters[128];
-		decl String:cfg2v5hunters[128];
-		decl String:cfg3v4hunters[128];
-		decl String:cfg3v5hunters[128];
-		decl String:cfg4v5hunters[128];
-		decl String:cfgwitchparty[128];
-		decl String:cfgdarkcoop[128];
-		#else
-		decl String:cfg1v1[128];
-		#endif
-		
-		GetConVarString(CompLoader4v4ClassicConfig, cfg4v4classic, 128);
-		GetConVarString(CompLoader5v5Config, cfg5v5, 128);
-		GetConVarString(CompLoader4v4Config, cfg4v4, 128);
-		GetConVarString(CompLoader3v3Config, cfg3v3, 128);
-		GetConVarString(CompLoader2v2Config, cfg2v2, 128);
-		#if FULL_VERSION
-		GetConVarString(CompLoader5v5HuntersConfig, cfg5v5hunters, 128);
-		GetConVarString(CompLoader4v4HuntersConfig, cfg4v4hunters, 128);
-		GetConVarString(CompLoader3v3HuntersConfig, cfg3v3hunters, 128);
-		GetConVarString(CompLoader2v2HuntersConfig, cfg2v2hunters, 128);
-		GetConVarString(CompLoader1v1HuntersConfig, cfg1v1hunters, 128);
-		
-		GetConVarString(CompLoader1v2HuntersConfig, cfg1v2hunters, 128);
-		GetConVarString(CompLoader1v3HuntersConfig, cfg1v3hunters, 128);
-		GetConVarString(CompLoader1v4HuntersConfig, cfg1v4hunters, 128);
-		GetConVarString(CompLoader1v5HuntersConfig, cfg1v5hunters, 128);
-		GetConVarString(CompLoader2v3HuntersConfig, cfg2v3hunters, 128);
-		GetConVarString(CompLoader2v4HuntersConfig, cfg2v4hunters, 128);
-		GetConVarString(CompLoader2v5HuntersConfig, cfg2v5hunters, 128);
-		GetConVarString(CompLoader3v4HuntersConfig, cfg3v4hunters, 128);
-		GetConVarString(CompLoader3v5HuntersConfig, cfg3v5hunters, 128);
-		GetConVarString(CompLoader4v5HuntersConfig, cfg4v5hunters, 128);
-		GetConVarString(CompLoaderWitchPartyConfig, cfgwitchparty, 128);
-		GetConVarString(CompLoaderDarkCoopConfig  , cfgdarkcoop  , 128);
-		#else
-		GetConVarString(CompLoader1v1Config, cfg1v1, 128);
-		#endif
 		
 		decl String:loadInfo[1024];
+		loadInfo[0] = '\0'; 
 		if(isAdmin == true) Format(loadInfo, 1024, "| command          | force load               | config that gets loaded       |\n");
 		else Format(loadInfo, 1024, "| command          | request to load          | config that gets loaded       |\n");
 		Format(loadInfo, 1024, "%s|------------------|--------------------------|-------------------------------|\n",loadInfo);
+
+		if(strlen(cfg5v5) > 0) 
 		Format(loadInfo, 1024, "%s| !load 5v5        | 5v5 hardcore config      | %30s|\n", loadInfo, cfg5v5);
+		if(strlen(cfg4v4) > 0) 
 		Format(loadInfo, 1024, "%s| !load 4v4        | 4v4 hardcore config      | %30s|\n", loadInfo, cfg4v4);
+		if(strlen(cfg4v4classic) > 0) 
 		Format(loadInfo, 1024, "%s| !load 4v4 classic| 4v4 classic config       | %30s|\n", loadInfo, cfg4v4classic);
+		if(strlen(cfg4v4Pub) > 0) 
+		Format(loadInfo, 1024, "%s| !load 4v4 pub    | 4v4 pub config           | %30s|\n", loadInfo, cfg4v4Pub);
+		if(strlen(cfg4v4PubHuters) > 0) 
+		Format(loadInfo, 1024, "%s| !load 4v4 pub hu | 4v4 pub hunter config    | %30s|\n", loadInfo, cfg4v4PubHuters);
+		if(strlen(cfg3v3) > 0) 
 		Format(loadInfo, 1024, "%s| !load 3v3        | 3v3 hardcore config      | %30s|\n", loadInfo, cfg3v3);
-		Format(loadInfo, 1024, "%s| !load 2v2        | 2v2 hardcore config      | %30s|\n", loadInfo, cfg2v2);
-		PrintToConsole(client, loadInfo);
+		if(strlen(cfg2v2) > 0) 
+		Format(loadInfo, 1024, "%s| !load 2v2        | 2v2 hardcore config      | %30s|", loadInfo, cfg2v2);
+		if(strlen(loadInfo) > 0) PrintToConsole(client, loadInfo);
+
+		loadInfo[0] = '\0'; 
 		#if FULL_VERSION
-		if(isHunterAllowed == true)
-		{
-			Format(loadInfo, 1024, "| !load 5v5 hu     | 5v5 hunters only config  | %30s|\n", cfg5v5hunters);
-			Format(loadInfo, 1024, "%s| !load 4v4 hu     | 4v4 hunters only config  | %30s|\n", loadInfo, cfg4v4hunters);
-			Format(loadInfo, 1024, "%s| !load 3v3 hu     | 3v3 hunters only config  | %30s|\n", loadInfo, cfg3v3hunters);
-			Format(loadInfo, 1024, "%s| !load 2v2 hu     | 2v2 hunters only config  | %30s|\n", loadInfo, cfg2v2hunters);
-			Format(loadInfo, 1024, "%s| !load 1v1        | 1v1 hunters only config  | %30s|\n", loadInfo, cfg1v1hunters);
-			PrintToConsole(client, loadInfo);
-			
-			Format(loadInfo, 1024, "| !load dc         | Dark Coop config         | %30s|\n", cfgdarkcoop);
-			Format(loadInfo, 1024, "%s| !load wp         | Witch Party config       | %30s|\n", loadInfo, cfgwitchparty);
-			Format(loadInfo, 1024, "%s| !load 1v2        | 1v2 hunters only config  | %30s|\n", loadInfo, cfg1v2hunters);
-			Format(loadInfo, 1024, "%s| !load 1v3        | 1v3 hunters only config  | %30s|\n", loadInfo, cfg1v3hunters);
-			Format(loadInfo, 1024, "%s| !load 1v4        | 1v4 hunters only config  | %30s|\n", loadInfo, cfg1v4hunters);
-			Format(loadInfo, 1024, "%s| !load 1v5        | 1v5 hunters only config  | %30s|\n", loadInfo, cfg1v5hunters);
-			Format(loadInfo, 1024, "%s| !load 2v3        | 2v3 hunters only config  | %30s|\n", loadInfo, cfg2v3hunters);
-			Format(loadInfo, 1024, "%s| !load 2v4        | 2v4 hunters only config  | %30s|\n", loadInfo, cfg2v4hunters);
-			Format(loadInfo, 1024, "%s| !load 2v5        | 2v5 hunters only config  | %30s|\n", loadInfo, cfg2v5hunters);
-			Format(loadInfo, 1024, "%s| !load 3v4        | 3v4 hunters only config  | %30s|\n", loadInfo, cfg3v4hunters);
-			Format(loadInfo, 1024, "%s| !load 3v5        | 3v5 hunters only config  | %30s|\n", loadInfo, cfg3v5hunters);
-			Format(loadInfo, 1024, "%s| !load 4v5        | 4v5 hunters only config  | %30s|\n", loadInfo, cfg4v5hunters);
-		}
+			if(isHunterAllowed == true)
+			{
+				if(strlen(cfg5v5hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 5v5 hu     | 5v5 hunters only config  | %30s|\n", loadInfo, cfg5v5hunters);
+				if(strlen(cfg4v4hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 4v4 hu     | 4v4 hunters only config  | %30s|\n", loadInfo, cfg4v4hunters);
+				if(strlen(cfg3v3hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 3v3 hu     | 3v3 hunters only config  | %30s|\n", loadInfo, cfg3v3hunters);
+				if(strlen(cfg2v2hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 2v2 hu     | 2v2 hunters only config  | %30s|\n", loadInfo, cfg2v2hunters);
+				if(strlen(cfg1v1hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 1v1        | 1v1 hunters only config  | %30s|", loadInfo, cfg1v1hunters);
+				if(strlen(loadInfo) > 0) PrintToConsole(client, loadInfo);
+
+				loadInfo[0] = '\0'; 
+				Format(loadInfo, 1024, "%s| !load 1v2        | 1v2 hunters only config  | %30s|\n", loadInfo, cfg1v2hunters);
+				if(strlen(cfg1v3hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 1v3        | 1v3 hunters only config  | %30s|\n", loadInfo, cfg1v3hunters);
+				if(strlen(cfg1v4hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 1v4        | 1v4 hunters only config  | %30s|\n", loadInfo, cfg1v4hunters);
+				if(strlen(cfg1v5hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 1v5        | 1v5 hunters only config  | %30s|\n", loadInfo, cfg1v5hunters);
+				if(strlen(cfg2v3hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 2v3        | 2v3 hunters only config  | %30s|\n", loadInfo, cfg2v3hunters);
+				if(strlen(cfg2v4hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 2v4        | 2v4 hunters only config  | %30s|\n", loadInfo, cfg2v4hunters);
+				if(strlen(cfg2v5hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 2v5        | 2v5 hunters only config  | %30s|\n", loadInfo, cfg2v5hunters);
+				if(strlen(cfg3v4hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 3v4        | 3v4 hunters only config  | %30s|\n", loadInfo, cfg3v4hunters);
+				if(strlen(cfg3v5hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 3v5        | 3v5 hunters only config  | %30s|\n", loadInfo, cfg3v5hunters);
+				if(strlen(cfg4v5hunters) > 0) 
+				Format(loadInfo, 1024, "%s| !load 4v5        | 4v5 hunters only config  | %30s|\n", loadInfo, cfg4v5hunters);
+			}
+
+			if(strlen(cfgdarkcoop) > 0) 
+			Format(loadInfo, 1024, "%s| !load dc         | Dark Coop config         | %30s|\n", loadInfo, cfgdarkcoop);
+			if(strlen(cfgwitchparty) > 0) 
+			Format(loadInfo, 1024, "%s| !load wp         | Witch Party config       | %30s|", loadInfo, cfgwitchparty);
+			if(strlen(cfg1v2hunters) > 0) 
 		#else
-		Format(loadInfo, 1024, "| !load 1v1        | 1v1 default config       | %30s|\n", cfg1v1);
+			if(strlen(cfg1v1) > 0) 
+	`		Format(loadInfo, 1024, "%s| !load 1v1        | 1v1 default config       | %30s|", loadInfo, cfg1v1);
 		#endif
-		PrintToConsole(client, loadInfo);
-		if(isAdmin == true) Format(loadInfo, 1024, "| !load cancel     | cancel all requests      |                               |\n");
-		else Format(loadInfo, 1024, "| !load cancel     | cancel the request       |                               |\n");
+		if(strlen(loadInfo) > 0) PrintToConsole(client, loadInfo);
+
+		loadInfo[0] = '\0';
+		//if(isAdmin == true) Format(loadInfo, 1024, "%s| !load cancel     | cancel all requests      |                               |\n", loadInfo);
+		//else Format(loadInfo, 1024, "%s| !load cancel     | cancel the request       |                               |\n", loadInfo);
 		Format(loadInfo, 1024, "%s|------------------|--------------------------|-------------------------------|", loadInfo);		
 		
 		ReplyToCommand(client, "[TS] %T","Check the console for available commands.",client);
@@ -913,14 +1008,14 @@ public Action:Config_Changer(client, args)
 		new AdminValueIsConfig4v5 = 0;		//is config 4v5 integer, on function start set to 0
 		new AdminValueIsConfigwp = 0 ; 		//is config witchparty integer, on function start set to 0
 		new AdminValueIsConfigdc = 0 ;
+		new AdminValueIsConfigPub = 0 ;
 		#if FULL_VERSION
 		new AdminValueIsConfigHunters = 0;	//is config hunters integer, on function start set to 0
 		#endif
 		#if NO_BOOMER_CFG
 		new AdminValueIsConfigNoBoomer = 0;
 		#endif
-		new AdminValueSumOfConfigs = 0;		//is the sum of the configs more than 1, then config is invalid, on function start set to 0
-		
+
 		//IsConfigXvX Variables are declared below OnMapStart
 		if((StrContains(Admin_Cfg, "5v5", false) != -1)) AdminValueIsConfig5v5 = 1;		//if string contains 5v5, set value to 1
 		if((StrContains(Admin_Cfg, "4v4", false) != -1)) AdminValueIsConfig4v4 = 1;		//if string contains 4v4, set value to 1
@@ -940,128 +1035,155 @@ public Action:Config_Changer(client, args)
 		if((StrContains(Admin_Cfg, "4v5", false) != -1)) AdminValueIsConfig4v5 = 1;		//if string contains 4v5, set value to 1
 		if((StrContains(Admin_Cfg, "wp", false) != -1)) AdminValueIsConfigwp = 1;		//if string contains witch party, set value to 1
 		if((StrContains(Admin_Cfg, "witchparty", false) != -1)) AdminValueIsConfigwp = 1;		//if string contains witch party, set value to 1
-		if((StrContains(Admin_Cfg, "WP", false) != -1)) AdminValueIsConfigwp = 1;		//if string contains witch party, set value to 1
-		if((StrContains(Admin_Cfg, "WitchParty", false) != -1)) AdminValueIsConfigwp = 1;		//if string contains witch party, set value to 1
-		
-		if((StrContains(Admin_Cfg, "DC", false) != -1)) AdminValueIsConfigdc = 1;
+
 		if((StrContains(Admin_Cfg, "dc", false) != -1)) AdminValueIsConfigdc = 1;
 		if((StrContains(Admin_Cfg, "dark coop", false) != -1)) AdminValueIsConfigdc = 1;
-		if((StrContains(Admin_Cfg, "Dark Coop", false) != -1)) AdminValueIsConfigdc = 1;
-		
+
 		if((StrContains(Admin_Cfg, "classic", false) != -1)) AdminValueIsConfigClassic = 1;	//if string contains hu, set value to 1
-		if((StrContains(Admin_Cfg, "cl", false) != -1)) AdminValueIsConfigClassic = 1;	//if string contains hu, set value to 1	
+		
+		if((StrContains(Admin_Cfg, "pub", false) != -1)) AdminValueIsConfigPub = 1;
+		
 		#if FULL_VERSION
-		if((StrContains(Admin_Cfg, "hu", false) != -1)) AdminValueIsConfigHunters = 1;	//if string contains hu, set value to 1	
+			if((StrContains(Admin_Cfg, "hu", false) != -1)) AdminValueIsConfigHunters = 1;	//if string contains hu, set value to 1	
 		#endif
 		#if NO_BOOMER_CFG
-		if((StrContains(Admin_Cfg, "nob", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1
-		if((StrContains(Admin_Cfg, "no", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
-		if((StrContains(Admin_Cfg, "nb", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
+			if((StrContains(Admin_Cfg, "nob", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1
+			if((StrContains(Admin_Cfg, "nb", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
 		#endif
-		
-		AdminValueSumOfConfigs = AdminValueIsConfig5v5 + AdminValueIsConfig4v4 + AdminValueIsConfig3v3 + AdminValueIsConfig2v2 + AdminValueIsConfig1v1
-		+ AdminValueIsConfig1v2 + AdminValueIsConfig1v3 + AdminValueIsConfig1v4 + AdminValueIsConfig1v5
-		+ AdminValueIsConfig2v3 + AdminValueIsConfig2v4 + AdminValueIsConfig2v5
-		+ AdminValueIsConfig3v4 + AdminValueIsConfig3v5 + AdminValueIsConfig4v5 + AdminValueIsConfigwp + AdminValueIsConfigdc;//calculate the sum of all the config value integers
-		
-		if(StrEqual(Admin_Cfg, "cancel", false))//checking if config is cancel, if it is, cancel this plugin, and jump to the admin config, stop this plugin
-		{
-			Admin_Cancel(client);
-			return Plugin_Handled;
-		}
+
+		// if(StrEqual(Admin_Cfg, "cancel", false))//checking if config is cancel, if it is, cancel this plugin, and jump to the admin config, stop this plugin
+		// {
+		// 	Admin_Cancel(client);
+		// 	return Plugin_Handled;
+		// }
 	
-				
-		if(AdminValueSumOfConfigs == 1)//if the sum of the config value integers = 1 then...
-		{	
-			hasprepareloaded = true;
-			adminLoadActive = true;
-			if(AdminValueIsConfig5v5 == 1)	//if the config is 5v5
-			{
-				#if NO_BOOMER_CFG
+		hasprepareloaded = true;
+		adminLoadActive = true;
+		if(AdminValueIsConfig5v5 == 1)	//if the config is 5v5
+		{
+			#if NO_BOOMER_CFG
 				if(AdminValueIsConfigNoBoomer == 1)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader5v5NobConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", AdminName,"comp_loader2","5v5 No Boomer");
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;					
+					if(strlen(cfg5v5Nob) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader5v5NobConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", AdminName,"comp_loader2","5v5 No Boomer");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;		
+					}			
 				}
-				#endif
-				#if FULL_VERSION
+			#endif
+			#if FULL_VERSION
 				if(AdminValueIsConfigHunters == 0)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+					if(strlen(cfg5v5) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader5v5Config, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","5v5 hardcore");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;	
+					}				
+				}
+				else
+				{
+					if(strlen(cfg5v5hunters) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader5v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", AdminName,"comp_loader2","5v5 Hunters Only");	//if hunters allowed 0
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}
+				}
+			#else
+				if(strlen(cfg5v5) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
 					GetConVarString(CompLoader5v5Config, AdminLoadCommandConfigToExecuteName, 128);
 					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","5v5 hardcore");
 					
 					Admin_Cancel_Lite();
 					
 					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;					
-				}
-				else 
-				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader5v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", AdminName,"comp_loader2","5v5 Hunters Only");	//if hunters allowed 0
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 					return Plugin_Handled;
 				}
-				#else
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader5v5Config, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","5v5 hardcore");
-				
-				Admin_Cancel_Lite();
-				
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#endif
-			}
-			if(AdminValueIsConfig4v4 == 1)	//if the config is 4v4
-			{
-				#if NO_BOOMER_CFG
+			#endif
+		}
+		else if(AdminValueIsConfig4v4 == 1)	//if the config is 4v4
+		{
+			#if NO_BOOMER_CFG
 				if(AdminValueIsConfigNoBoomer == 1)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader4v4NobConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 No Boomer");
-				
-					Admin_Cancel_Lite();
-				
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;					
+					if(strlen(cfg4v4Nob) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader4v4NobConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 No Boomer");
+					
+						Admin_Cancel_Lite();
+					
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;	
+					}				
 				}
-				#endif
-				#if FULL_VERSION
+			#endif
+			#if FULL_VERSION
 				if(AdminValueIsConfigHunters == 1)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader4v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Hunters Only");	//if hunters allowed 0
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;				
+					if(AdminValueIsConfigPub == 1)
+					{
+						if(strlen(cfg4v4PubHuters) > 0)
+						{
+							SetConVarInt(CompLoaderLoadActive, 0);
+							SetConVarInt(CompLoaderMapActive, 0);
+							GetConVarString(CompLoader4v4PubHubtersConfig, AdminLoadCommandConfigToExecuteName, 128);
+							CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Pub Hunters Only");	//if hunters allowed 0
+							
+							Admin_Cancel_Lite();
+							
+							CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+							return Plugin_Handled;
+						}	
+					}
+					else
+					{
+						if(strlen(cfg4v4hunters) > 0)
+						{
+							SetConVarInt(CompLoaderLoadActive, 0);
+							SetConVarInt(CompLoaderMapActive, 0);
+							GetConVarString(CompLoader4v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+							CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Hunters Only");	//if hunters allowed 0
+							
+							Admin_Cancel_Lite();
+							
+							CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+							return Plugin_Handled;
+						}	
+					}			
 				}
-				#endif
-				if(AdminValueIsConfigClassic == 1)
+			#endif
+			if(AdminValueIsConfigClassic == 1)
+			{
+				if(strlen(cfg4v4classic) > 0)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
 					GetConVarString(CompLoader4v4ClassicConfig, AdminLoadCommandConfigToExecuteName, 128);
 					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Classic");
 					
@@ -1070,10 +1192,28 @@ public Action:Config_Changer(client, args)
 					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 					return Plugin_Handled;
 				}
-				else
+			}
+			else if(AdminValueIsConfigPub == 1)
+			{
+				if(strlen(cfg4v4Pub) > 0)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader4v4PubConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Pub");
+					
+					Admin_Cancel_Lite();
+					
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
+			}
+			else
+			{
+				if(strlen(cfg4v4) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
 					GetConVarString(CompLoader4v4Config, AdminLoadCommandConfigToExecuteName, 128);
 					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Hardcore");
 					
@@ -1083,27 +1223,62 @@ public Action:Config_Changer(client, args)
 					return Plugin_Handled;
 				}
 			}
-			if(AdminValueIsConfig3v3 == 1)	//if the config is 3v3
-			{
-				#if NO_BOOMER_CFG
+		}
+		else if(AdminValueIsConfig3v3 == 1)	//if the config is 3v3
+		{
+			#if NO_BOOMER_CFG
 				if(AdminValueIsConfigNoBoomer == 1)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader3v3NobConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 No Boomer");
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;					
+					if(strlen(cfg3v3Nob) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader3v3NobConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 No Boomer");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;	
+					}				
 				}
-				#endif
-				#if FULL_VERSION
+			#endif
+			#if FULL_VERSION
 				if(AdminValueIsConfigHunters == 0)	//if hunters allowed 1
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+					if(strlen(cfg3v3) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader3v3Config, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 hardcore");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}
+				}
+				else 
+				{
+					if(strlen(cfg3v3hunters) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader3v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 Hunters Only");	//if hunters allowed 0
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}
+				}
+			#else
+				if(strlen(cfg3v3) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
 					GetConVarString(CompLoader3v3Config, AdminLoadCommandConfigToExecuteName, 128);
 					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 hardcore");
 					
@@ -1112,51 +1287,63 @@ public Action:Config_Changer(client, args)
 					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 					return Plugin_Handled;
 				}
-				else 
-				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader3v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 Hunters Only");	//if hunters allowed 0
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;
-				}
-				#else
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader3v3Config, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v3 hardcore");
-				
-				Admin_Cancel_Lite();
-				
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#endif
-			}
-			if(AdminValueIsConfig2v2 == 1)	//if the config is 2v2
-			{
-				#if NO_BOOMER_CFG
+			#endif
+		}
+		else if(AdminValueIsConfig2v2 == 1)	//if the config is 2v2
+		{
+			#if NO_BOOMER_CFG
 				if(AdminValueIsConfigNoBoomer == 1)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader2v2NobConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 No Boomer");
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;					
+					if(strlen(cfg2v2Nob) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader2v2NobConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 No Boomer");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}					
 				}
 				#endif
-				#if FULL_VERSION
+			#if FULL_VERSION
 				if(AdminValueIsConfigHunters == 0)	//if hunters allowed 1
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+					if(strlen(cfg2v2) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader2v2Config, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 hardcore");
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}
+				}
+				else 
+				{
+					if(strlen(cfg2v2hunters) > 0)
+					{
+						SetConVarInt(CompLoaderLoadActive, 0);
+						SetConVarInt(CompLoaderMapActive, 0);
+						GetConVarString(CompLoader2v2HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+						CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 Hunters Only");	//if hunters allowed 0
+						
+						Admin_Cancel_Lite();
+						
+						CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+						return Plugin_Handled;
+					}
+				}
+			#else
+				if(strlen(cfg2v2) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
 					GetConVarString(CompLoader2v2Config, AdminLoadCommandConfigToExecuteName, 128);
 					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 hardcore");
 					
@@ -1165,210 +1352,190 @@ public Action:Config_Changer(client, args)
 					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 					return Plugin_Handled;
 				}
-				else 
+			#endif
+		}
+		else if(AdminValueIsConfig1v1 == 1)	//if the config is 1v1
+		{
+			#if FULL_VERSION
+				if(strlen(cfg1v1hunters) > 0)
 				{
-					SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-					SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-					GetConVarString(CompLoader2v2HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 Hunters Only");	//if hunters allowed 0
-					
-					Admin_Cancel_Lite();
-					
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v1HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v1 Hunters Only");
 					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 					return Plugin_Handled;
 				}
-				#else
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader2v2Config, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v2 hardcore");
-				
-				Admin_Cancel_Lite();
-				
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#endif
-			}
-			if(AdminValueIsConfig1v1 == 1)	//if the config is 1v1
-			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader1v1HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v1 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-	
-				#endif
-			}
-			
+			#else
+				if(strlen(cfg1v1) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v1Config, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v1");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
+			#endif
+		}
+
+		#if FULL_VERSION
 			if(AdminValueIsConfig1v2 == 1)	//if the config is 1v2
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader1v2HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v2 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg1v2hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v2HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v2 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig1v3 == 1)	//if the config is 1v3
+			else if(AdminValueIsConfig1v3 == 1)	//if the config is 1v3
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader1v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v3 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg1v3hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v3 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig1v4 == 1)	//if the config is 1v4
+			else if(AdminValueIsConfig1v4 == 1)	//if the config is 1v4
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader1v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v4 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg1v4hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v4 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}			
-			if(AdminValueIsConfig1v5 == 1)	//if the config is 1v5
+			else if(AdminValueIsConfig1v5 == 1)	//if the config is 1v5
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader1v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v5 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg1v5hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader1v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","1v5 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}			
-			if(AdminValueIsConfig2v3 == 1)	//if the config is 2v3
+			else if(AdminValueIsConfig2v3 == 1)	//if the config is 2v3
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader2v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v3 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg2v3hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader2v3HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v3 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig2v4 == 1)	//if the config is 2v4
+			else if(AdminValueIsConfig2v4 == 1)	//if the config is 2v4
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader2v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v4 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg2v4hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader2v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v4 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig2v5 == 1)	//if the config is 2v5
+			else if(AdminValueIsConfig2v5 == 1)	//if the config is 2v5
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader2v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v5 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg2v5hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader2v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","2v5 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig3v4 == 1)	//if the config is 3v4
+			else if(AdminValueIsConfig3v4 == 1)	//if the config is 3v4
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader3v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v4 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg3v4hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader3v4HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v4 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig3v5 == 1)	//if the config is 3v5
+			else if(AdminValueIsConfig3v5 == 1)	//if the config is 3v5
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader3v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v5 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg3v5hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader3v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","3v5 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfig4v5 == 1)	//if the config is 4v5
+			else if(AdminValueIsConfig4v5 == 1)	//if the config is 4v5
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoader4v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v5 Hunters Only");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfg4v5hunters) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoader4v5HuntersConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v5 Hunters Only");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfigwp == 1)	//if the config is witch party
+			else if(AdminValueIsConfigwp == 1)	//if the config is witch party
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoaderWitchPartyConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","Witch Party");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfgwitchparty) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoaderWitchPartyConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","Witch Party");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-			if(AdminValueIsConfigdc == 1)	//if the config is witch party
+			else if(AdminValueIsConfigdc == 1)	//if the config is dark coop
 			{
-				#if FULL_VERSION
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				GetConVarString(CompLoaderDarkCoopConfig, AdminLoadCommandConfigToExecuteName, 128);
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","Dark Coop");
-				CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Handled;
-				#else
-
-				#endif
+				if(strlen(cfgdarkcoop) > 0)
+				{
+					SetConVarInt(CompLoaderLoadActive, 0);
+					SetConVarInt(CompLoaderMapActive, 0);
+					GetConVarString(CompLoaderDarkCoopConfig, AdminLoadCommandConfigToExecuteName, 128);
+					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","Dark Coop");
+					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+					return Plugin_Handled;
+				}
 			}
-		}
-		else
-		{
-			CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Config.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
-		}
+		#endif
+		
+		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Config.",client);
+		hasprepareloaded = false;
+		adminLoadActive = false;
+		return Plugin_Handled;
 	}
+
 	if (id == false)	//if client is non admin then...
 	{
-		new Client_Team		= GetClientTeam(client),
-		Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;	//getting dem client teamz. If client team is survivor, then opposite team is infected, else opposite team is survivorzor
+		new Client_Team		= GetClientTeam(client);
+		//int Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;
 		
 		//decl String:SurvivorCfg[128];		//gets string value of PlayerCfg when Team A requests !load
 		//decl String:InfectedCfg[128];		//gets string value of PlayerCfg when Team B requests !load
@@ -1399,6 +1566,7 @@ public Action:Config_Changer(client, args)
 				GetCmdArgString(PlayerCfg, sizeof(PlayerCfg));			//getting the !load arguments to PlayerCfg string
 				new ValueIsConfig5v5 = 0;		//is config 5v5 integer, on function start set to 0
 				new ValueIsConfigClassic = 0;
+				new ValueIsConfigPub = 0;
 				new ValueIsConfig4v4 = 0;		//is config 4v4 integer, on function start set to 0
 				new ValueIsConfig3v3 = 0;		//is config 3v3 integer, on function start set to 0
 				new ValueIsConfig2v2 = 0;		//is config 2v2 integer, on function start set to 0
@@ -1422,8 +1590,7 @@ public Action:Config_Changer(client, args)
 				#endif
 				#if NO_BOOMER_CFG
 				new ValueIsConfigNoBoomer = 0;
-				#endif
-				new ValueSumOfConfigs = 0;		//is the sum of the configs more than 1, then config is invalid, on function start set to 0
+				#endif//is the sum of the configs more than 1, then config is invalid, on function start set to 0
 						
 				if((StrContains(PlayerCfg, "5v5", false) != -1)) ValueIsConfig5v5 = 1;		//if string contains 4v4, set value to 1
 				if((StrContains(PlayerCfg, "4v4", false) != -1)) ValueIsConfig4v4 = 1;		//if string contains 4v4, set value to 1
@@ -1446,13 +1613,13 @@ public Action:Config_Changer(client, args)
 				if((StrContains(PlayerCfg, "WP", false) != -1)) ValueIsConfigwp = 1;		//if string contains witch party, set value to 1
 				if((StrContains(PlayerCfg, "WitchParty", false) != -1)) ValueIsConfigwp = 1;		//if string contains witch party, set value to 1
 				
-				if((StrContains(PlayerCfg, "DC", false) != -1)) ValueIsConfigdc = 1;
 				if((StrContains(PlayerCfg, "dc", false) != -1)) ValueIsConfigdc = 1;
 				if((StrContains(PlayerCfg, "dark coop", false) != -1)) ValueIsConfigdc = 1;
-				if((StrContains(PlayerCfg, "Dark Coop", false) != -1)) ValueIsConfigdc = 1;
 				
 				if((StrContains(PlayerCfg, "classic", false) != -1)) ValueIsConfigClassic = 1;	//if string contains hu, set value to 1
-				if((StrContains(PlayerCfg, "cl", false) != -1)) ValueIsConfigClassic = 1;	//if string contains hu, set value to 1	
+				
+				if((StrContains(PlayerCfg, "pub", false) != -1)) ValueIsConfigPub = 1;	//if string contains hu, set value to 1
+				
 				#if FULL_VERSION
 				if((StrContains(PlayerCfg, "hu", false) != -1)) ValueIsConfigHunters = 1;	//if string contains hu, set value to 1
 				#endif
@@ -1461,157 +1628,319 @@ public Action:Config_Changer(client, args)
 				if((StrContains(PlayerCfg, "no", false) != -1)) ValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
 				if((StrContains(PlayerCfg, "nb", false) != -1)) ValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
 				#endif
-				ValueSumOfConfigs = ValueIsConfig5v5 + ValueIsConfig4v4 + ValueIsConfig3v3 + ValueIsConfig2v2 + ValueIsConfig1v1
-				+ ValueIsConfig1v2 + ValueIsConfig1v3+ ValueIsConfig1v4 + ValueIsConfig1v5 
-				+ ValueIsConfig2v3 + ValueIsConfig2v4 + ValueIsConfig2v5 
-				+ ValueIsConfig3v4 + ValueIsConfig3v5 + ValueIsConfig4v5 + ValueIsConfigwp + ValueIsConfigdc;//calculate the sum of all the config value integers
+
+				// if(StrEqual(PlayerCfg, "cancel", false))//cancel configs before validating config, if the args are "cancel"
+				// {
+				// 	if(Config_Requests[Opposite_Team] && !Config_Requests[Client_Team])
+				// 	{
+				// 		CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!load");
+				// 		Config_Requests[TEAM_SURVIVOR] = false;
+				// 		Config_Requests[TEAM_INFECTED] = false;
+				// 		SetConVarInt(CompLoaderLoadActive, 0);
+				// 		return Plugin_Handled;
+				// 	}
+					
+				// 	if(!Config_Requests[Opposite_Team])
+				// 	{
+				// 		CPrintToChat(client, "[{olive}TS{default}] %T","Nothing to cancel.",client);
+				// 		return Plugin_Handled;
+				// 	}
+				// 	return Plugin_Handled;
+				// }
 				
-				if(StrEqual(PlayerCfg, "cancel", false))//cancel configs before validating config, if the args are "cancel"
+				bool bIsValidConfig = false;
+				if(ValueIsConfig5v5 == 1)	//if the config is 5v5
 				{
-					if(Config_Requests[Client_Team])
-					{
-						CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!load");
-						Config_Requests[TEAM_SURVIVOR] = false;
-						Config_Requests[TEAM_INFECTED] = false;
-						SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-						return Plugin_Handled;						
-					}
-					if(Config_Requests[Opposite_Team] && !Config_Requests[Client_Team])
-					{
-						CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!load");
-						Config_Requests[TEAM_SURVIVOR] = false;
-						Config_Requests[TEAM_INFECTED] = false;
-						SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-						return Plugin_Handled;
-					}
-					if(!Config_Requests[Opposite_Team])
-					{
-						CPrintToChat(client, "[{olive}TS{default}] %T","Nothing to cancel.",client);
-						return Plugin_Handled;
-					}
-					return Plugin_Handled;
-				}
-				
-				if(ValueSumOfConfigs == 1)	//if the sum of the config value integers = 1 then...
-				{	
-					if(ValueIsConfig5v5 == 1)	//if the config is 5v5
-					{
-						#if FULL_VERSION
+					#if FULL_VERSION
 						if(ValueIsConfigHunters != 1)	//if config is hunters 0
 						{
-							PlayerCfg = "5v5";
+							if(strlen(cfg5v5) > 0)
+							{
+								PlayerCfg = "5v5";
+								bIsValidConfig = true;
+							}
 						}
-						else PlayerCfg = "5v5 Hunter";	//if config is hunters 1
-						#else
-						PlayerCfg = "5v5";
-						#endif
-						#if NO_BOOMER_CFG
-						if(ValueIsConfigNoBoomer == 1)	PlayerCfg = "5v5 No Boomer"; //if config is no boomer						
-						#endif
-					}
-					if(ValueIsConfig4v4 == 1)	//if the config is 4v4
-					{
-						#if FULL_VERSION
+						else 
+						{
+							if(strlen(cfg5v5hunters) > 0)
+							{
+								PlayerCfg = "5v5 Hunter";	//if config is hunters 1
+								bIsValidConfig = true;
+							}
+						}
+					#else
+						if(strlen(cfg5v5) > 0)
+						{
+							PlayerCfg = "5v5";
+							bIsValidConfig = true;
+						}
+					#endif
+					#if NO_BOOMER_CFG
+						if(ValueIsConfigNoBoomer == 1)
+						{
+							if(strlen(cfg5v5Nob) > 0)
+							{
+								PlayerCfg = "5v5 No Boomer"; //if config is no boomer		
+								bIsValidConfig = true;
+							}	
+						}		
+					#endif
+				}
+				else if(ValueIsConfig4v4 == 1)	//if the config is 4v4
+				{
+					#if FULL_VERSION
 						if(ValueIsConfigHunters != 1)	//if config is hunters 0
 						{
 							if(ValueIsConfigClassic == 1)
-								PlayerCfg = "4v4 Classic";
+							{
+								if(strlen(cfg4v4classic) > 0)
+								{
+									PlayerCfg = "4v4 Classic";
+									bIsValidConfig = true;
+								}
+							}
+							else if(ValueIsConfigPub == 1)
+							{
+								if(strlen(cfg4v4Pub) > 0)
+								{
+									PlayerCfg = "4v4 Pub";
+									bIsValidConfig = true;
+								}
+							}
 							else
-								PlayerCfg = "4v4";
+							{
+								if(strlen(cfg4v4) > 0)
+								{
+									PlayerCfg = "4v4";
+									bIsValidConfig = true;
+								}
+							}
 						}
-						else PlayerCfg = "4v4 Hunter";	//if config is hunters 1
-						#else
-						PlayerCfg = "4v4";
-						#endif
-						#if NO_BOOMER_CFG
-						if(ValueIsConfigNoBoomer == 1)	PlayerCfg = "4v4 No Boomer"; //if config is no boomer						
-						#endif
-					}
-					if(ValueIsConfig3v3 == 1)	//if the config is 3v3
-					{
-						#if FULL_VERSION
+						else
+						{
+							if(ValueIsConfigPub == 1)
+							{
+								if(strlen(cfg4v4PubHuters) > 0)
+								{
+									PlayerCfg = "4v4 Pub Hunter";	//if config is hunters 1
+									bIsValidConfig = true;
+								}
+							}
+							else
+							{
+								if(strlen(cfg4v4hunters) > 0)
+								{
+									PlayerCfg = "4v4 Hunter";	//if config is hunters 1
+									bIsValidConfig = true;
+								}
+							}
+						}
+					#else
+						if(strlen(cfg4v4) > 0)
+						{
+							PlayerCfg = "4v4";
+							bIsValidConfig = true;
+						}
+					#endif
+					#if NO_BOOMER_CFG
+						if(ValueIsConfigNoBoomer == 1)
+						{
+							if(strlen(cfg4v4Nob) > 0)
+							{
+								PlayerCfg = "4v4 No Boomer"; //if config is no boomer
+								bIsValidConfig = true;
+							}
+						}						
+					#endif
+				}
+				else if(ValueIsConfig3v3 == 1)	//if the config is 3v3
+				{
+					#if FULL_VERSION
 						if(ValueIsConfigHunters != 1)	//if config is hunters 0
+						{
+							if(strlen(cfg3v3) > 0)
+							{
+								PlayerCfg = "3v3";
+								bIsValidConfig = true;
+							}
+						}
+						else
+						{
+							if(strlen(cfg3v3hunters) > 0)
+							{
+								PlayerCfg = "3v3 Hunter";	//if config is hunters 1
+								bIsValidConfig = true;
+							}
+						}
+					#else
+						if(strlen(cfg3v3) > 0)
 						{
 							PlayerCfg = "3v3";
+							bIsValidConfig = true;
 						}
-						else PlayerCfg = "3v3 Hunter";	//if config is hunters 1
-						#else
-						PlayerCfg = "3v3";
-						#endif
-						#if NO_BOOMER_CFG
-						if(ValueIsConfigNoBoomer == 1)	PlayerCfg = "3v3 No Boomer"; //if config is no boomer						
-						#endif
-					}
-					if(ValueIsConfig2v2 == 1)	//if the config is 2v2
-					{
-						#if FULL_VERSION
+					#endif
+					#if NO_BOOMER_CFG
+						if(ValueIsConfigNoBoomer == 1)
+						{
+							if(strlen(cfg3v3Nob) > 0)
+							{
+								PlayerCfg = "3v3 No Boomer"; //if config is no boomer	
+								bIsValidConfig = true;
+							}
+						}					
+					#endif
+				}
+				else if(ValueIsConfig2v2 == 1)	//if the config is 2v2
+				{
+					#if FULL_VERSION
 						if(ValueIsConfigHunters != 1)	//if config is hunters 0
 						{
-							PlayerCfg = "2v2";
+							if(strlen(cfg2v2) > 0)
+							{
+								PlayerCfg = "2v2";
+								bIsValidConfig = true;
+							}
 						}
-						else PlayerCfg = "2v2 Hunter";	//if config is hunters 1
-						#else
-						PlayerCfg = "2v2";
-						#endif
-						#if NO_BOOMER_CFG
-						if(ValueIsConfigNoBoomer == 1)	PlayerCfg = "2v2 No Boomer"; //if config is no boomer						
-						#endif
-					}
-					if(ValueIsConfig1v1 == 1)	//if the config is 1v1, defaults to hunter only because 1v1 is always hunter only
-					{
-						PlayerCfg = "1v1";
-					}
-					
-					if(ValueIsConfig1v2 == 1)	//if the config is 1v2, defaults to hunter only because 1v2 is always hunter only
+						else
+						{
+							if(strlen(cfg2v2hunters) > 0)
+							{
+								PlayerCfg = "2v2 Hunter";	//if config is hunters 1
+								bIsValidConfig = true;
+							}
+						}
+					#else
+						if(strlen(cfg2v2) > 0)
+						{
+							PlayerCfg = "2v2";
+							bIsValidConfig = true;
+						}
+					#endif
+					#if NO_BOOMER_CFG
+						if(ValueIsConfigNoBoomer == 1)
+						{
+							if(strlen(cfg2v2Nob) > 0)
+							{
+								PlayerCfg = "2v2 No Boomer"; //if config is no boomer	
+								bIsValidConfig = true;
+							}	
+						}				
+					#endif
+				}
+				else if(ValueIsConfig1v1 == 1)	//if the config is 1v1
+				{
+					#if FULL_VERSION
+						if(strlen(cfg1v1hunters) > 0)
+						{
+							PlayerCfg = "1v1";
+							bIsValidConfig = true;
+						}
+					#else
+						if(strlen(cfg1v1) > 0)
+						{
+							PlayerCfg = "1v1";
+							bIsValidConfig = true;
+						}
+					#endif
+				}
+				else if(ValueIsConfig1v2 == 1)	//if the config is 1v2, defaults to hunter only because 1v2 is always hunter only
+				{
+					if(strlen(cfg1v2hunters) > 0)
 					{
 						PlayerCfg = "1v2";
-					}
-					if(ValueIsConfig1v3 == 1)	//if the config is 1v3, defaults to hunter only because 1v3 is always hunter only
-					{
-						PlayerCfg = "1v3";
-					}
-					if(ValueIsConfig1v4 == 1)	//if the config is 1v4, defaults to hunter only because 1v4 is always hunter only
-					{
-						PlayerCfg = "1v4";
-					}
-					if(ValueIsConfig1v5 == 1)	//if the config is 1v5, defaults to hunter only because 1v5 is always hunter only
-					{
-						PlayerCfg = "1v5";
-					}
-					if(ValueIsConfig2v3 == 1)	//if the config is 2v3, defaults to hunter only because 2v3 is always hunter only
-					{
-						PlayerCfg = "2v3";
-					}
-					if(ValueIsConfig2v4 == 1)	//if the config is 2v4, defaults to hunter only because 2v4 is always hunter only
-					{
-						PlayerCfg = "2v4";
-					}
-					if(ValueIsConfig2v5 == 1)	//if the config is 2v5, defaults to hunter only because 2v5 is always hunter only
-					{
-						PlayerCfg = "2v5";
-					}
-					if(ValueIsConfig3v4 == 1)	//if the config is 3v4, defaults to hunter only because 3v4 is always hunter only
-					{
-						PlayerCfg = "3v4";
-					}
-					if(ValueIsConfig3v5 == 1)	//if the config is 3v5, defaults to hunter only because 3v5 is always hunter only
-					{
-						PlayerCfg = "3v5";
-					}
-					if(ValueIsConfig4v5 == 1)	//if the config is 4v5, defaults to hunter only because 4v5 is always hunter only
-					{
-						PlayerCfg = "4v5";
-					}
-					if(ValueIsConfigwp == 1)
-					{
-						PlayerCfg = "wp";
-					}
-					if(ValueIsConfigdc == 1)
-					{
-						PlayerCfg = "dc";
+						bIsValidConfig = true;
 					}
 				}
-				else
+				else if(ValueIsConfig1v3 == 1)	//if the config is 1v3, defaults to hunter only because 1v3 is always hunter only
+				{
+					if(strlen(cfg1v3hunters) > 0)
+					{
+						PlayerCfg = "1v3";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig1v4 == 1)	//if the config is 1v4, defaults to hunter only because 1v4 is always hunter only
+				{
+					if(strlen(cfg1v4hunters) > 0)
+					{
+						PlayerCfg = "1v4";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig1v5 == 1)	//if the config is 1v5, defaults to hunter only because 1v5 is always hunter only
+				{
+					if(strlen(cfg1v5hunters) > 0)
+					{
+						PlayerCfg = "1v5";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig2v3 == 1)	//if the config is 2v3, defaults to hunter only because 2v3 is always hunter only
+				{
+					if(strlen(cfg2v3hunters) > 0)
+					{
+						PlayerCfg = "2v3";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig2v4 == 1)	//if the config is 2v4, defaults to hunter only because 2v4 is always hunter only
+				{
+					if(strlen(cfg2v4hunters) > 0)
+					{
+						PlayerCfg = "2v4";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig2v5 == 1)	//if the config is 2v5, defaults to hunter only because 2v5 is always hunter only
+				{
+					if(strlen(cfg2v5hunters) > 0)
+					{
+						PlayerCfg = "2v5";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig3v4 == 1)	//if the config is 3v4, defaults to hunter only because 3v4 is always hunter only
+				{
+					if(strlen(cfg3v4hunters) > 0)
+					{
+						PlayerCfg = "3v4";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig3v5 == 1)	//if the config is 3v5, defaults to hunter only because 3v5 is always hunter only
+				{
+					if(strlen(cfg3v5hunters) > 0)
+					{
+						PlayerCfg = "3v5";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfig4v5 == 1)	//if the config is 4v5, defaults to hunter only because 4v5 is always hunter only
+				{
+					if(strlen(cfg4v5hunters) > 0)
+					{
+						PlayerCfg = "4v5";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfigwp == 1)
+				{
+					if(strlen(cfgwitchparty) > 0)
+					{
+						PlayerCfg = "wp";
+						bIsValidConfig = true;
+					}
+				}
+				else if(ValueIsConfigdc == 1)
+				{
+					if(strlen(cfgdarkcoop) > 0)
+					{
+						PlayerCfg = "dc";
+						bIsValidConfig = true;
+					}
+				}
+				
+				if(!bIsValidConfig)
 				{
 					CPrintToChat(client, "[{olive}TS{default}] %t","Invalid Config.", client); //if sum of configs is less than 1 or more than 2, print invalid config
 					return Plugin_Handled;
@@ -1631,204 +1960,218 @@ public Action:Config_Changer(client, args)
 				}
 				
 				#if FULL_VERSION
-				if(HunterAllowed == 1)								//if comp_loader_allow_hunters 1 then...
-				{
-					if(StrEqual(PlayerCfg, "5v5", false))
+					if(HunterAllowed == 1)								//if comp_loader_allow_hunters 1 then...
 					{
-						GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																	
+						if(StrEqual(PlayerCfg, "5v5", false))
+						{
+							GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																	
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Classic", false))
+						{
+							GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Pub", false))
+						{
+							GetConVarString(CompLoader4v4PubConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Pub Hunter", false))
+						{
+							GetConVarString(CompLoader4v4PubHubtersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v4", false))
+						{
+							GetConVarString(CompLoader4v4Config, LoadCommandConfigToExecuteName, 128);																	
+						}
+						else if(StrEqual(PlayerCfg, "3v3", false))
+						{
+							GetConVarString(CompLoader3v3Config, LoadCommandConfigToExecuteName, 128);																	
+						}
+						else if(StrEqual(PlayerCfg, "2v2", false))
+						{
+							GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);																		
+						}
+						#if NO_BOOMER_CFG
+							if(StrEqual(PlayerCfg, "5v5 No Boomer", false))
+							{
+								GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																	
+							}
+							else if(StrEqual(PlayerCfg, "4v4 No Boomer", false))
+							{
+								GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																		
+							}
+							else if(StrEqual(PlayerCfg, "3v3 No Boomer", false))
+							{
+								GetConVarString(CompLoader3v3NobConfig, LoadCommandConfigToExecuteName, 128);																	
+							}
+							else if(StrEqual(PlayerCfg, "2v2 No Boomer", false))
+							{
+								GetConVarString(CompLoader2v2NobConfig, LoadCommandConfigToExecuteName, 128);																		
+							}
+						#endif
+						if(StrEqual(PlayerCfg, "1v1", false))
+						{
+							GetConVarString(CompLoader1v1HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "1v2", false))
+						{
+							GetConVarString(CompLoader1v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "1v3", false))
+						{
+							GetConVarString(CompLoader1v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "1v4", false))
+						{
+							GetConVarString(CompLoader1v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "1v5", false))
+						{
+							GetConVarString(CompLoader1v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "2v3", false))
+						{
+							GetConVarString(CompLoader2v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "2v4", false))
+						{
+							GetConVarString(CompLoader2v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "2v5", false))
+						{
+							GetConVarString(CompLoader2v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "3v4", false))
+						{
+							GetConVarString(CompLoader3v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "3v5", false))
+						{
+							GetConVarString(CompLoader3v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v5", false))
+						{
+							GetConVarString(CompLoader4v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "wp", false))
+						{
+							GetConVarString(CompLoaderWitchPartyConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "dc", false))
+						{
+							GetConVarString(CompLoaderDarkCoopConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "5v5 Hunter", false))
+						{
+							GetConVarString(CompLoader5v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																	
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Hunter", false))
+						{
+							GetConVarString(CompLoader4v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "3v3 Hunter", false))
+						{
+							GetConVarString(CompLoader3v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "2v2 Hunter", false))
+						{
+							GetConVarString(CompLoader2v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						//else LogMessage("[Debug] Hunter is allowed, but failed to calculate config, cfg value %s", PlayerCfg);//debug
 					}
-					if(StrEqual(PlayerCfg, "4v4 Classic", false))
+					if(HunterAllowed != 1)	//if hunters arent allowed then..
 					{
-						GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																		
+						if(StrEqual(PlayerCfg, "5v5", false))
+						{
+							GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																			
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Classic", false))
+						{
+							GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Pub", false))
+						{
+							GetConVarString(CompLoader4v4PubConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "4v4", false))
+						{
+							GetConVarString(CompLoader4v4Config, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "3v3", false))
+						{
+							GetConVarString(CompLoader3v3Config, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "2v2", false))
+						{
+							GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);																	
+						}
+						else if(StrEqual(PlayerCfg, "1v1", false))
+						{
+							CPrintToChatAll("[{olive}TS{default}] %t","mode is disabled.","1v1");
+						}
+						#if NO_BOOMER_CFG
+							if(StrEqual(PlayerCfg, "5v5 No Boomer", false))
+							{
+								GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																			
+							}
+							else if(StrEqual(PlayerCfg, "4v4 No Boomer", false))
+							{
+								GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																	
+							}
+							else if(StrEqual(PlayerCfg, "3v3 No Boomer", false))
+							{
+								GetConVarString(CompLoader3v3NobConfig, LoadCommandConfigToExecuteName, 128);																		
+							}
+							else if(StrEqual(PlayerCfg, "2v2 No Boomer", false))
+							{
+								GetConVarString(CompLoader2v2NobConfig, LoadCommandConfigToExecuteName, 128);																	
+							}
+						#endif
+						if(StrEqual(PlayerCfg, "5v5 Hunter", false))
+						{
+							GetConVarString(CompLoader5v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																			
+						}
+						else if(StrEqual(PlayerCfg, "4v4 Hunter", false))
+						{
+							GetConVarString(CompLoader4v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
+						}
+						else if(StrEqual(PlayerCfg, "3v3 Hunter", false))
+						{
+							GetConVarString(CompLoader3v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																			
+						}
+						else if(StrEqual(PlayerCfg, "2v2 Hunter", false))
+						{
+							GetConVarString(CompLoader2v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																	
+						}
 					}
-					if(StrEqual(PlayerCfg, "4v4", false))
+				#else
+					if(StrEqual(PlayerCfg, "5v5", false))			//if PlayerCfg is 4v4 then
 					{
-						GetConVarString(CompLoader4v4Config, LoadCommandConfigToExecuteName, 128);																	
+						GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																		
 					}
-					if(StrEqual(PlayerCfg, "3v3", false))
+					else if(StrEqual(PlayerCfg, "4v4 Classic", false))
 					{
-						GetConVarString(CompLoader3v3Config, LoadCommandConfigToExecuteName, 128);																	
+						GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																			
 					}
-					if(StrEqual(PlayerCfg, "2v2", false))
+					else if(StrEqual(PlayerCfg, "4v4 Pub", false))
 					{
-						GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);																		
+						GetConVarString(CompLoader4v4PubConfig, LoadCommandConfigToExecuteName, 128);																		
 					}
-					#if NO_BOOMER_CFG
-					if(StrEqual(PlayerCfg, "5v5 No Boomer", false))
-					{
-						GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-					if(StrEqual(PlayerCfg, "4v4 No Boomer", false))
-					{
-						GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "3v3 No Boomer", false))
-					{
-						GetConVarString(CompLoader3v3NobConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-					if(StrEqual(PlayerCfg, "2v2 No Boomer", false))
-					{
-						GetConVarString(CompLoader2v2NobConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					#endif
-					if(StrEqual(PlayerCfg, "1v1", false))
-					{
-						GetConVarString(CompLoader1v1HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					
-					if(StrEqual(PlayerCfg, "1v2", false))
-					{
-						GetConVarString(CompLoader1v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "1v3", false))
-					{
-						GetConVarString(CompLoader1v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "1v4", false))
-					{
-						GetConVarString(CompLoader1v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "1v5", false))
-					{
-						GetConVarString(CompLoader1v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "2v3", false))
-					{
-						GetConVarString(CompLoader2v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "2v4", false))
-					{
-						GetConVarString(CompLoader2v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "2v5", false))
-					{
-						GetConVarString(CompLoader2v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "3v4", false))
-					{
-						GetConVarString(CompLoader3v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "3v5", false))
-					{
-						GetConVarString(CompLoader3v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "4v5", false))
-					{
-						GetConVarString(CompLoader4v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "wp", false))
-					{
-						GetConVarString(CompLoaderWitchPartyConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "dc", false))
-					{
-						GetConVarString(CompLoaderDarkCoopConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					
-					if(StrEqual(PlayerCfg, "5v5 Hunter", false))
-					{
-						GetConVarString(CompLoader5v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-					if(StrEqual(PlayerCfg, "4v4 Hunter", false))
-					{
-						GetConVarString(CompLoader4v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "3v3 Hunter", false))
-					{
-						GetConVarString(CompLoader3v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "2v2 Hunter", false))
-					{
-						GetConVarString(CompLoader2v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					//else LogMessage("[Debug] Hunter is allowed, but failed to calculate config, cfg value %s", PlayerCfg);//debug
-				}
-				if(HunterAllowed != 1)	//if hunters arent allowed then..
-				{
-					if(StrEqual(PlayerCfg, "5v5", false))
-					{
-						GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																			
-					}
-					if(StrEqual(PlayerCfg, "4v4 Classic", false))
-					{
-						GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "4v4", false))
+					else if(StrEqual(PlayerCfg, "4v4", false))			//if PlayerCfg is 4v4 then
 					{
 						GetConVarString(CompLoader4v4Config, LoadCommandConfigToExecuteName, 128);																		
 					}
-					if(StrEqual(PlayerCfg, "3v3", false))
+					else if(StrEqual(PlayerCfg, "3v3", false))
 					{
 						GetConVarString(CompLoader3v3Config, LoadCommandConfigToExecuteName, 128);																		
 					}
-					if(StrEqual(PlayerCfg, "2v2", false))
+					else if(StrEqual(PlayerCfg, "2v2", false))
 					{
-						GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);																	
+						GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);	;																		
 					}
-					if(StrEqual(PlayerCfg, "1v1", false))
+					else if(StrEqual(PlayerCfg, "1v1", false))
 					{
-						CPrintToChatAll("[{olive}TS{default}] %t","mode is disabled.","1v1");
+						GetConVarString(CompLoader1v1Config, LoadCommandConfigToExecuteName, 128);																		
 					}
-					#if NO_BOOMER_CFG
-					if(StrEqual(PlayerCfg, "5v5 No Boomer", false))
-					{
-						GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																			
-					}
-					if(StrEqual(PlayerCfg, "4v4 No Boomer", false))
-					{
-						GetConVarString(CompLoader4v4NobConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-					if(StrEqual(PlayerCfg, "3v3 No Boomer", false))
-					{
-						GetConVarString(CompLoader3v3NobConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "2v2 No Boomer", false))
-					{
-						GetConVarString(CompLoader2v2NobConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-					#endif
-					if(StrEqual(PlayerCfg, "5v5 Hunter", false))
-					{
-						GetConVarString(CompLoader5v5HuntersConfig, LoadCommandConfigToExecuteName, 128);																			
-					}
-					if(StrEqual(PlayerCfg, "4v4 Hunter", false))
-					{
-						GetConVarString(CompLoader4v4HuntersConfig, LoadCommandConfigToExecuteName, 128);																		
-					}
-					if(StrEqual(PlayerCfg, "3v3 Hunter", false))
-					{
-						GetConVarString(CompLoader3v3HuntersConfig, LoadCommandConfigToExecuteName, 128);																			
-					}
-					if(StrEqual(PlayerCfg, "2v2 Hunter", false))
-					{
-						GetConVarString(CompLoader2v2HuntersConfig, LoadCommandConfigToExecuteName, 128);																	
-					}
-				}
-				#else
-				if(StrEqual(PlayerCfg, "5v5", false))			//if PlayerCfg is 4v4 then
-				{
-					GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																		
-				}
-				if(StrEqual(PlayerCfg, "4v4 Classic", false))
-				{
-					GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																			
-				}
-				if(StrEqual(PlayerCfg, "4v4", false))			//if PlayerCfg is 4v4 then
-				{
-					GetConVarString(CompLoader4v4Config, LoadCommandConfigToExecuteName, 128);																		
-				}
-				if(StrEqual(PlayerCfg, "3v3", false))
-				{
-					GetConVarString(CompLoader3v3Config, LoadCommandConfigToExecuteName, 128);																		
-				}
-				if(StrEqual(PlayerCfg, "2v2", false))
-				{
-					GetConVarString(CompLoader2v2Config, LoadCommandConfigToExecuteName, 128);	;																		
-				}
-				if(StrEqual(PlayerCfg, "1v1", false))
-				{
-					GetConVarString(CompLoader1v1Config, LoadCommandConfigToExecuteName, 128);																		
-				}
 				#endif
 				
 				if(CanStartVotes(client))
@@ -1870,12 +2213,13 @@ public Action:Config_Changer(client, args)
 			Config_Requests[TEAM_INFECTED] = false;								//resetting the config requests so the function can be run through again
 		}	
 	}
+
 	return Plugin_Handled;
 }
 
 CampaignchangeDelayed()
 {
-	if (MapCountdownTimer == INVALID_HANDLE)
+	if (MapCountdownTimer == null)
 	{
 		PrintHintTextToAll("%t","comp_loader6",CAMPAIGN_CHANGE_DELAY+1);
 		isMapRestartPending = true;
@@ -1887,7 +2231,7 @@ public Action:timerCampaignchange(Handle:timer)
 {
 	if (CampaingChangeDelay == 0)
 	{
-		MapCountdownTimer = INVALID_HANDLE;
+		MapCountdownTimer = null;
 		//EmitSoundToAll("buttons/blip2.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5);
 		Map_Change_NOW();
 		return Plugin_Stop;
@@ -2050,8 +2394,7 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsBHA = 0;
 		new AdminValueIsP84 = 0;
 		#endif
-		new AdminValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
-				
+
 		if(StrEqual(Admin_Map, "nm", false)) AdminValueIsNM = 1;
 		else if((StrEqual(Admin_Map, "nomercy", false))) AdminValueIsNM = 1;
 		else if(StrEqual(Admin_Map, "dt", false)) AdminValueIsDT = 1;
@@ -2090,209 +2433,197 @@ public Action:Map_Changer(client, args)
 		else if((StrEqual(Admin_Map, "precinct84", false))) AdminValueIsP84 = 1;
 		#endif
 
-		AdminValueSumOfMaps = AdminValueIsNM + AdminValueIsDT + AdminValueIsBH + AdminValueIsDA + AdminValueIsSA + AdminValueIsCC;
-		#if CUSTOM_CONFIGS
-		AdminValueSumOfMaps += AdminValueIsC17 + AdminValueIsSB + AdminValueIsIHateMountain +
-				AdminValueIsDeadFlagBlues + AdminValueIsDeadBeforeDawn + AdminValueIsTheArenaoftheDead + 
-				AdminValueIsDeathAboard + AdminValueIsOne4Nine + AdminValueIsDB + AdminValueIsBHA +
-				AdminValueIsP84;//calculate the sum of all the config value integers
-		#endif
-		if(AdminValueSumOfMaps == 1)
-		{	
-			if(AdminValueIsNM == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_hospital01_apartment";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","No Mercy");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;	
-			}
-			else if(AdminValueIsDT == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_smalltown01_caves";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Toll");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsBH == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_farm01_hilltop";
-				CPrintToChatAll("[[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsDA == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_airport01_greenhouse";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Air");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;	
-			}
-			else if(AdminValueIsSA == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_river01_docks";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Sacrifice");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;	
-			}
-			else if(AdminValueIsCC == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_garage01_alleys";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Crash Course");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			#if CUSTOM_CONFIGS
-			if(AdminValueIsC17 == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_city17_01";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","City 17");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsSB == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_stadium1_apartment";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Suicide Blitz");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsIHateMountain == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_ihm01_forest";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","I hate mountain");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsDeadFlagBlues == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_vs_deadflagblues01_city";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Flag Blues");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsDeadBeforeDawn == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_dbd_citylights";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Before Dawn");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsTheArenaoftheDead == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_jsarena01_town";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Arena of the Dead");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsDeathAboard == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_deathaboard01_prison";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Aboard");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsOne4Nine == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_149_1";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","One 4 Nine");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsDB == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_darkblood01_tanker";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dark Blood");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsBHA == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "rombu01";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest APOCALYPSE");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			else if(AdminValueIsP84 == 1)
-			{
-				SetConVarInt(FindConVar("comp_loader_load_active"), 0);
-				SetConVarInt(FindConVar("comp_loader_map_active"), 0);
-				adminMapActive = true;
-				AdminMapToExecuteName = "l4d_noprecinct01_crash";
-				CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Precinct 84");
-				CampaignchangeDelayed();
-				Admin_Cancel_Lite();
-				return Plugin_Handled;
-			}
-			#endif
-		}
-		else
+		if(AdminValueIsNM == 1)
 		{
-			CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_hospital01_apartment";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","No Mercy");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;	
 		}
+		else if(AdminValueIsDT == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_smalltown01_caves";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Toll");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsBH == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_farm01_hilltop";
+			CPrintToChatAll("[[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsDA == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_airport01_greenhouse";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Air");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;	
+		}
+		else if(AdminValueIsSA == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_river01_docks";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Sacrifice");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;	
+		}
+		else if(AdminValueIsCC == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_garage01_alleys";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Crash Course");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		#if CUSTOM_CONFIGS
+		if(AdminValueIsC17 == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_city17_01";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","City 17");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsSB == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_stadium1_apartment";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Suicide Blitz");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsIHateMountain == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_ihm01_forest";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","I hate mountain");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsDeadFlagBlues == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_vs_deadflagblues01_city";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Flag Blues");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsDeadBeforeDawn == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_dbd_citylights";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Before Dawn");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsTheArenaoftheDead == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_jsarena01_town";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Arena of the Dead");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsDeathAboard == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_deathaboard01_prison";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Aboard");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsOne4Nine == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_149_1";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","One 4 Nine");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsDB == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_darkblood01_tanker";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dark Blood");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsBHA == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "rombu01";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest APOCALYPSE");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		else if(AdminValueIsP84 == 1)
+		{
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			adminMapActive = true;
+			AdminMapToExecuteName = "l4d_noprecinct01_crash";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Precinct 84");
+			CampaignchangeDelayed();
+			Admin_Cancel_Lite();
+			return Plugin_Handled;
+		}
+		#endif
+
+		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
 	}
 	if (!TestMatchDelay(client))
 	{
@@ -2347,8 +2678,6 @@ public Action:Map_Changer(client, args)
 				new ValueIsP84 = 0;
 				#endif
 				
-				new ValueSumOfMaps = 0;	//is the sum of the maps more than 1, then config is invalid, on function start set to 0
-						
 				if(StrEqual(PlayerMap, "nm", false)) ValueIsNM = 1;
 				else if((StrEqual(PlayerMap, "nomercy", false))) ValueIsNM = 1;
 				else if(StrEqual(PlayerMap, "dt", false)) ValueIsDT = 1;
@@ -2386,14 +2715,6 @@ public Action:Map_Changer(client, args)
 				else if(StrEqual(PlayerMap, "p84", false)) ValueIsP84 = 1;
 				else if((StrEqual(PlayerMap, "precinct84", false))) ValueIsP84 = 1;
 				#endif
-
-				
-				ValueSumOfMaps = ValueIsNM + ValueIsDT + ValueIsBH + ValueIsDA + ValueIsSA	+ ValueIsCC + ValueIsTS;
-				#if CUSTOM_CONFIGS
-				ValueSumOfMaps += ValueIsC17 + ValueIsSB + ValueIsIHateMountain + ValueIsDeadFlagBlues + 
-					ValueIsDeadBeforeDawn + ValueIsTheArenaoftheDead + ValueIsDeathAboard +
-					ValueIsOne4Nine + ValueIsDB + ValueIsBHA + ValueIsP84;//calculate the sum of all the config value integers
-				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
 				{
@@ -2402,7 +2723,7 @@ public Action:Map_Changer(client, args)
 						CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!changemap(!cm)");
 						Map_Requests[TEAM_SURVIVOR] = false;
 						Map_Requests[TEAM_INFECTED] = false;
-						SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+						SetConVarInt(CompLoaderMapActive, 0);
 						return Plugin_Handled;						
 					}
 					if(Map_Requests[Opposite_Team] && !Map_Requests[Client_Team])
@@ -2410,7 +2731,7 @@ public Action:Map_Changer(client, args)
 						CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!changemap(!cm)");
 						Map_Requests[TEAM_SURVIVOR] = false;
 						Map_Requests[TEAM_INFECTED] = false;
-						SetConVarInt(FindConVar("comp_loader_map_active"), 0);
+						SetConVarInt(CompLoaderMapActive, 0);
 						return Plugin_Handled;
 					}
 					if(!Map_Requests[Opposite_Team])
@@ -2421,106 +2742,124 @@ public Action:Map_Changer(client, args)
 					return Plugin_Handled;
 				}
 				
-				if(ValueSumOfMaps == 1)
-				{	
-					if(ValueIsNM == 1)
-					{
-						PlayerMap = "No Mercy";
-						PlayerMapChat = "NM";
-					}
-					else if(ValueIsDT == 1)
-					{
-						PlayerMap = "Death Toll";
-						PlayerMapChat = "DT";
-					}
-					else if(ValueIsBH == 1)
-					{
-						PlayerMap = "Blood Harvest";
-						PlayerMapChat = "BH";
-					}
-					else if(ValueIsDA == 1)
-					{
-						PlayerMap = "Dead Air";
-						PlayerMapChat = "DA";
-					}
-					else if(ValueIsSA == 1)
-					{
-						PlayerMap = "The Sacrifice";
-						PlayerMapChat = "SA";
-					}
-					else if(ValueIsTS == 1)
-					{
-						PlayerMap = "The Sacrifice";
-						PlayerMapChat = "TS";
-					}
-					else if(ValueIsCC == 1)
-					{
-						PlayerMap = "Crash Course";
-						PlayerMapChat = "CC";
-					}
-					#if CUSTOM_CONFIGS
-					if(ValueIsC17 == 1)
-					{
-						PlayerMap = "City 17";
-						PlayerMapChat = "C17";
-					}
-					else if(ValueIsSB == 1)
-					{
-						PlayerMap = "Suicide Blitz";
-						PlayerMapChat = "SB";
-					}
-					else if(ValueIsIHateMountain == 1)
-					{
-						PlayerMap = "I hate mountain";
-						PlayerMapChat = "IHM";
-					}
-					else if(ValueIsDeadFlagBlues == 1)
-					{
-						PlayerMap = "Dead Flag Blues";
-						PlayerMapChat = "DFB";
-					}
-					else if(ValueIsDeadBeforeDawn == 1)
-					{
-						PlayerMap = "Dead Before Dawn";
-						PlayerMapChat = "DBD";
-					}
-					else if(ValueIsTheArenaoftheDead == 1)
-					{
-						PlayerMap = "The Arena of the Dead";
-						PlayerMapChat = "AOTD";
-					}
-					else if(ValueIsDeathAboard == 1)
-					{
-						PlayerMap = "Death Aboard";
-						PlayerMapChat = "DAB";
-					}
-					else if(ValueIsOne4Nine == 1)
-					{
-						PlayerMap = "One 4 Nine";
-						PlayerMapChat = "149";
-					}
-					else if(ValueIsDB == 1)
-					{
-						PlayerMap = "Dark Blood";
-						PlayerMapChat = "DB";
-					}
-					else if(ValueIsBHA == 1)
-					{
-						PlayerMap = "Blood Harvest APOCALYPSE";
-						PlayerMapChat = "BHA";
-					}
-					else if(ValueIsP84 == 1)
-					{
-						PlayerMap = "Precinct 84";
-						PlayerMapChat = "P84";
-					}
-					#endif
+				bool bIsValidMap = false;
+				if(ValueIsNM == 1)
+				{
+					PlayerMap = "No Mercy";
+					PlayerMapChat = "NM";
+					bIsValidMap = true;
 				}
-				else
+				else if(ValueIsDT == 1)
+				{
+					PlayerMap = "Death Toll";
+					PlayerMapChat = "DT";
+					bIsValidMap = true;
+				}
+				else if(ValueIsBH == 1)
+				{
+					PlayerMap = "Blood Harvest";
+					PlayerMapChat = "BH";
+					bIsValidMap = true;
+				}
+				else if(ValueIsDA == 1)
+				{
+					PlayerMap = "Dead Air";
+					PlayerMapChat = "DA";
+					bIsValidMap = true;
+				}
+				else if(ValueIsSA == 1)
+				{
+					PlayerMap = "The Sacrifice";
+					PlayerMapChat = "SA";
+					bIsValidMap = true;
+				}
+				else if(ValueIsTS == 1)
+				{
+					PlayerMap = "The Sacrifice";
+					PlayerMapChat = "TS";
+					bIsValidMap = true;
+				}
+				else if(ValueIsCC == 1)
+				{
+					PlayerMap = "Crash Course";
+					PlayerMapChat = "CC";
+					bIsValidMap = true;
+				}
+				#if CUSTOM_CONFIGS
+				if(ValueIsC17 == 1)
+				{
+					PlayerMap = "City 17";
+					PlayerMapChat = "C17";
+					bIsValidMap = true;
+				}
+				else if(ValueIsSB == 1)
+				{
+					PlayerMap = "Suicide Blitz";
+					PlayerMapChat = "SB";
+					bIsValidMap = true;
+				}
+				else if(ValueIsIHateMountain == 1)
+				{
+					PlayerMap = "I hate mountain";
+					PlayerMapChat = "IHM";
+					bIsValidMap = true;
+				}
+				else if(ValueIsDeadFlagBlues == 1)
+				{
+					PlayerMap = "Dead Flag Blues";
+					PlayerMapChat = "DFB";
+					bIsValidMap = true;
+				}
+				else if(ValueIsDeadBeforeDawn == 1)
+				{
+					PlayerMap = "Dead Before Dawn";
+					PlayerMapChat = "DBD";
+					bIsValidMap = true;
+				}
+				else if(ValueIsTheArenaoftheDead == 1)
+				{
+					PlayerMap = "The Arena of the Dead";
+					PlayerMapChat = "AOTD";
+					bIsValidMap = true;
+				}
+				else if(ValueIsDeathAboard == 1)
+				{
+					PlayerMap = "Death Aboard";
+					PlayerMapChat = "DAB";
+					bIsValidMap = true;
+				}
+				else if(ValueIsOne4Nine == 1)
+				{
+					PlayerMap = "One 4 Nine";
+					PlayerMapChat = "149";
+					bIsValidMap = true;
+				}
+				else if(ValueIsDB == 1)
+				{
+					PlayerMap = "Dark Blood";
+					PlayerMapChat = "DB";
+					bIsValidMap = true;
+				}
+				else if(ValueIsBHA == 1)
+				{
+					PlayerMap = "Blood Harvest APOCALYPSE";
+					PlayerMapChat = "BHA";
+					bIsValidMap = true;
+				}
+				else if(ValueIsP84 == 1)
+				{
+					PlayerMap = "Precinct 84";
+					PlayerMapChat = "P84";
+					bIsValidMap = true;
+				}
+				#endif
+
+				if(!bIsValidMap)
 				{
 					CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Mapname.", client);
 					return Plugin_Handled;
-				}								
+				}
+
 				if(!Map_Requests[Opposite_Team] == false)
 				{
 					SurvivorMap = PlayerMap;	//OppositeTeam argument string gets saved to SurvivorMap (which is actually just the first team)
@@ -2537,13 +2876,13 @@ public Action:Map_Changer(client, args)
 					{
 						CPrintToChatAll("[{olive}TS{default}] %t.\n%t","comp_loader8", Team_Names[Client_Team], PlayerMap,"The team must agree by typing command", Team_Names[Opposite_Team],"!cm", PlayerMapChat);
 						//adminCancel = false;
-						SetConVarInt(FindConVar("comp_loader_map_active"), 1);
+						SetConVarInt(CompLoaderMapActive, 1);
 					}
 					else if(Map_Requests[TEAM_SURVIVOR] && Map_Requests[TEAM_INFECTED])	//if both client team have requested, and the opposite team have requested/responded, then...
 					{
 						if(StrEqual(InfectedMap, SurvivorMap, false))	//if both teams' string have the same value then...
 						{
-							SetConVarInt(FindConVar("comp_loader_map_active"), 0);	//this disables the timer from printing [TS] Request timed out., even though its function still happens later
+							SetConVarInt(CompLoaderMapActive, 0);	//this disables the timer from printing [TS] Request timed out., even though its function still happens later
 							
 							CPrintToChatAll("[{olive}TS{default}] %t","comp_loader9", Team_Names[Client_Team], PlayerMap);
 							Map_Requests[TEAM_SURVIVOR] = false;		//resetting to false so the function can be run through again
@@ -2695,7 +3034,7 @@ public OnMapStart()
 {
 	g_votedelay = 15;
 	CreateTimer(1.0, Timer_VoteDelay, _, TIMER_REPEAT| TIMER_FLAG_NO_MAPCHANGE); 
-	MapCountdownTimer = INVALID_HANDLE;
+	MapCountdownTimer = null;
 	isMapRestartPending = false;
 	
 	Config_Requests[TEAM_SURVIVOR] = false;
@@ -2708,16 +3047,16 @@ public OnMapStart()
 	adminMapActive = false;
 	
 	numberOfLoadTimers = 0;
-	SetConVarInt(FindConVar("comp_loader_load_active"), 0);
+	SetConVarInt(CompLoaderLoadActive, 0);
 	
 	numberOfMapTimers = 0;										//resets the map timers to 0 active
-	SetConVarInt(FindConVar("comp_loader_map_active"), 0);		//sets the convar to 0 on new map
+	SetConVarInt(CompLoaderMapActive, 0);		//sets the convar to 0 on new map
 	
 
 	CompLoaderEnabledValue = GetConVarInt(CompLoaderEnabled);
 	CheckMapName();
 	ExecConfig();	
-	MapCountdownTimer = INVALID_HANDLE;
+	MapCountdownTimer = null;
 	hasprepareloaded = false;
 	
 	PrecacheSound("ui/menu_enter05.wav");
@@ -2918,7 +3257,7 @@ Float:GetVotePercent(votes, totalVotes)
 bool:CanStartVotes(client)
 {
 	
- 	if(g_hMatchVote != INVALID_HANDLE || IsVoteInProgress())
+ 	if(g_hMatchVote != null || IsVoteInProgress())
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","A vote is already in progress!",client);
 		return false;
@@ -3005,7 +3344,6 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 			EmitSoundToAll("ui/beep_error01.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote fail.", RoundToNearest(100.0*limit), RoundToNearest(100.0*percent), totalVotes);
 			CreateTimer(2.0, VoteEndDelay);
-			hasprepareloaded = false;
 		}
 		else
 		{
@@ -3082,7 +3420,6 @@ public Handler_VoteCallback2(Handle:menu, MenuAction:action, param1, param2)
 			EmitSoundToAll("ui/beep_error01.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote fail.", RoundToNearest(100.0*limit), RoundToNearest(100.0*percent), totalVotes);
 			CreateTimer(2.0, VoteEndDelay);
-			hasprepareloaded = false;
 		}
 		else
 		{

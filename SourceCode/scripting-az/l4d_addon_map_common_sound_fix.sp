@@ -65,7 +65,7 @@ stock const char sDBD_Bug_BeenShot_Sound[][] =
     "ambient/weather/thunderstorm/thunder_3.wav"
 };
 
-static const char sFix_Bullets_Sound[][] =
+stock const char sFix_Bullets_Sound[][] =
 {   
     "npc/infected/gore/bullets/bullet_gib_01.wav",
     "npc/infected/gore/bullets/bullet_gib_02.wav",
@@ -86,7 +86,7 @@ static const char sFix_Bullets_Sound[][] =
     "npc/infected/gore/bullets/bullet_gib_17.wav"
 };
 
-static char sFix_BeenShot_Sound[][] =
+stock char sFix_BeenShot_Sound[][] =
 {   
     "npc/infected/action/been_shot/been_shot_01.wav",
     "npc/infected/action/been_shot/been_shot_02.wav",
@@ -150,10 +150,12 @@ public void OnPluginStart()
             OnEntityCreated(entity, classname);
         }
 
-        OnMapStart();
+        //OnMapStart();
     }
-}
 
+    AddNormalSoundHook(SI_OnSoundEmitted_Fix);
+}
+/*
 bool g_bDeathAboardMap, g_bPrecinct84Map, g_b149Map, g_bDBDMap;
 public void OnMapStart()
 {
@@ -366,6 +368,34 @@ public Action SI_DBD_OnSoundEmitted(int clients[MAXPLAYERS], int &numClients, ch
 
     return Plugin_Continue;
 }
+*/
+
+public Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH],int &entity, int &channel, float &volume, int &level, int &pitch, int &flags,char soundEntry[PLATFORM_MAX_PATH], int &seed)
+{
+    if (numClients >= 1){
+
+        if(IsCommonInfected(entity))
+        {
+            if(strncmp(sample, "ambient/weather/", 16) == 0 ||
+               strncmp(sample, "physics/wood/", 13) == 0)
+            {
+                //PrintToChatAll("zombie been shot sound or zombie bug bullet sound");
+
+                if(g_fCommonShotTime[entity] < GetEngineTime())
+                {
+                    int random = GetRandomInt(0, sizeof(sFix_Bullets_Sound)-1);
+                    EmitSoundToAll(sFix_Bullets_Sound[random], entity);
+                    g_fCommonShotTime[entity] = GetEngineTime() + SOUND_INTERVAL;
+                }
+                
+                return Plugin_Stop;
+            }
+        }
+    }
+
+    return Plugin_Continue;
+}
+
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
