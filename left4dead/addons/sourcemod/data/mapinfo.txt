@@ -514,6 +514,14 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.7"
+		"tank_ban_flow"
+		{
+			"Middle"
+			{
+				"min"		"61"
+				"max"		"77"
+			}
+		}
 	}
 	"l4d_149_5"
 	{
