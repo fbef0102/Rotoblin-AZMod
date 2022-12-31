@@ -26,16 +26,12 @@
 
 #pragma semicolon 1
 
-#include <multicolors>
 #include <sourcemod>
 #include <sdktools>
 #include <geoip>
-#undef REQUIRE_EXTENSIONS
-#include <geoipcity>
-#undef REQUIRE_PLUGIN
-#include <adminmenu>
+#include <multicolors>
 
-#define VERSION "1.7"
+#define VERSION "2.0"
 
 /*****************************************************************
 
@@ -46,8 +42,6 @@
 *****************************************************************/
 //static g_iSColors[5]             = {1,               3,              4,         6,			5};
 //static String:g_sSColors[5][13]  = {"{DEFAULT}",     "{LIGHTGREEN}", "{GREEN}", "{YELLOW}",	"{OLIVE}"};
-
-new bool:g_UseGeoIPCity = false;
 
 new Handle:g_CvarConnectDisplayType = INVALID_HANDLE;
 
@@ -121,9 +115,6 @@ public OnPluginStart()
 	
 	//suppress standard connection message
 	SetupSuppress();
-
-	// Check if we have GeoIPCity.ext loaded
-	g_UseGeoIPCity = LibraryExists("GeoIPCity");
 	
 	//create config file if not exists
 	AutoExecConfig(true, "cannounce");
@@ -165,21 +156,6 @@ public OnClientPostAdminCheck(client)
 			OnPostAdminCheck_JoinMsg();
 		}
 	}	
-}
-
-public OnLibraryRemoved(const String:name[])
-{
-	// Was the GeoIPCity extension removed?
-	if(StrEqual(name, "GeoIPCity"))
-		g_UseGeoIPCity = false;
-}
-
-
-public OnLibraryAdded(const String:name[])
-{
-	// Is the GeoIPCity extension running?
-	if(StrEqual(name, "GeoIPCity"))
-		g_UseGeoIPCity = true;
 }
 
 
@@ -241,9 +217,9 @@ PrintFormattedMessageToAll( client, playerjoin )//給全部人看的
 	SetFormattedMessage( client );
 	
 	Format( message, sizeof(message), "%s", player_country );
-	if(!StrEqual(player_region, "an Unknown Region", true))
+	if(strcmp(player_region, "an Unknown Region", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_region);
-	if(!StrEqual(player_city, "an IP Address", true)&&!StrEqual(player_city, "Somewhere", true))
+	if(strcmp(player_city, "an IP Address", false) != 0 && strncmp(player_city, "Somewhere", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_city);
 		
 	if(playerjoin == 1)//玩家進來
@@ -272,9 +248,9 @@ PrintFormattedMessageToAdmins( client, playerjoin)//專屬給adm看的
 	SetFormattedMessage( client );
 	
 	Format( message, sizeof(message), "%s", player_country );
-	if(!StrEqual(player_region, "an Unknown Region", true))
+	if(strcmp(player_region, "an Unknown Region", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_region);
-	if(!StrEqual(player_city, "an IP Address", true)&&!StrEqual(player_city, "Somewhere", true))
+	if(strcmp(player_city, "an IP Address", false) != 0 && strncmp(player_city, "Somewhere", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_city);
 
 		
@@ -315,9 +291,9 @@ PrintFormattedMsgToNonAdmins( client, playerjoin )//給不是adm看的
 	SetFormattedMessage( client );
 	
 	Format( message, sizeof(message), "%s", player_country );
-	if(!StrEqual(player_region, "an Unknown Region", true))
+	if(strcmp(player_region, "an Unknown Region", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_region);
-	if(!StrEqual(player_city, "an IP Address", true)&&!StrEqual(player_city, "Somewhere", true))
+	if(strcmp(player_city, "an IP Address", false) != 0 && strncmp(player_city, "Somewhere", false) != 0)
 		Format( message, sizeof(message), "%s, %s",message, player_city);
 		
 	for (new i = 1; i <= MaxClients; i++)
@@ -351,66 +327,62 @@ SetFormattedMessage(client)
 		//detect LAN IP
 		bIsLanIp = IsLanIP( player_ip );
 		
-		// Using GeoIPCity extension...
-		if ( g_UseGeoIPCity )
+		if( !GeoipCode2(player_ip, player_ccode) )
 		{
-			if( !GeoipGetRecord( player_ip, player_city, player_region, player_country, player_ccode, player_ccode3 ) )
+			if( bIsLanIp )
 			{
-				if( bIsLanIp )
-				{
-					Format( player_city, sizeof(player_city), "%T", "LAN City Desc", LANG_SERVER );
-					Format( player_region, sizeof(player_region), "%T", "LAN Region Desc", LANG_SERVER );
-					Format( player_country, sizeof(player_country), "%T", "LAN Country Desc", LANG_SERVER );
-					Format( player_ccode, sizeof(player_ccode), "%T", "LAN Country Short", LANG_SERVER );
-					Format( player_ccode3, sizeof(player_ccode3), "%T", "LAN Country Short 3", LANG_SERVER );
-				}
-				else
-				{
-					Format( player_city, sizeof(player_city), "%T", "Unknown City Desc", LANG_SERVER );
-					Format( player_region, sizeof(player_region), "%T", "Unknown Region Desc", LANG_SERVER );
-					Format( player_country, sizeof(player_country), "%T", "Unknown Country Desc", LANG_SERVER );
-					Format( player_ccode, sizeof(player_ccode), "%T", "Unknown Country Short", LANG_SERVER );
-					Format( player_ccode3, sizeof(player_ccode3), "%T", "Unknown Country Short 3", LANG_SERVER );
-				}
+				Format( player_ccode, sizeof(player_ccode), "%T", "LAN Country Short", LANG_SERVER );
+			}
+			else
+			{
+				Format( player_ccode, sizeof(player_ccode), "%T", "Unknown Country Short", LANG_SERVER );
 			}
 		}
-		else // Using GeoIP default extension...
+		
+		if( !GeoipCountry(player_ip, player_country, sizeof(player_country)) )
 		{
-			if( !GeoipCode2(player_ip, player_ccode) )
+			if( bIsLanIp )
 			{
-				if( bIsLanIp )
-				{
-					Format( player_ccode, sizeof(player_ccode), "%T", "LAN Country Short", LANG_SERVER );
-				}
-				else
-				{
-					Format( player_ccode, sizeof(player_ccode), "%T", "Unknown Country Short", LANG_SERVER );
-				}
+				Format( player_country, sizeof(player_country), "%T", "LAN Country Desc", LANG_SERVER );
 			}
-			
-			if( !GeoipCountry(player_ip, player_country, sizeof(player_country)) )
+			else
 			{
-				if( bIsLanIp )
-				{
-					Format( player_country, sizeof(player_country), "%T", "LAN Country Desc", LANG_SERVER );
-				}
-				else
-				{
-					Format( player_country, sizeof(player_country), "%T", "Unknown Country Desc", LANG_SERVER );
-				}
+				Format( player_country, sizeof(player_country), "%T", "Unknown Country Desc", LANG_SERVER );
 			}
-			
-			// Since the GeoIPCity extension isn't loaded, we don't know the city or region.
+		}
+		
+		if(!GeoipCity(player_ip, player_city, sizeof(player_city)))
+		{
 			if( bIsLanIp )
 			{
 				Format( player_city, sizeof(player_city), "%T", "LAN City Desc", LANG_SERVER );
-				Format( player_region, sizeof(player_region), "%T", "LAN Region Desc", LANG_SERVER );
-				Format( player_ccode3, sizeof(player_ccode3), "%T", "LAN Country Short 3", LANG_SERVER );
 			}
 			else
 			{
 				Format( player_city, sizeof(player_city), "%T", "Unknown City Desc", LANG_SERVER );
+			}
+		}
+
+		if(!GeoipRegion(player_ip, player_region, sizeof(player_region)))
+		{
+			if( bIsLanIp )
+			{
+				Format( player_region, sizeof(player_region), "%T", "LAN Region Desc", LANG_SERVER );
+			}
+			else
+			{
 				Format( player_region, sizeof(player_region), "%T", "Unknown Region Desc", LANG_SERVER );
+			}
+		}
+
+		if(!GeoipCode3(player_ip, player_ccode3))
+		{
+			if( bIsLanIp )
+			{
+				Format( player_ccode3, sizeof(player_ccode3), "%T", "LAN Country Short 3", LANG_SERVER );
+			}
+			else
+			{
 				Format( player_ccode3, sizeof(player_ccode3), "%T", "Unknown Country Short 3", LANG_SERVER );
 			}
 		}

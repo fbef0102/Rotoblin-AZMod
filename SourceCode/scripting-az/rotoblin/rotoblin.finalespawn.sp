@@ -5,8 +5,8 @@
  *
  *  File:			rotoblin.finalespawn.sp
  *  Type:			Module
- *  Description:	Reduces the spawn range on finales to normal spawning
- *					range.
+ *  Description:	1. Reduces the spawn range on finales to normal spawning range.
+ * 					2. Fixing Waiting For Survivors To Start The Finale or w/e
  *	Credits:		Confogl Team, <confogl.googlecode.com>
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
@@ -27,11 +27,12 @@
  *  along with Rotoblin.  If not, see <http://www.gnu.org/licenses/>.
  *
  * ============================================================================
+ * 
+ * 1.Reduces the spawn range on finales to normal spawning range.
+ * // Same as convar "z_finale_spawn_safety_range"
+ * // Convar "z_finale_spawn_safety_range" affects common zombie spawn and tank spawn, which causes nav issue on final map such as horde unable to spawn
+ * // So we use plugin to change special infected ghost SpawnFlags
  */
-
-// Same as convar "z_finale_spawn_safety_range"
-// Convar "z_finale_spawn_safety_range" affects common zombie spawn and tank spawn, which causes nav issue on final map such as horde unable to spawn
-// So we use plugin only for special infected
 
 /*
  * ==================================================
@@ -53,6 +54,9 @@ static	const			MIN_SPAWN_RANGE = 200; //same as l4d2
 static			bool:	g_bIsFinaleActive = false;
 static			Handle:g_hFnalSpawn, bool:g_bCvarFinalSpawn;
 
+const int OFFS_FROM_SPAWNSTATE = 0x26;
+int g_SawSurvivorsOutsideBattlefieldOffset;
+
 /*
  * ==================================================
  *                     Forwards
@@ -66,6 +70,8 @@ static			Handle:g_hFnalSpawn, bool:g_bCvarFinalSpawn;
  */
 _FinaleSpawn_OnPluginStart()
 {
+	g_SawSurvivorsOutsideBattlefieldOffset = FindSendPropInfo("CTerrorPlayer", "m_ghostSpawnState") + OFFS_FROM_SPAWNSTATE;
+
 	g_hFnalSpawn = CreateConVarEx("finalspawn_range",	"1", "Reduces the SI spawning range on finales to normal spawning range", _, true, 0.0, true, 1.0);
 
 	Get_FS_Cvars();
@@ -86,6 +92,7 @@ public _FS_OnPluginEnabled()
 	HookEvent("round_end", _FS_OnRoundChange_Event, EventHookMode_PostNoCopy);
 	HookEvent("round_start", _FS_OnRoundChange_Event, EventHookMode_PostNoCopy);
 	HookEvent("finale_start", _FS_OnFinaleStart_Event, EventHookMode_PostNoCopy);
+	HookEvent("finale_radio_start", _FS_OnFinaleStart_Event, EventHookMode_PostNoCopy);
 
 	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _FS_OnClientPutInServer);
 }
@@ -101,6 +108,7 @@ public _FS_OnPluginDisabled()
 	UnhookEvent("round_end", _FS_OnRoundChange_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("round_start", _FS_OnRoundChange_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("finale_start", _FS_OnFinaleStart_Event, EventHookMode_PostNoCopy);
+	UnhookEvent("finale_radio_start", _FS_OnFinaleStart_Event, EventHookMode_PostNoCopy);
 
 	UnhookPublicEvent(EVENT_ONPLUGINENABLE, _FS_OnPluginEnabled);
 	UnhookPublicEvent(EVENT_ONPLUGINDISABLE, _FS_OnPluginDisabled);
@@ -262,4 +270,32 @@ stock _FS_CvarDebug()
 	decl bool:iVal;
 	if ((iVal = GetConVarBool(g_hFnalSpawn)) != g_bCvarFinalSpawn)
 		DebugLog("%d		|	%d		|	rotoblin_finalspawn_range", iVal, g_bCvarFinalSpawn);
+}
+
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
+{
+	if(g_bWAIT_FOR_FINALE_map)
+	{
+		FixAllInfected();
+	}
+}
+
+void FixAllInfected()
+{
+	for (int i = 1; i < MaxClients; i++)
+	{
+		if (IsClientInGame(i) && GetClientTeam(i) == 3) 
+		{
+			SetSeenSurvivorsState(i, true);
+			// This part shouldn't be necessary, but just for good measure:
+			// Remove the "WAIT_FOR_FINALE" spawn flag
+			SetPlayerGhostSpawnState(i, GetGhostSpawnState(i) & ~4);
+		}
+	}
+}
+
+stock SetSeenSurvivorsState(entity, bool:seen)
+{
+	// m_ghostSawSurvivorsOutsideFinaleArea
+	SetEntData(entity, g_SawSurvivorsOutsideBattlefieldOffset, seen ? 1: 0, 1);
 }

@@ -1,29 +1,44 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 
-new bool:g_bIsWeaponEmpty[2048];
-new bool:g_bIgnoreWeaponSwitch[MAXPLAYERS+1];
+bool g_bIsWeaponEmpty[2048];
+bool g_bIgnoreWeaponSwitch[MAXPLAYERS+1];
 
 
-new Handle:ConVar_Huntrifle_EReloadLayer = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_EReloadTime = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_ReloadLayer = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_ReloadTime = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_PickupLayer = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_PickupTime = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_SwtichLayer = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_FireLayer = INVALID_HANDLE;
-new Handle:ConVar_Huntrifle_SwtichTime = INVALID_HANDLE;
+ConVar ConVar_Huntrifle_EReloadLayer = null;
+ConVar ConVar_Huntrifle_EReloadTime = null;
+ConVar ConVar_Huntrifle_ReloadLayer = null;
+ConVar ConVar_Huntrifle_ReloadTime = null;
+ConVar ConVar_Huntrifle_PickupLayer = null;
+ConVar ConVar_Huntrifle_PickupTime = null;
+ConVar ConVar_Huntrifle_SwtichLayer = null;
+ConVar ConVar_Huntrifle_FireLayer = null;
+ConVar ConVar_Huntrifle_SwtichTime = null;
 ConVar hRateOfFireCvar;
-static			Float:  g_fNextPrimaryAttack[MAXPLAYERS + 1]	=	{0.0};		//next gametime client's sniper is allowed to fire;
-static			Float:	g_fFireSpeed							= 	0.27;		//min low input values are 0.05 - 1.5 if you prefer stock speed * modifier, 
-static			bool:	g_bIsSniperActive[MAXPLAYERS + 1]		= 	{true};	//is client holding a sniper atm
-static			bool:	g_bFiredSniper[MAXPLAYERS + 1]			=	{false};	//did client just fire his sniper
-static			bool:	g_Animation[MAXPLAYERS + 1]				=	{true};
-public Plugin:myinfo = 
+
+int iConVar_Huntrifle_EReloadLayer;
+float fConVar_Huntrifle_EReloadTime;
+int iConVar_Huntrifle_ReloadLayer;
+float fConVar_Huntrifle_ReloadTime;
+int iConVar_Huntrifle_PickupLayer;
+float fConVar_Huntrifle_PickupTime;
+int iConVar_Huntrifle_SwtichLayer;
+float fConVar_Huntrifle_SwtichTime;
+int iConVar_Huntrifle_FireLayer;
+float fRateOfFireCvar;
+
+float g_fNextPrimaryAttack[MAXPLAYERS + 1]	=	{0.0};		//next gametime client's sniper is allowed to fire;
+float g_fFireSpeed							= 	0.27;		//min low input values are 0.05 - 1.5 if you prefer stock speed * modifier, 
+bool g_bIsSniperActive[MAXPLAYERS + 1]		= 	{true};		//is client holding a sniper atm
+bool g_bFiredSniper[MAXPLAYERS + 1]			=	{false};	//did client just fire his sniper
+bool g_Animation[MAXPLAYERS + 1]			=	{true};
+int OLD_WEAPON[MAXPLAYERS+1], NEW_WEAPON[MAXPLAYERS+1];
+
+public Plugin myinfo = 
 {
 	name = "Nerf Huntingrifle",
 	author = "Tester:Xeno, Coder:Timocop, archer, L4D1 Huntingrifle modify by Harry",
@@ -32,7 +47,22 @@ public Plugin:myinfo =
 	url = "Harry Potter myself,bitch"
 };
 
-public OnPluginStart()
+bool bLate;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    EngineVersion test = GetEngineVersion();
+
+    if( test != Engine_Left4Dead )
+    {
+        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+        return APLRes_SilentFailure;
+    }
+
+    bLate = late;
+    return APLRes_Success;
+}
+
+public void OnPluginStart()
 {
 	ConVar_Huntrifle_EReloadLayer = CreateConVar( "l4dbeta_huntingrifle_empty_reloadlayer", "15", "[-1 = DISABLED] <The Empty Reload Layer Sequence>",  FCVAR_NOTIFY );
 	ConVar_Huntrifle_EReloadTime = CreateConVar( "l4dbeta_huntingrifle_empty_reloadtime", "1.25", "[-1 = DISABLED] <Time to Block the Empty Reload Sequence>",  FCVAR_NOTIFY );
@@ -44,20 +74,79 @@ public OnPluginStart()
 	ConVar_Huntrifle_SwtichTime = CreateConVar( "l4dbeta_huntingrifle_swtichtime", "1.8", "[-1 = DISABLED] <Time to Block the Swtich Layer Sequence>",  FCVAR_NOTIFY );
 	ConVar_Huntrifle_FireLayer = CreateConVar( "l4d_huntingrifle_firelayer", "19", "[-1 = DISABLED] <The Fire Layer Sequence>", FCVAR_NOTIFY );
 	hRateOfFireCvar	= CreateConVar("l4d_huntingrifle_fire_rate", "0.20", "[1.0 = Value Default] In percentage, rate of fire (min 0.05; max 1.50).",  FCVAR_NOTIFY);
-	
+
+	GetCvars();
 	SetFireSpeed();
-	HookConVarChange(hRateOfFireCvar, ConVarChange_Slow);
+	ConVar_Huntrifle_EReloadLayer.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_EReloadTime.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_ReloadLayer.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_ReloadTime.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_PickupLayer.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_PickupTime.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_SwtichLayer.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_SwtichTime.AddChangeHook(ConVarChanged_Cvars);
+	ConVar_Huntrifle_FireLayer.AddChangeHook(ConVarChanged_Cvars);
+	hRateOfFireCvar.AddChangeHook(ConVarChange_Slow);
+
 	HookEvent("weapon_fire", eWeaponFire, EventHookMode_Pre);
 	HookEvent("weapon_reload", eReloadWeapon);
-	HookEvent("spawner_give_item", ePlayerUse);
-	HookEvent("item_pickup", ePlayerUse);
-	
-	for (new client = 1; client <= MaxClients; client++)
+	//HookEvent("spawner_give_item", ePlayerItemPickup);
+	HookEvent("item_pickup", ePlayerItemPickup);
+
+	if(bLate)
 	{
-		if (!IsClientInGame(client)) continue;
-		SDKHook(client, SDKHook_WeaponEquip, OnWeaponEquip);
-		SDKHook(client, SDKHook_WeaponSwitch, OnWeaponSwitch);
+		int iCurrentWeapon;
+		static char sWeaponName[64];
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (!IsClientInGame(client)) continue;
+
+			OnClientPutInServer(client);
+
+			if (GetClientTeam(client) == 2 && IsPlayerAlive(client))
+			{
+				iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+				if(iCurrentWeapon <= 0)
+					return;
+
+				GetEntityClassname(iCurrentWeapon, sWeaponName, sizeof(sWeaponName));
+				if (strcmp(sWeaponName, "weapon_hunting_rifle", false) == 0)
+				{
+					g_bIsSniperActive[client] = true;
+				}
+				else
+				{
+					g_bIsSniperActive[client] = false;
+				}
+			}
+
+		}
 	}
+}
+
+public void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetCvars();
+}
+
+public void ConVarChange_Slow(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{	
+	GetCvars();
+	SetFireSpeed();
+}
+
+void GetCvars()
+{
+	iConVar_Huntrifle_EReloadLayer = ConVar_Huntrifle_EReloadLayer.IntValue;
+	fConVar_Huntrifle_EReloadTime = ConVar_Huntrifle_EReloadTime.FloatValue;
+	iConVar_Huntrifle_ReloadLayer = ConVar_Huntrifle_ReloadLayer.IntValue;
+	fConVar_Huntrifle_ReloadTime = ConVar_Huntrifle_ReloadTime.FloatValue;
+	iConVar_Huntrifle_PickupLayer = ConVar_Huntrifle_PickupLayer.IntValue;
+	fConVar_Huntrifle_PickupTime = ConVar_Huntrifle_PickupTime.FloatValue;
+	iConVar_Huntrifle_SwtichLayer = ConVar_Huntrifle_SwtichLayer.IntValue;
+	fConVar_Huntrifle_SwtichTime = ConVar_Huntrifle_SwtichTime.FloatValue;
+	iConVar_Huntrifle_FireLayer = ConVar_Huntrifle_FireLayer.IntValue;
+	fRateOfFireCvar = hRateOfFireCvar.FloatValue;
 }
 
 /****************************************************************************************************************************
@@ -71,96 +160,103 @@ public OnPluginStart()
 	*****************************************************************************************************************************/
 
 
-public Action:eWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
+public void eWeaponFire(Event event, const char[] name, bool dontBroadcast) 
 {
-	new iClient = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsValidClient(iClient) 	
+	int iClient = GetClientOfUserId(event.GetInt("userid"));
+	if (!IsValidClient(iClient) 	
 			|| !IsPlayerAlive(iClient) 
 			/*|| IsFakeClient(iClient)*/
-			|| GetClientTeam(iClient) != 2||!g_bIsSniperActive[iClient])
-	return Plugin_Continue;
+			|| GetClientTeam(iClient) != 2 
+			|| !g_bIsSniperActive[iClient])
+		return;
 	
-	ChangeWeaponSize(iClient, 1);
+	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	if (iCurrentWeapon <= 0)
+		return;	
 	
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	if(!IsValidEntity(iCurrentWeapon))
-		return Plugin_Continue;	
-	
-	decl String:sWeaponName[32];
-	GetClientWeapon(iClient, sWeaponName, sizeof(sWeaponName));
-	if (StrContains(sWeaponName, "hunting_rifle", false) == -1)
-		return Plugin_Continue;
+	/*static char sWeaponName[64];
+	GetEntityClassname(iCurrentWeapon, sWeaponName, sizeof(sWeaponName));
+	if (strcmp(sWeaponName, "weapon_hunting_rifle", false) != 0)
+		return;*/
 		
-	if(GetEntProp(GetPlayerWeaponSlot(iClient, 0), Prop_Data, "m_iClip1") == 1)//最後一發射出去不使用拉勾動畫
-		return Plugin_Continue;
+	if (GetEntProp(iCurrentWeapon, Prop_Data, "m_iClip1") == 1)//最後一發射出去不使用拉勾動畫
+	{
+		g_bIsWeaponEmpty[iCurrentWeapon] = true;
+		return;
+	}
 	else
 	{
 		g_fNextPrimaryAttack[iClient] = GetGameTime() + g_fFireSpeed;//射速
 		g_bFiredSniper[iClient] = true;
 		g_Animation[iClient] = true;
-		CreateTimer(0.1,COLD_DOWN,iClient);//拉勾動畫
+		CreateTimer(0.1, COLD_DOWN, GetClientUserId(iClient)); //拉勾動畫
 	}
+}
+
+Action COLD_DOWN(Handle timer, int iClient) //拉勾動畫
+{
+	iClient = GetClientOfUserId(iClient);
+	if(!iClient || !IsClientInGame(iClient))
+		return Plugin_Continue;
+	
+	if(GetClientTeam(iClient) != 2 || !IsPlayerAlive(iClient))
+		return Plugin_Continue;
+
+	g_bFiredSniper[iClient] = false;	
+
+	if(!g_Animation[iClient])
+		return Plugin_Continue;
+
+	g_Animation[iClient] = false;
+
+	if(!g_bIsSniperActive[iClient])
+		return Plugin_Continue;
+		
+	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
+	if(!IsValidEntity(iViewModel))
+		return Plugin_Continue;
+
+	if(iConVar_Huntrifle_FireLayer <= 0) return Plugin_Continue;
+		
+	SetEntPropFloat(GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon"), Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
+	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_FireLayer); //16
+	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
+	
 	return Plugin_Continue;
 }
-public Action:COLD_DOWN(Handle:timer,any:iClient)//拉勾動畫
-{
-	if(!g_Animation[iClient]||!IsValidClient(iClient))
-		return;
-		
-	new iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-	if(!IsValidEntity(iViewModel))
-		return; 
-		
-	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", GetConVarInt(ConVar_Huntrifle_FireLayer)); //16
-	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
-	ChangeEdictState(iViewModel, FindDataMapInfo(iViewModel, "m_nLayerSequence"));
-	
-	return;
-}
-bool:ChangeWeaponSize(iClient, iClip)
-{
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
-	if(!IsValidEntity(iCurrentWeapon))
-	return false;
 
-	g_bIsWeaponEmpty[iCurrentWeapon] = (GetEntProp(iCurrentWeapon, Prop_Data, "m_iClip1") <= iClip);
-	
-	return true;
-}
-
-public Action:OnPlayerRunCmd(iClient, &iButtons, &iImpulse, Float:fVelocity[3], Float:fAngles[3], &iWeapon)
+public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVelocity[3], float fAngles[3], int &iWeapon)
 { 
 	if(!IsClientInGame(iClient)) return Plugin_Continue;
 	if(GetClientTeam(iClient) != 2) return Plugin_Continue;
 	//if(IsFakeClient(iClient)) return Plugin_Continue;
 	if(!IsPlayerAlive(iClient)) return Plugin_Continue;
-	
-	static OLD_WEAPON[MAXPLAYERS+1];
-	static NEW_WEAPON[MAXPLAYERS+1];
 
 	NEW_WEAPON[iClient] = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	if(NEW_WEAPON[iClient] <= 0 ) return Plugin_Continue;
+	
+	if(!g_bIsSniperActive[iClient])
+	{
+		OLD_WEAPON[iClient] = NEW_WEAPON[iClient];
+		return Plugin_Continue;
+	}
+
 	if(NEW_WEAPON[iClient] != OLD_WEAPON[iClient])
 	{
 		if(!g_bIgnoreWeaponSwitch[iClient])
-		WeaponChangeAnimation(iClient);
+			WeaponChangeAnimation(iClient, NEW_WEAPON[iClient]);
 		else
-		g_bIgnoreWeaponSwitch[iClient] = false;
+			g_bIgnoreWeaponSwitch[iClient] = false;
 		
-		ChangeWeaponSize(iClient, 0);
+		g_bIsWeaponEmpty[NEW_WEAPON[iClient]] = (GetEntProp(NEW_WEAPON[iClient], Prop_Data, "m_iClip1") <= 0);
 	}
 	OLD_WEAPON[iClient] = NEW_WEAPON[iClient];
-	
-	decl String:sWeaponName[64];
-	GetClientWeapon(iClient, sWeaponName, sizeof(sWeaponName));
-	if (StrContains(sWeaponName, "hunting_rifle", false) == -1)
-		return Plugin_Continue;
 		
-	if (g_bIsSniperActive[iClient] && g_bFiredSniper[iClient] && iButtons & IN_ATTACK)	//If player is holding sniper, and he just fired a shot, and he uses +attack
+	if (g_bFiredSniper[iClient] && iButtons & IN_ATTACK)	//If player is holding sniper, and he just fired a shot, and he uses +attack
 	{
-		new sniper = GetPlayerWeaponSlot(iClient, 0);
-		SetEntPropFloat(sniper, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
+		//SetEntPropFloat(NEW_WEAPON[iClient], Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
 		g_bFiredSniper[iClient] = false;
+		iButtons ^= IN_ATTACK;
 	}
 	else if(g_Animation[iClient] && iButtons & IN_ATTACK2)//拉槍動畫前右鍵推
 	{
@@ -170,166 +266,124 @@ public Action:OnPlayerRunCmd(iClient, &iButtons, &iImpulse, Float:fVelocity[3], 
 	return Plugin_Continue;
 }
 
-stock bool:WeaponChangeAnimation(iClient)
+void WeaponChangeAnimation(int iClient, int hActiveWeapon)
 {
-	new iWeaponNum = 0;
-	if (GetPlayerWeaponSlot(iClient, 0) > 0 && GetEntProp(GetPlayerWeaponSlot(iClient, 0), Prop_Data, "m_iClip1") > 0) iWeaponNum +=1;
-	if (GetPlayerWeaponSlot(iClient, 1) > 0) iWeaponNum += 1;
-	if (GetPlayerWeaponSlot(iClient, 2) > 0) iWeaponNum += 1;
-	if (GetPlayerWeaponSlot(iClient, 3) > 0) iWeaponNum += 1;
-	if (GetPlayerWeaponSlot(iClient, 4) > 0) iWeaponNum += 1;
-	
-	new iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-	
-	if(!IsValidEntity(iViewModel))
-	return false;
-	
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
-	if(!IsValidEntity(iCurrentWeapon))
-	return false;
-
-	if(iWeaponNum > 1)
+	if (GetEntProp(hActiveWeapon, Prop_Data, "m_iClip1") > 0)
 	{
-		decl String:sWeaponName[64];
-		GetClientWeapon(iClient, sWeaponName, sizeof(sWeaponName));
-
-		if (StrContains(sWeaponName, "hunting_rifle", false) != -1)
+		int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
+		if(!IsValidEntity(iViewModel)) return;
+	
+		if(iConVar_Huntrifle_SwtichLayer > 0)
 		{
-			if(GetConVarInt(ConVar_Huntrifle_SwtichLayer) == -1)
-			return false;
-			if(GetEntProp(GetPlayerWeaponSlot(iClient, 0), Prop_Data, "m_iClip1") == 0)//沒有子彈不使用拉勾動畫
-				return false;
-				
-			if(GetConVarInt(ConVar_Huntrifle_SwtichLayer) > 0)
-			{
-				SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", GetConVarInt(ConVar_Huntrifle_SwtichLayer)); 
-				SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
-				ChangeEdictState(iViewModel, FindDataMapInfo(iViewModel, "m_nLayerSequence"));
-			}
-			if(GetConVarFloat(ConVar_Huntrifle_SwtichTime) > 0)
-			{
-				Weapon_Speed(iClient, GetConVarFloat(ConVar_Huntrifle_SwtichTime));
-			}
-		}
-	}
-	return true;
-}
-
-
-
-public Action:eReloadWeapon(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new iClient = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(!IsValidClient(iClient) 	
-			|| !IsPlayerAlive(iClient) 
-			/*|| IsFakeClient(iClient)*/
-			|| GetClientTeam(iClient) != 2)
-	return Plugin_Continue;
-
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
-	if(!IsValidEntity(iCurrentWeapon))
-	return Plugin_Continue;
-
-	new iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-	
-	if(!IsValidEntity(iViewModel))
-	return Plugin_Continue;
-	
-	decl String:sWeaponName[32];
-	GetClientWeapon(iClient, sWeaponName, sizeof(sWeaponName));
-
-	if (StrContains(sWeaponName, "hunting_rifle", false) != -1)
-	{
-		if(g_bIsWeaponEmpty[iCurrentWeapon])
-		{
-			if(GetConVarInt(ConVar_Huntrifle_EReloadLayer) > 0)
-			{
-				SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", GetConVarInt(ConVar_Huntrifle_EReloadLayer)); //16
-				SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
-				ChangeEdictState(iViewModel, FindDataMapInfo(iViewModel, "m_nLayerSequence"));
-			}
-			if(GetConVarFloat(ConVar_Huntrifle_EReloadTime) > 0)
-			{
-				Weapon_Speed(iClient, GetConVarFloat(ConVar_Huntrifle_EReloadTime));
-			}
+			SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_SwtichLayer); 
+			SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
 		}
 		else
 		{
-			if(GetConVarInt(ConVar_Huntrifle_ReloadLayer) > 0)
-			{
-				SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", GetConVarInt(ConVar_Huntrifle_ReloadLayer));
-				SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
-				ChangeEdictState(iViewModel, FindDataMapInfo(iViewModel, "m_nLayerSequence"));
-			}
-			if(GetConVarFloat(ConVar_Huntrifle_ReloadTime) > 0)
-			{
-				Weapon_Speed(iClient, GetConVarFloat(ConVar_Huntrifle_ReloadTime));
-			}
+			return;
+		}
+
+		if(fConVar_Huntrifle_SwtichTime > 0)
+		{
+			Weapon_Speed(iClient, fConVar_Huntrifle_SwtichTime);
 		}
 	}
-	return Plugin_Continue;
 }
-public Action:ePlayerUse(Handle:event, const String:name[], bool:dontBroadcast)
+
+public void eReloadWeapon(Event event, const char[] name, bool dontBroadcast) 
 {
-	new iClient = GetClientOfUserId(GetEventInt(event, "userid"));
+	int iClient = GetClientOfUserId(event.GetInt("userid"));
+	if(!IsValidClient(iClient) 	
+			|| !IsPlayerAlive(iClient) 
+			/*|| IsFakeClient(iClient)*/
+			|| GetClientTeam(iClient) != 2
+			|| !g_bIsSniperActive[iClient])
+		return;
+
+	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	
+	if(iCurrentWeapon <= 0)
+		return;
+
+	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
+	
+	if(!IsValidEntity(iViewModel))
+		return;
+	
+	/*static char sWeaponName[64];
+	GetEntityClassname(iCurrentWeapon, sWeaponName, sizeof(sWeaponName));
+	if (strcmp(sWeaponName, "weapon_hunting_rifle", false) != 0)
+		return;*/
+
+	if(g_bIsWeaponEmpty[iCurrentWeapon])
+	{
+		if(iConVar_Huntrifle_EReloadLayer <= 0) return;
+
+		SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", ConVar_Huntrifle_EReloadLayer.IntValue); //16
+		SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
+		if(fConVar_Huntrifle_EReloadTime > 0)
+		{
+			Weapon_Speed(iClient, fConVar_Huntrifle_EReloadTime);
+		}
+	}
+	else
+	{
+		if(iConVar_Huntrifle_ReloadLayer <= 0) return;
+		
+		SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_ReloadLayer);
+		SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
+
+		if(fConVar_Huntrifle_ReloadTime > 0)
+		{
+			Weapon_Speed(iClient, fConVar_Huntrifle_ReloadTime);
+		}
+	}
+}
+
+public void ePlayerItemPickup(Event event, const char[] name, bool dontBroadcast) 
+{
+	int iClient = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(!IsValidClient(iClient) 	
 			|| !IsPlayerAlive(iClient) 
 			/*|| IsFakeClient(iClient)*/
 			|| GetClientTeam(iClient) != 2)
-	return Plugin_Continue;
+		return;
 	
-	decl String:sPickupName[64];
-	GetEventString(event, "item", sPickupName, sizeof(sPickupName)); 
+	static char sPickupName[64];
+	event.GetString("item", sPickupName, sizeof(sPickupName)); 
+	if (strcmp(sPickupName, "hunting_rifle", false) != 0)
+		return;
+
+	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
+	if (!IsValidEntity(iViewModel))
+		return;
 	
 	g_bIgnoreWeaponSwitch[iClient] = true;
+	
+	if(iConVar_Huntrifle_PickupLayer <= 0) return;
+	
+	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_PickupLayer);
+	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
 
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
-	if(!IsValidEntity(iCurrentWeapon))
-	return Plugin_Continue;
-	
-	new iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-	
-	if(!IsValidEntity(iViewModel))
-	return Plugin_Continue;
-	
-	
-	decl String:sWeaponName[32];
-	GetClientWeapon(iClient, sWeaponName, sizeof(sWeaponName));
-	
-	if(!StrEqual(sPickupName, sWeaponName, false))
-	return Plugin_Continue;
-	
-	if (StrContains(sPickupName, "hunting_rifle", false) != -1)
+	if(fConVar_Huntrifle_PickupTime > 0)
 	{
-		if(GetConVarInt(ConVar_Huntrifle_PickupLayer) > 0)
-		{
-			SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", GetConVarInt(ConVar_Huntrifle_PickupLayer));
-			SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
-			ChangeEdictState(iViewModel, FindDataMapInfo(iViewModel, "m_nLayerSequence"));
-		}
-		if(GetConVarFloat(ConVar_Huntrifle_PickupTime) > 0)
-		{
-			Weapon_Speed(iClient, GetConVarFloat(ConVar_Huntrifle_PickupTime));
-		}
+		Weapon_Speed(iClient, fConVar_Huntrifle_PickupTime);
 	}
-	return Plugin_Continue;
+
 }
 
 void Weapon_Speed(int iClient, float fValue) //WITHOUT ANIMATION SPEED CHANGE!
 {
 	if(fValue < 0) return;
 
-	new iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
 	
 	if(IsValidEntity(iCurrentWeapon))
 	{
-		new Float:fNextPrimaryAttack  = GetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack");
-		new Float:fGameTime = GetGameTime();
-		new Float:fNextPrimaryAttack_Mod = (fNextPrimaryAttack - fGameTime ) * fValue;
+		float fNextPrimaryAttack  = GetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack");
+		float fGameTime = GetGameTime();
+		float fNextPrimaryAttack_Mod = (fNextPrimaryAttack - fGameTime ) * fValue;
 
 		fNextPrimaryAttack_Mod += fGameTime;
 		
@@ -339,7 +393,7 @@ void Weapon_Speed(int iClient, float fValue) //WITHOUT ANIMATION SPEED CHANGE!
 	}
 }
 
-stock bool:IsValidClient(iClient)
+bool IsValidClient(int iClient)
 {
 	if(iClient < 1 || iClient > MaxClients)
 	return false;
@@ -347,13 +401,9 @@ stock bool:IsValidClient(iClient)
 	return IsClientInGame(iClient);
 }
 
-public ConVarChange_Slow(Handle:convar, const String:oldValue[], const String:newValue[])
-{	
-	SetFireSpeed();
-}
-static SetFireSpeed()
+void SetFireSpeed()
 {
-	float fPercentage = hRateOfFireCvar.FloatValue;
+	float fPercentage = fRateOfFireCvar;
 	if (FloatAbs(fPercentage) <= 1.5)
 	{
 		fPercentage = fPercentage * 100.0;
@@ -363,18 +413,33 @@ static SetFireSpeed()
 	fPercentage = 100.0 / fPercentage;
 	g_fFireSpeed = 0.25 * fPercentage;	
 }
-
-
-public Action:OnWeaponSwitch(client, weapon)
+public void OnClientDisconnect(int client)
 {
-	if (weapon < 1 ||
-		weapon > 2048 ||
-		!IsValidEntity(weapon))
-		return Plugin_Continue;
+	if(!IsClientInGame(client)) return;
+
+	ResetClientSniperData(client);
+}
+
+public void OnClientPutInServer(int client)
+{
+	//SDKHook(client, SDKHook_WeaponEquipPost, OnWeaponEquipPost);
+	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponSwitchPost);
+	ResetClientSniperData(client);
+}
+
+void OnWeaponSwitchPost(int client, int weapon)
+{
+	if (GetClientTeam(client) != 2) return;
+
+	if (weapon <= 0)
+	{
+		g_bIsSniperActive[client] = false;
+		return;
+	}
 	
-	decl String:classname[32];
-	GetEdictClassname(weapon, classname, 32);
-	if (StrEqual(classname, "weapon_hunting_rifle"))
+	static char classname[64];
+	GetEntityClassname(weapon, classname, sizeof(classname));
+	if (strcmp(classname, "weapon_hunting_rifle", false) == 0)
 	{
 		g_bIsSniperActive[client] = true;
 	}
@@ -382,36 +447,22 @@ public Action:OnWeaponSwitch(client, weapon)
 	{
 		g_bIsSniperActive[client] = false;
 	}
-	return Plugin_Continue;
 }
-
-public Action:OnWeaponEquip(client, weapon)
+/*
+Action OnWeaponEquipPost(int client, int weapon)
 {
-	if (GetClientTeam(client) != 2) return Plugin_Continue;
+	if (weapon <= 0) return;
+	if (GetClientTeam(client) != 2);
 
-	decl String:classname[128];
-	GetEdictClassname(weapon, classname, sizeof(classname));
-	if (!StrEqual(classname, "weapon_hunting_rifle")) return Plugin_Continue;
+	static char classname[64];
+	GetEntityClassname(weapon, classname, sizeof(classname));
+	if (strcmp(classname, "weapon_hunting_rifle", false) != 0) return;
 	
 	g_bIsSniperActive[client] = true;	//client is carrying sniper now (OnWeaponSwitch actually takes care of this)
-	
-	return Plugin_Continue;
 }
+*/
 
-public OnClientDisconnect_Post(client)
-{
-	SDKUnhook(client, SDKHook_WeaponEquip, OnWeaponEquip);
-	SDKUnhook(client, SDKHook_WeaponSwitch, OnWeaponSwitch);
-	ResetClientSniperData(client);
-}
-
-public OnClientPutInServer(client)
-{
-	SDKHook(client, SDKHook_WeaponEquip, OnWeaponEquip);
-	SDKHook(client, SDKHook_WeaponSwitch, OnWeaponSwitch);
-	ResetClientSniperData(client);
-}
-static ResetClientSniperData(client)
+void ResetClientSniperData(int client)
 {
 	g_bFiredSniper[client] = false;
 	g_Animation[client] = true;

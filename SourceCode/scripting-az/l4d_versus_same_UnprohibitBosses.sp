@@ -10,7 +10,7 @@
 #include <left4dhooks>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.6"
+#define PLUGIN_VERSION "1.7"
 
 #define INTRO		0
 #define REGULAR	1
@@ -30,13 +30,13 @@ ConVar WITCHPARTY, sv_cheats;
 ConVar g_hCvarWitchAvoidTank, g_hCvarBossDisable;
 ConVar survivor_limit;
 int survivor_limit_value;
+bool g_bFinalStarted;
 
 static KeyValues g_hMIData = null;
 
 ArrayList hValidTankFlows;
 ArrayList hValidWitchFlows;
 
-native bool IsWitchRestore(); // from l4d2_witch_restore
 native float GetSurCurrentFloat(); // from l4d_current_survivor_progress
 native void SaveBossPercents(); // from l4d_boss_percent
 
@@ -99,6 +99,8 @@ public void OnPluginStart()
 		}
 	}
 
+	HookEvent("finale_start", 			OnFinaleStart_Event, EventHookMode_PostNoCopy); //final starts, some of final maps won't trigger
+	HookEvent("finale_radio_start", 	OnFinaleStart_Event, EventHookMode_PostNoCopy); //final starts, all final maps trigger
 	HookEvent("tank_spawn",			TS_ev_TankSpawn,		EventHookMode_PostNoCopy);
 	HookEvent("player_spawn", 	Event_PlayerSpawn,	EventHookMode_PostNoCopy);
 	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
@@ -141,7 +143,7 @@ public OnMapStart()
 {
 	g_bTankVaildMap = true;
 	g_bWitchValidMap = true;
-	GetCurrentMap(g_sCurMap, 64);
+	GetCurrentMap(g_sCurMap, sizeof(g_sCurMap));
 
 	MI_KV_Close();
 	MI_KV_Load();
@@ -172,14 +174,16 @@ public void OnMapEnd()
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
-		CreateTimer(2.0, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.5, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iRoundStart = 1;
+
+	g_bFinalStarted = false;
 }
 
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
-		CreateTimer(2.0, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.5, COLD_DOWN, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iPlayerSpawn = 1;
 }
 
@@ -366,6 +370,11 @@ public Action:COLD_DOWN(Handle:timer)
 	SaveBossPercents();
 }
 
+public void OnFinaleStart_Event(Event event, const char[] name, bool dontBroadcast) 
+{
+	g_bFinalStarted = true;
+}
+
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	ResetPlugin();
@@ -447,7 +456,7 @@ public Action:TS_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 	}
 	else
 	{
-		if(g_bFixed || !Tank_firstround_spawn) return;
+		if(g_bFixed || !Tank_firstround_spawn || g_bFinalStarted) return;
 		
 		new iTank = IsTankInGame();
 		if (iTank){

@@ -706,7 +706,8 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 		return;
 	}
 
-	if (IsSurvivor(attacker) && IsInfected(victim))
+	if (attacker > 0 && attacker <= MaxClients && IsSurvivor(attacker) && 
+		victim > 0 && victim <= MaxClients && IsInfected(victim))
 	{
 		new zombieclass = GetEntProp(victim, Prop_Send, "m_zombieClass");
 		if (zombieclass == ZC_TANK) return; // We don't care about tank damage
@@ -746,7 +747,8 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 					assister_count++;
 				}
 			}
-			if (assister_count)
+			
+			if (assister_count > 0)
 			{
 				// Sort by damage, descending
 				SortCustom2D(assisters, assister_count, ClientValue2DSortDesc);

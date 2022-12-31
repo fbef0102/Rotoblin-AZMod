@@ -2,12 +2,6 @@
 * Traditional Chinese 		- 繁體中文 	- zho 	, by Harry
 * English 			- English 	- en 	, by Harry
 * Simplified Chinese 		- 简体中文 	- chi 	, by Target
-* Spanish 			- Espanol   	- es 	, by LuigixD
-* Portuguese			- portugues 	- pt 	, by Kadabra
-
 
 
 (type !lang in game to see what your langugage is)
-------------------------------------------------
-Want to translate this config into your language?
-add me and I will help translate language in next Roto-AZ mod update.

@@ -3,7 +3,6 @@
 
 #define DEBUG 0
 
-#define L4DBUILD 1
 #define ZC_TANK 5
 
 #define LEFT4FRAMEWORK_GAMEDATA "left4dhooks.l4d1"
@@ -19,11 +18,9 @@ public Plugin:myinfo =
 };
 
 new Handle:hCvarEnable;
-#if defined(L4DBUILD)
 new Handle:hCvarSIExcept;
 new Handle:hCvarSurvivorExcept;
 new Handle:g_hGetRunTopSpeed;
-#endif
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -41,10 +38,8 @@ public OnPluginStart()
 {
 	LoadSDK();
 	hCvarEnable = CreateConVar("simple_antibhop_enable", "1", "Enable or disable the Simple Anti-Bhop plugin");
-#if defined(L4DBUILD)
 	hCvarSIExcept = CreateConVar("bhop_except_si_flags", "4", "Bitfield for exempting SI in anti-bhop functionality. From least significant: 1=Smoker, 2=Boomer, 4=Hunter, 8=Tank, 15=All");
 	hCvarSurvivorExcept = CreateConVar("bhop_allow_survivor", "0", "Allow Survivors to bhop while plugin is enabled");
-#endif
 }
 
 void LoadSDK()
@@ -80,7 +75,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		return Plugin_Continue;
 
 	if (IsPlayerAlive(client)) {
-#if defined(L4DBUILD)
 		if (GetClientTeam(client) == 3) {
 			new class = GetEntProp(client, Prop_Send, "m_zombieClass");
 			// tank
@@ -99,7 +93,6 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 				return Plugin_Continue;
 			}
 		}
-#endif
 
 		new ClientFlags = GetEntityFlags(client);
 		if (ClientFlags & FL_ONGROUND) {

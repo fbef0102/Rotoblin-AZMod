@@ -21,8 +21,8 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 {
 	if (IsClientInGame(client) && IsPlayerAlive(client) && L4D_IsPlayerStaggering(client)) {
 		/*
-			* if you shoved the infected player with the butt while moving on the ladder, 
-			* he will not be able to move until he is killed
+			* If you shove an SI that's on the ladder, the player won't be able to move at all until killed.
+			* This is why we only apply this method when the SI is not on a ladder.
 		*/
 		if (GetEntityMoveType(client) != MOVETYPE_LADDER) {
 			buttons = 0;

@@ -26,6 +26,7 @@ public OnPluginStart()
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("player_use", Event_PlayerUse);
 	HookEvent("finale_start", Event_Finale_Start);
+	HookEvent("finale_radio_start", Event_Finale_Start);
 }
 
 public Event_Round_Start(Handle:event, String:name[], bool:dontBroadcast)
@@ -205,8 +206,10 @@ public Event_create_panic_event(Handle:event, String:name[], bool:dontBroadcast)
 	}
 }
 
-public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	if(resuce_start) return;
+
 	if(L4D_IsMissionFinalMap()){
 		resuce_start = true;
 		CPrintToChatAll("{green}[TS] %t","l4d_panic_notify6"); 

@@ -1,0 +1,157 @@
+v8.5.0
+
+* Support "left4deadDLC4-l4d2onl4d1" Mod
+* Play L4D2 maps in l4d1 game
+
+------------------New------------------
+-left4dead\addons\l4d1_mission_nav.vpk
+* Official Map Mission files
+* Official Map NAV files
+
+-plugins\l4d_freely_round_end.smx
+* Free movement after round ends.
+
+-plugins\l4d_ghost_tank_glow.smx
+* Detect ghost tank and create fakes models with glow.
+
+-gamedata\l4d_fix_shove_duration.txt
+-plugins\l4d_fix_shove_duration.smx
+* Fix SI getting shoved by nothing.
+	* The value of z_gun_swing_duration isn't respected internally, but a constant 1.0 instead.
+
+-gamedata\l4d_versus_sb_allow_leading_fix.txt
+-plugins\l4d_versus_sb_allow_leading_fix.smx
+* Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode.
+
+-gamedata\l4d2_steady_boost.txt
+-plugins\l4d2_steady_boost.smx
+* Prevent forced sliding when landing at head of enemies.
+
+-gamedata\l4d_bacteria_sound_block.txt
+-plugins\l4d_bacteria_sound_block.smx
+* Blocks smoekr, boomer, hunter bacteria sounds.
+
+-plugins\l4d_dissolve_infected.smx
+-gamedata\l4d_dissolve_infected.txt
+* Dissolves the witch, common, survivor or special infected when killed.
+	* Only works in some certain maps that have water
+	* Dead bodies splash with water impact, which causes client fps drop and crashing
+	
+-plugins\l4d_consistent_escaperoute.smx
+-gamedata\l4d_consistent_escaperoute.txt
+* Fixed Tank/Witch not spawning consistently for both sides.
+
+-plugins\l4d_infected_slowdown_protect.smx
+* Prevent infected slowdown being overridden by other damage.
+
+-plugins\smart_ai_rock.smx
+* Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
+
+------------------Delete------------------
+-translations\es\Roto2-AZ_mod.phrases.txt
+-translations\pt\Roto2-AZ_mod.phrases.txt
+* Remove spanish & portuguese (No one supports)
+
+-plugins\l4d_NoRescueFirstTank.smx
+* Remove function: Second tank spawns same position for both team
+
+------------------Change------------------
+-plugins\rotoblin-az.smx
+* Prevent ghost infected players from spawning inside checkpoint area
+	
+-plugins\l4d_slowdown_control.smx
+* Water Slowdown outside of Tank fights.
+	* Water speed: 170 (original: 175)
+	* Deep water speed: 136 (original: 140)
+* Reduces Water Slowdown during Tank fights.
+	* Water speed: 220 (original: 175)
+	* Deep water speed: 176 (original: 140)
+	
+-plugins\l4d_car_alarm_hittable_fix.smx
+* Added functionality to trigger car alarms when Survivors simply touch the car.
+* Added convars to control whether we care regarding AI and/or Survivors are capped when touching the car.
+
+-plugins\l4d_vomit_trace_patch.smx
+* Boomer's vomit is now able to pass through fence and barricade (https://i.imgur.com/MV6azfX.gif)
+
+-plugins\comp_loader.smx
+* Add two commands
+	* !cm cancel 	// forcecancel map request
+	* !load cancel 	// forcecancel load request
+	
+-plugins\l4d_bossvote.smx
+* Add a command
+	* !forceboss <tank> <witch> //adm forces to change boss percentage without vote
+	
+-plugins\optional\l4d_huntingrifle_damagemodify.smx
+* **Hunting Rifle**
+  * Tank dmg: 90->120 (was 125)
+	
+-stripper\Roto-AZMod\global_filters.cfg
+* Restore Environmental sounds and DSP + microphone / speaker effects
+
+-cfg\
+* Tanks speed: 210 (was 205)
+
+* Tank/Witch Spawns:
+  * *(Intro)*: **20%~90%** (was: 20%~85%)
+  * *(Regular)*: **10%~90%** (was: 15%~85%)
+  * *(Finale)*: **20%~80%** (unchanged)
+  
+  
+------------------Roto-AZ l4d2onl4d1------------------
+* Support "left4deadDLC4-l4d2onl4d1" Mod
+> The files are private, please contact Harry to request download.
+
+* Original Team: l4d2onl4d1-team (https://steamcommunity.com/groups/l4d2onl4d)
+* Improved: AshThe9thSurvivor (https://steamcommunity.com/profiles/76561198130246394)
+* Versus-Updated: HarryPotter (https://steamcommunity.com/profiles/76561198026784913)
+
+-data\l4d_random_beam_item.cfg
+-plugins\l4d_random_beam_item.smx
+* Gives a beam to gascans on the map
+	* Only works in c1m4, c6m3
+	
+-data\l4d1_glow_gascan.cfg
+-plugins\l4d1_glow_gascan.smx
+* Add a white outline glow effect to gas cans on the map
+	* Only works in c1m4, c6m3
+	
+-data\l4d_random_entity_color.cfg
+-plugins\l4d_random_entity_color.smx
+* Gives a color to gascans on the map
+	* Only works in c1m4, c6m3
+	
+-plugins\si_fire_immunity.smx
+* Special Infected fire damage management.
+	* Only works in c1m4, c6m3
+	
+-plugins\l4d1_random_witch_model.smx
+* Turn the special infected models more random
+	* Only works in c6m1
+
+-data\l4d_spawn_weapon.cfg
+-plugins\l4d_weapon_spawn.smx
+* Spawn single weapons and items
+
+-plugins\l4d_godframes_and_hittable_control.smx
+* Support L4D2 c5m5 maps
+ 	* Damage of cars in the parish bridge finale: 25
+	
+-plugins\rotoblin-az.smx
+* Fixing Waiting For Survivors To Start The Finale or w/e
+	* It happens in c5m5, c4m1
+
+-stripper\Roto-AZMod
+* L4D2 map modify 
+	* Add ammo, weapons, and objects (Based on L4D2-Comp-Stripper-Rework by Derpduck: https://github.com/Derpduck/L4D2-Comp-Stripper-Rework)
+	* Remove piece of shit l4d2 entities that crash server
+	* Fix Fog, Gascan, cola, gnome issue and error
+  
+-configs\VoteCustomCampaigns.txt
+-configs\adminmenu_maplist.ini
+-configs\adminmenu_custom.txt
+-data\mapinfo.txt
+-data\sm_l4dvs_mapchanger.txt
+-data\l4d1_jukebox_spawns.cfg
+* Support L4D2 maps 

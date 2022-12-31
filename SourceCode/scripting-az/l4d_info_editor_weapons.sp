@@ -1,6 +1,6 @@
 /*
 *	Info Editor - Test Weapons
-*	Copyright (C) 2020 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.1"
+#define PLUGIN_VERSION		"1.2"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.2 (20-Oct-2022)
+	- Changes to fix warnings when compiling on SourceMod 1.11.
 
 1.1 (10-May-2020)
 	- Various changes to tidy up code.
@@ -81,13 +84,15 @@ char g_sClass[MAX_STRING_LENGTH];
 char g_sKey[MAX_STRING_LENGTH];
 char g_sSet[MAX_STRING_LENGTH];
 
-public Action CmdInfoWeaponTest(int client, int args)
+Action CmdInfoWeaponTest(int client, int args)
 {
 	ServerCommand("sm_info_weapon weapon_rifle clip_size");
 	// ServerCommand("sm_info_weapon weapon_rifle clip_size 25"); // Set value of 25.
+
+	return Plugin_Handled;
 }
 
-public Action CmdInfoWeapon(int client, int args)
+Action CmdInfoWeapon(int client, int args)
 {
 	if( args < 2 )
 	{

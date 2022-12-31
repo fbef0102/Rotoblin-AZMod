@@ -69,7 +69,7 @@
 #define CVAR_FLAGS			FCVAR_PLUGIN|FCVAR_NOTIFY
 #define CHAT_TAG			"{green}[Jukebox] {default}"
 #define CONFIG_SPAWNS		"data/l4d1_jukebox_spawns.cfg"
-#define MAX_JUKEBOXES		2
+#define MAX_JUKEBOXES		10
 #define MAX_ENT_STORE		18
 
 #define MODEL_BODY			"models/props_unique/jukebox01_body.mdl"
@@ -85,7 +85,7 @@ static	g_iPlayerSpawn, g_iRoundStart,
 		g_music_entity,g_music,g_music_playing_wait_time,
 		g_iJukeboxes;
 
-new Float:musicvPos[MAX_JUKEBOXES][3], Float:musicvAng[MAX_JUKEBOXES][3];
+new Float:musicvPos[MAX_JUKEBOXES +1][3], Float:musicvAng[MAX_JUKEBOXES +1][3];
 
 // ====================================================================================================
 //					PLUGIN INFO / START / END
@@ -336,12 +336,13 @@ LoadJukeboxes()
 
 	for( new i = 1; i <= iCount; i++ )
 	{
-		Format(sTemp, sizeof(sTemp), "angle%d", i);
-		KvGetVector(hFile, sTemp, vAng);
 		Format(sTemp, sizeof(sTemp), "origin%d", i);
 		KvGetVector(hFile, sTemp, vPos);
+		Format(sTemp, sizeof(sTemp), "angle%d", i);
+		KvGetVector(hFile, sTemp, vAng);
 		MakeJukebox(vPos, vAng);
-		musicvPos[i-1] = vPos;musicvAng[i-1] =vAng;
+		musicvPos[i] = vPos;
+		musicvAng[i] =vAng;
 	}
 
 	CloseHandle(hFile);
@@ -382,7 +383,7 @@ MakeJukebox(const Float:vOrigin[3], const Float:vAngles[3])
 	vPos = vOrigin;
 	vAng = vAngles;
 	// Prop - Jukebox player
-	new player;
+	new JukeboxPlayer;
 	entity = CreateEntityByName("prop_dynamic");
 	if( entity != -1 )
 	{
@@ -396,16 +397,16 @@ MakeJukebox(const Float:vOrigin[3], const Float:vAngles[3])
 		DispatchKeyValue(entity, "fademaxdist", "850");
 		DispatchKeyValue(entity, "fademindist", "700");
 
-		Format(sTemp, sizeof(sTemp), "OnUser1 jb0-jukebox_script:runscriptcode:PlaySong():0:-1");
+		Format(sTemp, sizeof(sTemp), "OnUser1 jb%d-jukebox_script:runscriptcode:PlaySong():0:-1",iDJukebox);
 		SetVariantString(sTemp);
 		AcceptEntityInput(entity, "AddOutput");
-		Format(sTemp, sizeof(sTemp), "OnUser1 jb0-jukebox_button:Unlock::0.2:-1");
+		Format(sTemp, sizeof(sTemp), "OnUser1 jb%d-jukebox_button:Unlock::0.2:-1",iDJukebox);
 		SetVariantString(sTemp);
 		AcceptEntityInput(entity, "AddOutput");
 
 		DispatchSpawn(entity);
 		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
-		player = entity;
+		JukeboxPlayer = entity;
 	}
 
 
@@ -420,7 +421,7 @@ MakeJukebox(const Float:vOrigin[3], const Float:vAngles[3])
 
 		// Attach menu to jukebox
 		SetVariantString("!activator"); 
-		AcceptEntityInput(entity, "SetParent", player);
+		AcceptEntityInput(entity, "SetParent", JukeboxPlayer);
 
 	}
 
@@ -439,7 +440,7 @@ MakeJukebox(const Float:vOrigin[3], const Float:vAngles[3])
 
 		// Attach menu to jukebox
 		SetVariantString("!activator"); 
-		AcceptEntityInput(entity, "SetParent", player);
+		AcceptEntityInput(entity, "SetParent", JukeboxPlayer);
 
 		TeleportEntity(entity, fMenuPos, Float:{ 0.0, 0.0, 0.0 }, NULL_VECTOR);
 	}
@@ -501,24 +502,29 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 	new client = GetClientOfUserId( GetEventInt(event, "userid") );
 	if(!client|| client<0||GetClientTeam(client) != 2) return;
 	new iEntid=GetEventInt(event,"targetid");
+	if(!IsValidEntity(iEntid)) return;
+
 	//debug
 	//new String:st_entname[32];
 	//GetEdictClassname(iEntid,st_entname,32);
 	//CPrintToChatAll("client = %N, iEntid = %i",client,iEntid);
 	//CPrintToChatAll("edict classname = %s",st_entname);
-	decl String:targetname[128];
+	static char targetname[64];
 	GetEntPropString(iEntid, Prop_Data, "m_iName", targetname, sizeof(targetname));
 	//CPrintToChatAll("targetname = %s",targetname);
-	new number=-1;
-	if (StrEqual(targetname,"jb0-jukebox_button")) number=0;
-	else if (StrEqual(targetname,"jb1-jukebox_button")) number=1;
-	if (number+1)
+	new number=0;
+	if (strcmp(targetname,"jb0-jukebox_button",false) == 0) number=1;
+	else if (strcmp(targetname,"jb1-jukebox_button",false) == 0) number=2;
+	else if (strcmp(targetname,"jb2-jukebox_button",false) == 0) number=3;
+
+	if (number > 0)
 	{
-		if(g_music_playing_wait_time>0)
+		if(g_music_playing_wait_time > 0)
 		{
 			CPrintToChat(client,"%s{default} %T", CHAT_TAG,"Wait seconds to play a song again.",client,g_music_playing_wait_time);
 			return;
 		}
+
 		//stop previous music
 		new entity = g_music_entity;
 		if(IsValidEntRef(entity))
@@ -527,8 +533,8 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 			AcceptEntityInput(entity , "Volume");
 			AcceptEntityInput(entity, "Kill");
 		}
+
 		// new Music
-		// 
 		entity = CreateEntityByName("ambient_generic");
 		if( IsValidEntRef(entity) )
 		{
@@ -580,10 +586,7 @@ public Event_PlayerUse (Handle:event, const String:name[], bool:dontBroadcast)
 			DispatchKeyValue(entity, "pitch", "100");
 			DispatchSpawn(entity);
 			ActivateEntity(entity);
-			if(number)
-				TeleportEntity(entity, musicvPos[1], musicvAng[1], NULL_VECTOR);
-			else
-				TeleportEntity(entity, musicvPos[0], musicvAng[0], NULL_VECTOR);
+			TeleportEntity(entity, musicvPos[number], musicvAng[number], NULL_VECTOR);
 			AcceptEntityInput(entity, "PlaySound");
 			g_music_entity = EntIndexToEntRef(entity);
 			g_music_playing_wait_time = MUSIC_WAIT_TIME;

@@ -514,7 +514,7 @@
 	}
 	"The team have canceled the command request."
 	{
-		"chi"	"{1} 已取消了 {green}{2}{default} 请求。"
+		"chi"	"{1} 队伍已取消了 {green}{2}{default} 请求。"
 	}
 	"Nothing to cancel."
 	{
@@ -1482,6 +1482,10 @@
 	{
 		"chi"	"{blue}投票通过. {default}正在修改Boss路程..."
 	}
+	"l4d_bossvote7"
+	{
+		"chi"	"管理员 {lightgreen}%N{default} 强制Boss路程为 {green}Tank: {1}%%, Witch: {2}%%. {default}正在修改Boss路程..."
+	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
 	{
@@ -2244,10 +2248,75 @@
 	//////////////l4d_slowdown_control.smx//////////////
 	"l4d_slowdown_control_1"
 	{
-		"chi"		"坦克局 {olive}水中减速{default} 已去除."
+		"chi"		"坦克局已減少 {olive}水緩{default} 速度"
 	}	
 	"l4d_slowdown_control_2"
 	{
 		"chi"		"{olive}水中减速{default} 已恢复正常."
 	}
+	//////////////l4d_wind.smx//////////////
+	"l4d_wind_1"
+	{
+		"chi"		"传送玩家"
+	}	
+	"l4d_wind_2"
+	{
+		"chi"		"选择玩家"
+	}	
+	"l4d_wind_3"
+	{
+		"chi"		"目前没有活着的玩家"
+	}	
+	"l4d_wind_4"
+	{
+		"chi"		"传送对象不是一个活着的玩家"
+	}	
+	"l4d_wind_5"
+	{
+		"chi"		"选择传送地点"
+	}	
+	"l4d_wind_6"
+	{
+		"chi"		"准心上"
+	}	
+	"l4d_wind_7"
+	{
+		"chi"		"自己身上"
+	}	
+	"l4d_wind_8"
+	{
+		"chi"		"传送对象正在挂边，无法传送 %N"
+	}	
+	"l4d_wind_9"
+	{
+		"chi"		"传送对象正在被特感控，无法传送 %N"
+	}
+	"l4d_wind_10"
+	{
+		"chi"		"传送对象正在忙着控生还者，无法传送 %N"
+	}	
+	"l4d_wind_11"
+	{
+		"chi"		"不是一个活着的玩家，请重新选择!"
+	}	
+	"l4d_wind_12"
+	{
+		"chi"		"你传送了 %N."
+	}	
+	"l4d_wind_13"
+	{
+		"chi"		"无法传送 %N，请重新选择!"
+	}	
+	"l4d_wind_14"
+	{
+		"chi"		"要传送的对象不是一个活着的玩家，请重新选择!"
+	}
+	"l4d_wind_15"
+	{
+		"chi"		"失败! 无法增加一个Bot!"
+	}	
+	"l4d_wind_16"
+	{
+		"chi"		"自己"
+	}	
 }

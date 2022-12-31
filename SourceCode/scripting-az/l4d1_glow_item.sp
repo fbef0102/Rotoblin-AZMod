@@ -193,7 +193,7 @@ public void OnPluginStart()
     g_hCvar_Interval.AddChangeHook(Event_ConVarChanged);
 
     // Load plugin configs from .cfg
-    AutoExecConfig(true, CONFIG_FILENAME);
+    //AutoExecConfig(true, CONFIG_FILENAME);
 
     // Admin Commands
     RegAdminCmd("sm_glowinfo", CmdInfo, ADMFLAG_ROOT, "Outputs to the chat the glow info about the entity at your crosshair.");
@@ -478,6 +478,22 @@ void OnNextFrame(int entityRef)
     char classname[36];
     GetEntityClassname(entity, classname, sizeof(classname));
 
+    if (classname[0] == 'p') {
+        if(strncmp(classname, "prop_physics", 12, false) == 0)
+        {
+            if(!HasEntProp(entity, Prop_Send, "m_hasTankGlow"))
+                return;
+
+            if(GetEntProp(entity, Prop_Send, "m_hasTankGlow") == 0)
+                return;
+        }
+        else if(strncmp(classname, "prop_car_alarm", 14, false) == 0)
+        {
+            CreateTimer(1.0, Timer_AlarmCar, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);  //fix alarm car glass bugged and stuck 
+            return;
+        }
+    }
+
     if (HasEntProp(entity, Prop_Send, "m_isCarryable")) // CPhysicsProp
         g_smPropModelToClassname.GetString(modelname, classname, sizeof(classname));
 
@@ -545,6 +561,7 @@ int CreatePropGlow(int parent, int[] config)
     GetEntPropVector(parent, Prop_Data, "m_angAbsRotation", vAngles);
 
     int entity = CreateEntityByName("prop_glowing_object");
+    DispatchKeyValue(entity, "solid", "0");
     DispatchKeyValue(entity, "targetname", "l4d1_glow_item");
     DispatchKeyValue(entity, "disableshadows", "1");
     DispatchKeyValue(entity, "StartGlowing", "0");
@@ -1231,4 +1248,23 @@ int[] ConvertRGBToIntArray(char[] sColor)
     }
 
     return color;
+}
+
+Action Timer_AlarmCar(Handle timer, int entityRef)
+{
+    int entity = EntRefToEntIndex(entityRef);
+
+    if (entity == INVALID_ENT_REFERENCE)
+        return Plugin_Continue;
+
+    int config[CONFIG_ARRAYSIZE];
+
+    if (config[CONFIG_ENABLE] == 0)
+        g_smClassnameConfig.GetArray("prop_car_alarm", config, sizeof(config));
+
+
+    int glow = CreatePropGlow(entity, config);
+    ge_iConfig[glow] = config;
+
+    return Plugin_Continue;
 }

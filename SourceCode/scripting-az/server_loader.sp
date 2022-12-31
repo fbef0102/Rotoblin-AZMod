@@ -9,7 +9,7 @@ public Plugin myinfo =
 	author		= "archer & HarryPotter",
 	description	= "executes cfg file on server startup",
 	version		= PLUGIN_VERSION,
-	url = "https://steamcommunity.com/id/HarryPotter_TW/"
+	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
 
 ConVar cvarLoaderCfg;

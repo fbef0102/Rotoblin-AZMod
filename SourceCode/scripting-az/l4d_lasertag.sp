@@ -1,19 +1,8 @@
-/******************************/
-/*     [L4D(2)] Laser Tag     */
-/*       By KrX/ Whosat       */
-/* -------------------------- */
-/* Creates a laser beam from  */
-/*  player to bullet impact   */
-/*  point.                    */
-/* -------------------------- */
-/*  Version 0.2 (12 Jan 2011) */
-/* -------------------------- */
-/******************************/
 #pragma newdecls required
 #include <sourcemod>
 #include <sdktools>
 
-#define PLUGIN_VERSION "0.2"
+#define PLUGIN_VERSION "0.3"
 
 #define DEFAULT_FLAGS FCVAR_NONE|FCVAR_NOTIFY
 
@@ -26,7 +15,6 @@
 #define WEAPONTYPE_UNKNOWN  0
 
 ConVar cvar_vsenable;
-ConVar cvar_realismenable;
 ConVar cvar_bots;
 ConVar cvar_enable;
 
@@ -92,8 +80,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {	
 	cvar_enable = CreateConVar("l4d_lasertag_enable", "1", "Turnon Lasertagging. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
- 	cvar_vsenable = CreateConVar("l4d_lasertag_vs", "1", "Enable or Disable Lasertagging in Versus / Scavenge. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
-	cvar_realismenable = CreateConVar("l4d_lasertag_realism", "1", "Enable or Disable Lasertagging in Realism. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
+ 	cvar_vsenable = CreateConVar("l4d_lasertag_vs", "1", "Enable or Disable Lasertagging in Versus. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
 	cvar_bots = CreateConVar("l4d_lasertag_bots", "1", "Enable or Disable lasertagging for bots. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
 	
 	cvar_pistols = CreateConVar("l4d_lasertag_pistols", "1", "LaserTagging for Pistols. 0=disable, 1=enable", FCVAR_NONE, true, 0.0, true, 1.0);
@@ -132,7 +119,6 @@ public void OnPluginStart()
 	h_GameMode.AddChangeHook(ConVarGameMode);
 	cvar_enable.AddChangeHook(CheckEnabled);
 	cvar_vsenable.AddChangeHook(CheckEnabled);
-	cvar_realismenable.AddChangeHook(CheckEnabled);
 	cvar_bots.AddChangeHook(CheckEnabled);
 	
 	cvar_pistols.AddChangeHook(CheckWeapons);
@@ -169,12 +155,10 @@ public void ConVarGameMode(ConVar convar, const char[] oldValue, const char[] ne
 	
 	if (StrEqual(GameName, "survival", false))
 		GameMode = 3;
-	else if (StrEqual(GameName, "versus", false) || StrEqual(GameName, "teamversus", false) || StrEqual(GameName, "scavenge", false) || StrEqual(GameName, "teamscavenge", false))
+	else if (StrEqual(GameName, "versus", false))
 		GameMode = 2;
 	else if (StrEqual(GameName, "coop", false))
 		GameMode = 1;
-	else if (StrEqual(GameName, "realism", false))
-		GameMode = 0;
 	else
 		GameMode = -1;
 }
@@ -230,11 +214,6 @@ public void CheckEnabled(Handle convar, const char[] oldValue, const char[] newV
 	else if(GameMode == 2 && cvar_vsenable.IntValue == 0)
 	{
 		// IS VS Enabled?
-		g_LaserTagEnable = false;
-	}
-	else if(GameMode == 0 && cvar_realismenable.IntValue == 0)
-	{
-		// IS REALISM ENABLED?
 		g_LaserTagEnable = false;
 	}
 	else

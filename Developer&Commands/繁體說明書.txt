@@ -1,35 +1,56 @@
-Competitive L4D1 Configuration
--Based on L4D2 Acemod、L4D2 Zonemod、L4D1 rotoblin2 
+一代對抗競技插件
+-根據二代 Acemod、Zonemod 與 L4D1 rotoblin2 改編 
 
-Author:
-1. 哈利 (台灣人) 
-//如果有任何問題, 歡迎加steam好友並傳送訊息
-//If you have any questions, please contact me via steam, thank you!
+作者:
+哈利 - https://steamcommunity.com/profiles/76561198026784913
+//台灣人
+//如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
 --------引擎主要--------
 [01] sourcemod 1.11-git6905
 [02] metamod  1.11-git1148
 [03] stripper 1.2.2-git129
-[04] l4dtoolz 1.1.0.1
-[05] Tickrate Enabler 1.4
+[04] l4dtoolz 1.1.0.2
+[05] Tickrate Enabler 1.5
 [06] VoiceHook 3.0
 [07] Socket 3.0.1
 [08] geoipcity 1.1.2
-[09] sourcescramble 0.7.0
+[09] sourcescramble 0.7.1
 [10] CollisionHooks 0.2
 
 --------地圖修改--------
 1. 所有VS地圖均已解除屋頂限制
-2. 消除一些背景音或環境音樂，讓倖存者能專注特感
-3. 移除地圖上的固定機槍
-4. 地圖藥丸
+2. 移除地圖上的固定機槍
+3. 地圖藥丸
  -醫療箱限制一顆藥丸但不一定會出現
  -救援區域: 四顆
  -路上: 隨機出現1~2顆數量
-5. 清除或穿透一些小型物件，使玩家能移動順暢
-6. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
-7. 最終關卡路程符合救援進度
-8. 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
+4. 清除或穿透一些小型物件，使玩家能移動順暢
+5. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
+6. 最終關卡路程符合救援進度
+7. 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
+
+--------支援的三方圖--------
+* 下載連結: https://github.com/fbef0102/Rotoblin-AZMod/releases
+1. City 17 
+2. Suicide Blitz
+3. Dead Flag Blues
+4. I Hate Mountains
+5. Dead Before Dawn
+6. The Arena of the Dead
+7. Death Aboard
+8. One 4 Nine
+9. Dark Blood
+10. Blood Harvest APOCALYPSE
+11. Precinct 84
+
+* 支援二代地圖，想要地圖請聯繫哈利
+* 名稱: "left4deadDLC4-l4d2onl4d1" Mod
+* 作者:
+ 1. 原始開發團隊: l4d2onl4d1-team
+ 2. 改進優化: AshThe9thSurvivor
+ 3. 對抗更新: HarryPotter
+
 
 --------武器調整--------
 [01] Uzi 機槍
@@ -374,7 +395,6 @@ Author:
 
 [102] l4d_NoRescueFirstTank
 //移除救援後的第一隻坦克
-//rescue second tank spawn same position for both team
 
 [103] AI_HardSI
 //智能AI
@@ -521,6 +541,7 @@ Author:
 
 [148] l4d_car_alarm_hittable_fix
 //被其他Tank能打的物件觸碰的警報車關閉警報
+//人類碰到警報車直接觸發警報
 
 [149] l4d_weapon_prop_give_fix
 //使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
@@ -621,6 +642,48 @@ Author:
 
 [180] l4d_addon_map_common_sound_fix
 //在某些三方圖當中，修正普通殭屍被子彈擊中會發出錯誤的音效 (譬如: 打雷聲、木箱破碎聲)
+
+[181] l4d2_steady_boost
+//跳在敵方隊伍的頭上不會滑落
+
+[182] si_fire_immunity
+//特感不會著火受傷 (只限定於c1m4, c6m3 汽油關卡)
+
+[183] l4d_weapon_spawn
+//生成武器與物品 (只能拿一次，stripper做不到)
+
+[184] l4d_random_beam_item
+//汽油桶會有beam特效 (只限定於c1m4, c6m3 汽油關卡)
+
+[185] l4d_random_entity_color
+//汽油桶會渲染不同的顏色 (只限定於c1m4, c6m3 汽油關卡)
+
+[186] l4d1_glow_gascan_cola
+//汽油桶會有白色光圈 (只限定於c1m4, c6m3 汽油關卡)
+
+[187] l4d1_random_witch_model
+//Witch模組換成新娘 (只限定於c6m2)
+
+[188] l4d_bacteria_sound_block
+//消除Hunter,Smoker,Boomer專屬音樂
+
+[189] l4d_versus_sb_allow_leading_fix
+//修復倖存者bot在對抗模式下一直往前衝
+
+[190] l4d_fix_shove_duration
+//修復推Hunter飛撲的判定時間過長，沒有遵守官方指令值z_gun_swing_duration 0.2
+
+[191] l4d_ghost_tank_glow
+//靈魂Tank復活的時候創造假Tank模型光圈給所有人包括倖存者看見
+
+[192] l4d_consistent_escaperoute
+//修正兩邊隊伍不在相同的地點觸發Boss生成
+
+[193] l4d_infected_slowdown_protect
+//修正被普通感染者打到會減速，但是受到其他傷害（友傷、特感抓傷等等）會回復原速
+
+[194] smart_ai_rock
+//AI Tank丟石頭變得比較聰明，能馬上轉頭看向後面黏住的倖存者
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
@@ -735,6 +798,7 @@ Map = 地圖難度修改
 -!lang			//顯示你在這伺服器中會看到的語言
 -!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //隱藏的Ready頭上獎盃 (限Ready期間)
 -!load(!mode,!match)	//投票載入模式
+* cancel //取消換模式
 * 5v5, 5v5hu, 5v5nb, 5v5 classic
 * 4v4, 4v4 classic, 4v4hu, 4v4nb
 * 3v3, 3v3hu, 3v3nb
@@ -746,6 +810,7 @@ Map = 地圖難度修改
 * witch party
 * dark coop
 -!cm 			//投票切換地圖
+* cancel //取消換圖
 * nm (No Mercy)
 * dt (Death Toll)
 * da (Dead Air)

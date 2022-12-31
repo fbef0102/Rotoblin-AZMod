@@ -103,7 +103,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 	if(classname[0] != 'p')
 		return;
 	
-	if(!StrEqual(classname, "prop_physics", false) && !StrEqual(classname, "physics_prop", false))
+	if(strncmp(classname, "prop_physics", 12, false) != 0 && strncmp(classname, "physics_prop", 12, false) != 0)
 		return;
 	
 	g_bIsPhysics[entity] = true;

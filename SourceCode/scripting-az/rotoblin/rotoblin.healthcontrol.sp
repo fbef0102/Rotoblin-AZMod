@@ -105,7 +105,6 @@ enum struct ItemTracking {
 
 // ADT Array Handle for actual item spawns
 ArrayList g_hItemSpawns[view_as<int>(IL_Max)];
-static KeyValues g_hMIData = null;
 
 // **********************************************
 //                   Forwards
@@ -145,8 +144,6 @@ public _HealthControl_OnPluginStart()
 	{
 		g_hItemSpawns[i] = new ArrayList(sizeof(ItemTracking)); 
 	}
-
-	MI_KV_Load();
 }
 
 /**
@@ -200,11 +197,8 @@ public _HC_OnPluginDisable()
 	UnhookConVarChange(g_hHealthStyle_Cvar, _HC_HealthStyle_CvarChange);
 
 	DebugPrintToAllEx("Module is now unloaded");
-
-	MI_KV_Close();
 }
 
-char g_sCurMap[64];
 public _HC_OnMapStart()
 {
 	g_bIsRound1Over = false;
@@ -212,14 +206,6 @@ public _HC_OnMapStart()
 	{
 		g_hItemSpawns[i].Clear();
 	}
-
-	GetCurrentMap(g_sCurMap, 64);
-	MI_KV_Close();
-	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	}
-	KvRewind(g_hMIData);
 }
 
 public _HC_OnMapEnd()
@@ -228,7 +214,6 @@ public _HC_OnMapEnd()
 	g_bHaveRunRoundStart = false;
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _HC_OnEntityCreated);
 	DebugPrintToAllEx("Map is ending, unhook OnEntityCreated");
-	KvRewind(g_hMIData);
 }
 
 public _HC_HealthStyle_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
@@ -517,7 +502,7 @@ static UpdateStartingHealthItems()
 
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
-			if(!IsValidEntity(entity))
+			if(!IsValidEntity(entity) || !IsValidEdict(entity))
 				continue;
 
 			if(IsInSafeRoom(entity))
@@ -545,7 +530,7 @@ static RemoveAllPills()
 	new entity = -1;
 	while ((entity = FindEntityByClassnameEx(entity, PAIN_PILLS_CLASSNAME)) != -1)
 	{	
-		if(!IsValidEntity(entity))
+		if(!IsValidEntity(entity) || !IsValidEdict(entity))
 			continue;
 		
 		if(SafelyRemoveEdict(entity))
@@ -812,13 +797,16 @@ static EnumeratePillSpawns()
 	float origins[3], angles[3];
 	new psychonic = GetEntityCount();
 
-	KvJumpToKey(g_hMIData, g_sCurMap);
-	int mylimit = KvGetNum(g_hMIData, "pill_limit", 2);
-	KvRewind(g_hMIData);
+	int mylimit = 2;
+	if(KvJumpToKey(g_hMIData, g_sCurMap))
+	{
+		mylimit = KvGetNum(g_hMIData, "pill_limit", 2);
+		KvRewind(g_hMIData);
+	}
 
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
-		if(IsValidEntity(i))
+		if(IsValidEntity(i) && IsValidEdict(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
 			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
@@ -865,8 +853,12 @@ static RemoveToLimits()
 {
 	ItemTracking curitem;
 
-	KvJumpToKey(g_hMIData, g_sCurMap);
-	int curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
+	int curlimit = 2;
+	if(KvJumpToKey(g_hMIData, g_sCurMap))
+	{
+		curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
+		KvRewind(g_hMIData);
+	}
 
 	for(new itemidx = 0; itemidx < view_as<int>(IL_Max); itemidx++)
 	{
@@ -881,7 +873,7 @@ static RemoveToLimits()
 				//LogMessage("[IT] Killing randomly chosen %s #%d", g_sItemNames[itemidx][IN_longname], killidx);
 
 				g_hItemSpawns[itemidx].GetArray(killidx, curitem);
-				if(IsValidEntity(curitem.IT_entity) && !AcceptEntityInput(curitem.IT_entity, "kill"))
+				if(IsValidEntity(curitem.IT_entity) && IsValidEdict(curitem.IT_entity) && !AcceptEntityInput(curitem.IT_entity, "kill"))
 				{
 					LogError("[IT] Error killing instance of item %s", g_sItemNames[itemidx][IN_longname]);
 				}
@@ -906,7 +898,7 @@ static KillRegisteredItems()
 	new psychonic = GetEntityCount();
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
-		if(IsValidEntity(i))
+		if(IsValidEntity(i) && IsValidEdict(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
 			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
@@ -1025,24 +1017,4 @@ bool IsInSafeRoom(int kit)
 	}
 
 	return false;
-}
-
-void MI_KV_Close()
-{
-	if (g_hMIData != null) {
-		CloseHandle(g_hMIData);
-		g_hMIData = null;
-	}
-}
-
-void MI_KV_Load()
-{
-	char sNameBuff[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
-
-	g_hMIData = CreateKeyValues("MapInfo");
-	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
-		LogError("[MI] Couldn't load MapInfo data!");
-		MI_KV_Close();
-	}
 }

@@ -22,7 +22,6 @@ int	i_print_speaklist;
 char SpeakingPlayers[3][512];
 int team;
 #define UPDATESPEAKING_TIME_INTERVAL 0.5
-native bool IsClientListenMode(int client); //Form l4d_versus_specListener3.0
 
 public Plugin myinfo = 
 {
@@ -156,7 +155,7 @@ public Action UpdateSpeaking(Handle timer)
 		{
 			if(IsClientInGame(i)&&!IsFakeClient(i)&&ClientSpeakingList[i]>0)
 			{
-				if ( (GetClientTeam(i) == 1 && i_sv_alltalk == 0 && IsClientListenMode(i))//Spectator + alltalk 0 + open listen mode
+				if ( (GetClientTeam(i) == 1 && i_sv_alltalk == 0 && GetClientListeningFlags(i) == VOICE_LISTENALL)//Spectator + alltalk 0 + open listen mode
 				|| (i_alltalk_speaklist == 1 && i_sv_alltalk == 1) )//or Enable speaklist when sv_alltalk on
 				{		
 					SetGlobalTransTarget(i);

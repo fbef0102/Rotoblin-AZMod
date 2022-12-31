@@ -16,9 +16,10 @@
 
 static bool:bListionActive[MAXPLAYERS + 1];
 native Is_Ready_Plugin_On();
-#define PLUGIN_VERSION "3.2"
-new Handle:hspecListener_enable;
-new bool:specListener_enable;
+#define PLUGIN_VERSION "3.3"
+ConVar hspecListener_enable, hspecListener_access;
+char g_sCommandAccesslvl[16];
+bool specListener_enable;
 
 public Plugin:myinfo = 
 {
@@ -73,11 +74,16 @@ public Native_OpenSpectatorsListenMode(Handle:plugin, numParams) {
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	RegConsoleCmd("sm_hear", Command_hear);
 	
-	hspecListener_enable = CreateConVar("specListener_enable", "1", "Enable Hear Feature? [0-Disable, 1-Enable]", 0, true, 0.0, true, 1.0);
+	hspecListener_enable = CreateConVar("specListener_enable", "1", "If 1, enable Hear Feature for all spectators [0-Disable]", 0, true, 0.0, true, 1.0);
+	hspecListener_access = CreateConVar("specListener_command_access_flag", "", "Players with these flags have access to use sm_hear command to enable or disable hear feature. (Empty = Everyone, -1: Nobody)", FCVAR_NOTIFY);
+	
 	specListener_enable = GetConVarBool(hspecListener_enable);
 	HookConVarChange(hspecListener_enable, ConVarChange_hspecListener_enable);
+
+	GetCvars();
+	hspecListener_access.AddChangeHook(ConVarChanged_Cvars);
 	
-	//Spectators see Team_Chat
+	//Spectators see Team_Chat and Team MIC
 	RegConsoleCmd("say_team", Command_SayTeam);
 	
 	if(specListener_enable)
@@ -108,6 +114,16 @@ public ConVarChange_hspecListener_enable(Handle:convar, const String:oldValue[],
 	else
 		for (new i = 1; i <= MaxClients; i++) 
 			bListionActive[i] = true;
+}
+
+public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+	hspecListener_access.GetString(g_sCommandAccesslvl,sizeof(g_sCommandAccesslvl));
 }
 
 public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
@@ -142,6 +158,12 @@ public Action:Command_hear(client,args)
 	
 	if(GetClientTeam(client)!=TEAM_SPEC || !specListener_enable)
 		return Plugin_Handled;
+
+	if(HasAccess(client, g_sCommandAccesslvl) == false)
+	{
+		PrintHintText(client, "[TS] You don't have access");
+		return Plugin_Handled;
+	}
 	
 	bListionActive[client] = !bListionActive[client];
 	decl String:Info[50];
@@ -286,3 +308,21 @@ public IsValidClient (client)
 		
     return true;
 }  
+
+public bool HasAccess(int client, char[] g_sAcclvl)
+{
+	// no permissions set
+	if (strlen(g_sAcclvl) == 0)
+		return true;
+
+	else if (StrEqual(g_sAcclvl, "-1"))
+		return false;
+
+	// check permissions
+	if ( GetUserFlagBits(client) & ReadFlagString(g_sAcclvl) )
+	{
+		return true;
+	}
+
+	return false;
+}

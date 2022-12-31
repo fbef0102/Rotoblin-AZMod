@@ -11,7 +11,7 @@ new			bool:g_bVehicleIncoming;
 
 public Plugin:myinfo = 
 {
-	name = "L4D Score/Team Manager",
+	name = "L4D No Escape Tank",
 	author = "Harry Potter",
 	description = "No Tank Spawn as the rescue vehicle is coming",
 	version = "1.2",
@@ -41,6 +41,7 @@ public OnPluginStart()
 {
 	g_hEnableNoEscTank	= CreateConVar("no_escape_tank", "1", "Removes tanks which spawn as the rescue vehicle arrives on finales.", _, true, 0.0, true, 1.0);
 	HookEvent("finale_escape_start", NET_ev_FinaleEscStart, EventHookMode_PostNoCopy);
+	HookEvent("finale_vehicle_ready", 	NET_ev_Vehicle_Ready,		EventHookMode_PostNoCopy);
 	HookEvent("round_start", 	NET_ev_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("tank_spawn", NET_ev_TankSpawn, EventHookMode_PostNoCopy);
 	
@@ -49,6 +50,11 @@ public OnPluginStart()
 }
 
 public NET_ev_FinaleEscStart(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	g_bVehicleIncoming = true;
+}
+
+public void NET_ev_Vehicle_Ready(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	g_bVehicleIncoming = true;
 }

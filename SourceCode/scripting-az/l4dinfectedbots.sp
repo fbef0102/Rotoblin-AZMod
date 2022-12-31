@@ -674,6 +674,7 @@ public OnPluginStart()
 	HookEvent("create_panic_event", evtSurvivalStart);
 	HookEvent("tank_frustrated", evtTankFrustrated);
 	HookEvent("finale_start", evtFinaleStart);
+	HookEvent("finale_radio_start", evtFinaleStart);
 	HookEvent("mission_lost", evtMissionLost);
 	HookEvent("player_death", evtInfectedDeath);
 	HookEvent("player_spawn", evtInfectedSpawn);
@@ -3002,9 +3003,11 @@ public Action:HookSound_Callback(Clients[64], &NumClients, String:StrSample[PLAT
 
 // This event serves to make sure the bots spawn at the start of the finale event. The director disallows spawning until the survivors have started the event, so this was
 // definitely needed.
-public Action:evtFinaleStart(Handle:event, const String:name[], bool:dontBroadcast)
+public void evtFinaleStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	FinaleStarted = true;
+	if(FinaleStarted) return;
+
+ 	FinaleStarted = true;
 	CreateTimer(1.0, CheckIfBotsNeededLater, true);
 }
 

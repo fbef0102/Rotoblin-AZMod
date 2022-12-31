@@ -21,7 +21,7 @@ SetupCountryShow()
 {
 	g_CvarShowConnect = CreateConVar("sm_ca_showenhanced", "1", "displays enhanced message when player connects");
 	g_CvarShowDisconnect = CreateConVar("sm_ca_showenhanceddisc", "1", "displays enhanced message when player disconnects");
-	g_CvarShowEnhancedToAdmins = CreateConVar("sm_ca_showenhancedadmins", "0", "displays a different enhanced message to admin players (ADMFLAG_GENERIC)");
+	g_CvarShowEnhancedToAdmins = CreateConVar("sm_ca_showenhancedadmins", "1", "displays a different enhanced message to admin players (ADMFLAG_GENERIC)");
 }
 
 OnPostAdminCheck_CountryShow(client)

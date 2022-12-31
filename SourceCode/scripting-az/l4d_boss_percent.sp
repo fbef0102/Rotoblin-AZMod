@@ -10,7 +10,7 @@ public Plugin:myinfo =
 {
 	name = "L4D1 Boss Flow Announce (Back to roots edition)",
 	author = "ProdigySim, Jahze, Stabby, CircleSquared, CanadaRox, Visor, L4D1 port by harry",
-	version = "1.6.2",
+	version = "1.6.3",
 	description = "Announce boss flow percents!",
 	url = "https://github.com/ConfoglTeam/ProMod"
 };
@@ -45,9 +45,12 @@ public Native_GetWitchPercent(Handle:plugin, numParams) {
     return iWitchPercent;
 }
 
+Handle g_forwardUpdateBosses;
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
+
+	g_forwardUpdateBosses = CreateGlobalForward("OnUpdateBosses", ET_Ignore, Param_Cell, Param_Cell);
 
 	hCvarPrintToEveryone = CreateConVar("l4d_global_percent", "0", "Display boss percentages to entire team when using commands", FCVAR_NOTIFY);
 	hCvarTankPercent = CreateConVar("l4d_tank_percent", "1", "Display Tank flow percentage in chat", FCVAR_NOTIFY);
@@ -82,7 +85,7 @@ public Native_PrintBossPercents(Handle:plugin, numParams)
 }
 public Native_SaveBossPercents(Handle:plugin, numParams)
 {
-	CreateTimer(1.0, SaveBossFlows);
+	CreateTimer(0.1, SaveBossFlows);
 }
 
 public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
@@ -122,12 +125,18 @@ public Action:SaveBossFlows(Handle:timer)
 			iTankPercent = RoundToNearest(GetTankFlow(1)*100.0);
 		}
 	}
+
 	new Handle:WITCHPARTY = FindConVar("l4d_multiwitch_enabled");
 	if(WITCHPARTY != INVALID_HANDLE)
 	{
 		if(GetConVarInt(WITCHPARTY) == 1)
 			iWitchPercent = -2;
 	}
+
+	Call_StartForward(g_forwardUpdateBosses);
+	Call_PushCell(iTankPercent);
+	Call_PushCell(iWitchPercent);
+	Call_Finish();
 }
 
 stock PrintBossPercents(client)

@@ -396,7 +396,7 @@ static CvarsChanged()
 //Tools Folding
 static bool:IsValidEntRef(iEntRef)
 {
-	return (iEntRef != 0 && EntRefToEntIndex(iEntRef) != INVALID_ENT_REFERENCE);
+	return (iEntRef && EntRefToEntIndex(iEntRef) != INVALID_ENT_REFERENCE);
 }
 
 static EntityGetPosition(iEntity, Float:fPos[3])

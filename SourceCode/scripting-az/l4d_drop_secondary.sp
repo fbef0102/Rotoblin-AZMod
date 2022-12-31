@@ -1,226 +1,234 @@
 #pragma semicolon 1
-#pragma newdecls required
-
+#pragma newdecls required //強制1.7以後的新語法
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <l4d_weapon_stocks>
 
-#define MAXENTITIES 2048
-int g_PlayerSecondaryWeapons[MAXPLAYERS + 1];
 int g_PlayerPrimaryWeapons[MAXPLAYERS + 1];
-bool g_bPlayerPickUpWeapon;
+int g_PlayerSecondaryWeapons[MAXPLAYERS + 1]; 		/* slot1 entity */
 
 native bool IsInReady();//From l4dready
 
 public Plugin myinfo =
 {
-	name        = "L4D Drop Secondary",
-	author      = "Jahze, Visor,l4d1 modify by Harry",
-	version     = "2.4",
-	description = "Survivor players will drop their secondary weapon when they die + Survivor players won't drop their weapons when ready mode",
-	url         = "https://github.com/Attano/Equilibrium"
+	name		= "L4D1 Drop Secondary",
+	author		= "Jahze, Visor, NoBody & HarryPotter",
+	version		= "2.5",
+	description	= "Survivor players will drop their secondary weapon when they die",
+	url			= "https://steamcommunity.com/profiles/76561198026784913/"
 };
 
-public void OnPluginStart() 
+bool bLate;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) 
 {
-	HookEvent("round_start", OnRoundStart, EventHookMode_PostNoCopy);
-	HookEvent("player_use", OnPlayerUse, EventHookMode_Post);
-	HookEvent("player_bot_replace", OnBotSwap);
-	HookEvent("bot_player_replace", OnBotSwap);
-	HookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
-	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
-}
-
-public void OnMapStart()
-{
-	g_bPlayerPickUpWeapon = false;
-}
-
-public void OnRoundStart(Event event, const char[] name, bool dontBroadcast)
-{
-	for (int i = 0; i <= MAXPLAYERS; i++) 
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
 	{
-		g_PlayerSecondaryWeapons[i] = -1;
-		g_PlayerPrimaryWeapons[i] = -1;
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead .");
+		return APLRes_SilentFailure;
 	}
 
-	g_bPlayerPickUpWeapon = false;
+	bLate = late;
+	return APLRes_Success; 
 }
 
-public Action OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+public void OnPluginStart()
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(IsSurvivor(client))
-	{
-		int weapon = GetPlayerWeaponSlot(client, 1);
-		if(weapon > 0 && L4D2_GetWeaponId(weapon)!=L4D2WeaponId_None)
-			g_PlayerSecondaryWeapons[client] = weapon;
-		
-		int primaryweapon = GetPlayerWeaponSlot(client, 0);
-		if(primaryweapon > 0 && L4D2_GetWeaponId(primaryweapon)!=L4D2WeaponId_None)
-			g_PlayerPrimaryWeapons[client] = primaryweapon;
-	}
-	return Plugin_Continue;
-}
+	HookEvent("player_spawn",			Event_PlayerSpawn,	EventHookMode_PostNoCopy);
+	HookEvent("player_death", 			OnPlayerDeath, EventHookMode_Pre);
 
-public Action OnPlayerUse(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (IsSurvivor(client)) 
+	if (bLate)
 	{
-		int entity = event.GetInt("targetid"); // What we're attempting to use/pickup
-		if( entity && IsValidEntity(entity) )
+		for (int i = 1; i <= MaxClients; i++)
 		{
-			char g_szBuffer[8];
-			GetEdictClassname(entity, g_szBuffer, sizeof(g_szBuffer)); // Verify it's a weapon
-			//PrintToChatAll("OnPlayerUse: %s", g_szBuffer);
-			if( strncmp(g_szBuffer, "weapon_", 7) == 0 )
+			if (IsClientInGame(i))
 			{
-				int weapon = GetPlayerWeaponSlot(client, 1);
-				if(weapon > 0 && L4D2_GetWeaponId(weapon)!=L4D2WeaponId_None)
-					g_PlayerSecondaryWeapons[client] = weapon;
-				
-				int primaryweapon = GetPlayerWeaponSlot(client, 0);
-				if(primaryweapon > 0 && L4D2_GetWeaponId(primaryweapon)!=L4D2WeaponId_None)
-					g_PlayerPrimaryWeapons[client] = primaryweapon;
-
-				g_bPlayerPickUpWeapon = true;
+				OnClientPutInServer(i);
 			}
 		}
 	}
-	return Plugin_Continue;
-}
-
-public Action OnBotSwap(Event event, const char[] name, bool dontBroadcast)
-{
-	int bot = GetClientOfUserId(GetEventInt(event, "bot"));
-	int player = GetClientOfUserId(GetEventInt(event, "player"));
-	if (IsClientIndex(bot) && IsClientIndex(player)) 
-	{
-		if (StrEqual(name, "player_bot_replace")) 
-		{
-			g_PlayerSecondaryWeapons[bot] = g_PlayerSecondaryWeapons[player];
-			g_PlayerSecondaryWeapons[player] = -1;
-			g_PlayerPrimaryWeapons[bot] = g_PlayerPrimaryWeapons[player];
-			g_PlayerPrimaryWeapons[player] = -1;
-			
-		}
-		else 
-		{
-			g_PlayerSecondaryWeapons[player] = g_PlayerSecondaryWeapons[bot];
-			g_PlayerSecondaryWeapons[bot] = -1;
-			g_PlayerPrimaryWeapons[player] = g_PlayerPrimaryWeapons[bot];
-			g_PlayerPrimaryWeapons[bot] = -1;
-		}
-	}
-	return Plugin_Continue;
-}
-
-public Action OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (IsSurvivor(client)) 
-	{
-		int weapon = g_PlayerSecondaryWeapons[client];
-		int primaryweapon = g_PlayerPrimaryWeapons[client];
-		if(IsInReady())
-		{
-			if(weapon > 0 && L4D2_GetWeaponId(weapon) != L4D2WeaponId_None)
-				SafelyRemoveEdict(weapon);
-			if(primaryweapon > 0 && L4D2_GetWeaponId(primaryweapon) != L4D2WeaponId_None)
-				SafelyRemoveEdict(primaryweapon);
-		}
-		else
-		{
-			if(weapon!=-1 && IsValidEntity(weapon))
-				SetEntPropEnt(weapon, Prop_Data, "m_hOwner",client);
-			if(weapon > 0 && L4D2_GetWeaponId(weapon) != L4D2WeaponId_None && client == GetWeaponOwner(weapon) )
-			{
-				SDKHooks_DropWeapon(client, weapon);
-			}
-		}
-		g_PlayerSecondaryWeapons[client] = -1;
-		g_PlayerPrimaryWeapons[client] = -1;
-		return Plugin_Continue;
-		
-	}
-	return Plugin_Continue;
-}
-
-public void OnEntityCreated (int entity, const char[] classname)
-{	
-	if(!IsInReady() || !g_bPlayerPickUpWeapon) return;
-	
-	//PrintToChatAll("%d classname: %s",entity,classname);
-	
-	if(StrEqual(classname,"weapon_pistol"))
-	{
-		CreateTimer(0.1, DelayCheck, EntIndexToEntRef(entity));
-	}
-}
-
-public Action DelayCheck(Handle timer, int ref)
-{
-	int entity = EntRefToEntIndex(ref);
-
-	if(entity == INVALID_ENT_REFERENCE)
-	{
-		return Plugin_Continue;
-	}
-
-	for (int i = 0; i <= MAXPLAYERS; i++) 
-	{
-		if(IsSurvivor(i) && g_PlayerSecondaryWeapons[i] == entity)
-			return Plugin_Continue;
-	}
-
-	SafelyRemoveEdict(entity);
-
-	return Plugin_Continue;
-}
-
-int GetWeaponOwner(int weapon)
-{
-	return GetEntPropEnt(weapon, Prop_Data, "m_hOwner");
-}
-
-bool IsClientIndex(int client)
-{
-	return (client > 0 && client <= MaxClients);
-}
-
-bool IsSurvivor(int client)
-{
-	return (IsClientIndex(client) && IsClientInGame(client) && GetClientTeam(client) == 2);
-}
-
-stock bool SafelyRemoveEdict(int entity)
-{
-	if (entity == INVALID_ENT_REFERENCE || entity < 0 || entity > MAXENTITIES || !IsValidEntity(entity))
-	{
-		return false;
-	}
-
-	// Try and use the entity's kill input first.  If that doesn't work, fall back on SafelyRemoveEdict.
-	// AFAIK, we should always try to use Kill, as I've noticed problems when calling SafelyRemoveEdict (ents sticking around after deletion).
-	// This could be down to my own idiocy, but ... still.
-	if(!AcceptEntityInput(entity, "Kill"))
-	{
-		SafelyRemoveEdict(entity);
-	}
-
-	return true;
 }
 
 public void OnClientPutInServer(int client)
 {
-	g_PlayerSecondaryWeapons[client] = -1;
-	g_PlayerPrimaryWeapons[client] = -1;
+    SDKHook(client, SDKHook_WeaponEquipPost, OnWeaponEquipPost);
 }
 
 public void OnClientDisconnect(int client)
 {
-	g_PlayerSecondaryWeapons[client] = -1;
+	if(!IsClientInGame(client)) return;
+
+	clear(client);
+}
+
+public void OnWeaponEquipPost(int client, int weapon)
+{
+	if (client <= 0 || client > MaxClients || !IsClientInGame(client))
+		return;
+
+	GetSlots(client);
+}
+
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) 
+{
+	CreateTimer(0.1, ColdDown, event.GetInt("userid"));
+}
+
+public Action ColdDown(Handle timer, int client)
+{
+	client = GetClientOfUserId(client);
+	if(client && IsClientInGame(client))
+	{
+		GetSlots(client);
+	}
+
+	return Plugin_Continue;
+}
+
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) 
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(client == 0 || !IsClientInGame(client) || GetClientTeam(client) != 2)
+	{
+		clear(client);
+		return;
+	}
+
+	if(IsInReady())
+	{
+		if(IsValidEntRef(g_PlayerPrimaryWeapons[client]))
+		{
+			RemovePlayerItem(client, g_PlayerPrimaryWeapons[client]);
+			RemoveEntity(g_PlayerPrimaryWeapons[client]);
+		}
+
+		if(IsValidEntRef(g_PlayerSecondaryWeapons[client]))
+		{
+			RemovePlayerItem(client, g_PlayerSecondaryWeapons[client]);
+			RemoveEntity(g_PlayerSecondaryWeapons[client]);
+		}
+
+		clear(client);
+		return;
+	}
+	
+	int weapon = EntRefToEntIndex(g_PlayerSecondaryWeapons[client]);
+	
+	if(weapon == INVALID_ENT_REFERENCE)
+	{
+		g_PlayerSecondaryWeapons[client] = -1;
+		return;
+	}
+	
+	char sWeapon[32];
+	int clip;
+	GetEntityClassname(weapon, sWeapon, 32);
+	
+	int entity; 
+	float origin[3];
+	float ang[3];
+	GetClientEyePosition(client,origin);
+	GetClientEyeAngles(client, ang);
+	GetAngleVectors(ang, ang, NULL_VECTOR,NULL_VECTOR);
+	NormalizeVector(ang,ang);
+	ScaleVector(ang, 90.0);
+
+	if (strcmp(sWeapon, "weapon_pistol") == 0)
+	{
+		entity = CreateEntityByName(sWeapon);
+		if(entity == -1)
+		{
+			clear(client);
+			return;
+		}
+
+		clip = GetEntProp(weapon, Prop_Send, "m_iClip1");
+		
+		if (GetEntProp(weapon, Prop_Send, "m_isDualWielding") > 0)
+		{
+			int entity2 = CreateEntityByName(sWeapon); //second pistol
+			if(entity2 == -1)
+			{
+				clear(client);
+				return;
+			}
+			
+			TeleportEntity(entity2, origin, NULL_VECTOR, ang);
+			DispatchSpawn(entity2);
+			clip = GetEntProp(weapon, Prop_Send, "m_iClip1");
+			if(clip - 15 <= 0) SetEntProp(entity2, Prop_Send, "m_iClip1", 0);
+			else clip = clip - 15;
+		}
+	}
+	else	//unknow weapon
+	{
+		clear(client);
+		LogError("%N has unknow secondary weapon: %s", client, sWeapon);
+		return;
+	}
+
+	RemovePlayerItem(client, weapon);
+	RemoveEntity(weapon);
+	
+	TeleportEntity(entity, origin, NULL_VECTOR, ang);
+	DispatchSpawn(entity);
+
+	SetEntProp(entity, Prop_Send, "m_iClip1", clip);
+
+	clear(client);
+}
+
+stock bool IsIncapacitated(int client)
+{
+	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
+}
+
+void clear(int client)
+{
 	g_PlayerPrimaryWeapons[client] = -1;
+	g_PlayerSecondaryWeapons[client] = -1;
+}
+
+void GetSlots(int client)
+{
+	if(GetClientTeam(client) != 2 || !IsPlayerAlive(client))
+	{
+		clear(client);
+		return;
+	}
+
+	//if (IsIncapacitated(client)) //倒地不列入
+	//	return;
+
+	int slot0_weapon = GetPlayerWeaponSlot(client, 0);
+	if(slot0_weapon == -1)
+	{
+		g_PlayerPrimaryWeapons[client] = -1;
+	}
+	else
+	{
+		g_PlayerPrimaryWeapons[client] = EntIndexToEntRef(slot0_weapon);
+	}
+
+	int slot1_weapon = GetPlayerWeaponSlot(client, 1);
+	if(slot1_weapon == -1)
+	{
+		g_PlayerSecondaryWeapons[client] = -1;
+	}
+	else
+	{
+		g_PlayerSecondaryWeapons[client] = EntIndexToEntRef(slot1_weapon);
+	}
+
+	//PrintToChatAll("%N slot 0 weapon is %d", client, slot0_weapon);
+	//PrintToChatAll("%N slot 1 weapon is %d", client, slot1_weapon);
+}
+
+bool IsValidEntRef(int entity)
+{
+	if( entity && EntRefToEntIndex(entity) != INVALID_ENT_REFERENCE)
+		return true;
+	return false;
 }

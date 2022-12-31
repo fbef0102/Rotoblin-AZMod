@@ -108,6 +108,7 @@ public OnPluginStart()
 	HookEvent("infected_hurt",		PD_ev_InfectedHurt);
 	HookEvent("player_bot_replace",	PD_ev_PlayerBotReplace);
 	HookEvent("finale_start", PD_ev_Finale_Start);
+	HookEvent("finale_radio_start", PD_ev_Finale_Start);
 	HookEvent("finale_escape_start", PD_ev_FinaleEscStart, EventHookMode_PostNoCopy);
 	
 	g_hTrine = CreateTrie();
@@ -566,6 +567,8 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 	new bool:istankAI = false;
 	if(TankorWitch == _:TANK)
 	{
+		if(!IsClientInGame(iIndex)) return;
+		
 		GetClientName(iIndex,tankplayerName, 32);
 		if(StrEqual(tankplayerName,"Tank"))
 			istankAI =true;

@@ -8,17 +8,18 @@ ConVar g_hEnableNoFinalFirstTank;
 bool g_bEnableNoFinalFirstTank;
 
 static bool:resuce_start,bool:HasBlockFirstTank;
-static bool:g_bFixed,bool:Tank_firstround_spawn,Float:g_fTankData_origin[3],Float:g_fTankData_angel[3];
+//static bool:g_bFixed,bool:Tank_firstround_spawn
+Float:g_fTankData_origin[3],Float:g_fTankData_angel[3];
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 static KeyValues g_hMIData = null;
-bool g_bNoFinalFirstTankMap;
+bool g_bNoFinalFirstTankMap, g_bGauntletFinaleMap;
 
 public Plugin:myinfo = 
 {
 	name = "L4D Final No First Tank",
 	author = "Harry Potter",
-	description = "No First Tank Spawn as the final rescue start and second tank spawn same position for both team",
-	version = "1.5",
+	description = "No First Tank Spawn as the final rescue start",
+	version = "1.6",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -44,9 +45,10 @@ public int Native_HasFinalFirstTank(Handle plugin, int numParams) {
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	g_hEnableNoFinalFirstTank = CreateConVar("no_final_first_tank", "1", "Removes tanks which spawn as the rescue vehicle arrives on finales.", _, true, 0.0, true, 1.0);
+	g_hEnableNoFinalFirstTank = CreateConVar("no_final_first_tank", "1", "Removes first tanks which spawn after final rescue starts on finales.", _, true, 0.0, true, 1.0);
 	
 	HookEvent("finale_start", Event_Finale_Start);
+	HookEvent("finale_radio_start", Event_Finale_Start);
 	HookEvent("round_start", 	Event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("tank_spawn", PD_ev_TankSpawn, EventHookMode_PostNoCopy);
 	
@@ -57,11 +59,12 @@ public OnPluginStart()
 public OnMapStart()
 {
 	//強制rescue Second tank出生在一樣的位置
-	g_bFixed = false;
-	Tank_firstround_spawn = false;
-	ClearVec();
+	//g_bFixed = false;
+	//Tank_firstround_spawn = false;
+	//ClearVec();
 
 	g_bNoFinalFirstTankMap = true;
+	g_bGauntletFinaleMap = false;
 	char sCurMap[64];
 	GetCurrentMap(sCurMap, 64);
 
@@ -75,13 +78,20 @@ public OnMapStart()
 		{
 			g_bNoFinalFirstTankMap = false;
 		}
+
+		if (g_hMIData.GetNum("GauntletFinale_map", 0) == 1)
+		{
+			g_bGauntletFinaleMap = true;
+		}
 	}
 	MI_KV_Close();
 }
 
 public Action:Event_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank)  return;
+	if (g_bGauntletFinaleMap) return;
+	
+	if (!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank || resuce_start)  return;
 	
 	resuce_start = true;
 	CreateTimer(0.1, On_t_Instruction);
@@ -129,6 +139,7 @@ public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 			CreateTimer(1.5, KillFirstTank, userid);
 			return;
 		}
+		/*
 		else
 		{
 			//PrintToChatAll("Second Tank Spawn");
@@ -157,6 +168,7 @@ public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 				}
 			}
 		}
+		*/
 	}
 	
 }
@@ -180,7 +192,7 @@ public Enable_CvarChange(Handle:convar, const String:oldValue[], const String:ne
 	g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);\
 }
 
-IsTankInGame(exclude = 0)
+stock int IsTankInGame(int exclude = 0)
 {
 	for (new i = 1; i <= MaxClients; i++)
 		if (exclude != i && IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerTank(i) && IsPlayerAlive(i) && !IsIncapacitated(i))
@@ -189,12 +201,13 @@ IsTankInGame(exclude = 0)
 	return 0;
 }
 
-bool:InSecondHalfOfRound()
+stock bool InSecondHalfOfRound()
 {
 	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
 }
 
-static ClearVec()
+
+stock void ClearVec()
 {
 	for (new index; index < 3; index++){
 		g_fTankData_origin[index] = 0.0;

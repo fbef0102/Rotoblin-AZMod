@@ -25,7 +25,7 @@ public Plugin:myinfo =
 {
 	name = "L4D1 Boss Percents Vote",
 	author = "Visor, Harry Potter",
-	version = "1.2",
+	version = "1.3",
 	description = "Vote for percentage",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
@@ -34,6 +34,7 @@ public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	RegConsoleCmd("sm_voteboss", Vote);
+	RegAdminCmd("sm_forceboss", CMD_ForceBoss, ADMFLAG_ROOT, "Adm forces to change boss percentage");
 }
 
 public OnMapStart()
@@ -45,8 +46,14 @@ public OnMapStart()
 	VoteMenuClose();
 }
 
-public Action:Vote(client, args) 
+public Action Vote(int client, int args) 
 {
+	if (client == 0)
+	{
+		PrintToServer("[TS] This command cannot be used by server.");
+		return Plugin_Handled;
+	}
+
 	if (args < 1 || args > 2)
 	{
 		CPrintToChat(client, "%T","l4d_bossvote1",client,"!voteboss");
@@ -54,6 +61,7 @@ public Action:Vote(client, args)
 		CPrintToChat(client, "%T","l4d_bossvote3",client);
 		return Plugin_Handled;
 	}
+
 	if(CanStartVotes(client))
 	{
 		if (args == 2)
@@ -96,13 +104,71 @@ public Action:Vote(client, args)
 	return Plugin_Handled; 
 }
 
-bool:CanStartVotes(client)
+public Action CMD_ForceBoss(int client, int args) 
 {
- 	if(hVote  != null || IsVoteInProgress())
+	if (client == 0)
+	{
+		PrintToServer("[TS] This command cannot be used by server.");
+		return Plugin_Handled;
+	}
+
+	if (args < 1 || args > 2)
+	{
+		CPrintToChat(client, "%T","l4d_bossvote1",client,"!forceboss");
+		CPrintToChat(client, "%T","l4d_bossvote2",client,"!forceboss");
+		CPrintToChat(client, "%T","l4d_bossvote3",client);
+		return Plugin_Handled;
+	}
+
+	if(CanStartVotes(client))
+	{
+		if (args == 2)
+		{
+			GetCmdArg(1, tank, sizeof(tank));
+			fTankFlow = StringToFloat(tank) / 100.0;
+			GetCmdArg(2, witch, sizeof(witch));
+			fWitchFlow = StringToFloat(witch) / 100.0;
+		}
+		else
+		{
+			GetCmdArg(1, tank, sizeof(tank));
+			fTankFlow = StringToFloat(tank) / 100.0;
+			IntToString(0,witch,sizeof(witch));
+			fWitchFlow = 0.0;
+		}
+			
+		if(fTankFlow>=1 || fTankFlow<0 || fWitchFlow>=1 || fWitchFlow<0)
+		{
+			CPrintToChat(client, "%T","l4d_bossvote1",client,"!forceboss");
+			return Plugin_Handled;
+		}
+		
+		/*if (IsSpectator(client) || !IsInReady() || InSecondHalfOfRound())
+		{
+			CPrintToChat(client, "%T","l4d_bossvote4",client);
+			return Plugin_Handled;
+		}*/
+
+		char SteamId[35];
+		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
+		CPrintToChatAll("[{olive}TS{default}] %t", "l4d_bossvote7", client, tank, witch);
+		LogMessage("Adm %N(%s) forces to change Tank: %s%, Witch: %s%", client, SteamId, tank, witch);//記錄在log文件
+	
+		CreateTimer(2.0, RewriteBossFlows);
+		CreateTimer(4.0, PrintMessage);
+	}
+
+	return Plugin_Handled;
+}
+
+bool CanStartVotes(int client)
+{
+ 	if(hVote != null || IsVoteInProgress())
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","A vote is already in progress!",client);
 		return false;
 	}
+
 	return true;
 }
 

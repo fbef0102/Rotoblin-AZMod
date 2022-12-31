@@ -1,6 +1,6 @@
 /*
 *	Mission and Weapons - Info Editor
-*	Copyright (C) 2020 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.12"
+#define PLUGIN_VERSION		"1.19"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,35 @@
 
 ========================================================================================
 	Change Log:
+
+1.19 (16-Dec-2022)
+	- Fixed not loading melee weapons on certain maps under certain conditions. Thanks to "Mi.Cura" for reporting.
+	- Feature added: plugin can load mode specific sections that overwrite previous data loaded from the "l4d_info_editor_mission.cfg" config. Requested by "ProjectSky".
+	- Feature added: plugin can load mode specific configs, e.g. "l4d_info_editor_mission.versus.cfg" or "l4d_info_editor_mission.mutation3.cfg" for "Versus" or "Bleedout" modes etc.
+	- These features also apply to the "l4d_info_editor_weapons.cfg" data config.
+
+1.18 (15-Dec-2022)
+	- Fixed duplicating custom melee weapons in the mission keyvalue string. Thanks to "ProjectSky" for reporting.
+	- Fixed not loading melee weapons if the "Info Editor" config is missing a "meleeweapons" key to use.
+
+1.17 (12-Dec-2022)
+	- Forgot to turn off debug printing values.
+
+1.16 (11-Dec-2022)
+	- Fixed error in command "sm_info_melee" causing it to not display everything correctly.
+
+1.15 (11-Dec-2022)
+	- L4D2: Now supports 3rd party melee weapons where the mission.txt file does not contain a "meleeweapons" key. Thanks to "Yabi" for reporting and testing.
+	- L4D2: Added command "sm_info_melee" to list the maps currently allowed melee weapons and report any issues.
+	- L4D2: GameData file has updated to support these changes.
+
+1.14 (21-Oct-2022)
+	- Fixed plugins not loading with the updated include file.
+	- Include file updated.
+
+1.13 (20-Oct-2022)
+	- L4D2: Plugin now prevents setting over 16 melee weapons. Thanks to "gabuch2" for reporting.
+	- Compiled .smx plugin is now compiled with SourceMod version 1.11.
 
 1.12 (01-Oct-2020)
 	- Fixed not properly adding both melee weapons causing potential issues.
@@ -108,16 +137,21 @@
 #pragma newdecls required
 
 #include <sourcemod>
-#include <sdktools>
 #include <dhooks>
 
 #define GAMEDATA				"l4d_info_editor"
 #define CONFIG_MISSION			"data/l4d_info_editor_mission.cfg"
 #define CONFIG_WEAPONS			"data/l4d_info_editor_weapons.cfg"
 #define MAX_STRING_LENGTH		4096
+#define MAX_STRING_MELEE		64 // Maximum string length of melee weapons
 #define DEBUG_VALUES			0
 #define FORCE_VALUES			1 // Force create keyvalues when not found.
 
+bool g_bGameMode;
+ConVar g_hCvarMPGameMode;
+char g_sGameMode[64];
+char g_sConfigMission[PLATFORM_MAX_PATH];
+char g_sConfigWeapons[PLATFORM_MAX_PATH];
 Handle g_hForwardOnGetMission;
 Handle g_hForwardOnGetWeapons;
 Handle SDK_KV_GetString;
@@ -125,10 +159,13 @@ Handle SDK_KV_SetString;
 Handle SDK_KV_FindKey;
 ArrayList g_alMissionData;
 ArrayList g_alWeaponsData;
+ArrayList g_alMeleeDefault;
+ArrayList g_alMeleeCustoms;
 int g_PointerMission;
 bool g_bLeft4Dead2;
 bool g_bLoadNewMap;
-char g_sLastMap[PLATFORM_MAX_PATH];
+bool g_bManifest;
+bool g_bHasMelee;
 
 
 
@@ -161,10 +198,16 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("InfoEditor_SetString",		Native_SetString);
 	CreateNative("InfoEditor_ReloadData",		Native_ReloadData);
 
+	g_bManifest = late;
+	if( late )
+	{
+		LoadManifest();
+	}
+
 	return APLRes_Success;
 }
 
-public int Native_GetString(Handle plugin, int numParams)
+int Native_GetString(Handle plugin, int numParams)
 {
 	// Pointer to keyvalue for modifying
 	int pThis = GetNativeCell(1);
@@ -191,7 +234,7 @@ public int Native_GetString(Handle plugin, int numParams)
 	return 0;
 }
 
-public int Native_SetString(Handle plugin, int numParams)
+int Native_SetString(Handle plugin, int numParams)
 {
 	// Pointer to keyvalue for modifying
 	int pThis = GetNativeCell(1);
@@ -236,6 +279,10 @@ public int Native_SetString(Handle plugin, int numParams)
 public void OnPluginStart()
 {
 	CreateConVar("l4d_info_editor_version", PLUGIN_VERSION, "Mission and Weapons - Info Editor plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
+	g_hCvarMPGameMode = FindConVar("mp_gamemode");
+	g_hCvarMPGameMode.AddChangeHook(ConVarChanged_Cvars);
+	ConVarChanged_Cvars(null, "", "");
 
 	// ====================================================================================================
 	// SDKCalls
@@ -289,7 +336,7 @@ public void OnPluginStart()
 	if( !hDetour )
 		SetFailState("Failed to find \"CTerrorGameRules::GetMissionInfo\" signature.");
 	if( !DHookEnableDetour(hDetour, true, GetMissionInfo) )
-		SetFailState("Failed to detour \"CTerrorGameRules::GetMissionInfo\".");
+		SetFailState("Failed to detour \"CTerrorGameRules::GetMissionInfo\"");
 	delete hDetour;
 
 	// Weapon Info
@@ -297,7 +344,7 @@ public void OnPluginStart()
 	if( !hDetour )
 		SetFailState("Failed to find \"CTerrorWeaponInfo::Parse\" signature.");
 	if( !DHookEnableDetour(hDetour, false, GetWeaponInfo) )
-		SetFailState("Failed to detour \"CTerrorWeaponInfo::Parse\".");
+		SetFailState("Failed to detour \"CTerrorWeaponInfo::Parse\"");
 	delete hDetour;
 
 	if( g_bLeft4Dead2 )
@@ -307,7 +354,7 @@ public void OnPluginStart()
 		if( !hDetour )
 			SetFailState("Failed to find \"CMeleeWeaponInfo::Parse\" signature.");
 		if( !DHookEnableDetour(hDetour, false, GetMeleeWeaponInfo) )
-			SetFailState("Failed to detour \"CMeleeWeaponInfo::Parse\".");
+			SetFailState("Failed to detour \"CMeleeWeaponInfo::Parse\"");
 		delete hDetour;
 
 		// Allow all Melee weapon types
@@ -315,7 +362,15 @@ public void OnPluginStart()
 		if( !hDetour )
 			SetFailState("Failed to find \"CDirectorItemManager::IsMeleeWeaponAllowedToExist\" signature.");
 		if( !DHookEnableDetour(hDetour, true, MeleeWeaponAllowedToExist) )
-			SetFailState("Failed to detour \"CDirectorItemManager::IsMeleeWeaponAllowedToExist\".");
+			SetFailState("Failed to detour \"CDirectorItemManager::IsMeleeWeaponAllowedToExist\"");
+		delete hDetour;
+
+		// Overwrite string when "meleeweapons" keyvalue from mission.txt is empty
+		hDetour = DHookCreateFromConf(hGameData, "CMeleeWeaponInfoStore::LoadScriptsFromManifest");
+		if( !hDetour )
+			SetFailState("Failed to find \"CMeleeWeaponInfoStore::LoadScriptsFromManifest\" signature.");
+		if( !DHookEnableDetour(hDetour, false, LoadScriptsFromManifest) )
+			SetFailState("Failed to detour \"CMeleeWeaponInfoStore::LoadScriptsFromManifest\"");
 		delete hDetour;
 	}
 
@@ -340,13 +395,35 @@ public void OnPluginStart()
 	ResetPlugin();
 
 	// Commands
-	RegAdminCmd("sm_info_weapons_list",	CmdInfoWeaponsList,	ADMFLAG_ROOT, "Show weapons config tree of modified data for this map.");
 	RegAdminCmd("sm_info_mission_list",	CmdInfoMissionList,	ADMFLAG_ROOT, "Show mission config tree of modified data for this map.");
+	RegAdminCmd("sm_info_weapons_list",	CmdInfoWeaponsList,	ADMFLAG_ROOT, "Show weapons config tree of modified data for this map.");
 	RegAdminCmd("sm_info_mission",		CmdInfoMission,		ADMFLAG_ROOT, "Get or set the value of a mission keyname. Usage: sm_info_mission <keyname> [value].");
 	RegAdminCmd("sm_info_reload",		CmdInfoReload,		ADMFLAG_ROOT, "Reloads the mission and weapons configs. Weapons info data is re-parsed allowing changes to be made live without changing level.");
+
+	if( g_bLeft4Dead2 )
+	{
+		RegAdminCmd("sm_info_melee",	CmdInfoMelee,		ADMFLAG_ROOT, "Lists the maps current melee weapons allowed and report any issues.");
+
+		// Add stock melee weapons, used to remove from manifest
+		g_alMeleeDefault = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+		g_alMeleeDefault.PushString("baseball_bat");
+		g_alMeleeDefault.PushString("cricket_bat");
+		g_alMeleeDefault.PushString("crowbar");
+		g_alMeleeDefault.PushString("electric_guitar");
+		g_alMeleeDefault.PushString("fireaxe");
+		g_alMeleeDefault.PushString("frying_pan");
+		g_alMeleeDefault.PushString("golfclub");
+		g_alMeleeDefault.PushString("katana");
+		g_alMeleeDefault.PushString("knife");
+		g_alMeleeDefault.PushString("machete");
+		g_alMeleeDefault.PushString("tonfa");
+		g_alMeleeDefault.PushString("pitchfork");
+		g_alMeleeDefault.PushString("shovel");
+		g_alMeleeDefault.PushString("riot_shield");
+	}
 }
 
-public Action CmdListenBlock(int client, const char[] command, int argc)
+Action CmdListenBlock(int client, const char[] command, int argc)
 {
 	client = IsDedicatedServer() ? client : (client > 1 ? client : 0);
 
@@ -357,8 +434,12 @@ public Action CmdListenBlock(int client, const char[] command, int argc)
 
 public void OnMapEnd()
 {
-	GetCurrentMap(g_sLastMap, sizeof(g_sLastMap));
 	g_bLoadNewMap = true;
+}
+
+void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+{
+	g_hCvarMPGameMode.GetString(g_sGameMode, sizeof(g_sGameMode));
 }
 
 
@@ -366,18 +447,115 @@ public void OnMapEnd()
 // ====================================================================================================
 //					COMMANDS
 // ====================================================================================================
-public Action CmdInfoReload(int client, int args)
+Action CmdInfoMelee(int client, int args)
 {
-	g_sLastMap[0] = 0;
+	char sTemp[256];
+
+	ArrayList aTabs = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+	ArrayList aMiss = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+
+	// StringTable data
+	int table = INVALID_STRING_TABLE;
+	if( table == INVALID_STRING_TABLE )
+	{
+		table = FindStringTable("MeleeWeapons");
+	}
+
+	int total = GetStringTableNumStrings(table);
+	int max = GetStringTableMaxStrings(table);
+	for( int i = 0; i < total; i++ )
+	{
+		ReadStringTable(table, i, sTemp, sizeof(sTemp));
+
+		aTabs.PushString(sTemp);
+
+		ReplyToCommand(client, "StringTable %2d: [%s]", i + 1, sTemp);
+	}
+
+	// Mission data
+	if( g_PointerMission )
+	{
+		int mission = 0;
+		ReplyToCommand(client, " ");
+
+		SDKCall(SDK_KV_GetString, g_PointerMission, sTemp, sizeof(sTemp), "meleeweapons", "N/A");
+
+		if( sTemp[0] && strcmp(sTemp, "N/A") )
+		{
+			int last, pos;
+			bool loop = true;
+
+			while( loop )
+			{
+				pos = FindCharInString(sTemp[last], ';');
+				if( pos != -1 )
+				{
+					pos += last;
+					sTemp[pos] = 0;
+				}
+				else
+				{
+					loop = false;
+				}
+
+				mission++;
+				aMiss.PushString(sTemp[last]);
+				ReplyToCommand(client, "MissionData %2d. %s", mission, sTemp[last]);
+
+				last = pos + 1;
+			}
+		}
+
+		ReplyToCommand(client, "Total melee weapons: %d/%d", total, max);
+
+
+
+		// Verify lengths match
+		int lenMiss = aMiss.Length;
+		int lenTabs = aTabs.Length;
+		if( lenMiss != lenTabs )
+		{
+			ReplyToCommand(client, " ");
+			ReplyToCommand(client, "Melee length mismatch: Mission %d != StringTable %d", lenMiss, lenTabs);
+		}
+
+		// Verify lists match
+		char sTabs[MAX_STRING_MELEE];
+
+		if( lenMiss < lenTabs )
+			max = lenMiss;
+		else
+			max = lenTabs;
+
+		for( int i = 0; i < max; i++ )
+		{
+			aMiss.GetString(i, sTemp, sizeof(sTemp));
+			aTabs.GetString(i, sTabs, sizeof(sTabs));
+
+			if( strcmp(sTemp, sTabs) )
+			{
+				ReplyToCommand(client, "Melee mismatch: %d Mission [%s] != StringTable [%s]", i, sTemp, sTabs);
+			}
+		}
+	}
+	else
+	{
+		ReplyToCommand(client, "No mission pointer");
+	}
+
+	return Plugin_Handled;
+}
+
+Action CmdInfoReload(int client, int args)
+{
 	ReloadData();
 	ReplyToCommand(client, "[Info Editor] Reloaded configs and weapon attributes.");
 	return Plugin_Handled;
 }
 
-public int Native_ReloadData(Handle plugin, int numParams)
+int Native_ReloadData(Handle plugin, int numParams)
 {
 	ReloadData();
-
 	return 0;
 }
 
@@ -386,82 +564,18 @@ void ReloadData()
 	// Weapons Info is re-parsed via command in this function.
 	ResetPlugin();
 
-	// Mission Info has no command, but we can manually set changes with ease.
-	char key[MAX_STRING_LENGTH];
-	char value[MAX_STRING_LENGTH];
-	for( int i = 0; i < g_alMissionData.Length; i += 2 )
-	{
-		g_alMissionData.GetString(i, key, sizeof(key));
-		g_alMissionData.GetString(i + 1, value, sizeof(value));
-
-		char check[MAX_STRING_LENGTH];
-		SDKCall(SDK_KV_GetString, g_PointerMission, check, sizeof(check), key, "N/A");
-
-		// Dynamic Melee Weapons:
-		if( g_bLeft4Dead2 && strcmp(check, "N/A") && strcmp(key, "meleeweapons") == 0 )
-		{
-			Format(check, sizeof(check), ";%s;", check);
-			ReplaceStringEx(check, sizeof(check), ";riot_shield;", ";");
-			ReplaceStringEx(check, sizeof(check), ";baseball_bat;", ";");
-			ReplaceStringEx(check, sizeof(check), ";cricket_bat;", ";");
-			ReplaceStringEx(check, sizeof(check), ";crowbar;", ";");
-			ReplaceStringEx(check, sizeof(check), ";electric_guitar;", ";");
-			ReplaceStringEx(check, sizeof(check), ";fireaxe;", ";");
-			ReplaceStringEx(check, sizeof(check), ";frying_pan;", ";");
-			ReplaceStringEx(check, sizeof(check), ";golfclub;", ";");
-			ReplaceStringEx(check, sizeof(check), ";katana;", ";");
-			ReplaceStringEx(check, sizeof(check), ";knife;", ";");
-			ReplaceStringEx(check, sizeof(check), ";machete;", ";");
-			ReplaceStringEx(check, sizeof(check), ";tonfa;", ";");
-			ReplaceStringEx(check, sizeof(check), ";pitchfork;", ";");
-			ReplaceStringEx(check, sizeof(check), ";shovel;", ";");
-
-			int pos = strlen(check);
-			if( pos > 0 )
-			{
-				if( check[pos - 1] == ';' ) check[pos - 1] = 0;
-				StrCat(value, sizeof(value), ";");
-				StrCat(value, sizeof(value), check[1]);
-				pos = strlen(value);
-				if( pos > 0 )
-				{
-					if( value[pos - 1] == ';' ) value[pos - 1] = 0;
-				}
-			}
-		}
-
-		if( strcmp(check, value) )
-		{
-			#if DEBUG_VALUES || FORCE_VALUES
-			if( strcmp(check, "N/A") == 0 )
-			{
-				#if FORCE_VALUES
-					if( SDK_KV_FindKey != null )
-					{
-						SDKCall(SDK_KV_FindKey, g_PointerMission, key, true);
-						#if DEBUG_VALUES
-							PrintToServer("MissionInfo: Attempted to create \"%s\".", key);
-						#endif
-					}
-				#endif
-
-				#if DEBUG_VALUES
-					PrintToServer("MissionInfo: \"%s\" not found.", key);
-				#endif
-			} else {
-				#if DEBUG_VALUES
-					PrintToServer("MissionInfo: Set \"%s\" to \"%s\". Was \"%s\".", key, value, check);
-				#endif
-			}
-			#endif
-
-			SDKCall(SDK_KV_SetString, g_PointerMission, key, value);
-		}
-	}
+	if( g_PointerMission )
+		SetMissionData();
 }
 
-public Action CmdInfoMission(int client, int args)
+Action CmdInfoMission(int client, int args)
 {
+	if( g_PointerMission == 0 )
+	{
+		ReplyToCommand(client, "[Info] Error: no mission pointer. invalid game mode for this map?");
+		return Plugin_Handled;
+	}
+
 	if( args == 1 )
 	{
 		char key[MAX_STRING_LENGTH];
@@ -469,7 +583,7 @@ public Action CmdInfoMission(int client, int args)
 		GetCmdArg(1, key, sizeof(key));
 
 		SDKCall(SDK_KV_GetString, g_PointerMission, value, sizeof(value), key, "N/A");
-		ReplyToCommand(client, "[Info] Key \"%s\" = \"%s\".", key, value);
+		ReplyToCommand(client, "[Info] Key \"%s\" = \"%s\"", key, value);
 	}
 
 	else if( args == 2 )
@@ -494,9 +608,9 @@ public Action CmdInfoMission(int client, int args)
 		SDKCall(SDK_KV_SetString, g_PointerMission, key, value);
 
 		if( existed )
-			ReplyToCommand(client, "[Info] Set \"%s\" to \"%s\".", key, value);
+			ReplyToCommand(client, "[Info] Set \"%s\" to \"%s\"", key, value);
 		else
-			ReplyToCommand(client, "[Info] Created \"%s\" set \"%s\".", key, value);
+			ReplyToCommand(client, "[Info] Created \"%s\" set \"%s\"", key, value);
 	}
 
 	else
@@ -508,16 +622,20 @@ public Action CmdInfoMission(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action CmdInfoMissionList(int client, int args)
+Action CmdInfoMissionList(int client, int args)
 {
-	char key[MAX_STRING_LENGTH];
-	char value[MAX_STRING_LENGTH];
-
 	ReplyToCommand(client, "=============================");
 	ReplyToCommand(client, "===== MISSION INFO DATA =====");
 	ReplyToCommand(client, "=============================");
+	ReplyToCommand(client, " ");
+	ReplyToCommand(client, "Config: %s", g_sConfigMission);
+	ReplyToCommand(client, " ");
 
-	for( int i = 0; i < g_alMissionData.Length; i += 2 )
+	char key[MAX_STRING_LENGTH];
+	char value[MAX_STRING_LENGTH];
+	int length = g_alMissionData.Length;
+
+	for( int i = 0; i < length; i += 2 )
 	{
 		g_alMissionData.GetString(i, key, sizeof(key));
 		g_alMissionData.GetString(i + 1, value, sizeof(value));
@@ -529,19 +647,23 @@ public Action CmdInfoMissionList(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action CmdInfoWeaponsList(int client, int args)
+Action CmdInfoWeaponsList(int client, int args)
 {
+	ReplyToCommand(client, "=============================");
+	ReplyToCommand(client, "===== WEAPONS INFO DATA =====");
+	ReplyToCommand(client, "=============================");
+	ReplyToCommand(client, " ");
+	ReplyToCommand(client, "Config: %s", g_sConfigWeapons);
+	ReplyToCommand(client, " ");
+
 	ArrayList aHand;
 	int size;
+	int length = g_alWeaponsData.Length;
 	char key[MAX_STRING_LENGTH];
 	char value[MAX_STRING_LENGTH];
 	char check[MAX_STRING_LENGTH];
 
-	ReplyToCommand(client, "=============================");
-	ReplyToCommand(client, "===== WEAPONS INFO DATA =====");
-	ReplyToCommand(client, "=============================");
-
-	for( int x = 0; x < g_alWeaponsData.Length; x++ )
+	for( int x = 0; x < length; x++ )
 	{
 		// Weapon classname
 		aHand = g_alWeaponsData.Get(x);
@@ -570,7 +692,7 @@ public Action CmdInfoWeaponsList(int client, int args)
 // ====================================================================================================
 //					DETOURS
 // ====================================================================================================
-public MRESReturn GetMissionInfo(Handle hReturn, Handle hParams)
+MRESReturn GetMissionInfo(DHookReturn hReturn, DHookParam hParams)
 {
 	// Load new map data
 	if( g_bLoadNewMap ) ResetPlugin();
@@ -580,79 +702,7 @@ public MRESReturn GetMissionInfo(Handle hReturn, Handle hParams)
 	g_PointerMission = pThis;
 	if( pThis == 0 ) return MRES_Ignored; // Some maps the mission file does not load (most likely due to gamemode not being supported).
 
-	// Set data
-	char key[MAX_STRING_LENGTH];
-	char value[MAX_STRING_LENGTH];
-	char check[MAX_STRING_LENGTH];
-
-	for( int i = 0; i < g_alMissionData.Length; i += 2 )
-	{
-		g_alMissionData.GetString(i, key, sizeof(key));
-		g_alMissionData.GetString(i + 1, value, sizeof(value));
-
-		SDKCall(SDK_KV_GetString, pThis, check, sizeof(check), key, "N/A");
-
-		// Dynamic Melee Weapons:
-		if( g_bLeft4Dead2 && strcmp(check, "N/A") && strcmp(key, "meleeweapons") == 0 )
-		{
-			Format(check, sizeof(check), ";%s;", check);
-			ReplaceStringEx(check, sizeof(check), ";riot_shield;", ";");
-			ReplaceStringEx(check, sizeof(check), ";baseball_bat;", ";");
-			ReplaceStringEx(check, sizeof(check), ";cricket_bat;", ";");
-			ReplaceStringEx(check, sizeof(check), ";crowbar;", ";");
-			ReplaceStringEx(check, sizeof(check), ";electric_guitar;", ";");
-			ReplaceStringEx(check, sizeof(check), ";fireaxe;", ";");
-			ReplaceStringEx(check, sizeof(check), ";frying_pan;", ";");
-			ReplaceStringEx(check, sizeof(check), ";golfclub;", ";");
-			ReplaceStringEx(check, sizeof(check), ";katana;", ";");
-			ReplaceStringEx(check, sizeof(check), ";knife;", ";");
-			ReplaceStringEx(check, sizeof(check), ";machete;", ";");
-			ReplaceStringEx(check, sizeof(check), ";tonfa;", ";");
-			ReplaceStringEx(check, sizeof(check), ";pitchfork;", ";");
-			ReplaceStringEx(check, sizeof(check), ";shovel;", ";");
-
-			int pos = strlen(check);
-			if( pos > 0 )
-			{
-				if( check[pos - 1] == ';' ) check[pos - 1] = 0;
-				StrCat(value, sizeof(value), ";");
-				StrCat(value, sizeof(value), check[1]);
-				pos = strlen(value);
-				if( pos > 0 )
-				{
-					if( value[pos - 1] == ';' ) value[pos - 1] = 0;
-				}
-			}
-		}
-
-		if( strcmp(check, value) )
-		{
-			#if DEBUG_VALUES || FORCE_VALUES
-			if( strcmp(check, "N/A") == 0 )
-			{
-				#if FORCE_VALUES
-					if( SDK_KV_FindKey != null )
-					{
-						SDKCall(SDK_KV_FindKey, g_PointerMission, key, true);
-						#if DEBUG_VALUES
-							PrintToServer("MissionInfo: Attempted to create \"%s\".", key);
-						#endif
-					}
-				#endif
-
-				#if DEBUG_VALUES
-					PrintToServer("MissionInfo: \"%s\" not found.", key);
-				#endif
-			} else {
-				#if DEBUG_VALUES
-					PrintToServer("MissionInfo: Set \"%s\" to \"%s\". Was \"%s\".", key, value, check);
-				#endif
-			}
-			#endif
-
-			SDKCall(SDK_KV_SetString, pThis, key, value);
-		}
-	}
+	SetMissionData();
 
 	// Forward
 	Call_StartForward(g_hForwardOnGetMission);
@@ -662,19 +712,207 @@ public MRESReturn GetMissionInfo(Handle hReturn, Handle hParams)
 	return MRES_Ignored;
 }
 
-public MRESReturn MeleeWeaponAllowedToExist(Handle hReturn, Handle hParams)
+void SetMissionData()
 {
-	DHookSetReturn(hReturn, true);
+	// Mission Info has no command, but we can manually set changes with ease.
+	static char key[MAX_STRING_LENGTH];
+	static char value[MAX_STRING_LENGTH];
+	static char extra[MAX_STRING_LENGTH];
+	static char check[MAX_STRING_LENGTH];
+	static char defs[MAX_STRING_LENGTH];
+	static char temp[MAX_STRING_MELEE];
+
+	// Loop through Info Editor config
+	bool write;
+	int last;
+	int pos;
+	extra[0] = 0;
+	check[0] = 0;
+
+	for( int i = 0; i < g_alMissionData.Length; i += 2 )
+	{
+		g_alMissionData.GetString(i, key, sizeof(key));
+		g_alMissionData.GetString(i + 1, value, sizeof(value));
+
+		SDKCall(SDK_KV_GetString, g_PointerMission, defs, sizeof(defs), key, "N/A");
+
+		// Dynamic Melee Weapons:
+		if( g_bLeft4Dead2 && strcmp(key, "meleeweapons") == 0 )
+		{
+			g_bHasMelee = true;
+			write = false;
+
+			// Add manifest entries for custom melee weapons when the mission file does not supply the "meleeweapons" string
+			// Ignore these default melee weapons
+			if( g_alMeleeCustoms )
+			{
+				int total = g_alMeleeCustoms.Length;
+
+				// Loop through manifest melee weapon scripts
+				for( int x = 0; x < total; x++ )
+				{
+					g_alMeleeCustoms.GetString(x, temp, sizeof(temp));
+
+					// Only add unknown melee weapons
+					if( g_alMeleeDefault.FindString(temp) == -1 && StrContains(check, temp) == -1 )
+					{
+						StrCat(check, sizeof(check), temp);
+						StrCat(check, sizeof(check), ";");
+					}
+				}
+
+				// Remove trailing ";"
+				pos = strlen(check);
+				if( pos )
+				{
+					check[pos - 1] = 0;
+				}
+
+				// Manifest has custom entries
+				if( check[0] )
+				{
+					// If the maps "meleeweapons" string is empty, set them from the manifest
+					if( strcmp(defs, "N/A") == 0  )
+					{
+						write = true;
+						strcopy(defs, sizeof(defs), check);
+					}
+				}
+				// If the manifest has been read
+				else if( g_bManifest )
+				{
+					// If the maps "meleeweapons" string is empty, set them from the data config
+					if( strcmp(defs, "N/A") == 0  )
+					{
+						write = true;
+						strcopy(defs, sizeof(defs), value);
+					}
+				}
+			}
+
+			// "meleeweapons" string is not empty
+			if( strcmp(defs, "N/A") )
+			{
+				// Replace game default melee weapons
+				FormatEx(check, sizeof(check), ";%s;", defs);
+				ReplaceStringEx(check, sizeof(check), ";baseball_bat;", ";");
+				ReplaceStringEx(check, sizeof(check), ";cricket_bat;", ";");
+				ReplaceStringEx(check, sizeof(check), ";crowbar;", ";");
+				ReplaceStringEx(check, sizeof(check), ";electric_guitar;", ";");
+				ReplaceStringEx(check, sizeof(check), ";fireaxe;", ";");
+				ReplaceStringEx(check, sizeof(check), ";frying_pan;", ";");
+				ReplaceStringEx(check, sizeof(check), ";golfclub;", ";");
+				ReplaceStringEx(check, sizeof(check), ";katana;", ";");
+				ReplaceStringEx(check, sizeof(check), ";knife;", ";");
+				ReplaceStringEx(check, sizeof(check), ";machete;", ";");
+				ReplaceStringEx(check, sizeof(check), ";tonfa;", ";");
+				ReplaceStringEx(check, sizeof(check), ";pitchfork;", ";");
+				ReplaceStringEx(check, sizeof(check), ";shovel;", ";");
+				ReplaceStringEx(check, sizeof(check), ";riot_shield;", ";");
+
+				// Prevent duplicate entries
+				pos = 1;
+				while( (last = SplitString(check[pos], ";", temp, sizeof(temp))) != -1 )
+				{
+					if( StrContains(value, temp) == -1 && StrContains(extra, temp) == -1 )
+					{
+						Format(extra, sizeof(extra), "%s;%s", extra, temp);
+					}
+
+					pos += last;
+				}
+				
+				if( extra[0] )
+				{
+					Format(value, sizeof(value), "%s;%s", extra[1], value);
+				}
+
+				// Prevent setting over 16 melee weapons
+				pos = 0;
+				for( int x = 0; x < 16; x++ )
+				{
+					last = FindCharInString(value[pos], ';');
+					if( last == -1 ) break;
+
+					pos += last + 1;
+
+					if( x == 15 )
+					{
+						value[pos] = 0;
+						break;
+					}
+				}
+
+				// Remove trailing ;
+				pos = strlen(value);
+				if( pos > 0 )
+				{
+					if( value[pos - 1] == ';' ) value[pos - 1] = 0;
+				}
+			}
+			else
+			{
+				strcopy(value, sizeof(value), defs);
+			}
+		}
+
+		// Overwrite different values
+		if( write || strcmp(defs, value) )
+		{
+			#if DEBUG_VALUES || FORCE_VALUES
+			if( strcmp(defs, "N/A") == 0 )
+			{
+				#if FORCE_VALUES
+					if( SDK_KV_FindKey != null )
+					{
+						SDKCall(SDK_KV_FindKey, g_PointerMission, key, true);
+						#if DEBUG_VALUES
+							PrintToServer("MissionInfo: Attempted to create \"%s\"", key);
+						#endif
+					}
+				#endif
+
+				#if DEBUG_VALUES
+					PrintToServer("MissionInfo: \"%s\" not found.", key);
+				#endif
+			} else {
+				#if DEBUG_VALUES
+					PrintToServer("MissionInfo: Set \"%s\" to \"%s\". Was \"%s\"", key, value, defs);
+				#endif
+			}
+			#endif
+
+			SDKCall(SDK_KV_SetString, g_PointerMission, key, value);
+		}
+	}
+}
+
+MRESReturn MeleeWeaponAllowedToExist(DHookReturn hReturn, DHookParam hParams)
+{
+	hReturn.Value = true;
 	return MRES_Override;
 }
 
-public MRESReturn GetMeleeWeaponInfo(Handle hReturn, Handle hParams)
+MRESReturn LoadScriptsFromManifest(DHookReturn hReturn, DHookParam hParams)
+{
+	g_bManifest = true;
+
+	if( g_bHasMelee )
+	{
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+MRESReturn GetMeleeWeaponInfo(DHookReturn hReturn, DHookParam hParams)
 {
 	WeaponInfoFunction(1, hParams);
 	return MRES_Ignored;
 }
 
-public MRESReturn GetWeaponInfo(Handle hReturn, Handle hParams)
+MRESReturn GetWeaponInfo(DHookReturn hReturn, DHookParam hParams)
 {
 	WeaponInfoFunction(0, hParams);
 	return MRES_Ignored;
@@ -725,7 +963,7 @@ void WeaponInfoFunction(int funk, Handle hParams)
 							{
 								SDKCall(SDK_KV_FindKey, pThis, key, true);
 								#if DEBUG_VALUES
-									PrintToServer("WeaponInfo: Attempted to create \"%s\".", key);
+									PrintToServer("WeaponInfo: Attempted to create \"%s\"", key);
 								#endif
 							}
 						#endif
@@ -735,7 +973,7 @@ void WeaponInfoFunction(int funk, Handle hParams)
 						#endif
 					} else {
 						#if DEBUG_VALUES
-							PrintToServer("WeaponInfo: Set \"%s/%s\" to \"%s\". Was \"%s\".", class, key, value, check);
+							PrintToServer("WeaponInfo: Set \"%s/%s\" to \"%s\". Was \"%s\"", class, key, value, check);
 						#endif
 					}
 					#endif
@@ -768,12 +1006,15 @@ void ResetPlugin()
 	char sMap[PLATFORM_MAX_PATH];
 	GetCurrentMap(sMap, sizeof(sMap));
 
-	if( strcmp(sMap, g_sLastMap) == 0 )
-		return;
+	if( g_bLoadNewMap )
+	{
+		g_bLoadNewMap = false;
+		g_bManifest = false;
+		g_bHasMelee = false;
 
-	strcopy(g_sLastMap, sizeof(g_sLastMap), sMap);
-
-	g_bLoadNewMap = false;
+		// Load custom melee weapons list
+		LoadManifest();
+	}
 
 	// Clear strings
 	if( g_alMissionData != null )
@@ -787,11 +1028,13 @@ void ResetPlugin()
 	{
 		ArrayList aHand;
 		int size = g_alWeaponsData.Length;
+
 		for( int i = 0; i < size; i++ )
 		{
 			aHand = g_alWeaponsData.Get(i);
 			delete aHand;
 		}
+
 		g_alWeaponsData.Clear();
 		delete g_alWeaponsData;
 	}
@@ -808,25 +1051,116 @@ void OnStart()
 	ServerCommand("weapon_reparse_server; %s", g_bLeft4Dead2 ? "melee_reload_info_server" : "");
 }
 
+void LoadManifest()
+{
+	if( g_bLeft4Dead2 )
+	{
+		delete g_alMeleeCustoms;
+		g_alMeleeCustoms = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+
+		File hFile = OpenFile("scripts/melee/melee_manifest.txt", "r", true);
+		if( hFile )
+		{
+			char sLine[256];
+			int start;
+			int last;
+
+			while( !IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)) )
+			{
+				start = StrContains(sLine, "scripts/melee/", false);
+				if( start != -1 )
+				{
+					last = StrContains(sLine[start + 14], ".txt", false);
+					sLine[start + 14 + last] = 0;
+					g_alMeleeCustoms.PushString(sLine[start + 14]);
+				}
+			}
+
+			delete hFile;
+		}
+	}
+}
+
 void LoadConfig()
 {
 	g_alMissionData = new ArrayList(ByteCountToCells(MAX_STRING_LENGTH));
 	g_alWeaponsData = new ArrayList();
+	int pos;
 
-	char sPath[PLATFORM_MAX_PATH];
 
+
+	// ==========
+	// Mission config
+	// ==========
 	g_iSectionMission = 1;
-	BuildPath(Path_SM, sPath, sizeof(sPath), CONFIG_MISSION);
-	if( FileExists(sPath) )
-		ParseConfigFile(sPath);
+	BuildPath(Path_SM, g_sConfigMission, sizeof(g_sConfigMission), CONFIG_MISSION);
+	pos = StrContains(g_sConfigMission, ".cfg");
 
+	if( pos != -1 )
+	{
+		g_sConfigMission[pos] = 0;
+		Format(g_sConfigMission, sizeof(g_sConfigMission), "%s.%s.cfg", g_sConfigMission, g_sGameMode);
+	}
+
+	// Check for gamemode config
+	if( FileExists(g_sConfigMission) )
+	{
+		ParseConfigFile(g_sConfigMission);
+	}
+	else
+	{
+		// Load normal config
+		BuildPath(Path_SM, g_sConfigMission, sizeof(g_sConfigMission), CONFIG_MISSION);
+		if( FileExists(g_sConfigMission) )
+		{
+			g_bGameMode = false;
+			ParseConfigFile(g_sConfigMission);
+
+			g_bGameMode = true;
+			ParseConfigFile(g_sConfigMission);
+
+			g_bGameMode = false;
+		}
+	}
+
+
+
+	// ==========
+	// Weapons config
+	// ==========
 	g_iSectionMission = 0;
-	BuildPath(Path_SM, sPath, sizeof(sPath), CONFIG_WEAPONS);
-	if( FileExists(sPath) )
-		ParseConfigFile(sPath);
+
+	BuildPath(Path_SM, g_sConfigWeapons, sizeof(g_sConfigWeapons), CONFIG_WEAPONS);
+	pos = StrContains(g_sConfigWeapons, ".cfg");
+	if( pos != -1 )
+	{
+		g_sConfigWeapons[pos] = 0;
+		Format(g_sConfigWeapons, sizeof(g_sConfigWeapons), "%s.%s.cfg", g_sConfigWeapons, g_sGameMode);
+	}
+
+	// Check for gamemode config
+	if( FileExists(g_sConfigWeapons) )
+	{
+		ParseConfigFile(g_sConfigWeapons);
+	}
+	else
+	{
+		// Load normal config
+		BuildPath(Path_SM, g_sConfigWeapons, sizeof(g_sConfigWeapons), CONFIG_WEAPONS);
+		if( FileExists(g_sConfigWeapons) )
+		{
+			g_bGameMode = false;
+			ParseConfigFile(g_sConfigWeapons);
+
+			g_bGameMode = true;
+			ParseConfigFile(g_sConfigWeapons);
+
+			g_bGameMode = false;
+		}
+	}
 }
 
-bool ParseConfigFile(const char[] file)
+void ParseConfigFile(const char[] file)
 {
 	// Load parser and set hook functions
 	SMCParser parser = new SMCParser();
@@ -851,10 +1185,10 @@ bool ParseConfigFile(const char[] file)
 	}
 
 	delete parser;
-	return (result == SMCError_Okay);
+	// return (result == SMCError_Okay);
 }
 
-public SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes)
+SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes)
 {
 	g_iSectionLevel++;
 
@@ -866,32 +1200,42 @@ public SMCResult Config_NewSection(Handle parser, const char[] section, bool quo
 		{
 			g_bAllowSection = true;
 		} else {
-			char sMap[PLATFORM_MAX_PATH];
-			GetCurrentMap(sMap, sizeof(sMap));
-
-			if( StrContains(section, ",") != -1 )
+			if( g_bGameMode )
 			{
-				int index, last;
-				int len = strlen(section) + 2;
-				char[] newSection = new char [len];
-				StrCat(newSection, len, section);
-				StrCat(newSection, len, ",");
-
-				while( (index = StrContains(newSection[last], ",")) != -1 )
+				if( strcmp(section, g_sGameMode) == 0 )
 				{
-					newSection[last + index] = 0;
-					if( StrContains(sMap, newSection[last], false) != -1 )
-					{
-						g_bAllowSection = true;
-						break;
-					}
-					newSection[last + index] = ',';
-					last += index + 1;
+					g_bAllowSection = true;
 				}
 			}
-			else if( StrContains(sMap, section, false) != -1 )
+			else
 			{
-				g_bAllowSection = true;
+				char sMap[PLATFORM_MAX_PATH];
+				GetCurrentMap(sMap, sizeof(sMap));
+
+				if( StrContains(section, ",") != -1 )
+				{
+					int index, last;
+					int len = strlen(section) + 2;
+					char[] newSection = new char [len];
+					StrCat(newSection, len, section);
+					StrCat(newSection, len, ",");
+
+					while( (index = StrContains(newSection[last], ",")) != -1 )
+					{
+						newSection[last + index] = 0;
+						if( StrContains(sMap, newSection[last], false) != -1 )
+						{
+							g_bAllowSection = true;
+							break;
+						}
+						newSection[last + index] = ',';
+						last += index + 1;
+					}
+				}
+				else if( StrContains(sMap, section, false) != -1 )
+				{
+					g_bAllowSection = true;
+				}
 			}
 		}
 	}
@@ -934,7 +1278,7 @@ public SMCResult Config_NewSection(Handle parser, const char[] section, bool quo
 	return SMCParse_Continue;
 }
 
-public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] value, bool key_quotes, bool value_quotes)
+SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] value, bool key_quotes, bool value_quotes)
 {
 	// 2 = Mission
 	// 3 = Weapons
@@ -978,13 +1322,13 @@ public SMCResult Config_KeyValue(Handle parser, const char[] key, const char[] v
 	return SMCParse_Continue;
 }
 
-public SMCResult Config_EndSection(Handle parser)
+SMCResult Config_EndSection(Handle parser)
 {
 	g_iSectionLevel--;
 	return SMCParse_Continue;
 }
 
-public void Config_End(Handle parser, bool halted, bool failed)
+void Config_End(Handle parser, bool halted, bool failed)
 {
 	if( failed )
 		SetFailState("Error: Cannot load the Info Editor config.");

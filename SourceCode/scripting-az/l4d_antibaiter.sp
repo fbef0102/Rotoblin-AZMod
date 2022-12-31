@@ -82,6 +82,7 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd);
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	HookEvent("finale_start", Event_Finale_Start);
+	HookEvent("finale_radio_start", Event_Finale_Start);
 	HookEvent("create_panic_event", Event_create_panic_event);
 	
 	RoundEnd = false;

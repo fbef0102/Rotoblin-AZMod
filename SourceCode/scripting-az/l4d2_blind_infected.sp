@@ -211,5 +211,5 @@ public bool TraceFilter(int entity, int contentsMask)
 	char class[128];
 	GetEdictClassname(entity, class, sizeof(class)); // Ignore prop_physics since some can be seen through
 	
-	return !StrEqual(class, "prop_physics", false);
+	return strncmp(class, "prop_physics", 12, false) != 0;
 }

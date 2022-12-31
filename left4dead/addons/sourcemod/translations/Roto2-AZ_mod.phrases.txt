@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.4.1"
+		"en"			"Rotoblin-AZ Mod v8.5.0"
 	}
 	"Plugin_Information"
 	{
@@ -670,7 +670,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"	"The {1} have canceled the {green}{2}{default} request."
-		"zho"	"{1} 已取消了 {green}{2}{default} request."
+		"zho"	"{1} 隊伍已取消了 {green}{2}{default} 要求."
 	}
 	"Nothing to cancel."
 	{
@@ -1988,6 +1988,12 @@
 		"en"	"{blue}Vote pass. {default}Applying custom boss spawns..."
 		"zho"	"{blue}投票通過. {default}正在修改Boss路程..."
 	}
+	"l4d_bossvote7"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"	"Adm {lightgreen}%N{default} forces to change {green}Tank: {1}%%, Witch: {2}%%. {default}Applying custom boss spawns..."
+		"zho"	"管理員 {lightgreen}%N{default} 強制Boss路程為 {green}Tank: {1}%%, Witch: {2}%%. {default}正在修改Boss路程..."
+	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
 	{
@@ -3013,11 +3019,92 @@
 	"l4d_slowdown_control_1"
 	{
 		"en"		"{olive}Water Slowdown{default} has been reduced while Tank is in play."
-		"zho"		"Tank局 {olive}水緩{default} 已去除."
+		"zho"		"Tank局已減少 {olive}水緩{default} 速度."
 	}	
 	"l4d_slowdown_control_2"
 	{
 		"en"		"{olive}Water Slowdown{default} has been restored to normal."
 		"zho"		"{olive}水緩{default} 已恢復正常."
 	}
+	//////////////l4d_wind.smx//////////////
+	"l4d_wind_1"
+	{
+		"en"		"Teleport Player"
+		"zho"		"傳送玩家"
+	}	
+	"l4d_wind_2"
+	{
+		"en"		"Choose Target"
+		"zho"		"選擇玩家"
+	}	
+	"l4d_wind_3"
+	{
+		"en"		"There Are No Any alive player"
+		"zho"		"目前沒有活著的玩家"
+	}	
+	"l4d_wind_4"
+	{
+		"en"		"Target is not a valid alive player."
+		"zho"		"傳送對象不是一個活著的玩家"
+	}	
+	"l4d_wind_5"
+	{
+		"en"		"Choose Destination"
+		"zho"		"選擇傳送地點"
+	}	
+	"l4d_wind_6"
+	{
+		"en"		"Crosshair"
+		"zho"		"準心上"
+	}	
+	"l4d_wind_7"
+	{
+		"en"		"Self"
+		"zho"		"自己身上"
+	}	
+	"l4d_wind_8"
+	{
+		"en"		"Target is hanging from ledge, you can't teleport %N."
+		"zho"		"傳送對象正在掛邊，無法傳送 %N"
+	}	
+	"l4d_wind_9"
+	{
+		"en"		"Target is capped by special infected, you can't teleport %N."
+		"zho"		"傳送對象正在被特感控，無法傳送 %N"
+	}
+	"l4d_wind_10"
+	{
+		"en"		"Target is busy, you can't teleport %N."
+		"zho"		"傳送對象正在忙著控倖存者，無法傳送 %N"
+	}	
+	"l4d_wind_11"
+	{
+		"en"		"Not a valid alive player, choose again!"
+		"zho"		"不是一個活著的玩家，請重新選擇!"
+	}	
+	"l4d_wind_12"
+	{
+		"en"		"You teleport player %N."
+		"zho"		"你傳送了 %N."
+	}	
+	"l4d_wind_13"
+	{
+		"en"		"Failed to teleport player %N, try again later!"
+		"zho"		"無法傳送 %N，請重新選擇!"
+	}	
+	"l4d_wind_14"
+	{
+		"en"		"Target is not a valid alive player, choose again!"
+		"zho"		"要傳送的對象不是一個活著的玩家，請重新選擇!"
+	}	
+	"l4d_wind_15"
+	{
+		"en"		"Failed to add a bot"
+		"zho"		"失敗! 無法增加一個Bot!"
+	}	
+	"l4d_wind_16"
+	{
+		"en"		"Myself"
+		"zho"		"自己"
+	}	
 }

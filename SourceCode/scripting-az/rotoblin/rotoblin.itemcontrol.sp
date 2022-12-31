@@ -135,14 +135,17 @@ public _IC_OnPluginDisabled()
 	UnhookConVarChange(g_hEnableCannisters_Cvar, _IC_EnableCannisters_CvarChange);
 	
 	DebugPrintToAllEx("Module is now unloaded");
+
+	MI_KV_Close();
 }
 public _IC_OnMapStart()
 {
-    g_bHasMapStarted = true;
-    if (!g_bHaveRunRoundStart)
-    {
-        _IC_RoundStart_Event(INVALID_HANDLE, "", false);
-    }
+	g_bHasMapStarted = true;
+
+	if (!g_bHaveRunRoundStart)
+	{
+		_IC_RoundStart_Event(INVALID_HANDLE, "", false);
+	}
 }
 /**
  * Map is ending.
@@ -209,7 +212,7 @@ public _IC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
 	else
 		EnableOneThrowables();	
 	
-	if (g_bEnableCannisters == false)
+	if (g_bEnableCannisters == false && !g_bGasMap)
 	{
 		DebugPrintToAllEx("Will remove cannisters");	
 		RemoveCarryableCannisters();	
@@ -324,41 +327,43 @@ public _IC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
  */
 public _IC_OnEntityCreated(entity, const String:classname[])
 {
-	if(ShouldRemove(entity, classname))
-	{
-		new entRef = EntIndexToEntRef(entity);
-		CreateTimer(REMOVE_DELAY, _IC_RemoveEntity_Delayed, entRef);
-	}	
-}
+	if (entity < 0)
+		return;
 
-/**
- * Determines whether, according to current settings, an entity should be removed or not
- *
- * @param entity the entity being considered for removal
- * @param classname the entity's classname
- * @return boolean telling us whether to remove or not
- */
-static bool:ShouldRemove(entity, const String:classname[])
-{	
+	if(g_bGasMap) 
+		return;
+
 	if(!g_bEnableThrowables)
 	{
 		if (IsThrowable(classname))
 		{
-			DebugPrintToAllEx("Found a late spawned throwable.");		
-			return true;
-		}
-	}
-	
-	if(!g_bEnableCannisters)
-	{
-		if (StrEqual(classname, PROP_PHYSICS_NAME) && PropPhysicsIsCarryableCannister(entity))
-		{
-			DebugPrintToAllEx("Found a late spawned cannister");
-			return true;
+			new entRef = EntIndexToEntRef(entity);
+			CreateTimer(REMOVE_DELAY, _IC_RemoveEntity_Delayed, entRef);
+			return;
 		}
 	}
 
-	return false;
+	if(!g_bEnableCannisters)
+	{
+		if (StrEqual(classname, PROP_PHYSICS_NAME))
+		{
+			SDKHook(entity, SDKHook_SpawnPost, SpawnPost);
+			return;
+		}
+	}
+}
+
+void SpawnPost(int entity)
+{
+    // Validate
+	if( !IsValidEntity(entity) ) return;
+
+	// Model valid now
+	if (PropPhysicsIsCarryableCannister(entity))
+	{
+		new entRef = EntIndexToEntRef(entity);
+		CreateTimer(REMOVE_DELAY, _IC_RemoveEntity_Delayed, entRef);
+	}
 }
 
 /**
@@ -383,7 +388,7 @@ static bool:PropPhysicsIsCarryableCannister(prop_physicsEntity)
 	decl String:modelName[128];
 	GetEntPropString(prop_physicsEntity, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
 	
-	DebugPrintToAllEx("prop_physics found.  Model name is: %s", modelName);			
+	DebugPrintToAllEx("prop_physics %d found.  Model name is: %s", prop_physicsEntity, modelName);			
 	
 	if(	StrEqual(modelName, GASCAN_MODEL_NAME, false) || 
 		StrEqual(modelName, PROPANE_MODEL_NAME, false) || 

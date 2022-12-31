@@ -54,12 +54,19 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.4.1"								// Version
+#define PLUGIN_VERSION			"8.5.0"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
 #define PLUGIN_TAG				"Rotoblin"							// Tag for prints and commands
 #define	PLUGIN_GAMECONFIG_FILE	PLUGIN_SHORTNAME				// Name of gameconfig file
+
+// **********************************************
+//                    Cross plugin variables
+// **********************************************
+KeyValues g_hMIData = null;
+char g_sCurMap[64];
+bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
 
 // **********************************************
 //                    Includes
@@ -85,7 +92,7 @@
 
 // Modules
 #include "rotoblin/rotoblin.2vs2mod.sp"
-#include "rotoblin/rotoblin.despawninfected.sp"
+//#include "rotoblin/rotoblin.despawninfected.sp"
 #include "rotoblin/rotoblin.ghosttank.sp"
 #include "rotoblin/rotoblin.hordecontrol.sp"
 #include "rotoblin/rotoblin.exploitfixes.sp"
@@ -153,8 +160,14 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
  */
 public OnPluginStartEx()
 {
-	LoadTranslations("Roto2-AZ_mod.phrases");
 	DebugPrintToAll(DEBUG_CHANNEL_GENERAL, "[Main] Setting up...");
+
+	LoadTranslations("Roto2-AZ_mod.phrases");
+
+	HookPublicEvent(EVENT_ONPLUGINEND, _Roto_OnPluginEnd);
+	HookPublicEvent(EVENT_ONMAPSTART, _Roto_OnMapStart);
+	HookPublicEvent(EVENT_ONMAPEND, _Roto_OnMapEnd);
+
 
 	decl String:buffer[128];
 	Format(buffer, sizeof(buffer), "%s version", PLUGIN_FULLNAME);
@@ -177,7 +190,7 @@ public OnPluginStartEx()
 	_GhostTank_OnPluginStart();
 	_Pause_OnPluginStart();
 	_InfExloitFixes_OnPluginStart();
-	_DespawnInfected_OnPluginStart();
+	//_DespawnInfected_OnPluginStart();
 	_HordeControl_OnPluginStart();
 	_2vs2Mod_OnPluginStart();
 	_ReportStatus_OnPluginStart();
@@ -205,6 +218,8 @@ public OnPluginStartEx()
 
 	HookConVarChange(convar, _Main_Enable_CvarChange);
 	DebugPrintToAll(DEBUG_CHANNEL_GENERAL, "[Main] Done setting up!");
+
+	MI_KV_Load();
 }
 
 /**
@@ -233,4 +248,62 @@ public _Main_Enable_CvarChange(Handle:convar, const String:oldValue[], const Str
 public OnConfigsExecuted()
 {
 	_WA_OnConfigsExecuted();
+}
+
+public void _Roto_OnPluginEnd()
+{
+	MI_KV_Close();
+}
+
+public void _Roto_OnMapStart()
+{
+	GetCurrentMap(g_sCurMap, sizeof(g_sCurMap));
+
+	g_bGasMap = false;
+	g_bWAIT_FOR_FINALE_map = false;
+
+	MI_KV_Close();
+	MI_KV_Load();
+
+	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
+		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	} else
+	{
+		if (g_hMIData.GetNum("GasCan_map", 0) == 1)
+		{
+			g_bGasMap = true;
+		}
+
+		if (g_hMIData.GetNum("WAIT_FOR_FINALE_map", 0) == 1)
+		{
+			g_bWAIT_FOR_FINALE_map = true;
+		}
+	}
+
+	KvRewind(g_hMIData);
+}
+
+public void _Roto_OnMapEnd()
+{
+	KvRewind(g_hMIData);
+}
+
+void MI_KV_Close()
+{
+	if (g_hMIData != null) {
+		CloseHandle(g_hMIData);
+		g_hMIData = null;
+	}
+}
+
+void MI_KV_Load()
+{
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = CreateKeyValues("MapInfo");
+	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
+		LogError("[MI] Couldn't load MapInfo data!");
+		MI_KV_Close();
+	}
 }

@@ -8,22 +8,16 @@
 #define FULL_VERSION 1			//8 or just 4 configs
 #define NO_BOOMER_CFG 1			//enable or disable no boomer configs and convars
 
-//plugin version
-#if FULL_VERSION
-#define PLUGIN_VERSION "2.2"
-#else
-#define PLUGIN_VERSION "2.2"
-#endif
+#define PLUGIN_VERSION "2.4"
 
 #define L4D_MAXCLIENTS MaxClients
 #define L4D_MAXCLIENTS_PLUS1 (L4D_MAXCLIENTS + 1)
 #define MAPINFPMAXLEN 2048
 
-new Handle:MapCountdownTimer;
 #define CAMPAIGN_CHANGE_DELAY 4
 new bool:isMapRestartPending;
 new CampaingChangeDelay;
-static bool: hasprepareloaded = false;
+Handle CancelLoadTimer, CancelMapTimer, MapCountdownTimer;
 
 //plugin info
 public Plugin:myinfo = 
@@ -331,7 +325,8 @@ new bool:Map_Requests[TEAM_INFECTED + 1] = {false, false};		//creating Map_Reque
 new numberOfLoadTimers = 0;
 new numberOfMapTimers = 0;
 
-new bool:adminCancel = false;			//reset to false after client requests to load a config, controls Config_Requests[TEAM_INFECTED] and Config_Requests[TEAM_SURVIVOR] needs to be defined for use with the stop timer creation
+new bool:adminCancelLoad = false;			//reset to false after client requests to load a config
+new bool:adminCancelMap = false;			//reset to false after client requests to change map
 new bool:adminMapActive = false;		//this command is set to true when admin forces map or config change, that way players cant use !load or !changemap when the admin has already force executed (3second timeframe)
 new bool:adminLoadActive = false;
 
@@ -679,7 +674,7 @@ public Action:Timer_Load_Requests_Timeout(Handle:timer)
 		new status;
 		status = GetConVarInt(CompLoaderLoadActive);
 		
-		if(status == 1 && adminCancel == false && adminLoadActive == false)
+		if(status == 1 && adminCancelLoad == false && adminLoadActive == false)
 		{
 			Config_Requests[TEAM_SURVIVOR] = false;
 			Config_Requests[TEAM_INFECTED] = false;
@@ -710,7 +705,7 @@ public Action:Timer_Map_Requests_Timeout(Handle:timer)
 		new status;
 		status = GetConVarInt(CompLoaderMapActive);
 		
-		if(status == 1 && adminCancel == false && adminMapActive == false)
+		if(status == 1 && adminCancelMap == false && adminMapActive == false)
 		{
 			Map_Requests[TEAM_SURVIVOR] = false;
 			Map_Requests[TEAM_INFECTED] = false;
@@ -734,92 +729,112 @@ public Action:Timer_Map_Requests_Timeout(Handle:timer)
 
 Admin_Cancel_Lite()
 {
+	adminMapActive = true;
+	adminLoadActive = true;
 	Config_Requests[TEAM_SURVIVOR] = false;
 	Config_Requests[TEAM_INFECTED] = false;
 	Map_Requests[TEAM_SURVIVOR] = false;
 	Map_Requests[TEAM_INFECTED] = false;
-	adminCancel = true;
-	adminMapActive = true;
-	adminLoadActive = true;
+	adminCancelLoad = false;
+	adminCancelMap = false;
+
+	delete CancelLoadTimer;
+	delete CancelMapTimer;
+	delete MapCountdownTimer;
+
+	VoteMenuClose(); // close match vote menu
+	CreateTimer(0.1, VoteEndDelay);
+
+	isMapRestartPending = false;
 }
 
-Admin_Cancel(client)
+void Admin_Cancel(int client, int commandType)
 {
-	decl String:localAdminName[32];
+	char localAdminName[64];
 	GetClientName(client, localAdminName, sizeof(localAdminName));
-	
 	
 	//implement if both teams agree on config or map, still cancel the load by changing a integer value to 1, that is loaded in the delayed map/config execute command
 	
-	if ((Config_Requests[TEAM_SURVIVOR] || Config_Requests[TEAM_INFECTED]) && (!Map_Requests[TEAM_SURVIVOR] && !Map_Requests[TEAM_INFECTED]))
+	if (commandType == 0) //load
 	{
 		Config_Requests[TEAM_SURVIVOR] = false;
 		Config_Requests[TEAM_INFECTED] = false;
-		adminCancel = true;
+		adminCancelLoad = true;
 		adminMapActive = false;
 		adminLoadActive = false;
+		isMapRestartPending = false;
+
+		SetConVarInt(CompLoaderLoadActive, 0);
+		delete CancelLoadTimer;
+		CancelLoadTimer = CreateTimer(10.0, Timer_Admin_Cancel_Load_Cooldown);
+
+		VoteMenuClose(); // close match vote menu
+		CreateTimer(0.1, VoteEndDelay);
+
 		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", localAdminName,"canceled the command request.","!load");
-		SetConVarInt(CompLoaderLoadActive, 0);
-		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+		
 		return;
 	}
-	if ((!Config_Requests[TEAM_SURVIVOR] && !Config_Requests[TEAM_INFECTED]) && (Map_Requests[TEAM_SURVIVOR] || Map_Requests[TEAM_INFECTED]))
+	else if (commandType == 1) //cm
 	{
 		Map_Requests[TEAM_SURVIVOR] = false;
 		Map_Requests[TEAM_INFECTED] = false;
-		adminCancel = true;
+		adminCancelMap = true;
 		adminMapActive = false;
 		adminLoadActive = false;
-		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %s", localAdminName,"canceled the command request.","!map");
+		isMapRestartPending = false;
+
 		SetConVarInt(CompLoaderMapActive, 0);
-		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+		delete CancelMapTimer;
+		CancelMapTimer = CreateTimer(10.0, Timer_Admin_Cancel_Map_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
+
+		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t", localAdminName,"canceled the command request.","!cm");
+		
 		return;
 	}
-	else
-	{
-		Config_Requests[TEAM_SURVIVOR] = false;
-		Config_Requests[TEAM_INFECTED] = false;
-		Map_Requests[TEAM_SURVIVOR] = false;
-		Map_Requests[TEAM_INFECTED] = false;
-		adminCancel = true;
-		adminMapActive = false;
-		adminLoadActive = false;
-		CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s %t", localAdminName,"canceled all requests.");
-		SetConVarInt(CompLoaderMapActive, 0);
-		SetConVarInt(CompLoaderLoadActive, 0);
-		CreateTimer(10.0, Timer_Admin_Cancel_Cooldown, TIMER_FLAG_NO_MAPCHANGE);
-	}
+
 	return;
 }
 
-public Action:Timer_Admin_Cancel_Cooldown(Handle:timer)
+public Action:Timer_Admin_Cancel_Load_Cooldown(Handle:timer)
 {
-	adminCancel = false;
+	adminCancelLoad = false;
+
+	CancelLoadTimer = null;
+	return Plugin_Continue;
+}
+
+public Action:Timer_Admin_Cancel_Map_Cooldown(Handle:timer)
+{
+	adminCancelMap = false;
+
+	CancelMapTimer = null;
+	return Plugin_Continue;
 }
 
 public Action:Timer_Load_Config(Handle:timer)
 {
-	if (!adminCancel)
-	{
-		if(!adminLoadActive)
-		ServerCommand("exec %s", LoadCommandConfigToExecuteName);
-		else return;
-	}
+	if(adminCancelLoad || adminLoadActive) return Plugin_Continue;
+
+	ServerCommand("exec %s", LoadCommandConfigToExecuteName);
 }
 
 public Action:Timer_Admin_Load_Config(Handle:timer)
 {
-	adminLoadActive = false;
+	if(adminCancelLoad) return Plugin_Continue;
+
 	ServerCommand("exec %s", AdminLoadCommandConfigToExecuteName);
+
+	return Plugin_Continue;
 }
-Timer_Map_Change()
+
+Action Timer_Map_Change(Handle timer, any data)
 {
-	if (!adminCancel)
-	{
-		if(!adminMapActive)
-			CampaignchangeDelayed();
-		else return;
-	}
+	if (adminCancelMap || adminMapActive) return Plugin_Continue;
+
+	CampaignchangeDelayed();
+
+	return Plugin_Continue;
 }
 
 stock GetTeamMaxHumans(team)
@@ -860,12 +875,15 @@ stock GetTeamHumanCount(team)
 
 public Action:Config_Changer(client, args)
 {
-	if (client == 0)
+	if (client == 0) return Plugin_Handled;
+	new bool:id = IsPlayerGenericAdmin(client);
+
+	if(id == false && adminCancelLoad == true)
 	{
+		CPrintToChat(client, "[{olive}TS{default}] %T","command is not available.",client,"!load");
 		return Plugin_Handled;
 	}
-	if(hasprepareloaded||isMapRestartPending) return Plugin_Handled;
-	new bool:id = IsPlayerGenericAdmin(client);
+
 	if (args < 1)
 	{
 		new bool:isAdmin = false;
@@ -955,12 +973,12 @@ public Action:Config_Changer(client, args)
 			if(strlen(cfg1v2hunters) > 0) 
 		#else
 			if(strlen(cfg1v1) > 0) 
-	`		Format(loadInfo, 1024, "%s| !load 1v1        | 1v1 default config       | %30s|", loadInfo, cfg1v1);
+			Format(loadInfo, 1024, "%s| !load 1v1        | 1v1 default config       | %30s|", loadInfo, cfg1v1);
 		#endif
 		if(strlen(loadInfo) > 0) PrintToConsole(client, loadInfo);
 
 		loadInfo[0] = '\0';
-		//if(isAdmin == true) Format(loadInfo, 1024, "%s| !load cancel     | cancel all requests      |                               |\n", loadInfo);
+		if(isAdmin == true) Format(loadInfo, 1024, "%s| !load cancel     | cancel all requests      |                               |\n", loadInfo);
 		//else Format(loadInfo, 1024, "%s| !load cancel     | cancel the request       |                               |\n", loadInfo);
 		Format(loadInfo, 1024, "%s|------------------|--------------------------|-------------------------------|", loadInfo);		
 		
@@ -972,6 +990,7 @@ public Action:Config_Changer(client, args)
 			CPrintToChat(client, "[{olive}TS{default}] %T","Spectators cannot use command.",client,"!load");
 			return Plugin_Handled;
 		}
+
 		if (!TestMatchDelay(client))
 		{
 			return Plugin_Handled;
@@ -1051,14 +1070,14 @@ public Action:Config_Changer(client, args)
 			if((StrContains(Admin_Cfg, "nb", false) != -1)) AdminValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
 		#endif
 
-		// if(StrEqual(Admin_Cfg, "cancel", false))//checking if config is cancel, if it is, cancel this plugin, and jump to the admin config, stop this plugin
-		// {
-		// 	Admin_Cancel(client);
-		// 	return Plugin_Handled;
-		// }
-	
-		hasprepareloaded = true;
-		adminLoadActive = true;
+		if(StrEqual(Admin_Cfg, "cancel", false))//checking if config is cancel, if it is, cancel this plugin, and jump to the admin config, stop this plugin
+		{
+			Admin_Cancel(client, 0);
+			return Plugin_Handled;
+		}
+
+		if (adminLoadActive || isMapRestartPending) return Plugin_Handled;
+		
 		if(AdminValueIsConfig5v5 == 1)	//if the config is 5v5
 		{
 			#if NO_BOOMER_CFG
@@ -1527,15 +1546,17 @@ public Action:Config_Changer(client, args)
 		#endif
 		
 		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Config.",client);
-		hasprepareloaded = false;
 		adminLoadActive = false;
 		return Plugin_Handled;
 	}
 
 	if (id == false)	//if client is non admin then...
 	{
+		if(adminLoadActive || isMapRestartPending) return Plugin_Handled;
+		if(g_hMatchVote != null)  return Plugin_Handled;
+
 		new Client_Team		= GetClientTeam(client);
-		//int Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;
+		int Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;
 		
 		//decl String:SurvivorCfg[128];		//gets string value of PlayerCfg when Team A requests !load
 		//decl String:InfectedCfg[128];		//gets string value of PlayerCfg when Team B requests !load
@@ -1557,12 +1578,6 @@ public Action:Config_Changer(client, args)
 			//LogMessage("LoadAllowed returned 1");	//debug, log to file that comp_loader_load_allowed = 1
 			if(Client_Team == TEAM_SURVIVOR || Client_Team == TEAM_INFECTED)	//if the client using !load is either survivor or infected
 			{
-				if(adminLoadActive == true) return Plugin_Handled;
-				if(adminCancel == true)
-				{
-					CPrintToChat(client, "[{olive}TS{default}] %T","command is not available.",client,"!load");
-					return Plugin_Handled;
-				}
 				GetCmdArgString(PlayerCfg, sizeof(PlayerCfg));			//getting the !load arguments to PlayerCfg string
 				new ValueIsConfig5v5 = 0;		//is config 5v5 integer, on function start set to 0
 				new ValueIsConfigClassic = 0;
@@ -1629,24 +1644,24 @@ public Action:Config_Changer(client, args)
 				if((StrContains(PlayerCfg, "nb", false) != -1)) ValueIsConfigNoBoomer = 1;	//if string contains hu, set value to 1	
 				#endif
 
-				// if(StrEqual(PlayerCfg, "cancel", false))//cancel configs before validating config, if the args are "cancel"
-				// {
-				// 	if(Config_Requests[Opposite_Team] && !Config_Requests[Client_Team])
-				// 	{
-				// 		CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!load");
-				// 		Config_Requests[TEAM_SURVIVOR] = false;
-				// 		Config_Requests[TEAM_INFECTED] = false;
-				// 		SetConVarInt(CompLoaderLoadActive, 0);
-				// 		return Plugin_Handled;
-				// 	}
+				if(StrEqual(PlayerCfg, "cancel", false))//cancel configs before validating config, if the args are "cancel"
+				{
+					if(Config_Requests[Opposite_Team] && !Config_Requests[Client_Team])
+					{
+						CPrintToChatAll("[{olive}TS{default}] %t","The team have canceled the command request.", Team_Names[Client_Team],"!load");
+						Config_Requests[TEAM_SURVIVOR] = false;
+						Config_Requests[TEAM_INFECTED] = false;
+						SetConVarInt(CompLoaderLoadActive, 0);
+						return Plugin_Handled;
+					}
 					
-				// 	if(!Config_Requests[Opposite_Team])
-				// 	{
-				// 		CPrintToChat(client, "[{olive}TS{default}] %T","Nothing to cancel.",client);
-				// 		return Plugin_Handled;
-				// 	}
-				// 	return Plugin_Handled;
-				// }
+					if(!Config_Requests[Opposite_Team])
+					{
+						CPrintToChat(client, "[{olive}TS{default}] %T","Nothing to cancel.",client);
+						return Plugin_Handled;
+					}
+					return Plugin_Handled;
+				}
 				
 				bool bIsValidConfig = false;
 				if(ValueIsConfig5v5 == 1)	//if the config is 5v5
@@ -1944,7 +1959,8 @@ public Action:Config_Changer(client, args)
 				{
 					CPrintToChat(client, "[{olive}TS{default}] %t","Invalid Config.", client); //if sum of configs is less than 1 or more than 2, print invalid config
 					return Plugin_Handled;
-				}								
+				}	
+
 				// if(!Config_Requests[Opposite_Team] == false)
 				// {
 				// 	SurvivorCfg = PlayerCfg;	//OppositeTeam argument string gets saved to SurvivorCfg
@@ -2176,7 +2192,6 @@ public Action:Config_Changer(client, args)
 				
 				if(CanStartVotes(client))
 				{
-				
 					decl String:SteamId[35];
 					GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 					new String:curname[128];
@@ -2219,44 +2234,57 @@ public Action:Config_Changer(client, args)
 
 CampaignchangeDelayed()
 {
-	if (MapCountdownTimer == null)
-	{
-		PrintHintTextToAll("%t","comp_loader6",CAMPAIGN_CHANGE_DELAY+1);
-		isMapRestartPending = true;
-		CampaingChangeDelay = CAMPAIGN_CHANGE_DELAY;
-		MapCountdownTimer = CreateTimer(1.0, timerCampaignchange, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-	}
+	if (adminCancelMap) return;
+
+	PrintHintTextToAll("%t","comp_loader6",CAMPAIGN_CHANGE_DELAY+1);
+	isMapRestartPending = true;
+	CampaingChangeDelay = CAMPAIGN_CHANGE_DELAY;
+	delete MapCountdownTimer;
+	MapCountdownTimer = CreateTimer(1.0, timerCampaignchange, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 public Action:timerCampaignchange(Handle:timer)
 {
-	if (CampaingChangeDelay == 0)
+	if (adminCancelMap)
 	{
 		MapCountdownTimer = null;
-		//EmitSoundToAll("buttons/blip2.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5);
-		Map_Change_NOW();
 		return Plugin_Stop;
 	}
-	else
+
+	if (CampaingChangeDelay <= 0)
 	{
-		PrintHintTextToAll("%t","comp_loader6", CampaingChangeDelay);
-		EmitSoundToAll("buttons/blip1.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5);
-		CampaingChangeDelay--;
+		//EmitSoundToAll("buttons/blip2.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5);
+		Map_Change_NOW();
+		MapCountdownTimer = null;
+		return Plugin_Stop;
 	}
+	
+	PrintHintTextToAll("%t","comp_loader6", CampaingChangeDelay);
+	EmitSoundToAll("buttons/blip1.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5);
+	CampaingChangeDelay--;
+
 	return Plugin_Continue;
 }
+
 Map_Change_NOW()
 {
 	if(adminMapActive)
 		ServerCommand("changelevel %s", AdminMapToExecuteName);
 	else
 		ServerCommand("changelevel %s", MapToExecuteName);
-	isMapRestartPending = false;
-	adminMapActive = false;
 }
+
 public Action:Map_Changer(client, args)
 {
-	if(isMapRestartPending || adminMapActive) return Plugin_Handled;//正在倒數換圖或是admin已經強制換圖
+	if (client == 0) return Plugin_Handled;
+
 	new bool:id = IsPlayerGenericAdmin(client);
+
+	if(id == false && adminCancelMap == true)
+	{
+		CPrintToChat(client, "[{olive}TS{default}] %T","command is not available.",client,"!changemap(!cm)");
+		return Plugin_Handled;
+	}
+
 	if (args < 1)
 	{
 		new bool:isAdmin = false;
@@ -2371,9 +2399,11 @@ public Action:Map_Changer(client, args)
 		
 		if(StrEqual(Admin_Map, "cancel", false))//checking if config is cancel, if it is, cancel this plugin, and jump to the admin config, stop this plugin
 		{
-			Admin_Cancel(client);
+			Admin_Cancel(client, 1);
 			return Plugin_Handled;
 		}
+
+		if (isMapRestartPending || adminMapActive) return Plugin_Handled;//正在倒數換圖或是admin已經強制換圖
 				
 		new AdminValueIsNM = 0;		//is map no mercy integer, on function start set to 0
 		new AdminValueIsDT = 0;		//is map death toll integer, on function start set to 0
@@ -2435,202 +2465,189 @@ public Action:Map_Changer(client, args)
 
 		if(AdminValueIsNM == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_hospital01_apartment";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","No Mercy");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;	
 		}
 		else if(AdminValueIsDT == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_smalltown01_caves";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Toll");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsBH == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_farm01_hilltop";
 			CPrintToChatAll("[[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsDA == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_airport01_greenhouse";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Air");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;	
 		}
 		else if(AdminValueIsSA == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_river01_docks";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Sacrifice");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;	
 		}
 		else if(AdminValueIsCC == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_garage01_alleys";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Crash Course");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		#if CUSTOM_CONFIGS
 		if(AdminValueIsC17 == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_city17_01";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","City 17");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsSB == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_stadium1_apartment";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Suicide Blitz");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsIHateMountain == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_ihm01_forest";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","I hate mountain");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsDeadFlagBlues == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_vs_deadflagblues01_city";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Flag Blues");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsDeadBeforeDawn == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_dbd_citylights";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Before Dawn");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsTheArenaoftheDead == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_jsarena01_town";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","The Arena of the Dead");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsDeathAboard == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_deathaboard01_prison";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Death Aboard");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsOne4Nine == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_149_1";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","One 4 Nine");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsDB == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_darkblood01_tanker";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dark Blood");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsBHA == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "rombu01";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Blood Harvest APOCALYPSE");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		else if(AdminValueIsP84 == 1)
 		{
+			Admin_Cancel_Lite();
 			SetConVarInt(CompLoaderLoadActive, 0);
 			SetConVarInt(CompLoaderMapActive, 0);
-			adminMapActive = true;
 			AdminMapToExecuteName = "l4d_noprecinct01_crash";
 			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Precinct 84");
 			CampaignchangeDelayed();
-			Admin_Cancel_Lite();
 			return Plugin_Handled;
 		}
 		#endif
 
 		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
 	}
-	if (!TestMatchDelay(client))
-	{
-		return Plugin_Handled;
-	}
+
 	if (id == false)	//if client is non admin then...
 	{
+		if (isMapRestartPending || adminMapActive) return Plugin_Handled;//正在倒數換圖或是admin已經強制換圖
+
+		if (!TestMatchDelay(client))
+		{
+			return Plugin_Handled;
+		}
+
 		new Client_Team		= GetClientTeam(client),
 		Opposite_Team	= (Client_Team == TEAM_SURVIVOR) ? TEAM_INFECTED : TEAM_SURVIVOR;	//getting dem client teamz. If client team is survivor, then opposite team is infected, else opposite team is survivorzor
 		
@@ -2650,12 +2667,6 @@ public Action:Map_Changer(client, args)
 			//LogMessage("LoadAllowed returned 1");	//debug, log to file that comp_loader_load_allowed = 1
 			if(Client_Team == TEAM_SURVIVOR || Client_Team == TEAM_INFECTED)	//if the client using !load is either survivor or infected
 			{
-				if(adminMapActive == true) return Plugin_Handled;
-				if(adminCancel == true)
-				{
-					CPrintToChat(client, "[{olive}TS{default}] %T","command is not available.",client,"!changemap(!cm)");
-					return Plugin_Handled;
-				}
 				GetCmdArgString(PlayerMap, sizeof(PlayerMap));			//getting the !load arguments to PlayerMap string
 				new ValueIsNM = 0;		//is map no mercy integer, on function start set to 0
 				new ValueIsDT = 0;		//is map death toll integer, on function start set to 0
@@ -2875,7 +2886,6 @@ public Action:Map_Changer(client, args)
 					if(!Map_Requests[Opposite_Team])		//if opponent team did not !changemap, then...
 					{
 						CPrintToChatAll("[{olive}TS{default}] %t.\n%t","comp_loader8", Team_Names[Client_Team], PlayerMap,"The team must agree by typing command", Team_Names[Opposite_Team],"!cm", PlayerMapChat);
-						//adminCancel = false;
 						SetConVarInt(CompLoaderMapActive, 1);
 					}
 					else if(Map_Requests[TEAM_SURVIVOR] && Map_Requests[TEAM_INFECTED])	//if both client team have requested, and the opposite team have requested/responded, then...
@@ -2890,104 +2900,104 @@ public Action:Map_Changer(client, args)
 							if(StrEqual(PlayerMap, "No Mercy", false))
 							{
 								MapToExecuteName = "l4d_vs_hospital01_apartment";
-								Timer_Map_Change();					
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);					
 								return Plugin_Handled;															
 							}
 							else if(StrEqual(PlayerMap, "Death Toll", false))
 							{
 								MapToExecuteName = "l4d_vs_smalltown01_caves";
-								Timer_Map_Change();					
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);					
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Blood Harvest", false))
 							{
 								MapToExecuteName = "l4d_vs_farm01_hilltop";
-								Timer_Map_Change();					
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);					
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Dead Air", false))
 							{
 								MapToExecuteName = "l4d_vs_airport01_greenhouse";
-								Timer_Map_Change();					
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);					
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "The Sacrifice", false))
 							{
 								MapToExecuteName = "l4d_river01_docks";
-								Timer_Map_Change();				
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);				
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Crash Course", false))
 							{
 								MapToExecuteName = "l4d_garage01_alleys";
-								Timer_Map_Change();			
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);			
 								return Plugin_Handled;														
 							}
 							#if CUSTOM_CONFIGS
 							if(StrEqual(PlayerMap, "City 17", false))
 							{
 								MapToExecuteName = "l4d_vs_city17_01";
-								Timer_Map_Change();			
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);			
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Suicide Blitz", false))
 							{
 								MapToExecuteName = "l4d_vs_stadium1_apartment";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "I hate mountain", false))
 							{
 								MapToExecuteName = "l4d_ihm01_forest";
-								Timer_Map_Change();			
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);			
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Dead Flag Blues", false))
 							{
 								MapToExecuteName = "l4d_vs_deadflagblues01_city";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Dead Before Dawn", false))
 							{
 								MapToExecuteName = "l4d_dbd_citylights";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "The Arena of the Dead", false))
 							{
 								MapToExecuteName = "l4d_jsarena01_town";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Death Aboard", false))
 							{
 								MapToExecuteName = "l4d_deathaboard01_prison";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "One 4 Nine", false))
 							{
 								MapToExecuteName = "l4d_149_1";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Dark Blood", false))
 							{
 								MapToExecuteName = "l4d_darkblood01_tanker";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Blood Harvest APOCALYPSE", false))
 							{
 								MapToExecuteName = "rombu01";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							else if(StrEqual(PlayerMap, "Precinct 84", false))
 							{
 								MapToExecuteName = "l4d_noprecinct01_crash";
-								Timer_Map_Change();	
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}
 							#endif
@@ -3042,7 +3052,8 @@ public OnMapStart()
 	Map_Requests[TEAM_SURVIVOR] = false;
 	Map_Requests[TEAM_INFECTED] = false;
 	
-	adminCancel = false;
+	adminCancelLoad = false;
+	adminCancelMap = false;
 	adminLoadActive = false;
 	adminMapActive = false;
 	
@@ -3055,15 +3066,18 @@ public OnMapStart()
 
 	CompLoaderEnabledValue = GetConVarInt(CompLoaderEnabled);
 	CheckMapName();
-	ExecConfig();	
-	MapCountdownTimer = null;
-	hasprepareloaded = false;
+	ExecConfig();
 	
 	PrecacheSound("ui/menu_enter05.wav");
 	PrecacheSound("ui/beep_synthtone01.wav");
 	PrecacheSound("ui/beep_error01.wav");
 	
 	VoteMenuClose();
+}
+
+public void OnMapEnd()
+{
+	Admin_Cancel_Lite();
 }
 
 CheckMapName()
@@ -3095,7 +3109,9 @@ ExecConfig()
 }
 public Action:COLD_DOWN(Handle:timer,any:client)
 {
-	CreateTimer(3.0, Timer_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
+	if(adminCancelLoad || adminLoadActive) return Plugin_Continue;
+
+	CreateTimer(0.1, Timer_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action:Timer_VoteDelay(Handle:timer, any:client)
@@ -3229,6 +3245,8 @@ public ConfigsMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 
 public Action:COLD_DOWN2(Handle:timer,any:client)
 {
+	if(adminCancelLoad || adminLoadActive) return Plugin_Continue;
+
 	ServerCommand("exec %s", g_sCfg);
 }
 
@@ -3242,6 +3260,7 @@ public Action:VoteEndDelay(Handle:timer)
 	Voten = 0;
 	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,2);
 }
+
 VoteMenuClose()
 {
 	Votey = 0;
@@ -3249,6 +3268,7 @@ VoteMenuClose()
 	CloseHandle(g_hMatchVote);
 	g_hMatchVote = null;
 }
+
 Float:GetVotePercent(votes, totalVotes)
 {
 	return (float(votes) / float(totalVotes));
@@ -3256,7 +3276,6 @@ Float:GetVotePercent(votes, totalVotes)
 
 bool:CanStartVotes(client)
 {
-	
  	if(g_hMatchVote != null || IsVoteInProgress())
 	{
 		CPrintToChat(client, "{default}[{olive}TS{default}] %T","A vote is already in progress!",client);
@@ -3329,6 +3348,8 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 	}
 	else if (action == MenuAction_VoteCancel && param1 == VoteCancel_NoVotes)
 	{
+		if(adminCancelLoad || adminLoadActive) return 0;
+
 		CPrintToChatAll("{default}[{olive}TS{default}] %t","No votes");
 		g_votedelay = VOTEDELAY_TIME;
 		CreateTimer(1.0, Timer_VoteDelay, _, TIMER_REPEAT| TIMER_FLAG_NO_MAPCHANGE);
@@ -3337,6 +3358,8 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 	}	
 	else if (action == MenuAction_VoteEnd)
 	{
+		if(adminCancelLoad || adminLoadActive) return 0;
+
 		if ((strcmp(item, VOTE_YES) == 0 && FloatCompare(percent,limit) < 0 && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))
 		{
 			g_votedelay = VOTEDELAY_TIME;
@@ -3352,7 +3375,9 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 			EmitSoundToAll("ui/menu_enter05.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote pass.", RoundToNearest(100.0*percent), totalVotes);
 			CreateTimer(2.0, VoteEndDelay);
-			CreateTimer(0.1,COLD_DOWN,_);
+			CreateTimer(6.0,COLD_DOWN,_);
+
+			isMapRestartPending = true;
 		}
 	}
 	return 0;
@@ -3405,6 +3430,8 @@ public Handler_VoteCallback2(Handle:menu, MenuAction:action, param1, param2)
 	}
 	else if (action == MenuAction_VoteCancel && param1 == VoteCancel_NoVotes)
 	{
+		if(adminCancelLoad || adminLoadActive) return 0;
+		
 		CPrintToChatAll("{default}[{olive}TS{default}] %t","No votes");
 		g_votedelay = VOTEDELAY_TIME;
 		CreateTimer(1.0, Timer_VoteDelay, _, TIMER_REPEAT| TIMER_FLAG_NO_MAPCHANGE);
@@ -3413,6 +3440,8 @@ public Handler_VoteCallback2(Handle:menu, MenuAction:action, param1, param2)
 	}	
 	else if (action == MenuAction_VoteEnd)
 	{
+		if(adminCancelLoad || adminLoadActive) return 0;
+
 		if ((strcmp(item, VOTE_YES) == 0 && FloatCompare(percent,limit) < 0 && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))
 		{
 			g_votedelay = VOTEDELAY_TIME;
@@ -3428,7 +3457,9 @@ public Handler_VoteCallback2(Handle:menu, MenuAction:action, param1, param2)
 			EmitSoundToAll("ui/menu_enter05.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote pass.", RoundToNearest(100.0*percent), totalVotes);
 			CreateTimer(2.0, VoteEndDelay);
-			CreateTimer(3.0,COLD_DOWN2,_);
+			CreateTimer(6.0, COLD_DOWN2,_);
+
+			isMapRestartPending = true;
 		}
 	}
 	return 0;

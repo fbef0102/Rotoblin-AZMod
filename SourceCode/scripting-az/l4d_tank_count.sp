@@ -67,7 +67,7 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 		{
 			PounchSuccessCount[attacker]++;
 		}
-		else if (StrEqual(sClassname,"prop_physics") || StrEqual(sClassname,"prop_car_alarm"))
+		else if (strncmp(sClassname, "prop_physics", 12, false) == 0 || strncmp(sClassname, "prop_car_alarm", 14, false) == 0)
 		{	
 			if(bIgnoreOverkill[victim]) return;
 			

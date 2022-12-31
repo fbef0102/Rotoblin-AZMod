@@ -34,11 +34,11 @@
     }
 	"4"
     {
-        "chat"			"{lightgreen}addons\sourcemod\configs\advertisements.txt"
+        "chat"			"{lightgreen}This mod support L4D2onL4D1 maps"
     }
 	"5"
     {
-        "chat"			"{lightgreen}Roto-AZmod developer: Harry"
+        "chat"			"{lightgreen}Roto-AZmod developer: Harry, {olive}github.com/fbef0102/Rotoblin-AZMod"
     }
 	"6"
     {
@@ -95,5 +95,9 @@
 	"19"
     {
         "chat"			"{lightgreen}Multi Hunters mode: !ht、!timer"
+    }
+	"20"
+    {
+        "chat"			"{lightgreen}Harry's Private plugin list: github.com/fbef0102/Game-Private_Plugin"
     }
 }

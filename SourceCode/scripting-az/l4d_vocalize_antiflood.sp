@@ -51,7 +51,7 @@ int iClientFlags[MAXPLAYERS+1];
 public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	
+
 	hConVar1 = CreateConVar("l4d_vocalize_antiflood_player_token_time", "60", "Time interval to decrease a player token. (second)", FCVAR_NOTIFY, true, 1.0);
 	hConVar2 = CreateConVar("l4d_vocalize_antiflood_word_token_time", "5", "Time interval to decrease a word token. (second)", FCVAR_NOTIFY, true, 1.0);
 	hConVar3 = CreateConVar("l4d_vocalize_antiflood_player_token_limit", "2", "Max Player Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
@@ -137,7 +137,6 @@ bool IsPlayerVocalizeFlooding(int client, int initiator)
 
 	if (HasAccess(client, g_sImmueAcclvl)) return false;
 	
-	
 	float curTime = GetEngineTime();
 	int dif;
 	
@@ -149,8 +148,9 @@ bool IsPlayerVocalizeFlooding(int client, int initiator)
 		g_WorldVocalizeTokens[client] -= dif;
 		if (g_WorldVocalizeTokens[client] < 0) g_WorldVocalizeTokens[client] = 0;
 
+		if(g_WorldVocalizeTokens[client] >= g_iWorldTokenLimit) return true;
+
 		g_WorldVocalizeTokens[client]++;
-		if(g_WorldVocalizeTokens[client] > g_iWorldTokenLimit) return true;
 		
 		g_flLastWorldVocalizeTimeStamp[client] = curTime;
 	}
@@ -162,12 +162,13 @@ bool IsPlayerVocalizeFlooding(int client, int initiator)
 		g_VocalizeTokens[client] -= dif;
 		if (g_VocalizeTokens[client] < 0) g_VocalizeTokens[client]=0;
 
-		g_VocalizeTokens[client]++;
-		if (g_VocalizeTokens[client] > g_iPlayerTokenLimit) 
+		if (g_VocalizeTokens[client] >= g_iPlayerTokenLimit) 
 		{
 			if(g_bMessage) PrintToChat(client, "[\x05TS\x01] %T", "l4d_vocalize_antiflood", client);
 			return true;
 		}
+
+		g_VocalizeTokens[client]++;
 		
 		g_flLastVocalizeTimeStamp[client] = curTime;
 	}

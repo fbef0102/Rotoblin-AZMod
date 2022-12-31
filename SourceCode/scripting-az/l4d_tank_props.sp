@@ -46,7 +46,7 @@ public void OnPluginStart() {
 	g_hCvar_tankProps = CreateConVar("l4d_tank_props", "1", "Prevent tank props from fading whilst the tank is alive", FCVAR_NOTIFY);
 	g_hCvar_tankPropsGlow = CreateConVar("l4d_tank_props_glow", "1", "Show Hittable Glow for inf team whilst the tank is alive", FCVAR_NOTIFY);
 	g_hCvar_tankPropsGlowSpec = CreateConVar( "l4d_tank_prop_glow_spectators", "1", "Spectators can see the glow too", FCVAR_NOTIFY);
-	g_hCvarColor =	CreateConVar("l4d_tank_prop_render_color", "255 0 0", "Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue. (-1 -1 -1: disable)", FCVAR_NOTIFY);
+	g_hCvarColor =	CreateConVar("l4d_tank_prop_render_color", "200 0 0", "Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue. (-1 -1 -1: disable)", FCVAR_NOTIFY);
 	
 	GetCvars();
 	g_hCvar_tankProps.AddChangeHook(TankPropsChange);
@@ -278,6 +278,7 @@ void CreateTankPropGlow(int car)
 		entity = CreateEntityByName("prop_dynamic_override");
 		if(entity < 0 ) return;
 		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "disableshadows", "1");
 		DispatchKeyValue(entity, "targetname", "propglow");
 	}
 	else
@@ -285,22 +286,21 @@ void CreateTankPropGlow(int car)
 		entity = CreateEntityByName("prop_glowing_object");
 		if(entity < 0 ) return;
 		DispatchKeyValue(entity, "model", sModelName);
-		DispatchKeyValue(entity, "StartGlowing", "1");
+		DispatchKeyValue(entity, "disableshadows", "1");
 		DispatchKeyValue(entity, "targetname", "propglow");
 		
+		DispatchKeyValue(entity, "StartGlowing", "1");
 		DispatchKeyValue(entity, "GlowForTeam", "3");
 	}
 
 
 	/* GlowForTeam =  -1:ALL  , 0:NONE , 1:SPECTATOR  , 2:SURVIVOR , 3:INFECTED */
 	
-	DispatchKeyValue(entity, "fadescale", "1");
-	DispatchKeyValue(entity, "fademindist", "3000");
-	DispatchKeyValue(entity, "fademaxdist", "3200");
-	
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
 	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
+	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
 	SetVariantString("!activator");
 	AcceptEntityInput(entity, "SetParent", car); 
 
@@ -347,26 +347,25 @@ void CreateTankPropGlowSpectator(int car)
 	{
 		entity = CreateEntityByName("prop_dynamic_override");
 		DispatchKeyValue(entity, "model", sModelName);
+		DispatchKeyValue(entity, "disableshadows", "1");
 		DispatchKeyValue(entity, "targetname", "propglow");
 	}
 	else
 	{
 		entity = CreateEntityByName("prop_glowing_object");
 		DispatchKeyValue(entity, "model", sModelName);
-		DispatchKeyValue(entity, "StartGlowing", "1");
-		DispatchKeyValue(entity, "StartDisabled", "1");
+		DispatchKeyValue(entity, "disableshadows", "1");
 		DispatchKeyValue(entity, "targetname", "propglow");
 		
+		DispatchKeyValue(entity, "StartGlowing", "1");
 		DispatchKeyValue(entity, "GlowForTeam", "1");
 	}
-	
-	DispatchKeyValue(entity, "fadescale", "1");
-	DispatchKeyValue(entity, "fademindist", "3000");
-	DispatchKeyValue(entity, "fademaxdist", "3200");
 	
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
 	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
+	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
 	SetVariantString("!activator");
 	AcceptEntityInput(entity, "SetParent", car); 
 
@@ -462,7 +461,7 @@ public void PossibleTankPropCreated(int iEntity, const char[] sClassName)
 		return;
 	}
 	
-	if (strcmp(sClassName, "prop_physics") != 0) { // Hooks c11m4_terminal World Sphere
+	if (strncmp(sClassName, "prop_physics", 12, false) != 0) { // Hooks c11m4_terminal World Sphere
 		return;
 	}
 

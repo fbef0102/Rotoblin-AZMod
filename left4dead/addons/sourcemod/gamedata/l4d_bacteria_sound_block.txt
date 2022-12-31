@@ -1,0 +1,86 @@
+"Games"
+{
+	"left4dead"
+	{
+		"MemPatches"
+		{
+			"Music::OnSmokerAlert__skip_patch"
+			{
+				"signature"		"Music::OnSmokerAlert"
+				"linux"
+				{
+					"offset"	"45h"
+					"verify"	"\x0F\x86"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"2Dh"
+					"verify"	"\x0F\x85"
+					"patch"		"\x90\xE9"
+				}
+			}
+			
+			"Music::OnHunterAlert__skip_patch"
+			{
+				"signature"		"Music::OnHunterAlert"
+				"linux"
+				{
+					"offset"	"45h"
+					"verify"	"\x0F\x86"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"31h"
+					"verify"	"\x0F\x85"
+					"patch"		"\x90\xE9"
+				}
+			}
+			
+			"Music::OnBoomerAlert__skip_patch"
+			{
+				"signature"		"Music::OnBoomerAlert"
+				"linux"
+				{
+					"offset"	"49h"
+					"verify"	"\x0F\x86"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"31h"
+					"verify"	"\x0F\x85"
+					"patch"		"\x90\xE9"
+				}
+			}
+		}
+		
+		"Signatures"
+		{
+			"Music::OnSmokerAlert"
+			{
+				"library"		"server"
+				"linux"			"@_ZN5Music13OnSmokerAlertEif"
+				"windows"		"\x51\xA1\x2A\x2A\x2A\x2A\x53\x56\x8B\xF1"
+								/* 51 A1 ? ? ? ? 53 56 8B F1 */
+			}
+			
+			"Music::OnHunterAlert"
+			{
+				"library"		"server"
+				"linux"			"@_ZN5Music13OnHunterAlertEif"
+				"windows"		"\x51\xA1\x2A\x2A\x2A\x2A\x55\x56\x8B\xF1"
+								/* 51 A1 ? ? ? ? 55 56 8B F1 */
+			}
+			
+			"Music::OnBoomerAlert"
+			{
+				"library"		"server"
+				"linux"			"@_ZN5Music13OnBoomerAlertEif"
+				"windows"		"\x51\xA1\x2A\x2A\x2A\x2A\x55\x56\x8B\x70"
+								/* 51 A1 ? ? ? ? 55 56 8B 70 */
+			}
+		}
+	}
+}

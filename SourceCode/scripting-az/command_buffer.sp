@@ -1,6 +1,6 @@
 /*
 *	[ANY] Command and ConVar - Buffer Overflow Fixer
-*	Copyright (C) 2021 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"2.7"
+#define PLUGIN_VERSION 		"2.8"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+2.8 (19-Jan-2022)
+	- Fixed leaking handles when triggered to fix buffer issues.
 
 2.7 (06-Dec-2021)
 	- Fixed the last version breaking plugin functionality. Thanks to "sorallll" for reporting.
@@ -90,7 +93,7 @@
 #endif
 
 bool g_NextFrame;
-ArrayList g_sCommandList;
+ArrayList g_aCommandList;
 char g_sCurrentCommand[ARGS_BUFFER_LENGTH];
 
 public Plugin myinfo =
@@ -106,7 +109,7 @@ public void OnPluginStart()
 {
 	CreateConVar("command_buffer_version", PLUGIN_VERSION, "Command and ConVar - Buffer Overflow Fixer plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	g_sCommandList = new ArrayList(ByteCountToCells(ARGS_BUFFER_LENGTH));
+	g_aCommandList = new ArrayList(ByteCountToCells(ARGS_BUFFER_LENGTH));
 
 	// ====================================================================================================
 	// Detour - Anytime convars are added to the buffer this will fire
@@ -191,7 +194,7 @@ public MRESReturn InsertCommandPost(Handle hReturn, Handle hParams)
 		PrintToServer("Fix: [%s]", g_sCurrentCommand);
 	#endif
 
-	g_sCommandList.PushString(g_sCurrentCommand);
+	g_aCommandList.PushString(g_sCurrentCommand);
 
 	// Prevent "Cbuf_AddText: buffer overflow" message
 	DHookSetReturn(hReturn, true);
@@ -209,12 +212,12 @@ public void OnNextFrame(any na)
 
 	// Swap the buffers so we don't add to the list we're currently processing in our InsertServerCommand hook.
 	// Executes the ConVars/commands in the order they were.
-	ArrayList sCmdList = g_sCommandList.Clone();
-	g_sCommandList.Clear();
+	ArrayList aCmdList = g_aCommandList.Clone();
+	g_aCommandList.Clear();
 
 	static char sCommand[ARGS_BUFFER_LENGTH];
 
-	int length = sCmdList.Length;
+	int length = aCmdList.Length;
 	for( int i = 0; i < length; i++ )
 	{
 		// Debug print
@@ -224,10 +227,12 @@ public void OnNextFrame(any na)
 		#endif
 
 		// Insert
-		sCmdList.GetString(i, sCommand, sizeof(sCommand));
+		aCmdList.GetString(i, sCommand, sizeof(sCommand));
 		InsertServerCommand("%s", sCommand);
 
 		// Flush the command buffer now. Outside of loop doesn't work - the convars would remain incorrect.
 		ServerExecute();
 	}
+
+	delete aCmdList;
 }

@@ -1,6 +1,6 @@
 /*
 *	Info Editor - Test Plugin
-*	Copyright (C) 2020 Silvers
+*	Copyright (C) 2022 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.1"
+#define PLUGIN_VERSION		"1.3"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,12 @@
 
 ========================================================================================
 	Change Log:
+
+1.3 (11-Dec-2022)
+	- Increased string size.
+
+1.2 (20-Oct-2022)
+	- Small changes for a better example.
 
 1.1 (10-May-2020)
 	- Various changes to tidy up code.
@@ -46,6 +52,8 @@
 #include <sourcemod>
 #include <l4d_info_editor>
 
+bool g_bLeft4Dead2;
+
 
 
 // ====================================================================================================
@@ -60,6 +68,19 @@ public Plugin myinfo =
 	url = "https://forums.alliedmods.net/showthread.php?t=310586"
 }
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	if( test == Engine_Left4Dead ) g_bLeft4Dead2 = false;
+	else if( test == Engine_Left4Dead2 ) g_bLeft4Dead2 = true;
+	else
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+		return APLRes_SilentFailure;
+	}
+	return APLRes_Success;
+}
+
 public void OnAllPluginsLoaded()
 {
 	if( LibraryExists("info_editor") == false )
@@ -70,25 +91,28 @@ public void OnAllPluginsLoaded()
 
 public void OnGetMissionInfo(int pThis)
 {
-	RequestFrame(onMission, pThis);
+	RequestFrame(OnMission, pThis);
 }
 
-public void onMission(int pThis)
+void OnMission(int pThis)
 {
 	// Example
-	char temp[64];
+	static char temp[256];
 
-	// Get and show original value
-	InfoEditor_GetString(pThis, "meleeweapons", temp, sizeof(temp));
-	// Check the retrieved value is different to SetString value.
-	if( strcmp(temp, "knife") )
+	if( g_bLeft4Dead2 )
 	{
-		PrintToServer("[INFO EDITOR TEST] >>> meleeweapons original == (%d) [%s]", pThis, temp);
-		// Setting a new value
-		InfoEditor_SetString(pThis, "meleeweapons", "knife");
-		// Retrieve set value to show it's changed
+		// Get and show original value
 		InfoEditor_GetString(pThis, "meleeweapons", temp, sizeof(temp));
-		PrintToServer("[INFO EDITOR TEST] >>> meleeweapons modified == (%d) [%s]", pThis, temp);
+		// Check the retrieved value is different to SetString value.
+		if( strcmp(temp, "knife") )
+		{
+			PrintToServer("[INFO EDITOR TEST] >>> meleeweapons original == (%d) [%s]", pThis, temp);
+			// Setting a new value
+			InfoEditor_SetString(pThis, "meleeweapons", "knife");
+			// Retrieve set value to show it's changed
+			InfoEditor_GetString(pThis, "meleeweapons", temp, sizeof(temp));
+			PrintToServer("[INFO EDITOR TEST] >>> meleeweapons modified == (%d) [%s]", pThis, temp);
+		}
 	}
 
 	// Lets create another custom keyvalue which doesn't exist

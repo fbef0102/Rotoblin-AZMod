@@ -12,7 +12,7 @@ public Plugin myinfo =
         author = "HarryPotter",
         description = "As the name says, you dumb fuck!",
         version = PLUGIN_VERSION,
-        url = "https://steamcommunity.com/id/HarryPotter_TW/"
+        url = "https://steamcommunity.com/profiles/76561198026784913/"
 };
 
 static char MSG_KICK_REASON[] = "剩餘位子只限管理員.. Sorry, Reserverd Slots for Admin..";

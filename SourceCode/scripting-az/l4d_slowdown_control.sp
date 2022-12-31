@@ -33,8 +33,9 @@
 #define SURVIVOR_WALKSPEED		85.0
 #define SURVIVOR_CROUCHSPEED	75.0
 
-#define SURVIVOR_WATERSPEED_VS	170.0
-#define SURVIVOR_WATERSPEED_MAP_SA	85.0 //water Run speed in l4d1 the sacrifice map 2, don't doubt it, very slow
+/*In l4d2 official versus mode, water speed: 170, deep water speed: 136*/
+#define SURVIVOR_WATERSPEED_VS_L4D2	170.0
+#define SURVIVOR_DEEP_WATERSPEED_VS_L4D2 136.0
 
 #define TEAM_SURVIVORS 2
 #define TEAM_INFECTED 3
@@ -67,16 +68,18 @@ int iCvarSurvivorLimpHealth;
 
 bool
 	tankInPlay = false,
-	g_bBarge = false,
+	g_bWaterSlowDownMap = false,
 	g_bIsFirstTank = false,
 	bFoundCrouchTrigger = false,
 	bPlayerInCrouchTrigger[MAXPLAYERS + 1];
+
+int g_iRoundStart, g_iPlayerSpawn;
 
 public Plugin myinfo =
 {
 	name = "L4D1 Slowdown Control",
 	author = "Visor, Sir, darkid, Forgetest, A1m`, Derpduck, HarryPotter",
-	version = "2.6.8",
+	version = "2.8.1",
 	description = "Manages the water/gunfire slowdown for both teams",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
@@ -94,6 +97,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+static KeyValues g_hMIData = null;
+
 public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
@@ -101,10 +106,10 @@ public void OnPluginStart()
 	hCvarSdGunfireSi = CreateConVar("l4d_slowdown_gunfire_si", "0.0", "Maximum slowdown from gunfire for SI (-1: don't modify slowdown; 0.0: No slowdown, 0.01-1.0: 1%%-100%% slowdown)", _, true, -1.0, true, 1.0);
 	hCvarSdGunfireTank = CreateConVar("l4d_slowdown_gunfire_tank", "0.0", "Maximum slowdown from gunfire for the Tank (-1: don't modify slowdown; 0.0: No slowdown, 0.01-1.0: 1%%-100%% slowdown)", _, true, -1.0, true, 1.0);
 	hCvarSdInwaterTankRun = CreateConVar("l4d_slowdown_water_tank_run", "0", "Maximum tank Run speed in the water (0: don't modify speed; 210: default Tank Speed)", _, true, 0.0);
-	hCvarSdInwaterSurvivorRun = CreateConVar("l4d_slowdown_water_survivors_run", "0", "Maximum survivor Run speed in the water outside of Tank fights (0: don't modify speed; 220: default Survivor speed)", _, true, 0.0);
+	hCvarSdInwaterSurvivorRun = CreateConVar("l4d_slowdown_water_survivors_run", "170", "Maximum survivor Run speed in the water outside of Tank fights (0: don't modify speed; 220: default Survivor speed)", _, true, 0.0);
 	hCvarSdInwaterSurvivorRunDuringTank = CreateConVar("l4d_slowdown_water_survivors_run_during_tank", "220", "Maximum survivor Run speed in the water during Tank fights (0: don't modify speed; 220: default Survivor speed)", _, true, 0.0);
 	hCvarCrouchSpeedMod = CreateConVar("l4d2_slowdown_crouch_speed_mod", "1.4", "Modifier of player crouch speed when inside a designated trigger, 75 is the defualt for everyone (1: default speed)", _, true, 0.0);
-	
+
 	hCvarSdPistolMod = CreateConVar("l4d_slowdown_pistol_percent", "0.0", "Pistols cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
 	hCvarSdUziMod = CreateConVar("l4d_slowdown_uzi_percent", "0.8", "Unsilenced uzis cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
 	hCvarSdM4Mod = CreateConVar("l4d_slowdown_m4_percent", "0.8", "M4s cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
@@ -112,12 +117,12 @@ public void OnPluginStart()
 	hCvarSdAutoMod = CreateConVar("l4d_slowdown_auto_percent", "0.5", "Auto Shotguns cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
 	hCvarSdRifleMod = CreateConVar("l4d_slowdown_rifle_percent", "0.1", "Hunting Rifles cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
 
-	
+
 	hCvarSdInwaterTankRun.AddChangeHook(OnConVarChanged);
 	hCvarSdInwaterSurvivorRun.AddChangeHook(OnConVarChanged);
 	hCvarSdInwaterSurvivorRunDuringTank.AddChangeHook(OnConVarChanged);
 	hCvarCrouchSpeedMod.AddChangeHook(OnConVarChanged);
-	
+
 	hCvarSurvivorLimpHealth = FindConVar("survivor_limp_health");
 	hCvarSurvivorLimpRunSpeed = FindConVar("survivor_limp_run_speed");
 	hCvarSurvivorLimpHealth.AddChangeHook(OnConVarChanged);
@@ -125,15 +130,50 @@ public void OnPluginStart()
 
 	HookEvent("tank_spawn", TankSpawn, EventHookMode_PostNoCopy);
 	HookEvent("round_start", RoundStart, EventHookMode_PostNoCopy);
+	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_hurt", PlayerHurt);
 	HookEvent("player_death", TankDeath);
+
+	HookEvent("round_end",				Event_RoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
+	HookEvent("map_transition", 		Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
+	HookEvent("mission_lost", 			Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors wipe out in coop mode (also triggers round_end)
+	HookEvent("finale_vehicle_leaving", Event_RoundEnd,		EventHookMode_PostNoCopy); //final map final rescue vehicle leaving  (does not trigger round_end)
+
+
+	MI_KV_Load();
+}
+
+public void OnPluginEnd()
+{
+	MI_KV_Close();
+
+	ClearDefault();
 }
 
 public void OnMapStart()
 {
+	g_bWaterSlowDownMap = false;
+
 	char sMap[32];
-	GetCurrentMap(sMap, 32);
-	g_bBarge = StrEqual(sMap, "l4d_river02_barge");
+	GetCurrentMap(sMap, sizeof(sMap));
+
+	MI_KV_Close();
+	MI_KV_Load();
+	if (!KvJumpToKey(g_hMIData, sMap)) {
+		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
+	} else
+	{
+		if (g_hMIData.GetNum("WaterSlowDown_map", 0) == 1)
+		{
+			g_bWaterSlowDownMap = true;
+		}
+	}
+	KvRewind(g_hMIData);
+}
+
+public void OnMapEnd()
+{
+    ClearDefault();
 }
 
 public void OnConfigsExecuted()
@@ -159,7 +199,7 @@ void CvarsToType()
 
 public void TankSpawn(Event event, const char[] name, bool dontBroadcast) 
 {
-	if (!tankInPlay) {
+	if (!tankInPlay && g_bWaterSlowDownMap) {
 		tankInPlay = true;
 		if (fSurvWaterRunSpeedDuringTank > 0.0 && g_bIsFirstTank) {
 			CPrintToChatAll("%t", "l4d_slowdown_control_1");
@@ -169,6 +209,8 @@ public void TankSpawn(Event event, const char[] name, bool dontBroadcast)
 
 public void TankDeath(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_bWaterSlowDownMap) return;
+	
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0 && IsInfected(client) && IsTank(client)) {
 		CreateTimer(0.1, Timer_CheckTank);
@@ -193,7 +235,31 @@ public void RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bIsFirstTank = true;
 	tankInPlay = false;
+
+	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
+		CreateTimer(0.5, Timer_PluginStart);
+	g_iRoundStart = 1;
+}
+
+public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{ 
+    if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
+        CreateTimer(0.5, Timer_PluginStart);
+    g_iPlayerSpawn = 1;	
+}
+
+Action Timer_PluginStart(Handle timer)
+{
+	ClearDefault();
+
 	HookCrouchTriggers();
+
+	return Plugin_Continue;
+}
+
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
+{
+	ClearDefault();
 }
 
 public void HookCrouchTriggers()
@@ -208,15 +274,15 @@ public void HookCrouchTriggers()
 		}
 		
 		int iEntity = -1;
-		char targetname[128];
+		char targetname[64];
 		
 		while ((iEntity = FindEntityByClassname(iEntity, "trigger_multiple")) != -1) {
 			GetEntPropString(iEntity, Prop_Data, "m_iName", targetname, sizeof(targetname));
 			
-			if (StrEqual(targetname, "l4d_slowdown_crouch_speed", false)) {
+			if (strncmp(targetname, "l4d_slowdown_crouch_speed", 25, false) == 0) {
 				HookSingleEntityOutput(iEntity, "OnStartTouch", CrouchSpeedStartTouch);
 				HookSingleEntityOutput(iEntity, "OnEndTouch", CrouchSpeedEndTouch);
-				
+
 				bFoundCrouchTrigger = true;
 			}
 		}
@@ -269,7 +335,7 @@ public void PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 **/
 public Action L4D_OnGetRunTopSpeed(int client, float &retVal)
 {
-	if (!IsClientInGame(client)) { 
+	if (!IsClientInGame(client) || !g_bWaterSlowDownMap) { 
 		return Plugin_Continue;
 	}
 	
@@ -282,6 +348,8 @@ public Action L4D_OnGetRunTopSpeed(int client, float &retVal)
 			
 			// Only bother if survivor is in water
 			if (GetEntityFlags(client) & FL_INWATER) {
+				//int iWaterLevel = GetEntProp(client, Prop_Send, "m_nWaterLevel"); // 0: no water, 1: a little, 2: half body, 3: full body under water ( when iWaterLevel >=2, water speed = movement speed * 0.8)
+				//PrintToChatAll("iWaterLevel: %d, retVal: %.2f", iWaterLevel, retVal); // 0: no water, 1: a little, 2: half body, 3: full body under water
 				if (tankInPlay) { // speed of survivors in water during Tank fights
 					if (fSurvWaterRunSpeedDuringTank == 0.0) {
 						return Plugin_Continue; // Vanilla YEEEEEEEEEEEEEEEs
@@ -289,27 +357,21 @@ public Action L4D_OnGetRunTopSpeed(int client, float &retVal)
 						if(IsLimping(client) && fCvarSurvivorLimpRunSpeed < fSurvWaterRunSpeedDuringTank) { // not healthy
 							return Plugin_Continue;
 						}
-						
+ 
 						retVal = fSurvWaterRunSpeedDuringTank;
+						
 						return Plugin_Handled;
 					}
 				} else { // speed of survivors in water outside of Tank fights
 					if (fSurvWaterRunSpeed == 0.0) {
-						if(g_bBarge) //the sacrifice shit
-						{
-							retVal = SURVIVOR_WATERSPEED_MAP_SA;
-							return Plugin_Handled;
-						}
-						else
-						{
-							return Plugin_Continue; // Vanilla Water Speed
-						}
+						return Plugin_Continue; // Vanilla YEEEEEEEEEEEEEEEs
 					} else { // specific speed
 						if(IsLimping(client) && fCvarSurvivorLimpRunSpeed < fSurvWaterRunSpeed) { // not healthy
 							return Plugin_Continue;
 						}
 					
-						retVal = fSurvWaterRunSpeed;
+						retVal = fSurvWaterRunSpeed - 5.0; // water speed = movement speed + 5.0
+
 						return Plugin_Handled;
 					}
 				}
@@ -378,27 +440,6 @@ void ApplySlowdown(int client, float value)
 
 void GetScaleAndModifier(float &scale, float &modifier, const char[] weapon, int damage)
 {
-	// If max slowdown is 20%, and tank takes 10 damage from a chrome shotgun shell, they recieve:
-	//// 1 - .5 * 0.434 * .2 = 0.9566 -> 95.6% base speed, or 4.4% slowdown.
-	// If max slowdown is 20%, and tank takes 6 damage from a silenced uzi bullet, they recieve:
-	//// 1 - .8 * 0.0625 * .2 = 0.99 -> 99% base speed, or 1% slowdown.
-
-	// Weapon  | Max | Min
-	// Pistol  | 32  | 9
-	// Deagle  | 78  | 19
-	// Uzi     | 19  | 9
-	// Mac     | 24  | 0 <- Deals no damage at long range.
-	// AK      | 57  | 0 <- Deals no damage at long range.
-	// M4      | 32  | 0
-	// Scar    | 43  | 1
-	// Pump    | 13  | 2
-	// Chrome  | 15  | 2
-	// Auto    | 19  | 2
-	// Spas    | 23  | 3
-	// HR      | 90  | 90 <- No fall-off
-	// Scout   | 90  | 90 <- No fall-off
-	// Military| 90  | 90 <- No fall-off
-	// SMGs and Shotguns are using quadratic scaling, meaning that shooting long ranged is punished more harshly.
 	float fDamage = float(damage);
 	if (strcmp(weapon, "melee") == 0) {
 		// Melee damage scales with tank health, so don't bother handling it here.
@@ -504,4 +545,30 @@ bool IsPlayerInCrouchTrigger(int client)
 	}
 	
 	return false;
+}
+
+void MI_KV_Load()
+{
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = CreateKeyValues("MapInfo");
+	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
+		//LogError("[MI] Couldn't load MapInfo data!");
+		MI_KV_Close();
+	}
+}
+
+void MI_KV_Close()
+{
+	if (g_hMIData != null) {
+		CloseHandle(g_hMIData);
+		g_hMIData = null;
+	}
+}
+
+void ClearDefault()
+{
+	g_iRoundStart = 0;
+	g_iPlayerSpawn = 0;
 }
