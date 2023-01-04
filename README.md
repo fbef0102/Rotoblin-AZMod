@@ -67,13 +67,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Control Map Info: -left4dead/addons/sourcemod/data/mapinfo.txt
   * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
-  * [translations](/Developer%26Commands/translation%20list.txt): -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
+  * [Translations](/Developer%26Commands/Translation%20Language.txt): -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
     * do not overwrite any plugin that's existed.
   * To make it easy for personal configuration for certain plugins, there's an added "server_custom_convars.cfg" in the left4dead/cfg/Reloadables folder.
     * Keep in mind that this is a shared cfg, server excutes it after every mode loaded and map change, so it'll only contain shared cvars.
     * very useful for Admins wanting to load 1v1~5v5 supported plugins on top of the Configs.
-	  - *For people who don't like "extra pills on the map"*: ```rotoblin_health_style 3``
+	  - *For people who don't like "extra pills on the map"*: ```rotoblin_health_style 3```
 	  - *For people who don't like "Who will be the tank"*: ```tank_control_disable 1```
 	  - *For people who don't like "Pill Extra Health Bonus"*: ```l4d_score_healthbounus_pill 0```
 
