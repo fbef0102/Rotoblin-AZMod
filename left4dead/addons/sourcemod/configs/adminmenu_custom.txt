@@ -78,6 +78,38 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_noprecinct01_crash"
 		}
+		"L4D2C1"
+		{
+			"cmd" "sm_rcon changelevel c1m1_hotel"
+		}
+		"L4D2C2"
+		{
+			"cmd" "sm_rcon changelevel c2m1_highway"
+		}
+		"L4D2C3"
+		{
+			"cmd" "sm_rcon changelevel c3m1_plankcountry"
+		}
+		"L4D2C4"
+		{
+			"cmd" "sm_rcon changelevel c4m1_milltown_a"
+		}
+		"L4D2C5"
+		{
+			"cmd" "sm_rcon changelevel c5m1_waterfront"
+		}
+		"L4D2C6"
+		{
+			"cmd" "sm_rcon changelevel c6m1_riverbank"
+		}
+		"L4D2C13"
+		{
+			"cmd" "sm_rcon changelevel c13m1_alpinecreek"
+		}
+		"L4D2C14"
+		{
+			"cmd" "sm_rcon changelevel c14m1_junkyard"
+		}
 	}
 	"ChangeMode"
 	{

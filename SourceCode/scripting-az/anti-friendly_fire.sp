@@ -187,7 +187,7 @@ public void Event_IncapacitatedStart(Event event, const char[] name, bool dontBr
 		bIsSpecialWeapon = true;
 		if(g_bPipeBombDisable == false) return;
 	}
-	else if(IsFire(WeaponName) || IsFireworkcrate(WeaponName))
+	else if(IsFire(WeaponName))
 	{
 		bIsSpecialWeapon = true;
 		if(g_bFireDisable== false) return;
@@ -216,7 +216,7 @@ stock bool IsClientAndInGame(int client)
 
 stock bool IsFire(char[] classname)
 {
-	return StrEqual(classname, "inferno");
+	return strcmp(classname, "inferno") == 0 || strcmp(classname, "entityflame") == 0;
 } 
 
 stock bool IsPipeBombExplode(char[] classname)

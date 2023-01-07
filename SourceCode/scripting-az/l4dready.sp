@@ -1220,7 +1220,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	
 
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
-		CreateTimer(0.1, PluginStart);
+		CreateTimer(0.25, PluginStart);
 	g_iRoundStart = 1;
 
 	return Plugin_Continue;
@@ -1334,7 +1334,7 @@ public Action:timerUnreadyCallback(Handle:timer)
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 { 
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
-		CreateTimer(0.1, PluginStart);
+		CreateTimer(0.25, PluginStart);
 	g_iPlayerSpawn = 1;
 
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));

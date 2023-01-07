@@ -30,8 +30,8 @@ public void OnPluginStart()
 	g_hCvarLimit.AddChangeHook(ConVarChanged_Cvars);
 	g_iLimitCommon = g_hCvarLimit.IntValue;
 
-	HookEvent("round_end",		Event_RoundEnd, EventHookMode_PostNoCopy);
-	HookEvent("round_start",	Event_RoundStart, EventHookMode_PostNoCopy);
+	//HookEvent("round_end",		Event_RoundEnd, EventHookMode_PostNoCopy);
+	//HookEvent("round_start",	Event_RoundStart, EventHookMode_PostNoCopy);
 
 	LateLoad();
 }
@@ -52,11 +52,9 @@ public void OnMapEnd()
 
 	ResetPlugin();
 }
-
+/*
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	LateLoad();
-
 	g_bMapStarted = true;
 }
 
@@ -66,7 +64,7 @@ void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 
 	ResetPlugin();
 }
-
+*/
 void LateLoad()
 {
 	int entity = -1;
@@ -94,15 +92,9 @@ void ResetPlugin()
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if( g_bMapStarted && entity > 0 && entity < 2048 && strcmp(classname, INFECTED_NAME) == 0 )
+	if( entity > 0 && entity < 2048 && strcmp(classname, INFECTED_NAME) == 0 )
 	{
-		g_iCommon[entity] = entity;
-		g_iTotalCommon++;
-
-		if( g_iTotalCommon > g_iLimitCommon + OVERFLOW_SHIELD  )
-		{
-			SDKHook(entity, SDKHook_SpawnPost, OnSpawn);
-		}
+		SDKHook(entity, SDKHook_SpawnPost, SpawnPost);
 	}
 }
 
@@ -117,7 +109,19 @@ public void OnEntityDestroyed(int entity)
 	}
 }
 
-void OnSpawn(int entity)
+void SpawnPost(int entity)
 {
-	RemoveEntity(entity);
+	// Validate
+	if( !IsValidEntity(entity) ) return;
+
+	if( g_bMapStarted )
+	{
+		g_iCommon[entity] = entity;
+		g_iTotalCommon++;
+
+		if( g_iTotalCommon > g_iLimitCommon + OVERFLOW_SHIELD  )
+		{
+			RemoveEntity(entity);
+		}
+	}
 }

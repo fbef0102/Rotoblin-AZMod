@@ -3,8 +3,6 @@
 * Version	: 2.1.4
 * Game		: Left 4 Dead 1
 * Author	: djromero (SkyDavid, David) and MI 5 & l4d1 port by Harry
-* Testers	: Myself, MI 5
-* Website	: www.sky.zebgames.com
 * 
 * Purpose	: This plugin spawns infected bots in L4D1, and gives greater control of the infected bots in L4D1/L4D2.
 * 
@@ -487,7 +485,6 @@ static bool:WillBeTank[MAXPLAYERS+1]; // States whether that player will be the 
 static bool:TankWasSeen[MAXPLAYERS+1]; // Used only in coop, prevents the Sound hook event from triggering over and over again
 static bool:PlayerLifeState[MAXPLAYERS+1]; // States whether that player has the lifestate changed from switching the gamemode
 static bool:InitialSpawn; // Related to the coordination feature, tells the plugin to let the infected spawn when the survivors leave the safe room
-static bool:FreeSpawnReset[MAXPLAYERS+1]; // Tells the plugin to reset the FreeSpawn convar, used for the finale glitch only
 static bool:TempBotSpawned; // Tells the plugin that the tempbot has spawned
 static bool:AlreadyGhosted[MAXPLAYERS+1]; // Loop Breaker, prevents a player from spawning into a ghost over and over again
 static bool:AlreadyGhostedBot[MAXPLAYERS+1]; // Prevents bots taking over a player from ghosting
@@ -508,7 +505,6 @@ static Handle:h_DirectorSpawn; // yeah you're getting the idea
 static Handle:h_CoopPlayableTank; // yup, same thing again
 static Handle:h_GameMode; // uh huh
 static Handle:h_JoinableTeams; // Can you guess this one?
-static Handle:h_FreeSpawn; // We're done now, so be excited
 static Handle:h_StatsBoard; // Oops, now we are
 static Handle:h_Difficulty; // Ok, maybe not
 static Handle:h_JoinableTeamsAnnounce;
@@ -518,7 +514,6 @@ static Handle:h_InitialSpawn;
 static Handle:h_HumanCoopLimit;
 static Handle:h_AdminJoinInfected;
 static Handle:FightOrDieTimer[MAXPLAYERS+1]; // kill idle bots
-static Handle:h_BotGhostTime;
 static Handle:h_DisableSpawnsTank;
 static Handle:h_TankLimit;
 static Handle:h_WitchLimit;
@@ -543,8 +538,6 @@ static Handle:usrHUDPref 		= INVALID_HANDLE;	// Stores the client HUD preference
 
 static Handle:h_InfHUD		= INVALID_HANDLE;
 static Handle:h_Announce 	= INVALID_HANDLE;
-
-ConVar z_spawn_safety_range;
 
 public Plugin:myinfo = 
 {
@@ -623,7 +616,6 @@ public OnPluginStart()
 	h_CoopPlayableTank = CreateConVar("l4d_infectedbots_coop_versus_tank_playable", "0", "If 1, tank will be playable in coop/survival", FCVAR_NOTIFY|FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_JoinableTeams = CreateConVar("l4d_infectedbots_coop_versus", "0", "If 1, players can join the infected team in coop/survival (!ji in chat to join infected, !js to join survivors)", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_StatsBoard = CreateConVar("l4d_infectedbots_stats_board", "0", "If 1, the stats board will show up after an infected player dies (L4D1 ONLY)", FCVAR_SPONLY, true, 0.0, true, 1.0);
-	h_FreeSpawn = CreateConVar("l4d_infectedbots_free_spawn", "0", "If 1, infected players in coop/survival will spawn as ghosts", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_JoinableTeamsAnnounce = CreateConVar("l4d_infectedbots_coop_versus_announce", "0", "If 1, clients will be announced to on how to join the infected team", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_Coordination = CreateConVar("l4d_infectedbots_coordination", "0", "If 1, bots will only spawn when all other bot spawn timers are at zero", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_InfHUD = CreateConVar("l4d_infectedbots_infhud_enable", "1", "Toggle whether Infected HUD is active or not.", FCVAR_SPONLY, true, 0.0, true, 1.0);
@@ -632,7 +624,6 @@ public OnPluginStart()
 	h_InitialSpawn = CreateConVar("l4d_infectedbots_initial_spawn_timer", "10", "The spawn timer in seconds used when infected bots are spawned for the first time in a map", FCVAR_SPONLY);
 	h_HumanCoopLimit = CreateConVar("l4d_infectedbots_coop_versus_human_limit", "2", "Sets the limit for the amount of humans that can join the infected team in coop/survival", FCVAR_SPONLY);
 	h_AdminJoinInfected = CreateConVar("l4d_infectedbots_admin_coop_versus", "0", "If 1, only admins can join the infected team in coop/survival", FCVAR_SPONLY, true, 0.0, true, 1.0);
-	h_BotGhostTime = CreateConVar("l4d_infectedbots_ghost_time", "0", "If higher than zero, the plugin will ghost bots before they fully spawn on versus/scavenge", FCVAR_SPONLY);
 	h_DisableSpawnsTank = CreateConVar("l4d_infectedbots_spawns_disabled_tank", "0", "If 1, Plugin will disable spawning when a tank is on the field", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_VersusCoop = CreateConVar("l4d_infectedbots_versus_coop", "0", "If 1, The plugin will force all players to the infected side against the survivor AI for every round and map in versus/scavenge", FCVAR_SPONLY, true, 0.0, true, 1.0);
 	h_AdjustSpawnTimes = CreateConVar("l4d_infectedbots_adjust_spawn_times", "0", "If 1, The plugin will adjust spawn timers depending on the gamemode, adjusts spawn timers based on number of survivor players in coop and based on amount of infected players in versus/scavenge", FCVAR_SPONLY, true, 0.0, true, 1.0);
@@ -731,8 +722,6 @@ public OnPluginStart()
 		zombieHP[2] = GetConVarInt(cvarZombieHP[2]);
 		HookConVarChange(cvarZombieHP[2], cvarZombieHPChanged);
 	}
-	
-	z_spawn_safety_range = FindConVar("z_spawn_safety_range");
 	
 	// Create persistent storage for client HUD preferences 
 	usrHUDPref = CreateTrie();
@@ -1016,8 +1005,6 @@ TweakSettings()
 			SetConVarInt(FindConVar("z_gas_limit"), 0);
 			SetConVarInt(FindConVar("z_exploding_limit"), 0);
 			SetConVarInt(FindConVar("z_hunter_limit"), 0);
-			SetConVarFloat(FindConVar("tank_ground_pound_duration"), 0.1);
-			SetConVarInt(FindConVar("Z_frustration_lifetime"), 999999999);
 		}
 		case 2: // Versus, Better Versus Infected AI
 		{
@@ -1026,11 +1013,6 @@ TweakSettings()
 			SetConVarInt(FindConVar("z_hunter_limit"), 999);
 
 			// Enhance Special Infected AI
-			SetConVarInt(FindConVar("hunter_leap_away_give_up_range"), 0);
-			SetConVarInt(FindConVar("z_hunter_lunge_distance"), 5000);
-			SetConVarInt(FindConVar("hunter_pounce_ready_range"), 1500);
-			SetConVarFloat(FindConVar("hunter_pounce_loft_rate"), 0.055);
-			SetConVarFloat(FindConVar("tank_ground_pound_duration"), 0.1);
 			if (GetConVarBool(h_VersusCoop))
 				SetConVarInt(FindConVar("vs_max_team_switches"), 0);
 		}
@@ -1043,18 +1025,9 @@ TweakSettings()
 			SetConVarInt(FindConVar("z_gas_limit"), 0);
 			SetConVarInt(FindConVar("z_exploding_limit"), 0);
 			SetConVarInt(FindConVar("z_hunter_limit"), 0);
-			SetConVarFloat(FindConVar("tank_ground_pound_duration"), 0.1);
-			SetConVarInt(FindConVar("Z_frustration_lifetime"), 999999999);
 		}
 	}
 	
-	//Some cvar tweaks
-	SetConVarInt(FindConVar("z_attack_flow_range"), 50000);
-	SetConVarInt(FindConVar("director_spectate_specials"), 1);
-	
-	SetConVarInt(z_spawn_safety_range, 0);
-		
-	SetConVarInt(FindConVar("z_spawn_flow_limit"), 50000);
 	DirectorCvarsModified = false;
 
 	#if DEBUGSERVER
@@ -1071,17 +1044,10 @@ ResetCvars()
 	if (GameMode == 1)
 	{
 		ResetConVar(FindConVar("director_no_specials"), true, true);
-		ResetConVar(FindConVar("hunter_leap_away_give_up_range"), true, true);
-		ResetConVar(FindConVar("z_hunter_lunge_distance"), true, true);
-		ResetConVar(FindConVar("hunter_pounce_ready_range"), true, true);
-		ResetConVar(FindConVar("hunter_pounce_loft_rate"), true, true);
-		ResetConVar(FindConVar("tank_ground_pound_duration"), true, true);
-		ResetConVar(FindConVar("Z_frustration_lifetime"), true, true);
 		ResetConVar(FindConVar("holdout_max_smokers"), true, true);
 		ResetConVar(FindConVar("holdout_max_boomers"), true, true);
 		ResetConVar(FindConVar("holdout_max_hunters"), true, true);
 		ResetConVar(FindConVar("holdout_max_specials"), true, true);
-		ResetConVar(FindConVar("tank_ground_pound_duration"), true, true);
 	}
 	else if (GameMode == 2)
 	{
@@ -1096,10 +1062,6 @@ ResetCvars()
 		ResetConVar(FindConVar("z_gas_limit"), true, true);
 		ResetConVar(FindConVar("z_exploding_limit"), true, true);
 		ResetConVar(FindConVar("director_no_specials"), true, true);
-		ResetConVar(FindConVar("hunter_leap_away_give_up_range"), true, true);
-		ResetConVar(FindConVar("z_hunter_lunge_distance"), true, true);
-		ResetConVar(FindConVar("hunter_pounce_ready_range"), true, true);
-		ResetConVar(FindConVar("hunter_pounce_loft_rate"), true, true);
 	}
 }
 
@@ -1417,14 +1379,6 @@ public Action:MaxSpecialsSet(Handle:Timer)
 DirectorStuff()
 {	
 	SpecialHalt = false;
-	
-	SetConVarInt(z_spawn_safety_range, 0);
-		
-	SetConVarInt(FindConVar("director_spectate_specials"), 1);
-	
-	new Handle:HH2 = FindConVar("versus_special_respawn_interval");
-	if(HH2 != INVALID_HANDLE)
-		ResetConVar(HH2, true, true);
 	
 	// if the server changes the director spawn limits in any way, don't reset the cvars
 	if (!DirectorCvarsModified)
@@ -1984,24 +1938,8 @@ public Action:evtPlayerSpawn(Handle:event, const String:name[], bool:dontBroadca
 		FightOrDieTimer[client] = CreateTimer(GetConVarFloat(h_idletime_b4slay), DisposeOfCowards, client, TIMER_FLAG_NO_MAPCHANGE);
 	}
 	
-	// Turn infected player into a ghost if Free Spawning is on
-	
-	if (GameMode != 2 && !IsFakeClient(client) && !IsPlayerTank(client) && (GetConVarBool(h_FreeSpawn) && !AlreadyGhosted[client] || FreeSpawnReset[client]))
-	{
-		AlreadyGhosted[client] = true;
-		SetEntProp(client,Prop_Send,"m_isCulling",1);
-		ClientCommand(client, "+use");
-		CreateTimer(0.1, FreeSpawnEnsure, client, TIMER_FLAG_NO_MAPCHANGE);
-		if (FreeSpawnReset[client] == true)
-			FreeSpawnReset[client] = false;
-	}
-	
 	// Turn on Flashlight for Infected player
 	TurnNightVisionOn(client);
-	
-	// If its Versus and the bot is not a tank, make the bot into a ghost
-	if (IsFakeClient(client) && GameMode == 2 && !IsPlayerTank(client))
-		CreateTimer(0.1, Timer_SetUpBotGhost, client, TIMER_FLAG_NO_MAPCHANGE);
 	
 	return Plugin_Continue;
 }
@@ -2048,54 +1986,6 @@ public Action:DisposeOfCowards(Handle:timer, any:coward)
 		}
 	}
 	FightOrDieTimer[coward] = INVALID_HANDLE;
-}
-
-public Action:Timer_SetUpBotGhost(Handle:timer, any:client)
-{
-	// This will set the bot a ghost, stop the bot's movement, and waits until it can spawn
-	if (IsValidEntity(client))
-	{
-		if (!AlreadyGhostedBot[client])
-		{
-			SetGhostStatus(client, true);
-			SetEntityMoveType(client, MOVETYPE_NONE);
-			CreateTimer(GetConVarFloat(h_BotGhostTime), Timer_RestoreBotGhost, client, TIMER_FLAG_NO_MAPCHANGE);
-		}
-		else
-		AlreadyGhostedBot[client] = false;
-	}
-}
-
-public Action:Timer_RestoreBotGhost(Handle:timer, any:client)
-{
-	if (IsValidEntity(client))
-	{
-		SetGhostStatus(client, false);
-		SetEntityMoveType(client, MOVETYPE_WALK);
-	}
-}
-
-// The FreeSpawn ensure actions make sure that players spawn into ghosts (L4D 1 only)
-
-public Action:FreeSpawnEnsure(Handle:timer, any:client)
-{
-	ClientCommand(client, "+use");
-	ClientCommand(client, "-use");
-	
-	if (!IsPlayerGhost(client))
-		CreateTimer(0.1, FreeSpawnEnsure2, client, TIMER_FLAG_NO_MAPCHANGE);
-	
-}
-
-public Action:FreeSpawnEnsure2(Handle:timer, any:client)
-{
-	if (IsValidEntity(client))
-	{
-		SetEntProp(client,Prop_Send,"m_isCulling",1);
-		ClientCommand(client, "+use");
-		
-		CreateTimer(0.1, FreeSpawnEnsure, client, TIMER_FLAG_NO_MAPCHANGE);
-	}
 }
 
 public Action:evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
@@ -3027,11 +2917,6 @@ public Action:evtMissionLost(Handle:event, const String:name[], bool:dontBroadca
 			{
 				if (FinaleStarted)
 				{
-					PrintToChat(i, "\x04[SM] \x03 Infected Bots: \x04Please wait, you will spawn as a \x03ghost \x04shortly to get by the finale glitch");
-					if (!GetConVarBool(h_FreeSpawn))
-					{
-						FreeSpawnReset[i] = true;
-					}
 					#if DEBUGSERVER
 					LogMessage("Mission lost on the finale");
 					#endif
@@ -3655,23 +3540,10 @@ public OnPluginEnd()
 	ResetConVar(FindConVar("z_hunter_limit"), true, true);
 
 	ResetConVar(FindConVar("director_no_specials"), true, true);
-	ResetConVar(FindConVar("hunter_leap_away_give_up_range"), true, true);
-	ResetConVar(FindConVar("z_hunter_lunge_distance"), true, true);
-	ResetConVar(FindConVar("hunter_pounce_ready_range"), true, true);
-	ResetConVar(FindConVar("hunter_pounce_loft_rate"), true, true);
-	ResetConVar(FindConVar("z_attack_flow_range"), true, true);
-	ResetConVar(FindConVar("director_spectate_specials"), true, true);
-	ResetConVar(z_spawn_safety_range, true, true);
-	ResetConVar(FindConVar("z_spawn_flow_limit"), true, true);
 	ResetConVar(h_MaxPlayerZombies, true, true);
 	ResetConVar(FindConVar("z_tank_health"), true, true);
-	ResetConVar(FindConVar("tank_ground_pound_duration"), true, true);
-	ResetConVar(FindConVar("Z_frustration_lifetime"), true, true);
 	ResetConVar(FindConVar("vs_max_team_switches"), true, true);
-	
-	ResetConVar(z_spawn_safety_range, true, true);
 		
-	ResetConVar(FindConVar("z_spawn_flow_limit"), true, true);
 	//ResetConVar(FindConVar("z_max_player_zombies"), true, true);
 	
 	ResetConVar(FindConVar("sb_all_bot_team"), true, true);
@@ -4311,38 +4183,6 @@ stock CheatCommand(client, String:command[], String:arguments[] = "")
 	FakeClientCommand(client, "%s %s", command, arguments);
 	SetCommandFlags(command, flags);
 	SetUserFlagBits(client, userFlags);
-}
-
-stock InfectedForceGhost(client)
-{
-	static Handle:fhZombieAbortControl = INVALID_HANDLE;
-	
-	if (GameMode == 2) return;
-	if (!GetConVarBool(h_FreeSpawn)) return;
-	if (!IsClientInGame(client)) return;
-	if (GetClientTeam(client) != 3) return;
-	if (IsPlayerTank(client)) return;
-	if (IsPlayerGhost(client)) return;
-	if (IsFakeClient(client)) return;
-	
-	//Initialize
-	if (fhZombieAbortControl == INVALID_HANDLE){
-		new Handle:gConf = INVALID_HANDLE;
-		gConf = LoadGameConfigFile("l4dinfectedbots");
-		//CTerrorPlayer::PlayerZombieAbortControl(client,float=0)
-		StartPrepSDKCall(SDKCall_Player);
-		PrepSDKCall_SetFromConf(gConf, SDKConf_Signature, "ZombieAbortControl");
-		PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
-		fhZombieAbortControl = EndPrepSDKCall();
-		CloseHandle(gConf);
-		if (fhZombieAbortControl == INVALID_HANDLE){
-			SetFailState("Infected Bots can't get ZombieAbortControl SDKCall!");
-			return;
-		}			
-	}
-	SetEntProp(client,Prop_Send,"m_isCulling",1,1);
-	SDKCall(fhZombieAbortControl, client,0.0);	
-	return;
 }
 
 stock TurnNightVisionOn(client)

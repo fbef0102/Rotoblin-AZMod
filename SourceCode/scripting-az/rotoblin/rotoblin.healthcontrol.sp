@@ -711,6 +711,9 @@ public RemoveMedkits()
 				if (GetVectorDistance(NearestMedkit, Location, false) < 400)
 				{			
 					AcceptEntityInput(i, "Kill");
+
+					if(k == 4) continue;
+
 					g_iSaferoomKits[k++] = i;
 				}
 			}

@@ -5,12 +5,12 @@ v8.5.0
 
   > [**Support L4D2onL4D1 maps**](#roto-az-l4d2onl4d1)
   <br/><img src="https://i.imgur.com/utcIlA8.png" alt="FGkLDMp.png" width="1000" height = "350">
-  <br/><img src="https://i.imgur.com/OXWBfsg.jpg" alt="FGkLDMp.png" width="1000" height = "500">
-  <br/><img src="https://i.imgur.com/cSsbd2o.jpg" alt="FGkLDMp.png" width="1000" height = "500">
-  <br/><img src="https://i.imgur.com/TDPqp4i.jpg" alt="FGkLDMp.png" width="1000" height = "500">
-  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg" alt="Iv7Ns0E.png" width="1000" height = "500">
-  <br/><img src="https://i.imgur.com/BpH0wDk.jpg" alt="BpH0wDk.png" width="1000" height = "500">
-  <br/><img src="https://i.imgur.com/XKjIfTF.jpg" alt="XKjIfTF.png" width="1000" height = "500">
+  <br/><img src="https://i.imgur.com/OXWBfsg.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/cSsbd2o.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/TDPqp4i.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg" alt="Iv7Ns0E.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/BpH0wDk.jpg" alt="BpH0wDk.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/XKjIfTF.jpg" alt="XKjIfTF.png" width="1000" height = "475">
 
 * [繁體中文說明版](/Developer%26Commands/繁體說明書.txt)
 * [Developer](/Developer%26Commands)
@@ -132,10 +132,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Skeet Practice
   * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
   <br/><img src="https://i.imgur.com/ycHlIRZ.jpg" alt="ycHlIRZ.jpg" width="750" height = "400">
-  
   * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
   <br/><img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
-  
   > **Developer Comment:** Add glow effect to items in "Skeet Practice" mode, which helps players quickly get familiar with the maps
   > * Survivor can see pills、kits、weapons、ammo
   > * Infected can see hittable objects、alarm car
@@ -294,19 +292,19 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Special Infected(!inf):
   * **General:**
     * Spawntimers:
-	  - *(5v5)*: **15s**
-	  - *(4v4)*: **11s**
-	  - *(3v3)*: **9s**
-	  - *(2v2)*: **7s**
-	  - *(1v1)*: **1s**
+      - *(5v5)*: **15s**
+      - *(4v4)*: **11s**
+      - *(3v3)*: **9s**
+      - *(2v2)*: **7s**
+      - *(1v1)*: **1s**
     * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
     * Allows ghost infected to warp to survivors, Command: ```sm_warpto [#|name]``` or MOUSE2 (```sm_warpm2off``` to disable, say ```sm_warpm2on``` to enable)
-	  - *1*: **Francis**
-	  - *2*: **Bill**
-	  - *3*: **Zoey**
-	  - *4*: **Louis**
+      - *1*: **Francis**
+      - *2*: **Bill**
+      - *3*: **Zoey**
+      - *4*: **Louis**
     * No gunfire slowdown and shove slowdown
     * Can't spawn in saferoom or any "this is restricted area" rooms (one of l4d1 original feature)
     * Allow duck fastspeed exploit when infected ghost state (one of l4d1 original feature)
@@ -348,12 +346,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Tank won't stuck when punches incapped survivor
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed: 210 (survivors speed: 220, vanilla: 210)
-	* When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
-	<br/><img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
-	
-	* When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
-	<br/><img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
-    
+    * When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
+    <br/><img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
+    * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
+    <br/><img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
     * Players cannot shove tanks.
@@ -371,22 +367,22 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * **If each infected player has been tank at once, random choose!**
       * **Tank player has two control chances, it won't pass!!**
     * Health
-	  - *(5v5)*: **8500**
-	  - *(4v4)*: **7000**
-	  - *(3v3)*: **5025**
-	  - *(2v2)*: **3480**
-	  - *(1v1)*: **None**
+      - *(5v5)*: **8500**
+      - *(4v4)*: **7000**
+      - *(3v3)*: **5025**
+      - *(2v2)*: **3480**
+      - *(1v1)*: **None**
     * Slay AI Tank in 1v1, 2v2 and 3v3  
     * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
-	* Ignites the rock thrown by the Tank when he is on fire.
-	* Fixed an issue where tank rock is harder to land on survivors in saferoom area.
-	* Disables the Car Alarm when a Tank hittable hits the alarmed car.
-	* Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
-	* Tank burn life time: 125s (vanilla: **75**)
-	* Ghost Tank freezes and being immune to fire for a while.
-	* Fix frozen tanks, force tank player suicide when playing death animation.
-	* Fix punch get-up varying in length, along with flexible setting to it.
-  * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
+    * Ignites the rock thrown by the Tank when he is on fire.
+    * Fixed an issue where tank rock is harder to land on survivors in saferoom area.
+    * Disables the Car Alarm when a Tank hittable hits the alarmed car.
+    * Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
+    * Tank burn life time: 125s (vanilla: **75**)
+    * Ghost Tank freezes and being immune to fire for a while.
+    * Fix frozen tanks, force tank player suicide when playing death animation.
+    * Fix punch get-up varying in length, along with flexible setting to it.
+    * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
@@ -397,68 +393,67 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
 	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg" alt="RKAuCjY.jpg" width="750" height = "400">
-	
     * Instantly incapacitate Survivors
-	* Prevent common infected from pushing witch away when witch not startled yet
-	* Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
-	* Prevents the witch from randomly loosing target.
+    * Prevent common infected from pushing witch away when witch not startled yet
+    * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
+    * Prevents the witch from randomly loosing target.
 	
   * **Smoker:**
-	* Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
-	* First Drag Damage: 3, interval: 1s (same as vanilla)
-	* Drag Damage: 1, interval: 0.33s (3 dps, same as vanilla)
-	* Choke Damage: 1, interval: 0.2s (5 dps, same as vanilla)
-	* Fix tongue instant choking survivors.
-	* Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
-	* Fix unexpected tongue breaks for \"bending too many times\".
-	* Fix infected teammate blocking tongue chasing.
-	* Smoker's ability recharge cooldown
-	  - *After a successful hit*: 15s -> 13s
-	  - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
-	  - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
+    * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
+    * First Drag Damage: 3, interval: 1s (same as vanilla)
+    * Drag Damage: 1, interval: 0.33s (3 dps, same as vanilla)
+    * Choke Damage: 1, interval: 0.2s (5 dps, same as vanilla)
+    * Fix tongue instant choking survivors.
+    * Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
+    * Fix unexpected tongue breaks for \"bending too many times\".
+    * Fix infected teammate blocking tongue chasing.
+    * Smoker's ability recharge cooldown
+      - *After a successful hit*: 15s -> 13s
+      - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
+      - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
 	
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
     * Allow Bunny hop pounce (one of l4d1 original feature)
     * Maximum pounce damage: **35**
     * Wallkick/Backjumps
-	  - *(5v5)*: **✔**
-	  - *(4v4)*: **✔**
-	  - *(3v3)*: **✔**
-	  - *(2v2)*: **✔**
-	  - *(1v1)*: **✘**
+      - *(5v5)*: **✔**
+      - *(4v4)*: **✔**
+      - *(3v3)*: **✔**
+      - *(2v2)*: **✔**
+      - *(1v1)*: **✘**
     * DeadStop
-	  - *(5v5)*: **✘**
-	  - *(4v4)*: **✘**
-	  - *(3v3)*: **✘**
-	  - *(2v2)*: **✘**
-	  - *(1v1)*: **✘**
+      - *(5v5)*: **✘**
+      - *(4v4)*: **✘**
+      - *(3v3)*: **✘**
+      - *(2v2)*: **✘**
+      - *(1v1)*: **✘**
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
     * claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
     * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
-	* Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
-	* m2 godframes after a hunter lands on the ground: 0.25s
+    * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
+    * m2 godframes after a hunter lands on the ground: 0.25s
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
     * Recharge CD: 20s (vanilla: 30s)
     * Boom Horde limit
-	  - *(5v5)*: **35**
-	  - *(4v4)*: **26**
-	  - *(3v3)*: **21**
-	  - *(2v2)*: **13**
+      - *(5v5)*: **35**
+      - *(4v4)*: **26**
+      - *(3v3)*: **21**
+      - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-	  - *87%*: **3 Hunters + 1 Smoker**
-	  - *13%*: **4 Hunters**
-	* Explode after 3 times shove (original: 5)
-	* Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
-	* Fixes boomer teleport whenever hes close enough to ladder
-	* Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
-	* Boomer's vomit is now able to pass through fence and barricade
-	<br/><img src="https://i.imgur.com/MV6azfX.gif" alt="MV6azfX.gif" width="750" height = "400">
+      - *87%*: **3 Hunters + 1 Smoker**
+      - *13%*: **4 Hunters**
+    * Explode after 3 times shove (original: 5)
+    * Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
+    * Fixes boomer teleport whenever hes close enough to ladder
+    * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
+    * Boomer's vomit is now able to pass through fence and barricade
+    <br/><img src="https://i.imgur.com/MV6azfX.gif" alt="MV6azfX.gif" width="750" height = "400">
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
@@ -500,7 +495,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * While selected, pills can be passed with +reload to avoid accidental drops and canceling reload animations.
   * Survivors now get fatigued after **2** Shoves. (vanilla: **5**)
   * Stops Survivors from saying 'Hunter!'
-   > **Developer Comment:** sometimets survivors didn't see the silence hunter but their mouth keep saying 'Hunter!'
+    > **Developer Comment:** sometimets survivors didn't see the silence hunter but their mouth keep saying 'Hunter!'
   * Removes pills from bots if they try to use them and restores them when a human takes over.
   * AI Bots less retarded Convars
   * Blocks the stupid griefers who spam vocalize commands throughout after round is live.
@@ -535,7 +530,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * *(Hunter)*: **+0s**
      * *(Smoker)*: **+0.8s**
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
-   > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
+    > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
   * Trigger car alarms when Survivors simply touch the car.
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
   * Prevent infected slowdown being overridden by other damage.
