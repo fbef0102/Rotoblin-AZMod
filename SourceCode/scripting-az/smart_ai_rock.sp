@@ -28,7 +28,7 @@ methodmap PlayerBody
 
 public void L4D_TankRock_OnRelease_Post(int tank, int rock, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
 {
-	if (!IsFakeClient(tank))
+	if (tank <= 0 || tank > MaxClients || !IsClientInGame(tank) || !IsFakeClient(tank))
 		return;
 	
 	int ability = GetEntPropEnt(tank, Prop_Send, "m_customAbility");

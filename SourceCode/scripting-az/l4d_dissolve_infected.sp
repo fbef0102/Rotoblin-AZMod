@@ -31,7 +31,7 @@
 
 ========================================================================================
 	Change Log:
-1.18 (30-10-2022) by Harry
+1.18 (2-Feb-2023) by Harry
 	- Add survivor body RENDERFX_FADE_FAST (no dissolve)
 	- Remove infected body dissolve (RENDERFX_FADE_FAST only)
 	- Remove LMC
@@ -131,9 +131,9 @@
 
 
 Handle sdkDissolveCreate;
-ConVar g_hCvarAllow, g_hCvarChance, g_hCvarInfected, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog, g_hCvarTime, g_hCvarTimeMin, g_hCvarTimeMax;
+ConVar g_hCvarAllow, g_hCvarChance, g_hCvarInfected, g_hCvarSurvivor, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog, g_hCvarTime, g_hCvarTimeMin, g_hCvarTimeMax;
 int g_iCvarChance, g_iCvarInfected, g_iPlayerSpawn, g_iRoundStart, g_iDissolvers[MAX_DISSOLVE]; // g_iRagdollFader
-bool g_bCanDiss, g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2;
+bool g_bCanDiss, g_bCvarAllow, g_bCvarSurvivor, g_bMapStarted, g_bLeft4Dead2;
 float g_fCvarTime, g_fCvarTimeMin, g_fCvarTimeMax;
 int g_iClassTank;
 
@@ -201,6 +201,7 @@ public void OnPluginStart()
 	g_hCvarModesTog = CreateConVar(		"l4d_dissolve_modes_tog",		"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
 	g_hCvarChance = CreateConVar(		"l4d_dissolve_chance",			"100",			"Out of 100 the chance of dissolving a zombie when it dies. Note: stays activate for 0.5 seconds after triggering.", CVAR_FLAGS, true, 0.0, true, 100.0 );
 	g_hCvarInfected = CreateConVar(		"l4d_dissolve_infected",		"511",			"Dissolve these on death: 1=Common, 2=Witch, 4=Smoker, 8=Boomer, 16=Hunter, 32=Spitter, 64=Jockey, 128=Charger, 256=Tank, 511=All.", CVAR_FLAGS );
+	g_hCvarSurvivor = CreateConVar(		"l4d_dissolve_survivor",		"1",			"If 1, Dissolve survivor death model", CVAR_FLAGS, true, 0.0, true, 1.0 );
 	g_hCvarTime = CreateConVar(			"l4d_dissolve_time",			"0.2",			"How long the particles stay for. Recommended values for best results from 0.0 (minimal particles) to 0.8.", CVAR_FLAGS, true, 0.0, true, 2.0 );
 	g_hCvarTimeMin = CreateConVar(		"l4d_dissolve_time_min",		"0.0",			"When time_min and time_max are not 0.0 the dissolve time will randomly be set to a value between these.", CVAR_FLAGS, true, 0.0, true, 2.0 );
 	g_hCvarTimeMax = CreateConVar(		"l4d_dissolve_time_max",		"0.0",			"When time_min and time_max are not 0.0 the dissolve time will randomly be set to a value between these.", CVAR_FLAGS, true, 0.0, true, 2.0 );
@@ -214,6 +215,7 @@ public void OnPluginStart()
 	g_hCvarAllow.AddChangeHook(ConVarChanged_Allow);
 	g_hCvarChance.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarInfected.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarSurvivor.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarTime.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarTimeMin.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarTimeMax.AddChangeHook(ConVarChanged_Cvars);
@@ -326,6 +328,7 @@ void GetCvars()
 {
 	g_iCvarChance = g_hCvarChance.IntValue;
 	g_iCvarInfected = g_hCvarInfected.IntValue;
+	g_bCvarSurvivor = g_hCvarSurvivor.BoolValue;
 	g_fCvarTime = g_hCvarTime.FloatValue;
 	g_fCvarTimeMin = g_hCvarTimeMin.FloatValue;
 	g_fCvarTimeMax = g_hCvarTimeMax.FloatValue;
@@ -506,7 +509,7 @@ public void Event_Death(Event event, const char[] name, bool dontBroadcast)
 						DissolveTarget(0, target);
 					}
 				}
-				else if(GetClientTeam(target) == 2)
+				else if(g_bCvarSurvivor && GetClientTeam(target) == 2)
 				{
 					DissolveTarget(0, target);
 				}

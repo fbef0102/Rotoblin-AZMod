@@ -25,6 +25,8 @@
 #include <sdktools>
 #include <multicolors>
 #undef REQUIRE_PLUGIN
+#tryinclude <builtinvotes> //https://github.com/L4D-Community/builtinvotes/actions
+
 static Handle:g_hCVarMinAllowedSlots;
 static Handle:g_hCVarMaxAllowedSlots;
 
@@ -39,7 +41,6 @@ static g_iCurrentSlots;
 static g_iDesiredSlots;
 
 static Handle:g_cvarSlotsPluginEnabled = INVALID_HANDLE;
-static Handle:g_cvarSlotsAutoconf	= INVALID_HANDLE;
 static Handle:g_cvarSvVisibleMaxPlayers = INVALID_HANDLE;
 new bool:g_bSlotsLocked = false;
 static g_slotdelay;
@@ -68,7 +69,6 @@ public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	g_cvarSlotsPluginEnabled = CreateConVar("sm_slot_vote_enabled", "1", "Enabled?", FCVAR_NOTIFY);
-	g_cvarSlotsAutoconf = CreateConVar("sm_slot_autoconf", "1", "Autoconfigure slots vote max|min cvars?", FCVAR_NOTIFY);
 	g_hCVarMinAllowedSlots = CreateConVar("sm_slot_vote_min", "9", "Minimum allowed number of server slots (this value must be equal or lesser than sm_slot_vote_max).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
 	g_hCVarMaxAllowedSlots = CreateConVar("sm_slot_vote_max", "28", "Maximum allowed number of server slots (this value must be equal or greater than sm_slot_vote_min).", FCVAR_NOTIFY, true, 1.0, true, 32.0);
 
@@ -77,7 +77,6 @@ public OnPluginStart()
 	g_iMinAllowedSlots = GetConVarInt(g_hCVarMinAllowedSlots);
 	g_iMaxAllowedSlots = GetConVarInt(g_hCVarMaxAllowedSlots);
 
-	//PrintToServer("Slots set onload to: %d", GetConVarInt(g_hCVarMaxPlayersToolZ));
 	HookConVarChange(g_hCVarMinAllowedSlots, CVarChangeMinAllowedSlots);
 	HookConVarChange(g_hCVarMaxAllowedSlots, CVarChangeMaxAllowedSlots);
 
@@ -90,19 +89,9 @@ public OnPluginStart()
 
 	if (!g_bL4DToolz)
 	{
-		SetFailState("Supported slot patching mods not detected. Slot Vote disabled.");
+		SetFailState("Could not find ConVar \"sv_maxplayers\". Go to install L4dtoolz: https://github.com/Accelerator74/l4dtoolz/releases");
 	}
 
-	if (g_iCurrentSlots == -1)
-	{
-		g_iCurrentSlots = 8;
-	}
-	if(GetConVarBool(g_cvarSlotsAutoconf)) {
-		new Handle:hSurvivorLimit = FindConVar("survivor_limit");
-		//SetConVarInt(g_hCVarMinAllowedSlots, GetConVarInt(hSurvivorLimit) * 2);
-		PrintToServer("Min slots automatically configured to %d", GetConVarInt(hSurvivorLimit) * 2);
-		CloseHandle(hSurvivorLimit);
-	}
 	RegConsoleCmd("sm_slots", Cmd_SlotVote);
 	RegConsoleCmd("sm_nospec", Cmd_NoSpec);
 	RegConsoleCmd("sm_nospecs", Cmd_NoSpec);
@@ -410,6 +399,7 @@ static StartSlotVote(iClient)
 
 public Action:TimerChangeMaxPlayers(Handle:timer)
 {
+	CPrintToChatAll("[{olive}TS{default}] %t: {green}%d{default} - > {green}%d", "Change_Server_Slots" , g_iCurrentSlots, g_iDesiredSlots);
 	ChangeSeverSlots();
 	return Plugin_Stop;
 }

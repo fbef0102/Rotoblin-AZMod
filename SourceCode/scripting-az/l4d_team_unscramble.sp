@@ -1,63 +1,188 @@
+/*
+ * ============================================================================
+ *
+ * This file is part of the Rotoblin 2 (R2CompMod) project.
+ * See https://github.com/raziEiL/rotoblin2
+ *
+ *  Language:       SourcePawn.
+ *  Description:	Puts players on the right team after map/campaign change and provides API.
+ *  Credits:		Scratchy [Царапка] for idea.
+ *
+ *  Copyright (C) 2012-2015, 2020 raziEiL [disawar1] <mr.raz4291@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ============================================================================
+ */
+#define PLUGIN_VERSION "1.0"
+
+#pragma semicolon 1
+
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
+#undef REQUIRE_PLUGIN
+#include <l4d_lib>
 
-#pragma semicolon 1
-#define PLUGIN_VERSION "1.3"
+#define UNSCRABBLE_LOG 0
+#define MAIN_TAG				"[Unscramble]"
 
-#define AS_TAG				"[Unscramble]"
+#define VOTE_MISSION_CHANGE "#L4D_vote_passed_mission_change"
+#define VOTE_LEVEL_RESTART "#L4D_vote_passed_versus_level_restart"
 
-#define MAX_UNSRAMBLE_TIME 40.0
-#define UNSCRABBLE_MAX_FAILURE		3
-static	Handle:g_hTrine,Handle:g_hCvarEnable, Handle:g_fwdOnUnscrambleEnd, bool:g_bCvarASEnable, bool:g_bCheked[MAXPLAYERS+1], bool:g_bJoinTeamUsed[MAXPLAYERS+1],
-		g_iFailureCount[MAXPLAYERS+1], bool:g_bTeamLock, g_isOldTeamFlipped, g_isNewTeamFlipped, g_iTrineSize, Handle:g_hCvarNoVotes;
-static String:previousmap[128];
-static bool:previoussecondround;
-static bool:b_needswapteam;
+#if UNSCRABBLE_LOG
+static const String:g_LogFile[] = "logs\\rotoblin_unscramble.log";
+static String:g_sLogPatch[128];
+#endif
 
-public Plugin:myinfo = 
+static	Handle:g_hTrine, Handle:g_fwdOnUnscrambleEnd, bool:g_bCvarEnabled, bool:g_bCvarNotify, bool:g_bCvarNoVotes, Float:g_fCvarTime, g_iCvarAttempts, bool:g_bCheked[MAXPLAYERS+1], bool:g_bJoinTeamUsed[MAXPLAYERS+1],
+		g_iFailureCount[MAXPLAYERS+1], bool:g_bMapTranslition, bool:g_bTeamLock, g_isOldTeamFlipped, g_isNewTeamFlipped, g_iTrineSize, UserMsg:g_iVotePassMessageId;
+//bool g_bCvarUnlocker;
+
+public Plugin myinfo =
 {
-	name = "l4d_team_unscramble",
-	author = "Harry Potter",
-	description = "forces all players on the right team after map/campaign/match change",
+	name = "[L4D & L4D2] Unscramble (R2CompMod Standalone)",
+	author = "raziEiL [disawar1], HarryPotter",
+	description = "Puts players on the right team after map/campaign change and provides API.",
 	version = PLUGIN_VERSION,
-	url = "myself"
+	url = "http://steamcommunity.com/id/raziEiL"
 }
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	CreateNative("UnScramble_KeepTeams", Native_UnScramble_KeepTeams);
+	RegPluginLibrary("r2comp_unscramble");
+	CreateNative("R2comp_UnscrambleStart", Native_R2comp_UnscrambleStart);
+	CreateNative("R2comp_UnscrambleKeep", Native_R2comp_UnscrambleKeep);
+	CreateNative("R2comp_IsUnscrambled", Native_R2comp_IsUnscrambled);
+	CreateNative("R2comp_AbortUnscramble", Native_R2comp_AbortUnscramble);
 	return APLRes_Success;
 }
+
 public OnPluginStart()
 {
+	#if UNSCRABBLE_LOG
+		BuildPath(Path_SM, g_sLogPatch, 128, g_LogFile);
+	#endif
 	LoadTranslations("Roto2-AZ_mod.phrases");
+
 	g_hTrine = CreateTrie();
 	g_fwdOnUnscrambleEnd = CreateGlobalForward("R2comp_OnUnscrambleEnd", ET_Ignore);
+	g_iVotePassMessageId = GetUserMessageId("VotePass");
 
-	g_hCvarEnable = CreateConVar("allow_unscramble", "1", "Enables unscramble feature (Puts all players on the right team after map/campaign/match change)", _, true, 0.0, true, 1.0);
-	g_hCvarNoVotes = CreateConVar("unscramble_novotes", "1", "Prevents calling votes until unscramble completes", _, true, 0.0, true, 1.0);
+	CreateConVar("rotoblin_unscramble_version", PLUGIN_VERSION, "R2CompMod Unscramble Standalone plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	RegAdminCmd("sm_keepteams", Command_KeepTeams, ADMFLAG_ROOT, "Force teams to be the same each round.");
+	ConVar cVar;
+	cVar = CreateConVar("rotoblin_unscramble_notify", "0", "0=Off, 1=Prints a notification to chat when unscramble is completed (lets spectators know when they can join a team).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_bCvarNotify = GetConVarBool(cVar);
+	HookConVarChange(cVar, OnCvarChange_Notify);
 
+	//cVar = CreateConVar("rotoblin_choosemenu_unlocker", "1", "0=Off, 1=Allows spectator/infected players to join the survivor team even if the survivor bot is dead (through M button).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	//g_bCvarUnlocker = GetConVarBool(cVar);
+	//HookConVarChange(cVar, OnCvarChange_Unlocker);
 
-	if (!(g_bCvarASEnable = GetConVarBool(g_hCvarEnable))){
+	cVar = CreateConVar("rotoblin_unscramble_novotes", "1", "0=Off, 1=Prevents calling votes until unscramble completes.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_bCvarNoVotes = GetConVarBool(cVar);
+	HookConVarChange(cVar, OnCvarChange_NoVotes);
 
-		return;
-	}
-	if (GetConVarBool(g_hCvarNoVotes)){
+	cVar = CreateConVar("rotoblin_unscramble_attempts", "3", "Maximum attempts to try to move player to the team he were.", FCVAR_NOTIFY, true, 1.0, true, 6.0);
+	g_iCvarAttempts = GetConVarInt(cVar);
+	HookConVarChange(cVar, OnCvarChange_Attempts);
 
-		AddCommandListener(AS_cmdh_Vote, "callvote");
-		AddCommandListener(AS_cmdh_Vote, "vote");
-	}
+	cVar = CreateConVar("rotoblin_unscramble_time", "45", "Unscramble max processing time after map changed. When the time expires the teams changes will be unlocked.", FCVAR_NOTIFY, true, 15.0);
+	g_fCvarTime = GetConVarFloat(cVar);
+	HookConVarChange(cVar, OnCvarChange_Time);
 
-	HookEvent("round_end", AS_ev_RoundEnd, EventHookMode_PostNoCopy);
-	HookEvent("vote_passed", AS_ev_VotePassed);
-	
-	strcopy(previousmap, sizeof(previousmap), "");
+	cVar = CreateConVar("rotoblin_allow_unscramble", "1", "0=Off, 1=Enables unscramble feature (Puts players on the right team after map/campaign change).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_bCvarEnabled = GetConVarBool(cVar);
+	UM_OnPluginEnabled();
+	HookConVarChange(cVar, OnCvarChange_Enabled);
+
+	//AutoExecConfig(true, "r2comp_unscramble");
+	//AddCommandListener(US_cmdh_JoinTeam, "jointeam");
+
+	RegAdminCmd("sm_keepteams", Command_KeepTeams, ADMFLAG_ROOT, "Force to store players team data.");
+	RegAdminCmd("sm_unscramble_start", Command_UnscrambleStart, ADMFLAG_ROOT, "Force to puts players on the right team.");
+	RegAdminCmd("sm_unscramble_abort", Command_UnscrambleAbort, ADMFLAG_ROOT, "Aborts unscramble process.");
 }
 
-public Action:AS_cmdh_Vote(client, const String:command[], argc)
+UM_OnPluginEnabled()
+{
+	if (!g_bCvarEnabled){
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "unscramble cvar is disabled");
+		PrintToServer("%s unscramble cvar is disabled", MAIN_TAG);
+	#endif
+		return;
+	}
+	if (g_bCvarNoVotes){
+
+		AddCommandListener(US_cmdh_Vote, "callvote");
+		AddCommandListener(US_cmdh_Vote, "vote");
+
+		if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
+			HookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
+	}
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "unscramble is enabled");
+		PrintToServer("%s unscramble is enabled", MAIN_TAG);
+	#endif
+
+	HookEvent("round_end", US_ev_RoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("vote_passed", US_ev_VotePassed);
+}
+
+UM_OnPluginDisabled()
+{
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "unscramble is disabled");
+		PrintToServer("%s unscramble is disabled", MAIN_TAG);
+	#endif
+
+	if (!g_bCvarEnabled) return;
+
+	if (g_bCvarNoVotes){
+
+		RemoveCommandListener(US_cmdh_Vote, "callvote");
+		RemoveCommandListener(US_cmdh_Vote, "vote");
+
+		if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
+			UnhookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
+	}
+
+	UnhookEvent("round_end", US_ev_RoundEnd, EventHookMode_PostNoCopy);
+	UnhookEvent("vote_passed", US_ev_VotePassed);
+}
+
+public Action:Command_KeepTeams(client, args)
+{
+	US_KeepTeams();
+	return Plugin_Handled;
+}
+
+public Action:Command_UnscrambleStart(client, args)
+{
+	US_StartProcess();
+	return Plugin_Handled;
+}
+
+public Action:Command_UnscrambleAbort(client, args)
+{
+	US_AbortProcess();
+	return Plugin_Handled;
+}
+
+public Action:US_cmdh_Vote(client, const String:command[], argc)
 {
 	if (g_bTeamLock){
 
@@ -69,73 +194,166 @@ public Action:AS_cmdh_Vote(client, const String:command[], argc)
 	return Plugin_Continue;
 }
 
-public Action:Command_KeepTeams(client, args)
-{
-	AS_KeepTeams();
+// public Action:US_cmdh_JoinTeam(client, const String:command[], argc)
+// {
+// 	if (g_bTeamLock && !g_bJoinTeamUsed[client]){
 
-	return Plugin_Handled;
-}
+// 		#if UNSCRABBLE_LOG
+// 			LogToFile(g_sLogPatch, "%N use '%s' cmd, but blocked!", client, command);
+// 		#endif
 
-public AS_ev_VotePassed(Handle:event, const String:sName[], bool:DontBroadCast)
+// 		return Plugin_Handled;
+// 	}
+
+// 	if (g_bCvarUnlocker){
+
+// 		decl String:sAgr[32];
+// 		GetCmdArg(1, sAgr, 32);
+
+// 		if (/*only chooseteam menu!*/StrEqual(sAgr, "survivor", false) && GetClientTeam(client) != 2){
+// 			#if UNSCRABBLE_LOG
+// 				LogToFile(g_sLogPatch, "%N use '%s' cmd, args '%s'", client, command, sAgr);
+// 			#endif
+
+// 			for (new i = 1; i <= MaxClients; i++){
+// 				if (IsSurvivor(i) && IsFakeClient(i) && IsPlayerAlive(i))
+// 					return Plugin_Continue;
+// 			}
+
+// 			decl String:sSurvivor[16];
+// 			new bool:bAnyBot;
+
+// 			for (new i = 1; i <= MaxClients; i++){
+// 				if (!IsSurvivor(i) || IsPlayerAlive(i) || !IsFakeClient(i)) continue;
+
+// 				bAnyBot = true;
+
+// 				if (!GetCharacterName(i, SZF(sSurvivor)))
+// 					return Plugin_Continue;
+
+// 				break;
+// 			}
+
+// 			if (!bAnyBot) return Plugin_Continue;
+
+// 			CheatCommandEx(client, "sb_takecontrol", sSurvivor);
+
+// 			#if UNSCRABBLE_LOG
+// 				LogToFile(g_sLogPatch, "[chooseteam] %N trying to join survivor (%s) (%s)", client, sSurvivor, GetClientTeam(client) == 2 ? "Okay" : "Fail");
+// 			#endif
+
+// 			return Plugin_Handled;
+// 		}
+// 	}
+
+// 	return Plugin_Continue;
+// }
+
+public US_ev_VotePassed(Handle:event, const String:sName[], bool:DontBroadCast)
 {
 	decl String:sDetals[128];
 	GetEventString(event, "details", sDetals, 128);
 
-	if (StrEqual(sDetals, "#L4D_vote_passed_mission_change"))
-		AS_KeepTeams();
+	if (StrEqual(sDetals, VOTE_MISSION_CHANGE))
+		US_KeepTeams();
 }
+
+public Action US_msg_OnVotePass(UserMsg msg_id, BfRead message, const int[] players, int playersNum, bool reliable, bool init)
+{
+	char sIssue[40];
+	message.ReadByte();
+	message.ReadString(SZF(sIssue));
+
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "VotePass Usermessage: issue: %s", sIssue);
+	#endif
+
+	if (StrEqual(VOTE_MISSION_CHANGE, sIssue) || StrEqual(VOTE_LEVEL_RESTART, sIssue))
+		US_KeepTeams();
+
+	return Plugin_Continue;
+}
+
+public Action OnLogAction(Handle source, Identity ident,int client, int target, const char[] message)
+{
+	if (g_bCvarEnabled && StrContains(message, "changed map to") != -1)
+		US_KeepTeams();
+
+	return Plugin_Continue;
+}
+
+/*
+ * ---------------------------
+ *		Forwards
+ * ---------------------------
+*/
+// ---- ;
 
 public OnMapStart()
 {
-	b_needswapteam = false;
-	
-	PrecacheModel("models/survivors/survivor_manager.mdl", true);
-	PrecacheModel("models/survivors/survivor_biker.mdl", true);
-	PrecacheModel("models/survivors/survivor_teenangst.mdl", true);
-	PrecacheModel("models/survivors/survivor_namvet.mdl", true);
-	
-	decl String:currentmap[128];
-	GetCurrentMap(currentmap, sizeof(currentmap));
-	if(StrEqual(currentmap, previousmap) && previoussecondround)
-	{
-		b_needswapteam = true;
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "--------- MapStart ---------");
+	#endif
+	for (new i = IsL4DGameEx() ? L4D_SURVIVOR_CHARACTER_OFFSET : 0; i < SC_SIZE; i++){
+		PrecacheModel(L4D2_LIB_SURVIVOR_MDL[i], true);
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "Precache %s", L4D2_LIB_SURVIVOR_MDL[i]);
+	#endif
 	}
-	strcopy(previousmap, sizeof(previousmap),currentmap);
-	previoussecondround = false;
-	
-	CreateTimer(0.5, AS_t_TeamsFlipped);
-
-	if (!g_iTrineSize) return;
-
-	g_bTeamLock = true;
-
-	CreateTimer(5.0, AS_t_CheckConnected, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(MAX_UNSRAMBLE_TIME, AS_t_AllowTeamChanges, _, TIMER_FLAG_NO_MAPCHANGE);
+	g_bMapTranslition = false;
+	CreateTimer(0.5, US_t_TeamsFlipped);
+	US_Start();
 }
 
-public Action:AS_t_TeamsFlipped(Handle:timer)
+public Action:US_t_TeamsFlipped(Handle:timer)
+{
+	US_UpdateTeamFlipped();
+}
+
+US_UpdateTeamFlipped()
 {
 	g_isNewTeamFlipped = GameRules_GetProp("m_bAreTeamsFlipped");
 }
 
-public AS_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+bool:US_Start()
 {
-	if (GameRules_GetProp("m_bInSecondHalfOfRound"))
-	{
-		AS_KeepTeams();
+	if (!g_iTrineSize)
+		return false;
+
+	g_bTeamLock = true;
+
+	CreateTimer(5.0, US_t_CheckConnected, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_fCvarTime, US_t_AllowTeamChanges, _, TIMER_FLAG_NO_MAPCHANGE);
+	return true;
+}
+
+US_StartProcess()
+{
+	if (US_Start()){
+		US_UpdateTeamFlipped();
+
+		for (new i = 1; i <= MaxClients; i++){
+			if (IsClientInGame(i))
+				OnClientPutInServer(i);
+		}
 	}
 }
 
-static AS_KeepTeams()
+public US_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (!g_bCvarASEnable) return;
-	
-	if(InSecondHalfOfRound())
-	{
-		previoussecondround = true;
-	}
-	
+	if (GameRules_GetProp("m_bInSecondHalfOfRound") && !g_bMapTranslition)
+		US_KeepTeams();
+}
+
+US_KeepTeams()
+{
+	if (!g_bCvarEnabled) return;
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "KeepTeams");
+	#endif
+
 	g_bTeamLock = false;
+	g_bMapTranslition = true;
 	g_isOldTeamFlipped = GameRules_GetProp("m_bAreTeamsFlipped");
 	ClearTrie(g_hTrine);
 
@@ -161,6 +379,10 @@ static AS_KeepTeams()
 					bConnectedOnly = false;
 
 				SetTrieValue(g_hTrine, sSteamID, iTeam);
+
+				#if UNSCRABBLE_LOG
+					LogToFile(g_sLogPatch, "team %d. %N (%s)", iTeam, i, sSteamID);
+				#endif
 			}
 		}
 	}
@@ -170,17 +392,18 @@ static AS_KeepTeams()
 
 	g_iTrineSize = GetTrieSize(g_hTrine);
 }
+
 public OnClientPutInServer(client)
 {
 	if (g_bTeamLock && !IsFakeClient(client)){
-	
+
 		g_bCheked[client] = true;
 		g_iFailureCount[client] = 0;
-		CreateTimer(1.0, AS_t_UnscrabbleMe, client, TIMER_REPEAT);
+		CreateTimer(1.0, US_t_UnscrabbleMe, client, TIMER_REPEAT);
 	}
 }
 
-public Action:AS_t_UnscrabbleMe(Handle:timer, any:client)
+public Action:US_t_UnscrabbleMe(Handle:timer, any:client)
 {
 	if (!g_bTeamLock || !IsClientInGame(client)){
 
@@ -200,7 +423,7 @@ public Action:AS_t_UnscrabbleMe(Handle:timer, any:client)
 
 		new iNTeam = iLTeam;
 
-		if (IsTeamSwapped() || b_needswapteam){
+		if (IsTeamSwapped()){
 
 			switch (iLTeam){
 
@@ -218,22 +441,23 @@ public Action:AS_t_UnscrabbleMe(Handle:timer, any:client)
 
 			// we dont use sdk call's
 			g_bJoinTeamUsed[client] = true;
-			FakeClientCommand(client, "jointeam %d", iNTeam);
-			g_bJoinTeamUsed[client] = false;
-		}
-		if (GetClientTeam(client) != iNTeam && g_iFailureCount[client] == 0){
+			//FakeClientCommand(client, "jointeam %d", iNTeam);
 			switch (iNTeam){
-
 				case 2:
 					FakeClientCommand(client, "sm_sur");
 				case 3:
 					FakeClientCommand(client, "sm_inf");
 			}
+			g_bJoinTeamUsed[client] = false;
 		}
-		
+
+		#if UNSCRABBLE_LOG
+			LogToFile(g_sLogPatch, "%N (%s). Teams: last %d, current %d. Moved to %d (%s).", client, sSteamID, iLTeam, iCTeam, iNTeam, GetClientTeam(client) == iNTeam ? "Okay" : "Fail");
+		#endif
+
 		if (GetClientTeam(client) != iNTeam){
 
-			if (++g_iFailureCount[client] >= UNSCRABBLE_MAX_FAILURE){
+			if (++g_iFailureCount[client] >= g_iCvarAttempts){
 
 				g_bCheked[client] = false;
 				return Plugin_Stop;
@@ -243,12 +467,20 @@ public Action:AS_t_UnscrabbleMe(Handle:timer, any:client)
 		}
 		else if (--g_iTrineSize == 0){
 
-			ForceToUnlockTeams();
+			#if UNSCRABBLE_LOG
+				LogToFile(g_sLogPatch, "Trine is empty. Unlock 'jointeam' cmd");
+			#endif
+
+			US_ForceToUnlockTeams();
 		}
 	}
 	else if (iCTeam != 1){
 
 		ChangeClientTeam(client, 1);
+
+		#if UNSCRABBLE_LOG
+			LogToFile(g_sLogPatch, "%N (%s). Unknown client. Moved to 1", client, sSteamID);
+		#endif
 	}
 
 	g_bCheked[client] = false;
@@ -256,18 +488,27 @@ public Action:AS_t_UnscrabbleMe(Handle:timer, any:client)
 	return Plugin_Stop;
 }
 
-public Action:AS_t_AllowTeamChanges(Handle:timer)
+public Action:US_t_AllowTeamChanges(Handle:timer)
 {
-	ForceToUnlockTeams();
+	#if UNSCRABBLE_LOG
+		LogToFile(g_sLogPatch, "Time is up (%.0f sec). Force to unlock 'jointeam' cmd", g_fCvarTime);
+	#endif
+
+	US_ForceToUnlockTeams();
 }
 
-public Action:AS_t_CheckConnected(Handle:timer)
+public Action:US_t_CheckConnected(Handle:timer)
 {
 	if (!g_iTrineSize)
 		return Plugin_Stop;
 
 	if (IsUnscrabbleComplete()){
-		ForceToUnlockTeams();
+
+		#if UNSCRABBLE_LOG
+			LogToFile(g_sLogPatch, "Last client connected. Unlock 'jointeam' cmd");
+		#endif
+
+		US_ForceToUnlockTeams();
 
 		return Plugin_Stop;
 	}
@@ -275,11 +516,11 @@ public Action:AS_t_CheckConnected(Handle:timer)
 	return Plugin_Continue;
 }
 
-static ForceToUnlockTeams()
+US_ForceToUnlockTeams()
 {
 	if (!g_bTeamLock) return;
 
-	if(g_bCvarASEnable)
+	if (g_bCvarNotify)
 	{
 		//CPrintToChatAll("{default}[{olive}TS{default}] Unscramble completed.");
 	}
@@ -287,16 +528,22 @@ static ForceToUnlockTeams()
 	Call_StartForward(g_fwdOnUnscrambleEnd);
 	Call_Finish();
 
+	US_ClearVars();
+}
+
+US_ClearVars()
+{
+	ClearTrie(g_hTrine);
 	g_bTeamLock = false;
 	g_iTrineSize = 0;
 }
 
-static bool:IsTeamSwapped()
+bool:IsTeamSwapped()
 {
 	return g_isOldTeamFlipped != g_isNewTeamFlipped;
 }
 
-static bool:IsUnscrabbleComplete()
+bool:IsUnscrabbleComplete()
 {
 	for (new i = 1; i <= MaxClients; i++)
 		if (g_bCheked[i] || IsClientConnected(i) && !IsClientInGame(i))
@@ -305,19 +552,77 @@ static bool:IsUnscrabbleComplete()
 	return true;
 }
 
+US_AbortProcess(bool:fireOnUnscrambleEnd = true)
+{
+	if (fireOnUnscrambleEnd)
+		US_ForceToUnlockTeams();
+	else
+		US_ClearVars();
+}
+
+stock void CheatCommandEx(client, const String:command[], const String:arguments[] = "")
+{
+	new iFlags = GetCommandFlags(command);
+	SetCommandFlags(command, iFlags & ~FCVAR_CHEAT);
+	FakeClientCommand(client, "%s %s", command, arguments);
+	SetCommandFlags(command, iFlags);
+}
+
+public Native_R2comp_UnscrambleStart(Handle:plugin, numParams)
+{
+	US_StartProcess();
+}
+
+public Native_R2comp_UnscrambleKeep(Handle:plugin, numParams)
+{
+	US_KeepTeams();
+}
+
 public Native_R2comp_IsUnscrambled(Handle:plugin, numParams)
 {
 	return !g_bTeamLock;
 }
 
-public Native_UnScramble_KeepTeams(Handle:plugin, numParams)
+public Native_R2comp_AbortUnscramble(Handle:plugin, numParams)
 {
-	AS_KeepTeams();
-	
-	return;
+	US_AbortProcess(GetNativeCell(1));
 }
 
-bool:InSecondHalfOfRound()
+public void OnCvarChange_Enabled(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
 {
-	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
+	if (!StrEqual(sOldVal, sNewVal)){
+
+		g_bCvarEnabled = GetConVarBool(cVar);
+		US_ClearVars();
+
+		if (g_bCvarEnabled)
+			UM_OnPluginEnabled();
+		else
+			UM_OnPluginDisabled();
+	}
+}
+
+public void OnCvarChange_Notify(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
+{
+	g_bCvarNotify = GetConVarBool(cVar);
+}
+/*
+public void OnCvarChange_Unlocker(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
+{
+	g_bCvarUnlocker = GetConVarBool(cVar);
+}
+*/
+public void OnCvarChange_NoVotes(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
+{
+	g_bCvarNoVotes = GetConVarBool(cVar);
+}
+
+public void OnCvarChange_Attempts(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
+{
+	g_iCvarAttempts = GetConVarInt(cVar);
+}
+
+public void OnCvarChange_Time(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
+{
+	g_fCvarTime = GetConVarFloat(cVar);
 }

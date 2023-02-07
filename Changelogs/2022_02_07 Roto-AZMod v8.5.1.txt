@@ -1,0 +1,48 @@
+v8.5.1
+
+* Support "left4deadDLC4-l4d2onl4d1" Mod
+* Play L4D2 maps in l4d1 game
+
+------------------New------------------
+-gamedata\l4d2_scripted_tank_stage_fix.txt
+-plugins\l4d2_scripted_tank_stage_fix.smx
+* Fixed passing Tank (going AI) triggering next stage of script finales.
+
+-gamedata\l4d2_pistol_delay.txt
+-plugins\l4d2_pistol_delay.smx
+* Allows you to adjust the rate of fire of pistols (with a high tickrate, the rate of fire of dual pistols is very high).
+
+------------------Delete------------------
+-gamedata\l4d_tongue_float_fix.txt
+-plugins\l4d_tongue_float_fix.smx
+* Increasing official convar "tongue_vertical_choke_height" to a large value does the same thing.
+
+------------------Change------------------
+-plugins\rotoblin-az.smx
+* Remove function: Prevent ghost infected players from spawning inside checkpoint area
+
+-plugins\l4dready.smx
+* Reset survivors drown damage when round is live.
+
+-plugins\l4dscores.smx
+* Delete convar "l4d_team_order"
+
+-plugins\l4d_tank_props.smx
+* Create the fake car and force it to display the position and angle of the real car constantly.
+
+-plugins\finalefix.smx
+* Kill the survivor if you are incapped or pinned as the rescue vehicle leaves.
+
+-plugins\cannounce.smx
+* Delete IP display.
+
+-plugins\l4d_team_unscramble.smx
+* Update version from disawar1: https://forums.alliedmods.net/showthread.php?p=2720280
+
+-cfg\
+* Removed convar "l4d_team_order"
+* Add official convar "tongue_vertical_choke_height 99999.9"
+
+
+
+

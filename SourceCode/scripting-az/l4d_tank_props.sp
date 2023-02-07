@@ -298,38 +298,51 @@ void CreateTankPropGlow(int car)
 	
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
-	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
 	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
 	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
+
+	i_Ent[car] = EntIndexToEntRef(entity);
+
+	//暴力法
+	SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
+
+	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
+	SetEntityRenderColor (car, 255,255,255, 50);
+
+	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
+	SetEntityRenderMode(entity, RENDER_TRANSCOLOR);
+	SetEntityRenderColor (entity, g_iCvarColor[0], g_iCvarColor[1], g_iCvarColor[2], 255);
+
+	/*
+	//沒暴力法
 	SetVariantString("!activator");
 	AcceptEntityInput(entity, "SetParent", car); 
 
-	i_Ent[car] = EntIndexToEntRef(entity);
-	//SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
+	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
 
-	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
 	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
-	SetEntityRenderColor (car, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2], 255);
+	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
+	SetEntityRenderColor (car, g_iCvarColor[0], g_iCvarColor[1], g_iCvarColor[2], 255);
+	*/
 }
 
-/*
+
 void TankThink(int car)
 {
-	int entity = i_Ent[car];
-	if (IsValidEntRef(entity))
+	if (IsValidEntRef(i_Ent[car]))
 	{
-		float vPos[3];
-		float vAng[3];
+		static float vPos[3];
+		static float vAng[3];
 		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
 		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+		TeleportEntity(i_Ent[car], vPos, vAng, NULL_VECTOR);
 	}
 	else
 	{
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
-*/
+
 
 void CreateTankPropGlowSpectator(int car)
 {
@@ -363,34 +376,40 @@ void CreateTankPropGlowSpectator(int car)
 	
 	TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
 	DispatchSpawn(entity);
-	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	
 	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
 	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
-	SetVariantString("!activator");
-	AcceptEntityInput(entity, "SetParent", car); 
 
 	i_EntSpec[car] = EntIndexToEntRef(entity);
 
-	//SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
+	//暴力法
+	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
+
+	/*
+	//沒暴力法
+	SetVariantString("!activator");
+	AcceptEntityInput(entity, "SetParent", car); 
+	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	 */
 }
-/*
+
 void SpecTankThink(int car)
 {
-	int entity = i_EntSpec[car];
-	if (IsValidEntRef(entity))
+	if (IsValidEntRef(i_EntSpec[car]))
 	{
-		float vPos[3];
-		float vAng[3];
+		static float vPos[3];
+		static float vAng[3];
 		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
 		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(entity, vPos, vAng, NULL_VECTOR);
+		TeleportEntity(i_EntSpec[car], vPos, vAng, NULL_VECTOR);
 	}
 	else
 	{
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
-*/
+
 public Action FadeTankProps( Handle timer ) {
 	int entity;
 	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {

@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.0
+v8.5.1
 <br/>CopyRight @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 
@@ -32,7 +32,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
-  * -console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0
+  * ```-console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0```
 	
 - - - -	
 ### Server Install Optional ###
@@ -89,7 +89,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * The cvar controlling the door speed is "tick_door_speed" and is set to 1.3 by default.
   * Specrates.smx is a useful plugin to reduce server load causes by spectators.
     * This will send less updates to Spectators whilst maintaining a pleasant viewing experience.
-  * When player connects or disconnected, it would print the message about steamid and ip only adms can see.
+  * When player connects or disconnected, it would print the message to everyone, only adms can see steamid .
   * All4Dead.smx allows administrators to influence what the AI director does without sv_cheats. it's a menu system which is attached to the sm_admin menu
   * votes3.smx makes All players can not call a valve vote (esc->vote). Remeber if player wants to call a vote, use ```sm_votes``` instead!!
   * Adm type ```sm_slots <#>``` to forcechange server slots
@@ -281,7 +281,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Prevents director or map overrides of z_common_limit. Kill common if overflow.
 * Remove restricted time between panic events (90s)
 * Prevent forced sliding when landing at head of enemies.
-
+* Dissolves the witch, common, survivor or special infected when killed.
+	* Only works in some certain maps that have water
+	* Dead bodies splash with water impact, which causes client fps drop and client crash
+  
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 30s.
@@ -335,9 +338,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fix SI getting **shoved by nothing**.
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
-	* Prevent ghost infected players from spawning inside checkpoint area
-	<br/>![image](https://user-images.githubusercontent.com/12229810/204044419-21bba5aa-33c3-4286-b633-e19fca0bcb37.png)
-	<br/>![image](https://user-images.githubusercontent.com/12229810/204048025-e448023e-89f1-4477-ae50-12fcf279411a.png)
 	
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -383,6 +383,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix frozen tanks, force tank player suicide when playing death animation.
     * Fix punch get-up varying in length, along with flexible setting to it.
     * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
+    * Fixed passing Tank (going AI) triggering next stage of script finales.
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
@@ -580,28 +581,43 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
 * **Support "left4deadDLC4-l4d2onl4d1" Mod**
+  <img src="https://user-images.githubusercontent.com/12229810/216926232-6d92f80f-1829-4af8-ae25-8f1009ef6e15.png" alt="11460c3797f5.png">
 * Play L4D2 maps in l4d1 game
-> **Developer Comment:** The files are private, please contact Harry to request download.
+  1. **C1 - Dead Center**
+  2. **C2 - Dark Carnival**
+  3. **C3 - Swamp Fever**
+  4. **C4 - Hard Rain**
+  5. **C5 - The Parish**
+  6. **C6 - The Passing**
+  7. **C13 - Cold Stream**
+  8. **C14 - The Last Stand (New)**
+> **Developer Comment:** The server support files are **PRIVATE**, please contact Harry to request download.
 
-* L4D2 map modify 
-	* Add ammo, weapons, and objects (Based on [L4D2-Comp-Stripper-Rework by Derpduck](https://github.com/Derpduck/L4D2-Comp-Stripper-Rework))
-	* Remove piece of shit l4d2 entities that crash server
+* **L4D2 Map Modify**
+  <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png" alt="11460c3797f5.png">
+  * Add models, materials, objects, infected ladders, invisible blocks in 2019 L4D2 The Last Stand update. ([mapfixes](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_mapfixes.nut), [versus](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_versus.nut))
+  * Add ammo, weapons, and objects, infected ladders, invisible blocks (Based on [L4D2-Comp-Stripper-Rework by Derpduck](https://github.com/Derpduck/L4D2-Comp-Stripper-Rework))
+  * Remove piece of shit l4d2 entities that crash server
   * Fix Fog, Gascan, cola, gnome issue and error
-* Gives a beam to gascans on the map
-	* Only works in c1m4, c6m3
-* Add a white outline glow effect to gas cans on the map
-	* Only works in c1m4, c6m3
-* Gives a color to gascans on the map
-	* Only works in c1m4, c6m3
-* Special Infected fire damage management.
-	* Only works in c1m4, c6m3
-* Turn the special infected models more random
-	* Only works in c6m1
-* Spawn single weapons and items
-* Reduced Damage of cars: 25
-	* Only works in c5m5 (The parish bridge finale)
-* Fixing Waiting For Survivors To Start The Finale or w/e
-	* It happens in c5m5, c4m1
+
+* **Plugin Support**
+  <img src="https://user-images.githubusercontent.com/12229810/215238179-010e8b4f-f44e-4989-8b37-b5772ab6fc88.png" alt="b5772ab6fc88.png">
+  * Gives a beam to gascans on the map
+    * c1m4, c6m3, c14m2
+  * Add a white outline glow effect to gas cans on the map
+    * c1m4, c6m3, c14m2
+  * Gives a color to gascans on the map
+    * c1m4, c6m3, c14m2
+  * Give Special Infected fire immunity
+    * c1m4, c6m3, c14m2
+  * Spawn bride witch model
+    * c6m1
+  * Spawn single weapons and items
+    * c1m1 saferoom
+  * Reduced Damage of cars: 25
+    * c5m5 (The parish bridge finale)
+  * Fixing Waiting For Survivors To Start The Finale or w/e
+    * It happens in c5m5, c4m1
 
 - - - -
 ### Others ###

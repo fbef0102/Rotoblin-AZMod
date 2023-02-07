@@ -35,7 +35,7 @@ v8.5.0
 -gamedata\l4d_dissolve_infected.txt
 * Dissolves the witch, common, survivor or special infected when killed.
 	* Only works in some certain maps that have water
-	* Dead bodies splash with water impact, which causes client fps drop and crashing
+	* Dead bodies splash with water impact, which causes client fps drop and client crash
 	
 -plugins\l4d_consistent_escaperoute.smx
 -gamedata\l4d_consistent_escaperoute.txt

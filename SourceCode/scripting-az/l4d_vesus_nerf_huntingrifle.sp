@@ -436,6 +436,13 @@ void OnWeaponSwitchPost(int client, int weapon)
 		g_bIsSniperActive[client] = false;
 		return;
 	}
+
+	int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if(iCurrentWeapon <= 0)
+		return;
+	
+	if(iCurrentWeapon != weapon)
+		return;
 	
 	static char classname[64];
 	GetEntityClassname(weapon, classname, sizeof(classname));

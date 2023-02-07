@@ -110,7 +110,6 @@ static survivor_progress;
 static String:previousmap[128];
 
 //convar
-new Handle:cvarTeamSwapping = INVALID_HANDLE;
 new Handle:g_hPillScore = INVALID_HANDLE;
 new Handle:g_hKitScores = INVALID_HANDLE;
 new g_iPillScore;
@@ -176,8 +175,8 @@ public OnPluginStart()
 	RegConsoleCmd("sm_ps", Command_PrintScores, "sm_ps");
 	RegConsoleCmd("sm_scores", Command_PrintScores, "sm_scores - print up a list of round/campaign scores");
 	RegConsoleCmd("sm_score", Command_PrintScores, "sm_score - print up a list of round/campaign scores");
-	RegConsoleCmd("sm_bonus", Command_Health, "sm_s - bring up a list of round/campaign scores");
-	RegConsoleCmd("sm_health", Command_Health, "sm_s - bring up a list of round/campaign scores");
+	RegConsoleCmd("sm_bonus", Command_Health, "sm_bonus - Health bonus this round");
+	RegConsoleCmd("sm_health", Command_Health, "sm_bonus - Health bonus this round");
 	
 	RegAdminCmd("sm_swap", Command_Swap, ADMFLAG_BAN, "sm_swap <player1> [player2] ... [playerN] - swap all listed players to opposite teams");
 	RegAdminCmd("sm_swapto", Command_SwapTo, ADMFLAG_BAN, "sm_swapto <player1> [player2] ... [playerN] <teamnum> - swap all listed players to <teamnum> (1,2, or 3)");
@@ -191,10 +190,6 @@ public OnPluginStart()
 	* Cvars
 	*/
 	CreateConVar("l4d_team_manager_ver", SCORE_VERSION, "Version of the score/team manager plugin.", FCVAR_SPONLY|FCVAR_NOTIFY);
-	cvarTeamSwapping = CreateConVar("l4d_team_order", "0", 
-			"0 - highest score goes survivor first, 1 - highest score goes infected first, 2 - never swap teams, 3 - swap teams every map, 4 - swap teams on the 3rd map, 5 - same as 0 except on finale highest score goes infected first", 
-			FCVAR_SPONLY|FCVAR_NOTIFY
-	);
 	
 	g_hPillScore = 	CreateConVar("l4d_score_healthbounus_pill", "15", "Heath bounus each pill. (0=off)", FCVAR_SPONLY|FCVAR_NOTIFY);
 	g_iPillScore = GetConVarInt(g_hPillScore);
@@ -817,7 +812,7 @@ public OnMapEnd()
 	* Try to figure out if we should swap scores 
 	* at the beginning of the next map
 	*/
-	new TeamSwappingType:swapKind = TeamSwappingType:GetConVarInt(cvarTeamSwapping);
+	TeamSwappingType swapKind = HighestScoreSurvivorFirstButFin;
 	switch(swapKind)
 	{
 		case SwapEveryMap:
@@ -1156,7 +1151,7 @@ GetClientTeamForNextMap(client, bool:pendingSwapScores = false)
 {
 	new bool:isThirdMap = mapCounter == 3;
 	
-	new TeamSwappingType:swapKind = TeamSwappingType:GetConVarInt(cvarTeamSwapping);
+	TeamSwappingType swapKind = HighestScoreSurvivorFirstButFin;
 	new team;
 	
 	//same type of logic except on the finale, in which we flip it

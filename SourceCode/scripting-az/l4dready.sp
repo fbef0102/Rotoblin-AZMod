@@ -155,7 +155,7 @@ native ChoseTankPrintWhoBecome();
 native OpenSpectatorsListenMode();
 native GiveSurAllPills();
 native ShowRotoInfo();
-native UnScramble_KeepTeams();
+native R2comp_UnscrambleKeep(); //From l4d_team_unscramble.smx
 native bool:IsClientVoteMenu(client);//From Votes2
 native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native AnnounceSIClasses();//From si_class_announce
@@ -1283,7 +1283,7 @@ public Action:timerLiveMessageCallback(Handle:timer)
 {
 	ShowRotoInfo();
 	OpenSpectatorsListenMode();
-	UnScramble_KeepTeams();
+	R2comp_UnscrambleKeep();
 	AnnounceSIClasses();
 	
 	return Plugin_Stop;
@@ -3051,6 +3051,16 @@ RoundEndBeforeLive()
 //round_start just after the last automatic restart
 RoundIsLive()
 {
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(!IsClientInGame(i)) continue;
+
+		if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
+
+		SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
+		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
+	}
+
 	SetConVarInt(FindConVar("sb_stop"), SB_STOP_CONVAR);
 	SetConVarInt(g_hDirectorNoDeathCheck, 0);
 	UnfreezeAllPlayers();

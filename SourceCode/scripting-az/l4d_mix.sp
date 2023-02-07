@@ -368,7 +368,7 @@ void DisplayVoteMenuCaptainSurvivor()
 		SurvivorCaptainMenu.ExitButton = true;
 		for(int i = 1; i <= MaxClients; i++) 
 			if (IsClientInGame(i)&&!IsFakeClient(i))
-				SurvivorCaptainMenu.Display(i, 10);
+				SurvivorCaptainMenu.Display(i, 15);
 
 
 		CreateTimer(10.1, TimerCheckSurvivorCaptainVote, view_as<any>(2), 0);
@@ -467,14 +467,14 @@ void DisplayVoteMenuPlayerSelect()
 		{
 			if (!g_bSelectToggle)
 			{
-				PlayerSelectMenu.Display(g_iSurvivorCaptain, 1);
+				PlayerSelectMenu.Display(g_iSurvivorCaptain, 3);
 			}
 			if (g_bSelectToggle)
 			{
-				PlayerSelectMenu.Display(g_iInfectedCaptain, 1);
+				PlayerSelectMenu.Display(g_iInfectedCaptain, 3);
 			}
 		}
-		CreateTimer(1.1, Timer_PlayerSelection, view_as<any>(1), 0);
+		CreateTimer(3.0, Timer_PlayerSelection, view_as<any>(1), 0);
 	}
 }
 
@@ -589,7 +589,7 @@ void DisplayVoteMenuCaptainInfected()
 	
 	for(int i = 1; i <= MaxClients; i++)
 		if (IsClientInGame(i) && !IsFakeClient(i) && g_iSurvivorCaptain != i)
-			InfectedCaptainMenu.Display(i, 10);
+			InfectedCaptainMenu.Display(i, 15);
 			
 	CreateTimer(10.1, TimerCheckInfectedCaptainVote, view_as<any>(2), 0);
 }

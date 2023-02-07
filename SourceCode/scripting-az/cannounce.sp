@@ -258,15 +258,17 @@ PrintFormattedMessageToAdmins( client, playerjoin)//專屬給adm看的
 	{
 		for (new i = 1; i <= MaxClients; i++)
 		{
-			if( IsClientInGame(i) && CheckCommandAccess( i, "", ADMFLAG_GENERIC, true ) )
+			if( IsClientInGame(i) && CheckCommandAccess( i, "", ADMFLAG_ROOT, true ) )
 			{
-				if(playerjoin == 1)//玩家進來
+				if(playerjoin == 1) //玩家進來
 				{
-					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce1",i, player, message, player_ip, STEAMID);
+					//CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce1",i, player, message, player_ip, STEAMID);
+					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) {olive}<%s>","cannounce1",i, player, message, STEAMID);
 				}
-				else//玩家離開
+				else //玩家離開
 				{
-					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce2",i,player,dcreason,player_ip, STEAMID);
+					//CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) IP: {green}%s{default} {olive}<%s>","cannounce2",i,player,dcreason,player_ip, STEAMID);
+					CPrintToChat(i, "{default}[{olive}TS{default}] %T ({green}%s{default}) {olive}<%s>","cannounce2",i,player,dcreason, STEAMID);
 				}
 			}
 		}
@@ -298,7 +300,7 @@ PrintFormattedMsgToNonAdmins( client, playerjoin )//給不是adm看的
 		
 	for (new i = 1; i <= MaxClients; i++)
 	{
-		if( IsClientInGame(i) && !CheckCommandAccess( i, "", ADMFLAG_GENERIC, true ) )
+		if( IsClientInGame(i) && !CheckCommandAccess( i, "", ADMFLAG_ROOT, true ) )
 		{
 			if(playerjoin == 1)//玩家進來
 			{
