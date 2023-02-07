@@ -462,7 +462,7 @@
 		{
 			"End Saferoom"
 			{
-				"min"		"75"
+				"min"		"70"
 				"max"		"100"
 			}
 		}
@@ -470,7 +470,7 @@
 		{
 			"End Saferoom"
 			{
-				"min"		"75"
+				"min"		"70"
 				"max"		"100"
 			}
 		}
@@ -511,6 +511,14 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.5"
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_jsarena04_arena"
 	{
@@ -769,6 +777,472 @@
 			{
 				"min"		"60"
 				"max"		"75"
+			}
+		}
+	}
+	"c1m1_hotel"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"tank_ban_flow"
+		{
+			"Before elevator exit"
+			{
+				"min"		"51"
+				"max"		"77"
+			}
+			"Early spawns"
+			{
+				"min"		"0"
+				"max"		"31"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Early spawns"
+			{
+				"min"		"0"
+				"max"		"24"
+			}
+		}
+	}
+	"c1m2_streets"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.25"
+		"Cola_map" "1"
+		"tank_ban_flow"
+		{
+			"One way drop"
+			{
+				"min"		"56"
+				"max"		"62"
+			}
+			"Cola Event"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
+		}
+	}
+	"c1m3_mall"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.5"
+		"tank_ban_flow"
+		{
+			"Event escalators"
+			{
+				"min"		"61"
+				"max"		"80"
+			}
+		}
+	}
+	"c1m4_atrium"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"tank_map_off" "1"
+		"witch_map_off" "1"
+		"GasCan_map" "1"
+		"witch_ban_flow"
+		{
+			"Before elevator"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
+	}
+	"c2m1_highway"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"One way drop platforms"
+			{
+				"min"		"76"
+				"max"		"79"
+			}
+		}
+	}
+	"c2m2_fairgrounds"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"tank_ban_flow"
+		{
+			"Start of event"
+			{
+				"min"		"86"
+				"max"		"100"
+			}
+		}
+	}
+	"c2m3_coaster"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"tank_ban_flow"
+		{
+			"Coaster Start"
+			{
+				"min"		"57"
+				"max"		"100"
+			}
+		}
+	}
+	"c2m4_barns"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.6"
+		"tank_ban_flow"
+		{
+			"Event 2nd stage"
+			{
+				"min"		"86"
+				"max"		"100"
+			}
+		}
+	}
+	"c2m5_concert"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		
+	}
+	"c3m1_plankcountry"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Before ferry (bugged spawn)"
+			{
+				"min"		"37"
+				"max"		"62"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Before ferry (bugged spawn)"
+			{
+				"min"		"37"
+				"max"		"62"
+			}
+		}
+	}
+	"c3m2_swamp"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.25"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+	}
+	"c3m3_shantytown"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Bridge Event"
+			{
+				"min"		"76"
+				"max"		"79"
+			}
+		}
+	}
+	"c3m4_plantation"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+	}
+	"c4m1_milltown_a"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"WAIT_FOR_FINALE_map"	"1"
+		"tank_ban_flow"
+		{
+			"Early spawns"
+			{
+				"min"		"0"
+				"max"		"28"
+			}
+		}
+	}
+	"c4m2_sugarmill_a"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Field"
+			{
+				"min"		"82"
+				"max"		"100"
+			}
+		}
+	}
+	"c4m3_sugarmill_b"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Elevator"
+			{
+				"min"		"30"
+				"max"		"36"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Field and elevator"
+			{
+				"min"		"0"
+				"max"		"29"
+			}
+		}
+	}
+	"c4m4_milltown_b"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.6"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+	}
+	"c4m5_milltown_escape"
+	{
+		"pill_limit" "0"
+		"VersusModifier"		"2.0"
+		"tank_map_off" "1"
+		"no_final_first_tank" "0"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+	}
+	"c5m1_waterfront"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"tank_ban_flow"
+		{
+			"Early spawns"
+			{
+				"min"		"0"
+				"max"		"38"
+			}
+		}
+	}
+	"c5m2_park"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"tank_ban_flow"
+		{
+			"CEDA trailer and alarm event"
+			{
+				"min"		"58"
+				"max"		"88"
+			}
+		}
+	}
+	"c5m3_cemetery"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Sewer and parking lot"
+			{
+				"min"		"60"
+				"max"		"73"
+			}
+		}
+	}
+	"c5m4_quarter"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.6"
+		"tank_ban_flow"
+		{
+			"Last one way drop"
+			{
+				"min"		"88"
+				"max"		"100"
+			}
+		}
+	}
+	"c5m5_bridge"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"WAIT_FOR_FINALE_map"	"1"
+		"GauntletFinale_map"	"1"
+		"witch_map_off" "1"
+		"versus_boss_flow_min" 	"12"
+		"tank_ban_flow"
+		{
+			"Rush Bridge"
+			{
+				"min"		"15"
+				"max"		"100"
+			}
+		}
+	}
+	"c6m1_riverbank"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"witch_map_off" "1"
+		"BridgeWitch_map" "1"
+		"WaterSlowDown_map" 	"1"
+	}
+	"c6m2_bedlam"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Event (bugged spawn)"
+			{
+				"min"		"74"
+				"max"		"100"
+			}
+		}
+	}
+	"c6m3_port"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"tank_map_off" "1"
+		"witch_map_off" "1"
+		"no_final_first_tank" "0"
+		"GasCan_map" "1"
+		"witch_ban_flow"
+		{
+			"Before elevator"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
+	}
+	"c13m1_alpinecreek"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"After one way drop"
+			{
+				"min"		"83"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"After one way drop"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
+	}
+	"c13m2_southpinestream"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.25"
+		"tank_ban_flow"
+		{
+			"Event"
+			{
+				"min"		"82"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Event"
+			{
+				"min"		"75"
+				"max"		"100"
+			}
+		}
+	}
+	"c13m3_memorialbridge"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Event and bridge descent"
+			{
+				"min"		"50"
+				"max"		"77"
+			}
+		}
+	}
+	"c13m4_cutthroatcreek"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"tank_ban_flow"
+		{
+			"River Rush"
+			{
+				"min"		"32"
+				"max"		"71"
+			}
+		}
+	}
+	"c14m1_junkyard"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+	}
+	"c14m2_lighthouse"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"WaterSlowDown_map" 	"1"
+		"GasCan_map" "1"
+		"tank_ban_flow"
+		{
+			"one way drop"
+			{
+				"min"		"64"
+				"max"		"80"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"one way drop"
+			{
+				"min"		"64"
+				"max"		"80"
 			}
 		}
 	}
