@@ -7,7 +7,7 @@
 //如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
 --------引擎主要--------
-[01] sourcemod 1.11-git6905
+[01] sourcemod 1.11-git6919
 [02] metamod  1.11-git1148
 [03] stripper 1.2.2-git129
 [04] l4dtoolz 1.1.0.2
@@ -50,6 +50,15 @@
  1. 原始開發團隊: l4d2onl4d1-team
  2. 改進優化: AshThe9thSurvivor
  3. 對抗更新: HarryPotter
+* 地圖列表:
+ 1. C1 - Dead Center
+ 2. C2 - Dark Carnival
+ 3. C3 - Swamp Fever
+ 4. C4 - Hard Rain
+ 5. C5 - The Parish
+ 6. C6 - The Passing
+ 7. C13 - Cold Stream
+ 8. C14 - The Last Stand (New)
 
 
 --------武器調整--------
@@ -266,7 +275,7 @@
 //多一點聽到Smoker與Boomer的語音
 
 [60] TickrateFixes
-//解決tick高的時候存在的少數問題 (Hook Pistols + 重力 + 門速)
+//解決tick高的時候存在的少數問題 (重力 + 門速)
 
 [61] l4d_storm
 //L4D1 黑暗Environment 
@@ -684,6 +693,12 @@
 
 [194] smart_ai_rock
 //AI Tank丟石頭變得比較聰明，能馬上轉頭看向後面黏住的倖存者
+
+[195] l4d2_scripted_tank_stage_fix
+//修正 救援開始後的最後一隻Tank變成AI，救援載具馬上到來
+
+[196] l4d2_pistol_delay
+//修正 高Tickrate情況下，手槍射速過快
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
