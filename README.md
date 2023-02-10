@@ -613,11 +613,35 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Spawn bride witch model
     * c6m1
   * Spawn single weapons and items
-    * c1m1 saferoom
+    * c1m1 saferoom, c4m1 saferoom
   * Reduced Damage of cars: 25
     * c5m5 (The parish bridge finale)
   * Fixing Waiting For Survivors To Start The Finale or w/e
     * It happens in c5m5, c4m1
+  * <details><summary><b>Details of each plugin</b></summary>
+
+    * **In c1m4, c6m3, c14m2 map. there is a problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field, so these three plugins fix that**
+      ```php
+      l4d_random_beam_item.smx
+      l4d_random_entity_color.smx
+      l4d1_glow_gascan.smx
+      ```
+
+    * **Put the single smg and shotgun on saferoom because there are no any weapons in c1m1 saferoom and c4m1 saferoom**
+      ```php
+      l4d_weapon_spawn.smx
+      ```
+
+    * **Spawn "bride witch model" on the wedding scene in c6m1**
+      ```php
+      l4d1_random_witch_model.smx
+      ```
+
+    * **In c1m4, c6m3, c14m2 map, give special infected fire immune, so they won't burn**
+      ```php
+      si_fire_immunity.smx
+      ```
+  </details>
 
 - - - -
 ### Others ###

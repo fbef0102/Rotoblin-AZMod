@@ -39,6 +39,9 @@ v8.5.1
 -plugins\l4d_team_unscramble.smx
 * Update version from disawar1: https://forums.alliedmods.net/showthread.php?p=2720280
 
+-plugins\optional\l4d_tankhud.smx
+* Fix Translation
+
 -cfg\
 * Removed convar "l4d_team_order"
 * Add official convar "tongue_vertical_choke_height 99999.9"

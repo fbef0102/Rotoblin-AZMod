@@ -84,7 +84,7 @@ public Action:ToggleTankHudCmd(client, args)
 	
 	if(IsClientInGame(client) && IsInfected(client) && GetEntProp(client, Prop_Send, "m_zombieClass") == 5 && bTankHudActive[client])
 	{
-		CPrintToChat(client, "{default}[{green}HUD{default}] {default}As a {green}Tank{default}, you won't see {lightgreen}Tank Hud{default}.");
+		CPrintToChat(client, "%T", "l4d_tankhud2", client);
 	}
 }
 
