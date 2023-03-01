@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.18"
+#define PLUGIN_VERSION 		"1.19"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,7 +31,7 @@
 
 ========================================================================================
 	Change Log:
-1.18 (2-Feb-2023) by Harry
+1.19 (21-Feb-2023) by Harry
 	- Add survivor body RENDERFX_FADE_FAST (no dissolve)
 	- Remove infected body dissolve (RENDERFX_FADE_FAST only)
 	- Remove LMC
@@ -489,8 +489,10 @@ public void Event_Death(Event event, const char[] name, bool dontBroadcast)
 						{
 							SetEntityRenderFx(target, RENDERFX_FADE_FAST);
 							DissolveTarget(index, target);
+							RemoveEntity(target);
 						} else {
 							DissolveTarget(index, target);
+							RemoveEntity(target);
 						}
 					}
 				}

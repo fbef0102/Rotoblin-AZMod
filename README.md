@@ -197,12 +197,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Reload Speed: 2.23->1.75
   * Damage: 20->23
   * Limit: 3
+  * FF Protect Range: 37
       
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
   * Ammo: 128->96
-  * Limit: None
-      
+  * Limit: 3
+  * FF Protect Range: 37
+
+* **Pistol**
+  * FF Protect Range: 25
+
 * **Hunting Rifle**
   * Empty Reload Time: 1->1.25
   * Normal Reload Time: 1 (unchanged)
@@ -212,6 +217,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Tank dmg: 90->120
   * Hunter dmg: Chest 250, Stomach 168
   * Limit: 1
+  * FF Protect Range: 25
   > **Developer Comment:** As we've noticed in L4D1, the Uzis were completely nothing and shotguns were taking over everything. In the release of Roto-AZMod, I want to make the Uzi more attractiv, which result into the Uzi having more advantages. And there can be a sniper in a team, this Hunting Rifle is nerfed a lot as you can see rate of fire is very slow. Peope can choose thier desired weapons. Each performs one's own best part in a team.
 
 - - - -
@@ -416,7 +422,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
     * Allow Bunny hop pounce (one of l4d1 original feature)
-    * Maximum pounce damage: **35**
+    * Maximum pounce damage: **40**
     * Wallkick/Backjumps
       - *(5v5)*: **✔**
       - *(4v4)*: **✔**

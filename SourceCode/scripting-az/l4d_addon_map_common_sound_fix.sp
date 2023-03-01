@@ -136,8 +136,9 @@ public Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, ch
 
         if(IsCommonInfected(entity))
         {
-            if(strncmp(sample, "ambient/weather/", 16, false) == 0 ||
-               strncmp(sample, "physics/wood/", 13, false) == 0)
+            /*if(strncmp(sample, "ambient/weather/", 16, false) == 0 ||
+               strncmp(sample, "physics/wood/", 13, false) == 0)*/
+            if( strncmp(sample, "npc/infected/", 13, false) != 0)
             {
                 //PrintToChatAll("zombie been shot sound or zombie bullet bug sound: %s", sample);
 

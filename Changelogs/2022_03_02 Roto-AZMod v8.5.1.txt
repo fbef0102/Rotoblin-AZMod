@@ -42,9 +42,32 @@ v8.5.1
 -plugins\optional\l4d_tankhud.smx
 * Fix Translation
 
+-plugins\l4d_addon_map_common_sound_fix.smx
+-plugins\l4d_fix_deathfall_cam.smx
+* Update
+
+-plugins\savechat.smx
+* Save and record players' commands in console
+
+-plugins\checkpoint-rage-control.smx
+* Added conditions and events to prevent notice spam.
+
+-plugins\l4d_godframes_and_hittable_control.smx
+* Add friendly fire protect range
+  * Uzi: 37
+  * Pumpshotgun: 37
+  * Hunting Rifle: 37
+  * Pistol: 25
+  
 -cfg\
 * Removed convar "l4d_team_order"
 * Add official convar "tongue_vertical_choke_height 99999.9"
+
+* **Pumpshotgun**
+  * Limit: 3 (was 4)
+  
+* **Hunter:**
+    * Maximum pounce damage: **40**
 
 
 
