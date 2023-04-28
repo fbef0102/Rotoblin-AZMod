@@ -1007,6 +1007,8 @@ public void OnClientPutInServer(int client)
 {
 	if(IsFakeClient(client)) return;
 
+	readyStatus[client] = 0;
+
 	g_iSpectatePenaltyCounter[client] = g_iSpectatePenalty;
 	CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
@@ -1470,6 +1472,7 @@ public Action:eventPlayerTeamCallback(Handle:event, const String:name[], bool:do
 	#endif
 	
 	SetEngineTime(client);
+	readyStatus[client] = 0;
 	if(readyMode)
 	{
 		DrawReadyPanelList();
@@ -2118,8 +2121,6 @@ public Action:readyDown(client, args)
 	if(!readyMode || !readyStatus[client] || GetClientTeam(client) == L4D_TEAM_SPECTATE || g_bIsSpectating[client]) return Plugin_Handled;
 	if(isCampaignBeingRestarted || insideCampaignRestart) return Plugin_Handled;
 	
-	decl String:name[MAX_NAME_LENGTH];
-	GetClientName(client, name, sizeof(name));
 	SetEngineTime(client);
 	readyStatus[client] = 0;
 	checkStatus();

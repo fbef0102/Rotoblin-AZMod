@@ -10,7 +10,7 @@
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
 	"ROTO_AZ_PLUGIN_VERSION"
 	{
-		"en"			"Rotoblin-AZ Mod v8.5.1"
+		"en"			"Rotoblin-AZ Mod v8.5.2"
 	}
 	"Plugin_Information"
 	{
@@ -2175,13 +2175,13 @@
 	"l4d_tankhud1"
 	{
 		"#format"	"{1:s}"
-		"en"		"{default}[{green}HUD{default}]{lightgreen} Tank Hud {default}is now {olive}{1}{default}."
-		"zho"		"{default}[{green}介面插件{default}]{lightgreen} Tank介面 {default}目前 {olive}{1}{default}."
+		"en"		"[{green}HUD{default}]{lightgreen} Tank Hud {default}is now {olive}{1}{default}."
+		"zho"		"[{green}介面插件{default}]{lightgreen} Tank介面 {default}目前 {olive}{1}{default}."
 	}
 	"l4d_tankhud2"
 	{
-		"en"		"{default}[{green}HUD{default}] As a {green}Tank{default}, you won't see {lightgreen} Tank Hud{default}."
-		"zho"		"{default}[{green}介面插件{default}] 身為一個 {green}Tank{default}, 你不會看見 {lightgreen}Tank介面{default}."
+		"en"		"[{green}HUD{default}] As a {green}Tank{default}, you won't see {lightgreen}Tank Hud{default}."
+		"zho"		"[{green}介面插件{default}] 身為一個 {green}Tank{default}, 你不會看見 {lightgreen}Tank介面{default}."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"

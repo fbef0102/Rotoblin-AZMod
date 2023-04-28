@@ -22,7 +22,7 @@ int iTankClient = -1;
 public Plugin:myinfo = {
 	name        = "L4D2 Tank Props,l4d1 modify by Harry",
 	author      = "Jahze & Harry Potter",
-	version     = "2.6",
+	version     = "2.7",
 	description = "Stop tank props from fading whilst the tank is alive + add Hittable Glow",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
@@ -64,8 +64,18 @@ public void OnPluginEnd()
 
 public void OnMapEnd()
 {
+	DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
+
 	ClearArray(hTankProps);
 	ClearArray(hTankPropsHit);
+}
+
+public void OnClientDisconnect(int client)
+{
+	if(IsTank(client))
+	{
+		CreateTimer(0.5, TankDeadCheck, _, TIMER_FLAG_NO_MAPCHANGE);
+	}
 }
 
 void PluginEnable() {
@@ -534,7 +544,6 @@ int FindTank() {
 
 bool IsTank( int client ) {
     if ( client < 0
-    || !IsClientConnected(client)
     || !IsClientInGame(client)
     || GetClientTeam(client) != 3
     || !IsPlayerAlive(client) ) {

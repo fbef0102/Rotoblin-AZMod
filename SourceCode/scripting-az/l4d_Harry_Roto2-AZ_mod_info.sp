@@ -87,7 +87,13 @@ public Native_ShowRotoInfo(Handle:plugin, numParams)
 
 public Action:InfoCmd(client, args)
 {
-	if(!IsClientConnected(client) || IsFakeClient(client))
+	if (client == 0)
+	{
+		PrintToServer("[TS] %T","command cannot be used by server.",client);
+		return;
+	}
+
+	if(IsFakeClient(client))
 		return;
 		
 	ClientInfoMenu[client] = true;
@@ -101,7 +107,10 @@ public Action:InfoLanguage(client, args)
 		PrintToServer("[TS] %T","command cannot be used by server.",client);
 		return;
 	}
-	if(!IsClientConnected(client) || IsFakeClient(client)) return;
+
+	if(IsFakeClient(client))
+		return;
+
 	PrintToChat(client,"<%T>","Language",client);
 }
 

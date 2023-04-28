@@ -15,7 +15,7 @@ forward Action CH_PassFilter(int ent1, int ent2, bool &result);
 public Extension __ext_collisionhook =
 {
 	name = "CollisionHook",
-	file = "collisionhook.ext.2.l4d",
+	file = "collisionhook.ext",
 
 #if defined AUTOLOAD_EXTENSIONS
 	autoload = 1,

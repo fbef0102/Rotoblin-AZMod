@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.1
+v8.5.2
 <br/>CopyRight @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 
@@ -190,12 +190,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.26
-  * Moveing Spread: 3.0->2.45
+  * Still Spread: 0.32->0.22
+  * Moveing Spread: 3.0->2.0
   * Ammo: 480->800
   * Damage Drop-off: 0.84->0.78
-  * Reload Speed: 2.23->1.75
-  * Damage: 20->23
+  * Reload Speed: 2.23->1.8
+  * Damage: 20->22
   * Limit: 3
   * FF Protect Range: 37
       
@@ -344,7 +344,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fix SI getting **shoved by nothing**.
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
-	
+	* Prevent ghost infected players from spawning inside checkpoint area
+    <br/>![image](https://user-images.githubusercontent.com/12229810/204044419-21bba5aa-33c3-4286-b633-e19fca0bcb37.png)
+    <br/>![image](https://user-images.githubusercontent.com/12229810/204048025-e448023e-89f1-4477-ae50-12fcf279411a.png)
+
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
     * Show how long is tank alive, and tank punch/rock/car statistics once tank dead
@@ -608,22 +611,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * **Plugin Support**
   <img src="https://user-images.githubusercontent.com/12229810/215238179-010e8b4f-f44e-4989-8b37-b5772ab6fc88.png" alt="b5772ab6fc88.png">
-  * Gives a beam to gascans on the map
-    * c1m4, c6m3, c14m2
-  * Add a white outline glow effect to gas cans on the map
-    * c1m4, c6m3, c14m2
-  * Gives a color to gascans on the map
-    * c1m4, c6m3, c14m2
-  * Give Special Infected fire immunity
-    * c1m4, c6m3, c14m2
-  * Spawn bride witch model
-    * c6m1
-  * Spawn single weapons and items
-    * c1m1 saferoom, c4m1 saferoom
-  * Reduced Damage of cars: 25
-    * c5m5 (The parish bridge finale)
-  * Fixing Waiting For Survivors To Start The Finale or w/e
-    * It happens in c5m5, c4m1
+
   * <details><summary><b>Details of each plugin</b></summary>
 
     * **In c1m4, c6m3, c14m2 map. there is a problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field, so these three plugins fix that**
@@ -648,6 +636,23 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       si_fire_immunity.smx
       ```
   </details>
+  
+  * Gives a beam to gascans on the map
+    * c1m4, c6m3, c14m2
+  * Add a white outline glow effect to gas cans on the map
+    * c1m4, c6m3, c14m2
+  * Gives a color to gascans on the map
+    * c1m4, c6m3, c14m2
+  * Give Special Infected fire immunity
+    * c1m4, c6m3, c14m2
+  * Spawn bride witch model
+    * c6m1
+  * Spawn single weapons and items
+    * c1m1 saferoom, c4m1 saferoom
+  * Reduced Damage of cars: 25
+    * c5m5 (The parish bridge finale)
+  * Fixing Waiting For Survivors To Start The Finale or w/e
+    * It happens in c5m5, c4m1
 
 - - - -
 ### Others ###

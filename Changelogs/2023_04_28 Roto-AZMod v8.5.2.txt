@@ -1,0 +1,45 @@
+v8.5.2
+
+* Support "left4deadDLC4-l4d2onl4d1" Mod
+* Please re-download latest "Windows Server files" or "Linux Server files"
+
+------------------New------------------
+-plugins\l4d_fix_saferoom_ghostspawn.smx
+-gamedata\l4d_fix_saferoom_ghostspawn.txt
+* Fix a glitch that ghost can spawn in saferoom while it shouldn't.
+
+------------------Delete------------------
+None
+
+------------------Change------------------
+-plugins\checkpoint-rage-control.smx
+-plugins\l4d_no_m2_movement_block.smx
+-plugins\l4d_tank_props.smx
+* Fixed error
+
+-plugins\l4d_tongue_block_fix.smx
+* Update version
+
+-plugins\left4dhooks.smx
+* Update 1129
+
+-plugins\l4d_sm_respawn.smx
+-plugins\l4d_tankpunchstuckfix.smx
+-plugins\optional\l4d_ssi_teleport_fix.smx
+* Replace gamedata with left4dhooks
+
+-plugins\optional\l4d_vesus_nerf_huntingrifle.smx = > l4d_versus_nerf_huntingrifle.smx
+* Correct Name
+
+-cfg\
+-data\l4d_info_editor_weapons.cfg
+* **Uzi**
+  * Still Spread: 0.32->0.22 (was 0.26)
+  * Moveing Spread: 3.0->2.0 (was 2.45)
+  * Ammo: 480->800
+  * Damage Drop-off: 0.84->0.78
+  * Reload Speed: 2.23->1.8 (was 1.75)
+  * Damage: 20->22 (was 23)
+  
+-stripper\Roto-AZMod\maps\
+* Modify The Sacrifice & (L4D2) The Passing

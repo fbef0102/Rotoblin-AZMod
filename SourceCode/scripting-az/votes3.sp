@@ -642,7 +642,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 		{
 			if (player == param1)
 			{
-				CPrintToChatAll("{default}[{olive}TS{default}] Kick yourself? choose again");
+				CPrintToChat(param1, "{default}[{olive}TS{default}] Kick yourself? choose again");
 				CreateVoteKickMenu(param1);
 			}
 			else 
@@ -664,7 +664,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 		}
 		else
 		{
-			CPrintToChatAll("{default}[{olive}TS{default}] %t", "votes3_18");
+			CPrintToChat(param1, "{default}[{olive}TS{default}] %t", "votes3_18");
 			CreateVoteKickMenu(param1);
 		}
 

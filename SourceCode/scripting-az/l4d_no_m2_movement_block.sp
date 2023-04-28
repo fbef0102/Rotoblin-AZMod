@@ -94,6 +94,9 @@ MRESReturn OnPlayerMove_Pre(Address pThis)
 	int client = L4D_GetSIFromAddress(CTerrorGameMovement_GetPlayer(pThis));
 	if (client == -1 || !IsPlayerAlive(client))
 		return MRES_Ignored;
+
+	if (IsFakeClient(client) || GetClientTeam(client) != 3)
+		return MRES_Ignored;
 	
 	if (GetEntProp(client, Prop_Send, "m_zombieClass") == 5)
 		return MRES_Ignored;

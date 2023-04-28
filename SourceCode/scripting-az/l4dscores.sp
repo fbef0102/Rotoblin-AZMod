@@ -812,7 +812,7 @@ public OnMapEnd()
 	* Try to figure out if we should swap scores 
 	* at the beginning of the next map
 	*/
-	TeamSwappingType swapKind = HighestScoreSurvivorFirstButFin;
+	TeamSwappingType swapKind = HighestScoreSurvivorFirst;
 	switch(swapKind)
 	{
 		case SwapEveryMap:
@@ -1151,7 +1151,7 @@ GetClientTeamForNextMap(client, bool:pendingSwapScores = false)
 {
 	new bool:isThirdMap = mapCounter == 3;
 	
-	TeamSwappingType swapKind = HighestScoreSurvivorFirstButFin;
+	TeamSwappingType swapKind = HighestScoreSurvivorFirst;
 	new team;
 	
 	//same type of logic except on the finale, in which we flip it

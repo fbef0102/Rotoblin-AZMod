@@ -2,15 +2,6 @@
 {
 	"#default"
 	{
-		"Offsets"
-		{
-			"OS"
-			{
-				"linux"			"1"
-				"windows"		"0"
-			}
-		}
-		
 		"Functions"
 		{
 			"CTongue::UpdateTongueTarget"
@@ -75,7 +66,7 @@
 				"linux"
 				{
 					"offset"	"47Eh"
-					"verify"	"\xC7\x44\x24\x04"	// mov  dword ptr [esp+04h], 0
+					"verify"	"\xC7\x44\x24\x04"					// mov  dword ptr [esp+04h], 0
 					"patch"		"\x89\x74\x24\x04\x90\x90\x90\x90"	// mov  [esp+04h], esi ; this
 				}
 				"windows"
@@ -138,7 +129,7 @@
 				{
 					"signature"	"CTongue::OnUpdateExtendingState"
 					"read"		"235"
-					"offset"	"8"
+					"read"		"8"
 				}
 			}
 		}
@@ -247,7 +238,7 @@
 				{
 					"signature"	"CTongue::OnUpdateExtendingState"
 					"read"		"259"
-					"offset"	"8"
+					"read"		"8"
 				}
 			}
 		}

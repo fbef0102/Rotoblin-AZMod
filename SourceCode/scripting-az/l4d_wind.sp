@@ -164,7 +164,7 @@ public Action Timer_KickFakeBot(Handle timer, int fakeclient)
 {
 	if(IsClientConnected(fakeclient))
 	{
-		KickClient(fakeclient, "Kicking FakeClient");	
+		KickClient(fakeclient, "Kicking Fake Bot by l4d_wind");	
 		return Plugin_Stop;
 	}	
 	return Plugin_Continue;

@@ -147,7 +147,7 @@ public Action:KickTick(Handle:hTimer, any:Junk)
 	{
 		if(IsClientConnected(i)&&IsFakeClient(i)&&IsUseless(i)&&NumSurvivors>MaxSurvivors)
 		{
-			CreateTimer(0.0, KickFakeClient, i);
+			CreateTimer(0.1, KickFakeClient, i);
 			NumSurvivors--;
 		}
 	}
@@ -160,7 +160,7 @@ public Action:KickFakeClient(Handle:hTimer, any:Client)
 {
 	if(IsClientConnected(Client) && IsFakeClient(Client))
 	{
-		KickClient(Client, "Kicking Fake Client.");
+		KickClient(Client, "Kicking Fake Bot by l4d_superversus");
 	}
 	return Plugin_Handled;
 }

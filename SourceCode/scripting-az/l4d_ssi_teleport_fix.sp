@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
+#include <left4dhooks>
 
 #define  MIN(%0,%1) (((%0) < (%1)) ? (%0) : (%1))
 #define L4DInfected_Smoker 1
@@ -36,7 +37,6 @@ float g_DiscardRange;
 int g_iSsitpLimit;
 int sitele2[MAXPLAYERS + 1] = {-1};
 int si2tele[MAXPLAYERS + 1] = {-1};
-static Handle WarpToValidPositionSDKCall = null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -56,26 +56,12 @@ public Plugin myinfo =
 	name = "Super SI Teleport.", 
 	author = "AiMee, Harry Potter", 
 	description = "Teleport infected player (Not tank) to the teammate who is much nearer to survivors.", 
-	version = "1.3", 
+	version = "1.4", 
 	url = "https://steamcommunity.com/id/TIGER_x_DRAGON/"
 };
 
 public void OnPluginStart()
 {
-	Handle hGameConf = LoadGameConfigFile("l4d_ssi_teleport_fix");
-	if( hGameConf == null )
-	{
-		SetFailState("Unable to find gamedata \"l4d_ssi_teleport_fix.txt\".");
-	}
-	StartPrepSDKCall(SDKCall_Player);
-	PrepSDKCall_SetFromConf(hGameConf, SDKConf_Signature, "WarpToValidPositionIfStuck");
-	WarpToValidPositionSDKCall = EndPrepSDKCall();
-	if(WarpToValidPositionSDKCall == null)
-	{
-		SetFailState("Could not find signature \"WarpToValidPositionIfStuck\".");
-	}
-	delete hGameConf;
-
 	g_hDiscardRange  	= CreateConVar("ssitp_tp1_range", 			"600",	"Infected player will be teleported if his distance is outside this range.", FCVAR_NOTIFY, true, 1.0);
 	g_hTeleRangeMax 	= CreateConVar("ssitp_tp2_range_max", 		"800", 	"Teleport to the player max range, value must <= 'ssitp_tp1_discard_range'.", FCVAR_NOTIFY, true, 1.0);
 	g_hTeleRangeMin 	= CreateConVar("ssitp_tp2_range_min", 		"150", 	"Teleport to the player min range", FCVAR_NOTIFY, true, 0.0);
@@ -351,7 +337,7 @@ public Action Timer_CheckIfStuck(Handle timer, int client)
 {
 	if (IsClientInGame(client) && GetClientTeam(client) == 3)
 	{
-		SDKCall(WarpToValidPositionSDKCall, client, 0);
+		L4D_WarpToValidPositionIfStuck(client);
 	}
 
 	return Plugin_Continue;

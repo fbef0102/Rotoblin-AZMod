@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <left4dhooks>
 #include <multicolors>
 #include <l4d_lib>
 
@@ -35,7 +36,6 @@ new     Handle:     g_hCvarDeStuckTime                          = INVALID_HANDLE
 new 	Handle: 	tpsf_debug_print;
 new modelnum[MAXPLAYERS + 1];
 static bool:TankPounchClient[MAXPLAYERS + 1];
-static Handle g_WarpToValidPositionSDKCall = null;
 
 public Plugin:myinfo = 
 {
@@ -61,18 +61,6 @@ public Native_IsTankPounchClient(Handle:plugin, numParams)
 
 public OnPluginStart()
 {
-    Handle hGameData = LoadGameConfigFile("l4d_tankpunchstuckfix");
-    if (hGameData == null) SetFailState("Could not find gamedata file at addons/sourcemod/gamedata/l4d_tankpunchstuckfix.txt , you FAILED AT INSTALLING");
-
-    StartPrepSDKCall(SDKCall_Player);
-    PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "WarpToValidPositionIfStuck");
-    g_WarpToValidPositionSDKCall = EndPrepSDKCall();
-    if(g_WarpToValidPositionSDKCall == null)
-    {
-        SetFailState("Could not find signature \"WarpToValidPositionIfStuck\".");
-    }
-    delete hGameData;
-
     LoadTranslations("Roto2-AZ_mod.phrases");
     // hook already existing clients if loading late
     if (g_bLateLoad) {
@@ -310,7 +298,7 @@ public PrintDebug(const String:Message[], any:...)
 
 stock void CTerrorPlayer_WarpToValidPositionIfStuck(int client)
 {
-	SDKCall(g_WarpToValidPositionSDKCall, client, 0);
+	L4D_WarpToValidPositionIfStuck(client);
 }
 
 public Action:OnBotSwap(Handle:event, const String:name[], bool:dontBroadcast) 

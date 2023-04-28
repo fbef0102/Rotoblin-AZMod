@@ -63,12 +63,12 @@
 
 --------武器調整--------
 [01] Uzi 機槍
-1.{　0.32->0.26	 } 每發子彈的彈道
-2.{　3.0->2.45　 } 邊移動邊開槍的準度
+1.{　0.32->0.22	 } 每發子彈的彈道
+2.{　3.0->2.0　  } 邊移動邊開槍的準度
 3.{　480->800　  } 後備子彈
 4.{　0.84->0.78　} 傷害距離遞減
-5.{  2.23->1.75  } 裝彈速度
-6.{  20->23	     } 傷害
+5.{  2.23->1.8   } 裝彈速度
+6.{  20->22      } 傷害
 7.{　3　		 } 隊伍可拿數量
 8.{　37　		 } 友傷保護範圍
 
@@ -210,7 +210,7 @@
 [37] l4d2_blind_infected
 //Hides all weapons and iteams from the infected team or dead survivor until they are (possibly) visible to one of the alive survivors to prevent SI scouting the map
 
-[38] l4d_vesus_nerf_huntingrifle
+[38] l4d_versus_nerf_huntingrifle
 //削弱狙擊槍各種設定,改成二代AWP,Scout拉勾模式, 射一槍,拉一下
 
 [39] l4d_huntingrifle_damagemodify 　(乘風撰寫)
@@ -705,6 +705,9 @@
 
 [196] l4d2_pistol_delay
 //修正 高Tickrate情況下，手槍射速過快
+
+[197] l4d_fix_saferoom_ghostspawn
+//修正 靈魂特感在安全室可以鑽NAV漏洞復活
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
