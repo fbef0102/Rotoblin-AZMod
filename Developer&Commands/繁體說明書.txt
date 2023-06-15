@@ -709,6 +709,9 @@
 [197] l4d_fix_saferoom_ghostspawn
 //修正 靈魂特感在安全室可以鑽NAV漏洞復活
 
+[198] l4d1_glow_item
+//讓武器與物品發光，方便玩家練習
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

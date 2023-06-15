@@ -115,6 +115,7 @@ Handle g_hSDK_CMeleeWeaponInfoStore_GetMeleeWeaponInfo;
 Handle g_hSDK_CTerrorGameRules_GetMissionInfo;
 Handle g_hSDK_CDirector_TryOfferingTankBot;
 Handle g_hSDK_CNavMesh_GetNavArea;
+Handle g_hSDK_CNavArea_IsConnected;
 Handle g_hSDK_CTerrorPlayer_GetFlowDistance;
 Handle g_hSDK_CTerrorPlayer_SetShovePenalty;
 // Handle g_hSDK_CTerrorPlayer_SetNextShoveTime;
@@ -727,6 +728,7 @@ int Native_CTerrorGameRules_GetSurvivorSetMap(Handle plugin, int numParams) // N
 	char sTemp[8];
 	//PrintToServer("#### CALL g_hSDK_CTerrorGameRules_GetMissionInfo");
 	int infoPointer = SDKCall(g_hSDK_CTerrorGameRules_GetMissionInfo);
+	ValidateAddress(infoPointer, "CTerrorGameRules::GetMissionInfo");
 
 	//PrintToServer("#### CALL g_hSDK_KeyValues_GetString");
 	SDKCall(g_hSDK_KeyValues_GetString, infoPointer, sTemp, sizeof(sTemp), "survivor_set", "2"); // Default set = 2
@@ -1881,8 +1883,6 @@ int Native_SetFirstSpawnClass(Handle plugin, int numParams) // Native "L4D2_SetF
 
 int Native_NavAreaTravelDistance(Handle plugin, int numParams) // Native "L4D2_NavAreaTravelDistance"
 {
-	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
-
 	ValidateNatives(g_hSDK_NavAreaTravelDistance, "NavAreaTravelDistance");
 
 	float vPos[3], vEnd[3];
@@ -1892,7 +1892,10 @@ int Native_NavAreaTravelDistance(Handle plugin, int numParams) // Native "L4D2_N
 	int a3 = GetNativeCell(3);
 
 	//PrintToServer("#### CALL g_hSDK_NavAreaTravelDistance");
-	return SDKCall(g_hSDK_NavAreaTravelDistance, vPos, vEnd, a3);
+	if( g_bLeft4Dead2 )
+		return SDKCall(g_hSDK_NavAreaTravelDistance, vPos, vEnd, a3);
+
+	return SDKCall(g_hSDK_NavAreaTravelDistance, vPos, vEnd);
 }
 
 int Native_NavAreaBuildPath(Handle plugin, int numParams) // Native "L4D2_NavAreaBuildPath"
@@ -2067,10 +2070,33 @@ any Native_GetPlayerSpawnTime(Handle plugin, int numParams) // Native "L4D_GetPl
 {
 	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
 
-	ValidateAddress(g_iOff_SpawnTimer, "SpawnTimer");
+	ValidateAddress(g_iOff_m_flBecomeGhostAt, "CTerrorPlayer::m_flBecomeGhostAt");
+
+	float fBecomeGhostAt = GetEntDataFloat(GetNativeCell(1), g_iOff_m_flBecomeGhostAt);
+	return fBecomeGhostAt - GetGameTime();
+}
+
+int Native_SetPlayerSpawnTime(Handle plugin, int numParams) // Native "L4D_SetPlayerSpawnTime"
+{
+	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
+
+	ValidateAddress(g_iOff_m_flBecomeGhostAt, "CTerrorPlayer::m_flBecomeGhostAt");
 
 	int client = GetNativeCell(1);
-	return (view_as<float>(LoadFromAddress(GetEntityAddress(client) + view_as<Address>(g_iOff_SpawnTimer + 8), NumberType_Int32)) - GetGameTime());
+
+	float time = GetNativeCell(2);
+	time += GetGameTime();
+
+	SetEntDataFloat(client, g_iOff_m_flBecomeGhostAt, time, false);
+
+	// We need to tell the player that his spawn time has been changed so that it is displayed in the client hud.
+	// iClient - 1, turn player index into player slot.
+	if( GetNativeCell(3) && g_iPlayerResourceRef != INVALID_ENT_REFERENCE && EntRefToEntIndex(g_iPlayerResourceRef) != INVALID_ENT_REFERENCE )
+	{
+		SetEntPropFloat(g_iPlayerResourceRef, Prop_Send, "m_flBecomeGhostAt", time, client);
+	}
+
+	return 0;
 }
 
 int Native_CDirector_RestartScenarioFromVote(Handle plugin, int numParams) // Native "L4D_RestartScenarioFromVote"
@@ -3108,6 +3134,21 @@ int Native_GetNavAreaPos(Handle plugin, int numParams) // Native "L4D_GetNavArea
 	return 0;
 }
 
+int Native_GetNavAreaCenter(Handle plugin, int numParams) // Native "L4D_GetNavAreaCenter"
+{
+	Address area = GetNativeCell(1);
+
+	float vPos[3];
+
+	vPos[0] = view_as<float>(LoadFromAddress(area + view_as<Address>(44), NumberType_Int32));
+	vPos[1] = view_as<float>(LoadFromAddress(area + view_as<Address>(48), NumberType_Int32));
+	vPos[2] = view_as<float>(LoadFromAddress(area + view_as<Address>(52), NumberType_Int32));
+
+	SetNativeArray(2, vPos, sizeof(vPos));
+
+	return 0;
+}
+
 int Native_GetNavAreaSize(Handle plugin, int numParams) // Native "L4D_GetNavAreaSize"
 {
 	Address area = GetNativeCell(1);
@@ -3127,6 +3168,17 @@ int Native_GetNavAreaSize(Handle plugin, int numParams) // Native "L4D_GetNavAre
 	SetNativeArray(2, vSize, sizeof(vSize));
 
 	return 0;
+}
+
+int Native_CNavArea_IsConnected(Handle plugin, int numParams) // Native "L4D_NavArea_IsConnected"
+{
+	Address area1 = GetNativeCell(1);
+	Address area2 = GetNativeCell(2);
+	int dir = GetNativeCell(3);
+
+	if( dir < 1 || dir > 4 ) ThrowError("Invalid direction specified: %d should be 1-4", dir);
+
+	return SDKCall(g_hSDK_CNavArea_IsConnected, area1, area2, dir);
 }
 
 int Native_GetTerrorNavArea_Attributes(Handle plugin, int numParams) // Native "L4D_GetNavArea_SpawnAttributes"
@@ -3191,6 +3243,7 @@ int Native_CTerrorGameRules_GetNumChaptersForMissionAndMode(Handle plugin, int n
 
 			//PrintToServer("#### CALL g_hSDK_CTerrorGameRules_GetMissionInfo");
 			int infoPointer = SDKCall(g_hSDK_CTerrorGameRules_GetMissionInfo);
+			ValidateAddress(infoPointer, "CTerrorGameRules::GetMissionInfo");
 
 			char sMode[64];
 			char sTemp[64];
@@ -3659,7 +3712,7 @@ any Direct_GetSpawnTimer(Handle plugin, int numParams) // Native "L4D2Direct_Get
 {
 	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
 
-	ValidateAddress(g_iOff_SpawnTimer, "SpawnTimer");
+	ValidateAddress(g_iOff_m_flBecomeGhostAt, "SpawnTimer");
 
 	int client = GetNativeCell(1);
 	if( client < 1 || client > MaxClients )
@@ -3669,7 +3722,7 @@ any Direct_GetSpawnTimer(Handle plugin, int numParams) // Native "L4D2Direct_Get
 	if( pEntity == Address_Null )
 		return CTimer_Null;
 
-	return view_as<CountdownTimer>(pEntity + view_as<Address>(g_iOff_SpawnTimer));
+	return view_as<CountdownTimer>(pEntity + view_as<Address>(g_iOff_m_flBecomeGhostAt - 8));
 }
 
 any Direct_GetInvulnerabilityTimer(Handle plugin, int numParams) // Native "L4D2Direct_GetInvulnerabilityTimer"

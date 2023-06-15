@@ -6,7 +6,7 @@
 #include <sourcescramble>
 #include <dhooks>
 
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.4"
 
 public Plugin myinfo = 
 {
@@ -27,6 +27,7 @@ public Plugin myinfo =
 #define PATCH_ARG "__AddEntityToIgnore_argpatch"
 #define PATCH_PASSENT "__TraceFilterTongue_passentpatch"
 #define PATCH_DUMMY "__AddEntityToIgnore_dummypatch"
+#define PATCH_COOP_DUMMY "__AddEntityToIgnore_noncompetitive_dummypatch"
 
 DynamicDetour g_hDetour;
 
@@ -79,9 +80,15 @@ public void OnPluginStart()
 	MemoryPatch hPatch = CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_DUMMY);
 	PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
 	
+	hPatch = CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_COOP_DUMMY);
+	PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
+	
 	if (GetEngineVersion() == Engine_Left4Dead)
 	{
 		hPatch = CreateEnabledPatch(conf, KEY_ISTARGETVISIBLE...PATCH_DUMMY);
+		PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
+		
+		hPatch = CreateEnabledPatch(conf, KEY_ISTARGETVISIBLE...PATCH_COOP_DUMMY);
 		PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
 	}
 	
@@ -92,7 +99,7 @@ public void OnPluginStart()
 	delete conf;
 	
 	CreateConVarHook("tongue_tip_through_teammate",
-					"0",
+					"1",
 					"Whether smoker can shoot his tongue through his teammates.\n"
 				...	"1 = Through generic SIs, 2 = Through Tank, 3 = All, 0 = Disabled",
 					FCVAR_SPONLY,
@@ -100,7 +107,7 @@ public void OnPluginStart()
 					CvarChg_TipThroughTeammate);
 	
 	CreateConVarHook("tongue_fly_through_teammate",
-					"1",
+					"5",
 					"Whether tongue can go through his teammates once shot.\n"
 				...	"1 = Through generic SIs, 2 = Through Tank, 4 = Through Survivors, 7 = All, 0 = Disabled",
 					FCVAR_SPONLY,

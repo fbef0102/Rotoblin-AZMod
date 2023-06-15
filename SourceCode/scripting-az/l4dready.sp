@@ -162,6 +162,8 @@ native AnnounceSIClasses();//From si_class_announce
 native antibaiter_clear();//From l4d_antibaiter
 native Score_GetTeamCampaignScore(team);//From l4dscores
 native Keep_SI_Starting(); //From l4d_QuadCaps
+native bool TS_GetHostName(char[] str, int size); //From l4d_DynamicHostname, just prevent idiots from changing hostname "[ZS]"
+native void MaterialHack_CheckClients(); //From l4d_texture_manager_block, check if any client uses ConVar cheat
 
 new String:HostName[256];
 new change;
@@ -947,20 +949,7 @@ public OnMapStart()
 	readyCountdownTimer = INVALID_HANDLE;
 	MapCountdownTimer = INVALID_HANDLE;
 	
-	decl String:sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
-	
-	new Handle:file = OpenFile(sPath, "r");//讀取檔案
-	if(file == INVALID_HANDLE)
-	{
-		LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
-		return;
-	}
-	
-	if(!IsEndOfFile(file) && ReadFileLine(file, HostName, sizeof(HostName)))//讀一行
-	{
-		//LogMessage("Host Name without current mode: %s",HostName);
-	}
+	TS_GetHostName(HostName, sizeof(HostName));
 }
 
 public bool:OnClientConnect()
@@ -2525,6 +2514,9 @@ public Action:TimerCountAdd(Handle:timer)
 
 		DrawReadyPanelList();
 		checkStatus();
+
+		MaterialHack_CheckClients();
+		
 		return Plugin_Continue;
 	}
 	return Plugin_Stop;

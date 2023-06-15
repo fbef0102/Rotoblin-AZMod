@@ -2,9 +2,8 @@
 #include <sdktools>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.3"
 
-#define		DN_TAG		"[DHostName]"
 #define		SYMBOL_LEFT		'('
 #define		SYMBOL_RIGHT	')'
 
@@ -18,6 +17,21 @@ public Plugin:myinfo =
 	description = "Show what mode is it now on chinese server name with txt file",
 	version = PLUGIN_VERSION,
 	url = "http://steamcommunity.com/profiles/76561198026784913"
+}
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	CreateNative("TS_GetHostName", Native_GetHostName);
+
+	return APLRes_Success;
 }
 
 public OnPluginStart()
@@ -58,4 +72,36 @@ ChangeServerName()
 	}
 
 	CloseHandle(file);
+}
+
+
+// native int TS_GetHostName(char[] str, int size)
+int Native_GetHostName(Handle plugin, int numParams)
+{
+	int size;
+	size = GetNativeCell(2);
+	if (size <= 0) return false;
+
+	char[] str = new char[size];
+
+	char sPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
+	
+	new Handle:file = OpenFile(sPath, "r");//讀取檔案
+	if(file == INVALID_HANDLE)
+	{
+		LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
+		CloseHandle(file);
+		return false;
+	}
+
+	if(!IsEndOfFile(file) && ReadFileLine(file, str, size))//讀一行
+	{
+		SetNativeString(1, str, size, false);
+		CloseHandle(file);
+		return true;
+	}
+	CloseHandle(file);
+
+	return false;
 }

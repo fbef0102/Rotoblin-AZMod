@@ -1,39 +1,10 @@
-/**
-// ====================================================================================================
-Change Log:
-
-1.0.4 (19-June-2022)
-    - Fixed an error while trying to retrieve the glow parent entity. (thanks "CrazMan" for reporting)
-
-1.0.3 (25-September-2021)
-    - Added blink color/alpha option.
-    - Fixed some weapons blinking while equipped.
-    - Fixed minigun glow position.
-
-1.0.2 (15-September-2021)
-    - Added fade option (team based).
-    - Added cvar timer to detect when should toggle the glow.
-    - Fixed sprite console errors.
-
-1.0.1 (12-September-2021)
-    - Removed minigun outline glow while in use.
-    - Added new commands to manually add/remove glow.
-    - Added support to model-based config in the data file. (thanks "KadabraZz" for requesting)
-    - Added blink effect. (thanks "KadabraZz" for sharing)
-
-1.0.0 (07-September-2021)
-    - Initial release.
-
-// ====================================================================================================
-*/
-
 // ====================================================================================================
 // Plugin Info - define
 // ====================================================================================================
 #define PLUGIN_NAME                   "[L4D1] Glow Item (White)"
-#define PLUGIN_AUTHOR                 "Mart"
+#define PLUGIN_AUTHOR                 "Mart, Harry"
 #define PLUGIN_DESCRIPTION            "Add a white outline glow effect to items on the map"
-#define PLUGIN_VERSION                "1.0.4"
+#define PLUGIN_VERSION                "1.0h"
 #define PLUGIN_URL                    "https://forums.alliedmods.net/showthread.php?t=334222"
 
 // ====================================================================================================
@@ -98,6 +69,7 @@ public Plugin myinfo =
 #define CONFIG_ARRAYSIZE              9
 
 #define MAXENTITIES                   2048
+#define ENTITY_SAFE_LIMIT             2000
 
 // ====================================================================================================
 // Plugin Cvars
@@ -544,6 +516,8 @@ void OnNextFrame(int entityRef)
     }
 
     int glow = CreatePropGlow(entity, config);
+    if(glow <= 0) return;
+
     ge_iConfig[glow] = config;
 }
 
@@ -561,6 +535,8 @@ int CreatePropGlow(int parent, int[] config)
     GetEntPropVector(parent, Prop_Data, "m_angAbsRotation", vAngles);
 
     int entity = CreateEntityByName("prop_glowing_object");
+    if( !CheckIfEntityMax(entity) ) return -1;
+
     DispatchKeyValue(entity, "solid", "0");
     DispatchKeyValue(entity, "targetname", "l4d1_glow_item");
     DispatchKeyValue(entity, "disableshadows", "1");
@@ -1090,6 +1066,8 @@ Action CmdAdd(int client, int args)
         AcceptEntityInput(entity, "Kill");
 
     int glow = CreatePropGlow(parent, g_iDefaultConfig);
+    if(glow <= 0) return Plugin_Handled;
+
     ge_iConfig[glow] = g_iDefaultConfig;
     ge_iConfig[glow][CONFIG_TEAM] = 0;
     ge_iConfig[glow][CONFIG_FADEMAX] = 0;
@@ -1130,6 +1108,8 @@ Action CmdAll(int client, int args)
             continue;
 
         int glow = CreatePropGlow(entity, g_iDefaultConfig);
+        if(glow <= 0) return Plugin_Handled;
+
         ge_iConfig[glow] = g_iDefaultConfig;
         ge_iConfig[glow][CONFIG_TEAM] = 0;
         ge_iConfig[glow][CONFIG_FADEMAX] = 0;
@@ -1264,7 +1244,21 @@ Action Timer_AlarmCar(Handle timer, int entityRef)
 
 
     int glow = CreatePropGlow(entity, config);
+    if(glow <= 0) return Plugin_Continue;
+
     ge_iConfig[glow] = config;
 
     return Plugin_Continue;
+}
+
+bool CheckIfEntityMax(int entity)
+{
+	if(entity == -1) return false;
+
+	if(	entity > ENTITY_SAFE_LIMIT)
+	{
+		AcceptEntityInput(entity, "Kill");
+		return false;
+	}
+	return true;
 }

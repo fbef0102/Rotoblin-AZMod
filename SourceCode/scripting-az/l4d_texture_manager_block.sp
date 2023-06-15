@@ -12,9 +12,24 @@ public Plugin myinfo =
 	name = "Mathack Block",
 	author = "Sir, Visor, NightTime & extrav3rt, Harry Potter",
 	description = "Kicks out clients who are potentially attempting to enable mathack",
-	version = "1.6",
+	version = "1.7",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	CreateNative("MaterialHack_CheckClients", Native_CheckClients);
+
+	return APLRes_Success;
+}
 
 public void OnPluginStart()
 {
@@ -28,12 +43,12 @@ public void OnPluginStart()
 	CreateTimer(2.5, CheckClients, _, TIMER_REPEAT);
 }
 
-public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	g_iPenalty = g_hPenalty.IntValue;
 }
 
-public Action CheckClients(Handle timer)
+Action CheckClients(Handle timer)
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -47,13 +62,15 @@ public Action CheckClients(Handle timer)
 			QueryClientConVar(client, "l4d_bhop", ClientQueryCallback_l4d_bhop); //ban auto bhop from dll
 			QueryClientConVar(client, "l4d_bhop_autostrafe", ClientQueryCallback_l4d_bhop_autostrafe); //ban auto bhop from dll
 			QueryClientConVar(client, "cl_fov", ClientQueryCallback_cl_fov);
+			QueryClientConVar(client, "r_minlightmap", ClientQueryCallback_r_minlightmap);
+			QueryClientConVar(client, "mat_monitorgamma_tv_exp", ClientQueryCallback_mat_monitorgamma_tv_exp);
 		}
 	}	
 
 	return Plugin_Continue;
 }
 
-public void ClientQueryCallback(QueryCookie cookie,  int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback(QueryCookie cookie,  int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {
 	if(!IsClientInGame(client)) return;
 
@@ -102,8 +119,7 @@ public void ClientQueryCallback(QueryCookie cookie,  int client, ConVarQueryResu
 	}
 }
 
-
-public void ClientQueryCallback_DrawModels(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_DrawModels(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -136,7 +152,7 @@ public void ClientQueryCallback_DrawModels(QueryCookie cookie, int client, ConVa
 	}
 }
 
-public void ClientQueryCallback_PostPrecess(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_PostPrecess(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -169,7 +185,7 @@ public void ClientQueryCallback_PostPrecess(QueryCookie cookie, int client, ConV
 	}
 }
 
-public void ClientQueryCallback_AntiVomit(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_AntiVomit(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -202,7 +218,7 @@ public void ClientQueryCallback_AntiVomit(QueryCookie cookie, int client, ConVar
 	}
 }
 
-public void ClientQueryCallback_HDRLevel(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_HDRLevel(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -235,7 +251,7 @@ public void ClientQueryCallback_HDRLevel(QueryCookie cookie, int client, ConVarQ
 	}
 }
 
-public void ClientQueryCallback_l4d_bhop(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_l4d_bhop(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -268,7 +284,7 @@ public void ClientQueryCallback_l4d_bhop(QueryCookie cookie, int client, ConVarQ
 	}
 }
 
-public void ClientQueryCallback_l4d_bhop_autostrafe(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_l4d_bhop_autostrafe(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -301,7 +317,7 @@ public void ClientQueryCallback_l4d_bhop_autostrafe(QueryCookie cookie, int clie
 	}
 }
 
-public void ClientQueryCallback_cl_fov(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+void ClientQueryCallback_cl_fov(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
 {	
 	if(!IsClientInGame(client)) return;
 
@@ -332,4 +348,78 @@ public void ClientQueryCallback_cl_fov(QueryCookie cookie, int client, ConVarQue
 			ServerCommand("sm_exbanid %d \"%s\"", g_iPenalty, SteamID);
 		}
 	}
+}
+
+void ClientQueryCallback_r_minlightmap(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+{	
+	if(!IsClientInGame(client)) return;
+
+	int clientCvarValue = StringToInt(cvarValue);
+
+	if (clientCvarValue > 0)
+	{
+		char t_name[MAX_NAME_LENGTH];
+		GetClientName(client,t_name,MAX_NAME_LENGTH);
+		
+		char SteamID[32];
+		GetClientAuthId(client, AuthId_Steam2, SteamID, sizeof(SteamID));
+	
+		LogToFile(path, ".:[Name: %N | STEAMID: %s | r_minlightmap: %d]:.", client, SteamID, clientCvarValue);
+
+		if (g_iPenalty == 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been kicked for using \x04r_minlightmap %d\x01!", client, clientCvarValue);
+			KickClient(client, "ConVar r_minlightmap violation");
+		}
+		else if (g_iPenalty > 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been banned for using \x04r_minlightmap %d\x01!", client, clientCvarValue);
+			static char reason[255];
+			FormatEx(reason, sizeof(reason), "%s", "Banned for using r_minlightmap %d", clientCvarValue);
+			
+			BanClient(client, g_iPenalty, BANFLAG_AUTHID, reason, reason);
+			ServerCommand("sm_exbanid %d \"%s\"", g_iPenalty, SteamID);
+		}
+	}
+}
+
+void ClientQueryCallback_mat_monitorgamma_tv_exp(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+{	
+	if(!IsClientInGame(client)) return;
+
+	float clientCvarValue = StringToFloat(cvarValue);
+
+	if (clientCvarValue > 2.5)
+	{
+		char t_name[MAX_NAME_LENGTH];
+		GetClientName(client,t_name,MAX_NAME_LENGTH);
+		
+		char SteamID[32];
+		GetClientAuthId(client, AuthId_Steam2, SteamID, sizeof(SteamID));
+	
+		LogToFile(path, ".:[Name: %N | STEAMID: %s | mat_monitorgamma_tv_exp: %.1f]:.", client, SteamID, clientCvarValue);
+
+		if (g_iPenalty == 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been kicked for using \x04mat_monitorgamma_tv_exp %.1f\x01!", client, clientCvarValue);
+			KickClient(client, "ConVar mat_monitorgamma_tv_exp violation");
+		}
+		else if (g_iPenalty > 1)
+		{
+			PrintToChatAll("\x01[\x05TS\x01] \x03%N \x01has been banned for using \x04mat_monitorgamma_tv_exp %.1f\x01!", client, clientCvarValue);
+			static char reason[255];
+			FormatEx(reason, sizeof(reason), "%s", "Banned for using mat_monitorgamma_tv_exp %.1f", clientCvarValue);
+			
+			BanClient(client, g_iPenalty, BANFLAG_AUTHID, reason, reason);
+			ServerCommand("sm_exbanid %d \"%s\"", g_iPenalty, SteamID);
+		}
+	}
+}
+
+// native void MaterialHack_CheckClients()
+int Native_CheckClients(Handle plugin, int numParams)
+{
+	CreateTimer(0.1, CheckClients);
+
+	return 0;
 }
