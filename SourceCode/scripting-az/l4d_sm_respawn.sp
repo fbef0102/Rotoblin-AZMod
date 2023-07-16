@@ -275,21 +275,17 @@ public void Event_DeadSurvivorVisible(Event event, const char[] name, bool dontB
 	}
 }
 
-public Action CmdRespawnMenu(int client, int args)
-{
-	MenuClientsToSpawn(client);
-	return Plugin_Handled;
-}
-
 public Action CmdRespawn(int client, int args)
 {
+	if(client == 0) return Plugin_Handled;
+
 	if( args < 1 )
 	{
 		if( GetCmdReplySource() == SM_REPLY_TO_CONSOLE )
 		{
 			PrintToConsole(client, "[SM] Usage: sm_respawn <player1> [player2] ... [playerN] - respawn all listed players");
 		}
-		CmdRespawnMenu(client, 0);
+		MenuClientsToSpawn(client);
 		return Plugin_Handled;
 	}
 	char arg1[MAX_TARGET_LENGTH], target_name[MAX_TARGET_LENGTH];

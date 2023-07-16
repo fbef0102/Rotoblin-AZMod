@@ -6,7 +6,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.4.3"
+#define PLUGIN_VERSION "1.0h"
 
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 #define ABS(%0) (((%0) < 0) ? -(%0) : (%0))
@@ -16,7 +16,7 @@ bool NoSpam[MAXPLAYERS + 1];
 public Plugin myinfo = 
 {
 	name = "No spawn near safe room door.",
-	author = "Eyal282 ( FuckTheSchool ), Forgetest, HarryPotter",
+	author = "Forgetest, HarryPotter",
 	description = "To prevent a player breaching safe room door with a bug, prevents him from spawning near safe room door. The minimum distance is proportionate to his speed ",
 	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?p=2520740"

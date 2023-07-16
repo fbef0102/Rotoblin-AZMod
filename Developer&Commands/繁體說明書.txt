@@ -7,28 +7,27 @@
 //如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
 --------引擎主要--------
-[01] sourcemod 1.11-git6919
-[02] metamod  1.11-git1148
-[03] stripper 1.2.2-git129
-[04] l4dtoolz 1.1.0.2
-[05] Tickrate Enabler 1.5
-[06] VoiceHook 3.0
-[07] Socket 3.0.1
-[08] geoipcity 1.1.2
-[09] sourcescramble 0.7.1
-[10] CollisionHooks 0.2
+* sourcemod v1.11-git6934
+* metamod  v1.11-git1148
+* stripper v1.2.2-git141
+* l4dtoolz v1.1.0.2
+* Tickrate Enabler v1.5
+* REST in Pawn v1.3.1
+* Socket v3.0.2
+* sourcescramble v0.7.1.1
+* CollisionHooks v1.2
 
 --------地圖修改--------
-1. 所有VS地圖均已解除屋頂限制
-2. 移除地圖上的固定機槍
-3. 地圖藥丸
- -醫療箱限制一顆藥丸但不一定會出現
- -救援區域: 四顆
- -路上: 隨機出現1~2顆數量
-4. 清除或穿透一些小型物件，使玩家能移動順暢
-5. 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
-6. 最終關卡路程符合救援進度
-7. 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
+* 所有VS地圖均已解除屋頂限制
+* 移除地圖上的固定機槍
+* 地圖藥丸
+	-醫療箱限制一顆藥丸但不一定會出現
+	-救援區域: 四顆
+	-路上: 隨機出現1~2顆數量
+* 清除或穿透一些小型物件，使玩家能移動順暢
+* 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
+* 最終關卡路程符合救援進度
+* 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
 
 --------支援的三方圖--------
 * 下載連結: https://github.com/fbef0102/Rotoblin-AZMod/releases
@@ -47,50 +46,50 @@
 * 支援二代地圖，想要地圖請聯繫哈利
 * 名稱: "left4deadDLC4-l4d2onl4d1" Mod
 * 作者:
- 1. 原始開發團隊: l4d2onl4d1-team
- 2. 改進優化: AshThe9thSurvivor
- 3. 對抗更新: HarryPotter
+	1. 原始開發團隊: l4d2onl4d1-team
+	2. 改進優化: AshThe9thSurvivor
+	3. 對抗更新: HarryPotter
 * 地圖列表:
- 1. C1 - Dead Center
- 2. C2 - Dark Carnival
- 3. C3 - Swamp Fever
- 4. C4 - Hard Rain
- 5. C5 - The Parish
- 6. C6 - The Passing
- 7. C13 - Cold Stream
- 8. C14 - The Last Stand (New)
+	1. C1 - Dead Center
+	2. C2 - Dark Carnival
+	3. C3 - Swamp Fever
+	4. C4 - Hard Rain
+	5. C5 - The Parish
+	6. C6 - The Passing
+	7. C13 - Cold Stream
+	8. C14 - The Last Stand (New)
 
 
 --------武器調整--------
-[01] Uzi 機槍
-1.{　0.32->0.22	 } 每發子彈的彈道
-2.{　3.0->2.0　  } 邊移動邊開槍的準度
-3.{　480->800　  } 後備子彈
-4.{　0.84->0.78　} 傷害距離遞減
-5.{  2.23->1.8   } 裝彈速度
-6.{  20->22      } 傷害
-7.{　3　		 } 隊伍可拿數量
-8.{　37　		 } 友傷保護範圍
+* Uzi 機槍
+{		0.32->0.22	} 每發子彈的彈道
+{		3.0->2.0	} 邊移動邊開槍的準度
+{		480->800	} 後備子彈
+{		0.84->0.78	} 傷害距離遞減
+{  		2.23->1.8   } 裝彈速度
+{  		20->22      } 傷害
+{		3		 	} 隊伍可拿數量
+{		37		 	} 友傷保護範圍
 
-[02] Pumpshotgun 霰彈槍
-1.{　128->96	} 後備子彈
-2.{　2.5->1.5	} 空中準度
-3.{　4　		} 隊伍可拿數量
-4.{　37　		} 友傷保護範圍
+* Pumpshotgun 霰彈槍
+{		128->96		} 後備子彈
+{		2.5->1.5	} 空中準度
+{		4			} 隊伍可拿數量
+{		37			} 友傷保護範圍
 
-[03] Pistol 手槍
-1.{　25　		} 友傷保護範圍
+* Pistol 手槍
+{		25			} 友傷保護範圍
 
-[04] Hunting_Rifle 狙擊槍 
-1.{   1->1.25 	} 彈夾完全空的裝彈時間
-2.{   1    	  	} 彈夾裝彈時間 (沒變)
-3.{   1    	  	} 撿起武器所需時間 (沒變)
-4.{   1 -> 1.8	} 切換武器所需時間
-5.{	　1->0.2　	} 射速
-6.{   90->120 	} 一槍對Tank的傷害
-7.{	　胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
-8.{	　1　　		} 隊伍可拿數量
-9.{　37　		} 友傷保護範圍
+* Hunting_Rifle 狙擊槍 
+{   	1->1.25 	} 彈夾完全空的裝彈時間
+{   	1    	  	} 彈夾裝彈時間 (沒變)
+{   	1    	  	} 撿起武器所需時間 (沒變)
+{   	1 -> 1.8	} 切換武器所需時間
+{		1->0.2		} 射速
+{   	90->120 	} 一槍對Tank的傷害
+{		胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
+{		1			} 隊伍可拿數量
+{		37			} 友傷保護範圍
 
 --------插件使用--------
 [01] pounceannounce 
@@ -712,6 +711,9 @@
 [198] l4d1_glow_item
 //讓武器與物品發光，方便玩家練習
 
+[199] l4d_tongue_float_fix
+//解決偶而發生的bug，舌頭拉人瞬間直接拖走倖存者不留機會的問題
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -729,25 +731,12 @@
 [09] smac_cvars (偵測作弊指令)
 
 --------分數計算--------
-( AD + HB + PILLS ) x Alive x Map  
+分數 = ( AD + HB + PILLS ) x Alive x Map  
 AD = 平均距離, 介於 0-100%
 HB = 生命加值, Floor(實血/2) + RoundToNearest(虛血/4)
 PILLS = 藥分, 保留藥丸每顆+15
 Alive = 倖存者存活數
 Map = 地圖難度修改
-
---------非官方地圖--------
-[01] City 17
-[02] Suicide Blitz 
-[03] Dead Flag Blues 
-[04] I Hate Mountains
-[05] Dead Before Dawn
-[06] The Arena of the Dead
-[07] Death Aboard
-[08] One 4 Nine
-[09] Dark Blood
-[10] Blood Harvest APOCALYPSE
-[11] Precinct 84
 
 --------指令備忘錄--------
 [管理員專用]

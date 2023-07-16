@@ -1,0 +1,17 @@
+v8.5.3
+
+* Support "left4deadDLC4-l4d2onl4d1" Mod
+
+------------------New------------------
+-plugins\l4d_tongue_float_fix.smx
+* Fix tongue instant choking survivors.
+
+------------------Delete------------------
+None
+
+------------------Change------------------
+-plugins\left4dhooks.smx
+* Update v1.134
+
+-plugins\l4d_reservedslots.smx
+* Update v1.5

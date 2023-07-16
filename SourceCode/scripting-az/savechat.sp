@@ -308,9 +308,15 @@ void SaveMessage(const char[] message)
 	fileHandle = OpenFile(chatFile, "a");  /* Append */
 	if(fileHandle == null)
 	{
-		CreateDirectory("/addons/sourcemod/logs/chat", 0);
+		CreateDirectory("/addons/sourcemod/logs/chat", 511);
 		fileHandle = OpenFile(chatFile, "a"); //open again
+		if(fileHandle == null)
+		{
+			LogError("Can not create chat file: %s", chatFile);
+			return;
+		}
 	}
+	
 	WriteFileLine(fileHandle, message);
 	delete fileHandle;
 }

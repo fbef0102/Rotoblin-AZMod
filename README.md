@@ -1,20 +1,12 @@
 # Rotoblin-AZMod
-v8.5.2
+v8.5.3
 <br/>CopyRight @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
 
-  > [**Support L4D2onL4D1 maps**](#roto-az-l4d2onl4d1)
-  <br/><img src="https://i.imgur.com/utcIlA8.png" alt="FGkLDMp.png" width="1000" height = "350">
-  <br/><img src="https://i.imgur.com/OXWBfsg.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/cSsbd2o.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/TDPqp4i.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg" alt="Iv7Ns0E.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/BpH0wDk.jpg" alt="BpH0wDk.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/XKjIfTF.jpg" alt="XKjIfTF.png" width="1000" height = "475">
-
-* [繁體中文說明版](/Developer%26Commands/繁體說明書.txt)
-* [Developer](/Developer%26Commands)
-* [Source Code](/SourceCode)
+* [Support L4D2onL4D1 maps](#roto-az-l4d2onl4d1)
+* [繁體中文說明](/Developer%26Commands/繁體說明書.txt)
+* [Developer 作者介紹](/Developer%26Commands/Roto-AZMod%20Developer.cfg)
+* [Source Code 專案源碼](/SourceCode)
 
 **LINUX/WINDOWS SERVERS WORK**
 * This repository only supports Sourcemod 1.11 and up.
@@ -41,7 +33,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/skeet_database) records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/pounce_database) records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
-
+* [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors): Changes the colors of players chat based on config file.
 
 - - - -	
 ### Server Anti Cheat ###
@@ -589,9 +581,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
-* **Support "left4deadDLC4-l4d2onl4d1" Mod**
-  <img src="https://user-images.githubusercontent.com/12229810/216926232-6d92f80f-1829-4af8-ae25-8f1009ef6e15.png" alt="11460c3797f5.png">
-* Play L4D2 maps in l4d1 game
+
+> **Developer Comment:** The following files are **PRIVATE**, please contact Harry to request download.
+
+* **Play L4D2 maps in l4d1 game**
   1. **C1 - Dead Center**
   2. **C2 - Dark Carnival**
   3. **C3 - Swamp Fever**
@@ -600,59 +593,59 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   6. **C6 - The Passing**
   7. **C13 - Cold Stream**
   8. **C14 - The Last Stand (New)**
-> **Developer Comment:** The server support files are **PRIVATE**, please contact Harry to request download.
 
-* **L4D2 Map Modify**
+  <br/><img src="https://i.imgur.com/utcIlA8.png" alt="FGkLDMp.png" width="1000" height = "350">
+  <br/><img src="https://i.imgur.com/OXWBfsg.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/cSsbd2o.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/TDPqp4i.jpg" alt="FGkLDMp.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg" alt="Iv7Ns0E.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/BpH0wDk.jpg" alt="BpH0wDk.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/XKjIfTF.jpg" alt="XKjIfTF.png" width="1000" height = "475">
+
+* <details><summary> <b>"left4deadDLC4-l4d2onl4d1" Mod</b> </summary>
+
+  <img src="https://user-images.githubusercontent.com/12229810/216926232-6d92f80f-1829-4af8-ae25-8f1009ef6e15.png" alt="11460c3797f5.png">
+
+  * 6 GB files
+  * Have install instructions
+</details>
+
+* <details><summary> <b>L4D2 Map Modify</b> </summary>
+
   <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png" alt="11460c3797f5.png">
+
   * Add models, materials, objects, infected ladders, invisible blocks in 2019 L4D2 The Last Stand update. ([mapfixes](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_mapfixes.nut), [versus](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_versus.nut))
   * Add ammo, weapons, and objects, infected ladders, invisible blocks (Based on [L4D2-Comp-Stripper-Rework by Derpduck](https://github.com/Derpduck/L4D2-Comp-Stripper-Rework))
   * Remove piece of shit l4d2 entities that crash server
   * Fix Fog, Gascan, cola, gnome issue and error
+</details>
 
-* **Plugin Support**
+* <details><summary> <b>Plugin Support</b> </summary>
+
   <img src="https://user-images.githubusercontent.com/12229810/215238179-010e8b4f-f44e-4989-8b37-b5772ab6fc88.png" alt="b5772ab6fc88.png">
 
-  * <details><summary><b>Details of each plugin</b></summary>
+  * **In c1m4, c6m3, c14m2 map. there is a problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field, so these three plugins fix that**
+    ```php
+    l4d_random_beam_item.smx
+    l4d_random_entity_color.smx
+    l4d1_glow_gascan.smx
+    ```
 
-    * **In c1m4, c6m3, c14m2 map. there is a problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field, so these three plugins fix that**
-      ```php
-      l4d_random_beam_item.smx
-      l4d_random_entity_color.smx
-      l4d1_glow_gascan.smx
-      ```
+  * **Put the single smg and shotgun on saferoom because there are no any weapons in c1m1 saferoom and c4m1 saferoom**
+    ```php
+    l4d_weapon_spawn.smx
+    ```
 
-    * **Put the single smg and shotgun on saferoom because there are no any weapons in c1m1 saferoom and c4m1 saferoom**
-      ```php
-      l4d_weapon_spawn.smx
-      ```
+  * **Spawn "bride witch model" on the wedding scene in c6m1**
+    ```php
+    l4d1_random_witch_model.smx
+    ```
 
-    * **Spawn "bride witch model" on the wedding scene in c6m1**
-      ```php
-      l4d1_random_witch_model.smx
-      ```
-
-    * **In c1m4, c6m3, c14m2 map, give special infected fire immune, so they won't burn**
-      ```php
-      si_fire_immunity.smx
-      ```
-  </details>
-  
-  * Gives a beam to gascans on the map
-    * c1m4, c6m3, c14m2
-  * Add a white outline glow effect to gas cans on the map
-    * c1m4, c6m3, c14m2
-  * Gives a color to gascans on the map
-    * c1m4, c6m3, c14m2
-  * Give Special Infected fire immunity
-    * c1m4, c6m3, c14m2
-  * Spawn bride witch model
-    * c6m1
-  * Spawn single weapons and items
-    * c1m1 saferoom, c4m1 saferoom
-  * Reduced Damage of cars: 25
-    * c5m5 (The parish bridge finale)
-  * Fixing Waiting For Survivors To Start The Finale or w/e
-    * It happens in c5m5, c4m1
+  * **In c1m4, c6m3, c14m2 map, give special infected fire immune, so they won't burn**
+    ```php
+    si_fire_immunity.smx
+    ```
+</details>
 
 - - - -
 ### Others ###
