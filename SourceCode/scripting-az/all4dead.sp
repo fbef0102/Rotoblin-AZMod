@@ -169,7 +169,6 @@ public OnPluginStart() {
 
 public OnPluginEnd() {
 	ResetToDefaults(0);
-	LogAction(0, -1, "%s %s has been unloaded.", PLUGIN_NAME, PLUGIN_VERSION);
 }
 
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast) {
@@ -177,7 +176,6 @@ public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroa
 	/* If something spawns and we have just requested something to spawn - assume it is the same thing and make sure it has max health */
 	if (GetClientTeam(client) == 3 && currently_spawning) {
 		StripAndExecuteClientCommand(client, "give", "health");
-		LogAction(0, -1, "[NOTICE] Given full health to client %L that (hopefully) was spawned by A4D.", client);
 		// We have added health to the thing we have spawned so turn ourselves off
 		currently_spawning = false;	
 	}
@@ -295,7 +293,6 @@ SpawnInfected(client, const String:type[]) {
 		StripAndExecuteClientCommand(client, "z_spawn", arguments);
 	}
   NotifyPlayers(client, feedback);
-  LogAction(client, -1, "[NOTICE]: (%L) has spawned a %s", client, type);
 }
 
 // This toggles whether or not we want the director to automatically place the things we spawn.
@@ -320,7 +317,6 @@ EnableAutoPlacement(client, bool:value) {
 	  NotifyPlayers(client, "Automatic placement of spawned infected has been enabled.");
 	else
 		NotifyPlayers(client, "Automatic placement of spawned infected has been disabled.");
-	LogAction(client, -1, "(%L) set %s to %i", client, "a4d_automatic_placement", value);	
 }
 
 // This menu deals with all commands related to spawning items/creatures
@@ -509,7 +505,6 @@ SpawnItem(client, const String:item[]) {
 	} else {
 		StripAndExecuteClientCommand(client, "give", item);
 		NotifyPlayers(client, feedback);	
-  	LogAction(client, -1, "[NOTICE]: (%L) has spawned a %s", client, item);
 	}
 }
 
@@ -526,7 +521,6 @@ ForcePanic(client) {
 	else
 		StripAndExecuteClientCommand(client, "director_force_panic_event", "");
   NotifyPlayers(client, "The zombies are coming!");	
-  LogAction(client, -1, "[NOTICE]: (%L) executed %s", client, "a4d_force_panic");
 }
 
 // Force the AI Director to start panic events constantly, one after each another, until asked politely to stop. 
@@ -548,7 +542,7 @@ public Action:CommandPanicForever(client, args) {
 }
 
 PanicForever(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "director_panic_forever", value);
+	StripAndChangeServerConVarBool("director_panic_forever", value);
   if (value == true)
     NotifyPlayers(client, "Endless panic events have started.");
 	else
@@ -574,7 +568,7 @@ public Action:CommandForceTank(client, args) {
 }
 
 ForceTank(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "director_force_tank", value);
+	StripAndChangeServerConVarBool("director_force_tank", value);
 	if (value == true)
 		NotifyPlayers(client, "A tank is guaranteed to spawn this round");
 	else
@@ -598,7 +592,7 @@ public Action:CommandForceWitch(client, args) {
 }
 
 ForceWitch(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "director_force_witch", value);
+	StripAndChangeServerConVarBool("director_force_witch", value);
   if (value == true)
 		NotifyPlayers(client, "A witch is guaranteed to spawn this round");	
 	else 
@@ -624,7 +618,7 @@ public Action:CommandDelayRescue(client, args) {
 }
 
 DelayRescue(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "director_finale_infinite", value);
+	StripAndChangeServerConVarBool("director_finale_infinite", value);
 	if (value == true)
 		NotifyPlayers(client, "The rescue vehicle has been delayed indefinitely.");
 	else
@@ -649,11 +643,11 @@ public Action:CommandAddZombies(client, args) {
 
 AddZombies(client, zombies_to_add) {
 	new new_zombie_total = zombies_to_add + GetConVarInt(FindConVar("z_mega_mob_size"));
-	StripAndChangeServerConVarInt(client, "z_mega_mob_size", new_zombie_total);
+	StripAndChangeServerConVarInt("z_mega_mob_size", new_zombie_total);
 	new_zombie_total = zombies_to_add + GetConVarInt(FindConVar("z_mob_spawn_max_size"));
-	StripAndChangeServerConVarInt(client, "z_mob_spawn_max_size", new_zombie_total);
+	StripAndChangeServerConVarInt("z_mob_spawn_max_size", new_zombie_total);
 	new_zombie_total = zombies_to_add + GetConVarInt(FindConVar("z_mob_spawn_min_size"));
-	StripAndChangeServerConVarInt(client, "z_mob_spawn_min_size", new_zombie_total);
+	StripAndChangeServerConVarInt("z_mob_spawn_min_size", new_zombie_total);
 	NotifyPlayers(client, "The horde grows larger.");
 }
 
@@ -756,7 +750,6 @@ public Action:CommandEnableNotifications(client, args) {
 EnableNotifications(client, bool:value) {
 	SetConVarBool(notify_players, value);
 	NotifyPlayers(client, "Player notifications have now been enabled.");
-	LogAction(client, -1, "(%L) set %s to %i", client, "a4d_notify_players", value);	
 }
 
 /* Resets all ConVars to their default settings. */
@@ -772,11 +765,10 @@ ResetToDefaults(client) {
 	PanicForever(client, false);
 	DelayRescue(client, false);
 	DisableNewVersusLogic(client, false);
-	StripAndChangeServerConVarInt(client, "z_mega_mob_size", 50);
-	StripAndChangeServerConVarInt(client, "z_mob_spawn_max_size", 30);
-	StripAndChangeServerConVarInt(client, "z_mob_spawn_min_size", 10);
+	StripAndChangeServerConVarInt("z_mega_mob_size", 50);
+	StripAndChangeServerConVarInt("z_mob_spawn_max_size", 30);
+	StripAndChangeServerConVarInt("z_mob_spawn_min_size", 10);
 	NotifyPlayers(client, "Restored the default settings.");
-	LogAction(client, -1, "(%L) executed %s", client, "a4d_reset_to_defaults");
 }
 
 /* This menu deals with all Configuration commands that don't fit into another category */
@@ -831,7 +823,7 @@ public Action:CommandEnableAllBotTeams(client, args) {
 }
 
 EnableAllBotTeam(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "sb_all_bot_team", value);
+	StripAndChangeServerConVarBool("sb_all_bot_team", value);
 	if (value == true)
 		NotifyPlayers(client, "Allowing an all bot survivor team.");	
 	else
@@ -854,7 +846,7 @@ public Action:CommandDisableNewVersusLogic(client, args) {
 }
 
 DisableNewVersusLogic(client, bool:value) {
-	StripAndChangeServerConVarBool(client, "versus_boss_spawning", value);
+	StripAndChangeServerConVarBool("versus_boss_spawning", value);
 	if (value == true) 
 		NotifyPlayers(client, "Using the new style boss spawning rules in versus.");
 	else
@@ -909,12 +901,11 @@ NotifyPlayers(client, const String:message[]) {
     ShowActivity2(client, PLUGIN_TAG, message);
 }
 
-StripAndChangeServerConVarBool(client, String:command[], bool:value) {
+StripAndChangeServerConVarBool(String:command[], bool:value) {
 	new flags = GetCommandFlags(command);
 	SetCommandFlags(command, flags & ~FCVAR_CHEAT);
 	SetConVarBool(FindConVar(command), value, false, false);
 	SetCommandFlags(command, flags);
-	LogAction(client, -1, "[NOTICE]: (%L) set %s to %i", client, command, value);	
 }
 
 StripAndExecuteClientCommand(client, const String:command[], const String:arguments[]) {
@@ -926,12 +917,11 @@ StripAndExecuteClientCommand(client, const String:command[], const String:argume
 
 /* Strip and change a ConVar to the value sppcified */
 /* This doesn't do any maths. If you want to add 10 to an existing ConVar you need to work out the value before you call this */
-StripAndChangeServerConVarInt(client, String:command[], value) {
+StripAndChangeServerConVarInt(String:command[], value) {
 	new flags = GetCommandFlags(command);
 	SetCommandFlags(command, flags & ~FCVAR_CHEAT);
 	SetConVarInt(FindConVar(command), value, false, false);
 	SetCommandFlags(command, flags);
-	LogAction(client, -1, "[NOTICE]: (%L) set %s to %i", client, command, value);	
 }
 
 // Gets a fake client ID to allow various commands to be called as console
