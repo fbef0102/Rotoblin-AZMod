@@ -10,6 +10,5 @@ Credit
 * [Alliedmodders](http://www.sourcemod.net/plugins.php?mod=6&search=1)
 
 Looking for more?
-* [L4D1-Competitive-Plugins](https://github.com/fbef0102/L4D1-Competitive-Plugins)
 * [L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)
 

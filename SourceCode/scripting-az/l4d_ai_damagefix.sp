@@ -4,8 +4,6 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define GAMEDATA_FILE           "staggersolver"
-
 #define TEAM_SURVIVOR           2
 #define TEAM_INFECTED           3
 

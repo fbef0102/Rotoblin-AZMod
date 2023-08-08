@@ -4,6 +4,19 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"tank_ban_flow"
+		{
+			"One way drop"
+			{
+				"min"		"31"
+				"max"		"43"
+			}
+			"Alley"
+			{
+				"min"		"59"
+				"max"		"67"
+			}
+		}
 	}
 	"l4d_vs_hospital02_subway"
 	{
@@ -48,6 +61,22 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"tank_ban_flow"
+		{
+			"Ladders"
+			{
+				"min"		"38"
+				"max"		"42"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Ladders"
+			{
+				"min"		"29"
+				"max"		"35"
+			}
+		}
 	}
 	"l4d_vs_smalltown02_drainage"
 	{
@@ -64,6 +93,19 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"tank_ban_flow"
+		{
+			"Start of event"
+			{
+				"min"		"65"
+				"max"		"75"
+			}
+			"End of event"
+			{
+				"min"		"83"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_vs_smalltown05_houseboat"
 	{
@@ -152,6 +194,14 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"tank_ban_flow"
+		{
+			"Late spawns (bugged spawn)"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_vs_farm04_barn"
 	{
@@ -162,6 +212,14 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"tank_ban_flow"
+		{
+			"After one way drop"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_river01_docks"
 	{
@@ -405,6 +463,14 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"Alarm car to one way drop"
+			{
+				"min"		"50"
+				"max"		"75"
+			}
+		}
 	}
 	"l4d_dbd_the_mall"
 	{
@@ -826,23 +892,33 @@
 		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
-			"Before elevator exit"
-			{
-				"min"		"51"
-				"max"		"77"
-			}
-			"Early spawns"
+			"Instant spawns"
 			{
 				"min"		"0"
 				"max"		"31"
 			}
+			"Before elevator top, after elevator bottom"
+			{
+				"min"		"50"
+				"max"		"79"
+			}
+			"After kitchen"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
 		}
 		"witch_ban_flow"
 		{
-			"Early spawns"
+			"Instant spawns"
 			{
 				"min"		"0"
-				"max"		"24"
+				"max"		"20"
+			}
+			"After kitchen"
+			{
+				"min"		"85"
+				"max"		"100"
 			}
 		}
 	}
@@ -933,6 +1009,11 @@
 		"VersusModifier"		"1.4"
 		"tank_ban_flow"
 		{
+			"One way drop"
+			{
+				"min"		"36"
+				"max"		"39"
+			}
 			"Coaster Start"
 			{
 				"min"		"57"
@@ -988,6 +1069,14 @@
 		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"Late tanks"
+			{
+				"min"		"75"
+				"max"		"100"
+			}
+		}
 	}
 	"c3m3_shantytown"
 	{
@@ -1050,7 +1139,7 @@
 		{
 			"Elevator"
 			{
-				"min"		"30"
+				"min"		"23"
 				"max"		"36"
 			}
 		}

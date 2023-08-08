@@ -34,6 +34,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/pounce_database) records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
 * [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors): Changes the colors of players chat based on config file.
+* [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly): Attaches an extra flashlight to spectators and dead survivors.
 
 - - - -	
 ### Server Anti Cheat ###
@@ -157,11 +158,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove item spawns in bad locations or excessive density in a location
   
 * **Nav Remake:**
-  * No Mercy Map 1
-  * No Mercy Map 4
-  * Dead Air Map 1
-  * Death Toll Map 5
-  
+  * No Mercy Map 1~5
+  * Dead Air Map 1~5
+  * Death Toll Map 1~5
+  * Blood Harvest Map 1~5
+
 - - - -
 ### Custom Map Support ###
 * List
@@ -337,8 +338,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
 	* Prevent ghost infected players from spawning inside checkpoint area
-    <br/>![image](https://user-images.githubusercontent.com/12229810/204044419-21bba5aa-33c3-4286-b633-e19fca0bcb37.png)
-    <br/>![image](https://user-images.githubusercontent.com/12229810/204048025-e448023e-89f1-4477-ae50-12fcf279411a.png)
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned

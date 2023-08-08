@@ -125,7 +125,7 @@ public _HealthControl_OnPluginStart()
 	IntToString(view_as<int>(g_iHealthStyle), buffer, sizeof(buffer)); // Get default value for replacement style
 	g_hHealthStyle_Cvar = CreateConVarEx("health_style", 
 		buffer, 
-		"How medkits and pills will be configured. 0 - Don't replace any medkits, 1 - Replace all medkits with pills, 2 - Replace all but finale medkits with pills, 3 - Replace safe room and finale kits with pills; remove all other health sources", 
+		"medkits and pills configuration. 0=Don't replace any medkits, 1=Replace all medkits with pills, 2=Replace all medkits with pills except the finale medkits, 3=Replace the finale kits with pills and remove all other pills/kits, 4=Replace all medkits with pills, only remove saferoom kits (use data/mapinfo to control pill limit)", 
 		FCVAR_NOTIFY);
 
 	if (g_hHealthStyle_Cvar == INVALID_HANDLE) 
@@ -445,16 +445,12 @@ static UpdateStartingHealthItems()
 	new k =0;
 	entity = -1;
 	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
+	int number;
 	if(g_bIsFinale)//救援關四顆藥丸符合當前人類數量
 	{
 		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
 		{
 			RemoveAllPills();
-		}
-
-		if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) 
-		{
-			return;
 		}
 
 		for(int i = 0; i < 16; i++)
@@ -469,6 +465,14 @@ static UpdateStartingHealthItems()
 			
 			if(IsInSafeRoom(entity))
 				continue;
+
+			if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) 
+			{
+				ReplaceKitWithPills(entity);
+				number++;
+				if(number >= 3) break;
+				continue;
+			}
 
 			//decl Float:entityPos[3];
 			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
@@ -598,8 +602,7 @@ bool ShouldReplaceKitWithPills()
 {
 	if ((g_bIsFinale && 
 		g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS)||
-		g_iHealthStyle == REPLACE_NO_KITS||
-		g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS)
+		g_iHealthStyle == REPLACE_NO_KITS)
 	{
 		// Finale medkit and we're not replacing them; can't touch this!
 		//or REPLACE_NO_KITS
@@ -767,6 +770,7 @@ public void ReplaceSafeRoomMedkits()
 					//decl Float:entityPos[3];
 					//GetEntPropVector(i, Prop_Send, "m_vecOrigin", entityPos);	
 					//LogMessage("saferoom KIT here %d: %f %f %f",i,entityPos[0],entityPos[1],entityPos[2]);	
+					ReplaceKitWithPills(i);	
 					g_iSaferoomKits[k++] = i;
 				}
 			}
