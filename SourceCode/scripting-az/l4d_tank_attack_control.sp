@@ -39,7 +39,7 @@ public OnPluginStart()
 	new Handle:hCvarPunchDelay = FindConVar("z_tank_attack_interval");
 	new Handle:hCvarThrowDelay = FindConVar("z_tank_throw_interval");
 
-	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "0", "0: valve animation, 1: remove random MOUSE1 punches and bind them to MOUSE1+E/R buttons, 2: remove but dont bind.", _, true, 0.0, true, 2.0);
+	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "2", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
 
 	g_iCvarPunchControl = GetConVarInt(hCvarPunchControl);
 	g_fCvarPunchDelay = GetConVarFloat(hCvarPunchDelay);
@@ -127,11 +127,8 @@ public Action:TAC_t_Instruction(Handle:timer)
 	new i = FindTank();
 	if(i == -1)
 		return;
-	if (g_iCvarPunchControl == 1){
-		return;
-	}
-	else
-		CPrintToChat(i,"%T","l4d_tank_attack_control_Rock",i);
+
+	CPrintToChat(i,"%T","l4d_tank_attack_control_Rock",i);
 }
 
 public Action:OnPlayerRunCmd(client, &buttons)
@@ -139,25 +136,22 @@ public Action:OnPlayerRunCmd(client, &buttons)
 	if (!g_bTankInGame || !buttons || GetClientTeam(client) != 3 || IsFakeClient(client) || !IsPlayerTank(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 		
-	if(unlock_play_list(client)) return Plugin_Continue;
-	
-	if (!g_bThrowBlock[client]){
-		if(buttons & IN_ATTACK2)
-		{
-			g_seqQueuedThrow[client] = OneOverhand;
-		}
-		else if (buttons & IN_USE)
-		{
-			g_seqQueuedThrow[client] = Underhand;
-			buttons |= IN_ATTACK2;
-		}
-		else if (buttons & IN_RELOAD)
-		{
-			g_seqQueuedThrow[client] = TwoOverhand;
-			buttons |= IN_ATTACK2;
-		}
+
+	if(buttons & IN_ATTACK2)
+	{
+		g_seqQueuedThrow[client] = OneOverhand;
 	}
-	else if (g_iCvarPunchControl && (buttons & IN_ATTACK) && !g_bPunchBlock[client]){
+	else if (buttons & IN_USE)
+	{
+		g_seqQueuedThrow[client] = Underhand;
+		buttons |= IN_ATTACK2;
+	}
+	else if (buttons & IN_RELOAD)
+	{
+		g_seqQueuedThrow[client] = TwoOverhand;
+		buttons |= IN_ATTACK2;
+	}
+	else if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK)){
 
 		if (g_iCvarPunchControl == 1){
 
@@ -170,17 +164,17 @@ public Action:OnPlayerRunCmd(client, &buttons)
 		}
 		else
 			g_seqQueuedThrow[client] = RightHook;
-	}	
+	}
 	
 	return Plugin_Continue;
 }
 
 public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 {
-	if(unlock_play_list(client)) return Plugin_Continue;
 	if (g_seqQueuedThrow[client] != Null){
 
 		if (sequence > _:Throw){ // throw
+			if(unlock_play_list(client)) return Plugin_Continue;
 
 			if (g_seqQueuedThrow[client] > Throw){
 
@@ -222,7 +216,7 @@ public Action:TAC_t_UnlockPunchControl(Handle:timer, any:client)
 
 stock unlock_play_list(client)
 {
-	decl String:cmpSteamId[32];
+	static char cmpSteamId[32];
 	GetClientAuthId(client, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId));
 	if (StrEqual("STEAM_1:1:30315619", cmpSteamId)||StrEqual("STEAM_1:1:173899272", cmpSteamId)) //for JJ,小文 who has problem with keyboard
 		return true;

@@ -38,9 +38,6 @@ static	const	Float:	FIRE_IMMUNITY_TIME					= 5.0;			// How long the tank is fire
 static	const			FIRE_DAMAGE_TYPE					= 8;			/* "Pre" fire damage type. This damage type is applied to the tank before he gets lit
 																			 * on fire. By detecting this damage type instead of using GetEntityFlags on tank, we
 																			 * can prevent the rage meter from disappear from the tank. */
-static	const			INCAP_HEALTH						= 300;			// Punch fix, incap health
-static	const	Float:	INCAP_DELAY							= 0.4;			// Punch fix, how long before incaping the survivor again
-static	const	String:	INCAP_WEAPON[]						= "tank_claw";	// Punch fix, which weapon used to incap the survivor before applying punch fix
 
 static			Handle:	g_hSelectionTimeCvar				= INVALID_HANDLE;
 
@@ -85,7 +82,6 @@ public _GT_OnPluginEnable()
 
 	HookEvent("round_start"			, _GT_RoundStart_Event, EventHookMode_PostNoCopy);
 	HookEvent("player_hurt"			, _GT_PlayerHurt_Event);
-	HookEvent("player_incapacitated", _GT_PlayerIncap_Event);
 	HookTankEvent(TANK_SPAWNED	, _GT_TankSpawn_Event);
 	HookTankEvent(TANK_KILLED	, _GT_TankKilled_Event);
 	HookTankEvent(TANK_PASSED	, _GT_TankPassed_Event);
@@ -107,7 +103,6 @@ public _GT_OnPluginDisable()
 
 	UnhookEvent("round_start",			_GT_RoundStart_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("player_hurt",			_GT_PlayerHurt_Event);
-	UnhookEvent("player_incapacitated", _GT_PlayerIncap_Event);
 	UnhookPublicEvent(EVENT_ONPLAYERRUNCMD, _GT_OnPlayerRunCmd);
 
 	DebugPrintToAllEx("Module is now unloaded");
@@ -216,29 +211,6 @@ public _GT_PlayerHurt_Event(Handle:event, const String:name[], bool:dontBroadcas
 }
 
 /**
- * Called when a player gets incapacitated.
- *
- * @param event			Handle to event.
- * @param name			String containing the name of the event.
- * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
- * @noreturn
- */
-public _GT_PlayerIncap_Event(Handle:event, String:event_name[], bool:dontBroadcast)
-{
-	if (!IsTankInPlay()) return; // If the tank isn't in play, return
-
-	decl String:weapon[16];
-	GetEventString(event, "weapon", weapon, 16); // Get the weapon used to incap the survivor
-	if (!StrEqual(weapon, INCAP_WEAPON)) return; // If tank incap'd the survivor
-
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	SetEntProp(client, Prop_Send, "m_isIncapacitated", 0);			// Unincap the survivor
-	SetEntityHealth(client, 1);										// Set his health to 1
-	CreateTimer(INCAP_DELAY, _GT_PlayerIncap_Timer, client);		// Create timer to reincap him
-	DebugPrintToAllEx("Client %i: \"%N\" have been tank punch upon being incap'd", client, client);
-}
-
-/**
  * Called when a clients movement buttons are being processed.
  *
  * @param client		Index of the client.
@@ -324,21 +296,6 @@ public Action:_GT_BlockUse_Timer(Handle:timer, any:client)
 {
 	g_bBlockUse[client] = false;
 	g_hBlockUse_Timer[client] = INVALID_HANDLE;
-}
-
-/**
- * Called when the player incap timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-public Action:_GT_PlayerIncap_Timer(Handle:timer, any:client)
-{
-	if(IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR)
-	{
-		SetEntProp(client, Prop_Send, "m_isIncapacitated", 1);	// Incap survivor
-		SetEntityHealth(client, INCAP_HEALTH);					// Reset health
-	}
 }
 
 // **********************************************

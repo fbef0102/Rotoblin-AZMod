@@ -952,17 +952,7 @@ public OnMapStart()
 	TS_GetHostName(HostName, sizeof(HostName));
 }
 
-public bool:OnClientConnect()
-{
-	if(readyMode) 
-	{
-		checkStatus();
-	}
-	
-	return true;
-}
-
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
 	hiddenPanel[client] = false;
 	g_fButtonTime[client] = 0.0;
@@ -1003,6 +993,11 @@ public void OnClientPutInServer(int client)
 
 	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 		SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+
+	if(readyMode) 
+	{
+		checkStatus();
+	}
 }
 
 public void OnPreThinkPost(int client)
@@ -1451,29 +1446,28 @@ public Action:eventPlayerBotReplaceCallback(Handle:event, const String:name[], b
 }
 
 //When a player changes team
-public Action:eventPlayerTeamCallback(Handle:event, const String:name[], bool:dontBroadcast)
+void eventPlayerTeamCallback(Event event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	#if READY_DEBUG
-	new String:curname[128];
-	GetClientName(client,curname,128);
-	DebugPrintToAll("[DEBUG] client %s changing team.", curname);
-	#endif
+	int userid = event.GetInt("userid");
+	int client = GetClientOfUserId(userid);
+	if(!client || !IsClientInGame(client) || IsFakeClient(client)) return;
 	
 	SetEngineTime(client);
 	readyStatus[client] = 0;
-	if(readyMode)
-	{
-		DrawReadyPanelList();
-		checkStatus();
-	}
+	//if(readyMode)
+	//{
+	//	DrawReadyPanelList();
+	//	checkStatus();
+	//}
 	
-	CreateTimer(1.0,PlayerChangeTeamCheck,client);//延遲一秒檢查
+	CreateTimer(1.0,PlayerChangeTeamCheck, userid);//延遲一秒檢查
 }
 
-public Action:PlayerChangeTeamCheck(Handle:timer,any:client)
+Action PlayerChangeTeamCheck(Handle timer, int userid)
 {
-	if(client && IsClientInGame(client) && !IsFakeClient(client))
+	int client = GetClientOfUserId(userid);
+
+	if(client && IsClientInGame(client))
 	{
 		new newteam = GetClientTeam(client);
 		if(newteam != L4D_TEAM_SPECTATE)
@@ -1514,6 +1508,8 @@ public Action:PlayerChangeTeamCheck(Handle:timer,any:client)
 			}		
 		}
 	}
+
+	return Plugin_Continue;
 }
 
 //When a player gets hurt during ready mode, block all damage
@@ -2348,7 +2344,7 @@ DrawReadyPanelList()
 	{
 		DrawPanelText(panel, "SPECTATORS.");
 		
-		if( specs >=3 && ( RealplayerinSV() >= 14 || (sur == GetTeamMaxHumans(2) && inf == GetTeamMaxHumans(3)) ) )
+		if( specs >=3 )
 		{
 			Format(readyPlayers, 1024, "Many (%d)", specs);
 			DrawPanelText(panel, readyPlayers);

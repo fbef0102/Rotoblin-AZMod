@@ -36,9 +36,9 @@ enum HEALTH_STYLE
 {
 	REPLACE_NO_KITS = 0, // Don't replace any medkits with pills
 	REPLACE_ALL_KITS = 1, // Replace all medkits with pills
-	REPLACE_ALL_BUT_FINALE_KITS = 2, // Replace all medkits with pills except the finale medkits
-	SAFEROOM_AND_FINALE_PILLS_ONLY = 3, // Replace the finale kits with pills and remove all other pills/kits
-	ZONEMOD_PILLS = 4 // Replace all medkits with pills, only remove saferoom kits (use data/mapinfo to control pill limit)
+	REPLACE_ALL_BUT_FINALE_KITS = 2, // Replace saferoom medkits with pills + allow few kits on the map and final
+	SAFEROOM_AND_FINALE_PILLS_ONLY = 3, // Replace the finale kits with pills and remove all other pills/kits + give pills when round starts
+	ZONEMOD_PILLS = 4 // Replace all medkits with pills (use data/mapinfo to control pill limit) + remove saferoom kits + give pills when round starts
 }
 // --------------------
 //       Private
@@ -404,28 +404,6 @@ static UpdateHealthStyle()
 static UpdateStartingHealthItems()
 {	
 	new entity = -1;
-	/*
-	//尋找地圖中的藥丸與治療包
-	while ( ((entity = FindEntityByClassnameEx(entity, PAIN_PILLS_CLASSNAME)) != -1) )
-	{
-		if(!IsValidEntity(entity))
-			continue;
-			
-		decl Float:entityPos[3];
-		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-		LogMessage("PILLS here1 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);	
-	}
-	entity = -1;
-	while ( ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1) )
-	{
-		if(!IsValidEntity(entity))
-			continue;
-			
-		decl Float:entityPos[3];
-		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
-		LogMessage("KITS here1 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);	
-	}
-	*/
 	
 	DebugPrintToAllEx("Updating starting health items.");
 	if (g_iHealthStyle == ZONEMOD_PILLS||g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)//remove saferoom medkits
@@ -498,6 +476,11 @@ static UpdateStartingHealthItems()
 	}
 	else //非救援關
 	{
+		if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) 
+		{
+			return;
+		}
+
 		// Then, if we're using the hardcore setting, remove all pills from the map
 		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
 		{		

@@ -1,17 +1,33 @@
 # Rotoblin-AZMod
 v8.5.3
 <br/>CopyRight @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
-<br/><img src="https://i.imgur.com/FGkLDMp.png" alt="FGkLDMp.png" width="1100" height = "550">
-
-* [Support L4D2onL4D1 maps](#roto-az-l4d2onl4d1)
-* [繁體中文說明](/Developer%26Commands/繁體說明書.txt)
-* [Developer 作者介紹](/Developer%26Commands/Roto-AZMod%20Developer.cfg)
-* [Source Code 專案源碼](/SourceCode)
+<br/><img src="https://i.imgur.com/FGkLDMp.png">
+- [Navigation](#rotoblin-azmod)
+    - [Server Install](#server-install)
+    - [Server Anti Cheat](#server-anti-cheat)
+    - [Server Admins](#server-admins)
+    - [Gamemodes](#gamemodesload-match-mode)
+    - [Votes Menu](#votes-menuvotes)
+    - [Map Changes](#map-changes)
+    - [Custom Map Support](#custom-map-support)
+    - [Weapon Adjustments](#weapon-adjustments)
+    - [Score Calculation](#score-calculationhealthbonus)
+    - [Bug / Exploit Fixes](#bug--exploit-fixes)
+    - [Gameplay / Balance Changes](#gameplay--balance-changes)
+    - [Miscellaneous](#miscellaneous)
+    - [Support L4D2onL4D1 maps](#roto-az-l4d2onl4d1)
+    - [Others](#others)
+    - [Chinese | 繁體中文說明](/Developer%26Commands/繁體說明書.txt)
+    - [Developer | 作者介紹](/Developer%26Commands/Roto-AZMod%20Developer.cfg)
+    - [Project Source Code | 專案源碼](/SourceCode)
 
 **LINUX/WINDOWS SERVERS WORK**
 * This repository only supports Sourcemod 1.11 and up.
 
 A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、L4D2 [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, increase max damage pounce, more Tank hp and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+
+- - - -	
+### If you appreciate my work, please [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
 
 - - - -
 ### Server Install ###
@@ -41,9 +57,6 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Sourcemod_Anti-Cheat](https://github.com/fbef0102/L4D1-Server4Dead/releases): a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
 * [Little-Anti-Cheat](https://github.com/J-Tanzanite/Little-Anti-Cheat): a free and open source anti-cheat for source games. Helpful in dealing with cheaters such as aimbot, bunnyhop, aimlock.
   > **Developer Comment:** I highly recommend to install, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
-
-- - - -	
-### If you appreciate my work, please [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
 
 - - - -
 ### Server Admins! ###
@@ -120,13 +133,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Hunters only
 * Special
   * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
-  <br/><img src="https://i.imgur.com/IMVp3NI.jpg" alt="IMVp3NI.jpg" width="750" height = "400">
+  <br/><img src="https://i.imgur.com/IMVp3NI.jpg">
   
 * Skeet Practice
   * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
-  <br/><img src="https://i.imgur.com/ycHlIRZ.jpg" alt="ycHlIRZ.jpg" width="750" height = "400">
+  <br/><img src="https://i.imgur.com/ycHlIRZ.jpg">
   * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
-  <br/><img src="https://i.imgur.com/72oUS2W.jpg" alt="72oUS2W.jpg" width="750" height = "400">
+  <br/><img src="https://i.imgur.com/72oUS2W.jpg">
   > **Developer Comment:** Add glow effect to items in "Skeet Practice" mode, which helps players quickly get familiar with the maps
   > * Survivor can see pills、kits、weapons、ammo
   > * Infected can see hittable objects、alarm car
@@ -145,11 +158,18 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    
 - - - -
 ### Map Changes ###
+<br/><img src="https://i.imgur.com/JDlwzs7.jpg">
+<br/><img src="https://i.imgur.com/cgkKT9S.jpg">
+<br/><img src="https://i.imgur.com/h4I6s9c.jpg">
+<br/><img src="https://i.imgur.com/nQlwMhT.jpg">
+<br/><img src="https://i.imgur.com/mCW8LHK.jpg">
+<br/><img src="https://i.imgur.com/4B5MaSD.jpg">
+<br/><img src="https://i.imgur.com/gTvOcdd.jpg">
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
   * Remove miniguns and machine guns
   * Extra Pills
-    * Limit 1 pill in cabinets, but the pill is not fixed spawn
+    * Limit 2 pill in cabinets, but the pill is not fixed spawn
     * On the road: 1~2 pills
     * Final rescue area: 4 pills
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
@@ -347,13 +367,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed: 210 (survivors speed: 220, vanilla: 210)
     * When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
-    <br/><img src="https://i.imgur.com/H6gFGOf.jpg" alt="jtIWewR.jpg" width="750" height = "400">
+    <br/><img src="https://i.imgur.com/H6gFGOf.jpg">
     * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
-    <br/><img src="https://i.imgur.com/jtIWewR.jpg" alt="jtIWewR.jpg" width="750" height = "400">
+    <br/><img src="https://i.imgur.com/jtIWewR.jpg">
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
     * Players cannot shove tanks.
     * Passing control to AI tank will no longer be rewarded with an instant respawn
+    * Remove random punches animation, now always right hook.
     * Tanks can use Secondary Attack, Use, and Reload Buttons to throw rocks.
 	  - *(MOUSE2)*: **One handed overhand**
 	  - *(E)*: **Underhand**
@@ -393,7 +414,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Enlarge witch flashlight range: 750 (vanilla: 400)
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
     * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
-	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg" alt="RKAuCjY.jpg" width="750" height = "400">
+	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
     * Instantly incapacitate Survivors
     * Prevent common infected from pushing witch away when witch not startled yet
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
@@ -454,7 +475,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fixes boomer teleport whenever hes close enough to ladder
     * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
     * Boomer's vomit is now able to pass through fence and barricade
-    <br/><img src="https://i.imgur.com/MV6azfX.gif" alt="MV6azfX.gif" width="750" height = "400">
+    <br/><img src="https://i.imgur.com/MV6azfX.gif">
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!
@@ -576,7 +597,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Shows a laser for straight-flying fired projectiles during ready up.
 * Free movement after round ends.
 * Allows changing of displayed game type in server browser
-<br/><img src="https://i.imgur.com/hbJd1Hs.png" alt="FGkLDMp.png" width="950" height = "500">
+<br/><img src="https://i.imgur.com/hbJd1Hs.png">
 
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
@@ -593,13 +614,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   7. **C13 - Cold Stream**
   8. **C14 - The Last Stand (New)**
 
-  <br/><img src="https://i.imgur.com/utcIlA8.png" alt="FGkLDMp.png" width="1000" height = "350">
-  <br/><img src="https://i.imgur.com/OXWBfsg.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/cSsbd2o.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/TDPqp4i.jpg" alt="FGkLDMp.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg" alt="Iv7Ns0E.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/BpH0wDk.jpg" alt="BpH0wDk.png" width="1000" height = "475">
-  <br/><img src="https://i.imgur.com/XKjIfTF.jpg" alt="XKjIfTF.png" width="1000" height = "475">
+  <br/><img src="https://i.imgur.com/utcIlA8.png">
+  <br/><img src="https://i.imgur.com/OXWBfsg.jpg">
+  <br/><img src="https://i.imgur.com/cSsbd2o.jpg">
+  <br/><img src="https://i.imgur.com/TDPqp4i.jpg">
+  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg">
+  <br/><img src="https://i.imgur.com/BpH0wDk.jpg">
+  <br/><img src="https://i.imgur.com/XKjIfTF.jpg">
 
 * <details><summary> <b>"left4deadDLC4-l4d2onl4d1" Mod</b> </summary>
 

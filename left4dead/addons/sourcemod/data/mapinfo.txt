@@ -135,11 +135,35 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"tank_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"87"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_vs_airport04_terminal"
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"tank_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"75"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"The End of the Map"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_vs_airport05_runway"
 	{
