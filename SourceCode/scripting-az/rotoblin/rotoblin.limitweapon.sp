@@ -230,8 +230,9 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 		curclassname[0] = '\0';
 	}
 
-	if(StrEqual(classname, WEAPON_HUNTING_RIFLE)){
-		if (GetActiveWeapons(WEAPON_HUNTING_RIFLE) >= g_iLimitHuntingRifle && g_iLimitHuntingRifle >=0) // If ammount of active hunting rifles are at the limit
+	if(StrEqual(classname, WEAPON_HUNTING_RIFLE))
+	{
+		if (g_iLimitHuntingRifle >=0 && GetActiveWeapons(WEAPON_HUNTING_RIFLE) >= g_iLimitHuntingRifle) // If ammount of active hunting rifles are at the limit
 		{
 			if (!g_bHaveTipped[client])
 			{
@@ -250,8 +251,9 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
-	else if(StrEqual(classname, WEAPON_AUTOSHOTGUN)){
-		if (GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun && g_iLimitAutoShotgun >=0)
+	else if(StrEqual(classname, WEAPON_AUTOSHOTGUN))
+	{
+		if (g_iLimitAutoShotgun >=0 && GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun )
 		{
 			if (!g_bHaveTipped[client])
 			{
@@ -282,8 +284,9 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
-	else if(StrEqual(classname, WEAPON_RIFLE)){
-		if (GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle && g_iLimitRifle >=0)
+	else if(StrEqual(classname, WEAPON_RIFLE))
+	{
+		if (g_iLimitRifle >=0 && GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle)
 		{
 			if (!g_bHaveTipped[client])
 			{
@@ -314,8 +317,9 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
-	else if(StrEqual(classname, WEAPON_PUMPSHOTGUN)){
-		if (GetActiveWeapons(WEAPON_PUMPSHOTGUN) >= g_iLimitPumpShotgun && g_iLimitPumpShotgun >=0) 
+	else if(StrEqual(classname, WEAPON_PUMPSHOTGUN))
+	{
+		if (g_iLimitPumpShotgun >=0 && GetActiveWeapons(WEAPON_PUMPSHOTGUN) >= g_iLimitPumpShotgun) 
 		{
 			if (!g_bHaveTipped[client])
 			{
@@ -334,8 +338,9 @@ public Action:_LHR_OnWeaponCanUse(client, weapon)
 			return Plugin_Handled; // Dont allow survivor picking up the hunting rifle
 		}
 	}
-	else if(StrEqual(classname, WEAPON_SMG)){
-		if (GetActiveWeapons(WEAPON_SMG) >= g_iLimitSmg && g_iLimitSmg >=0) 
+	else if(StrEqual(classname, WEAPON_SMG))
+	{
+		if (g_iLimitSmg >=0 && GetActiveWeapons(WEAPON_SMG) >= g_iLimitSmg) 
 		{
 			if (!g_bHaveTipped[client])
 			{
@@ -431,3 +436,50 @@ static GetActiveWeapons(const String:WEAPON_NAME[])
 // 		}
 // 	}
 // }
+
+public Action L4D2_OnFindScavengeItem(client, &item)
+{
+	if(!IsFakeClient(client) || item <= MaxClients || !IsValidEntity(item)) return Plugin_Continue;
+
+	static char classname[128];
+	GetEntityClassname(item, classname, sizeof(classname));
+	//PrintToChatAll("%N tries to pick up %s", client, classname);
+	
+	if(StrEqual(classname, WEAPON_HUNTING_RIFLE))
+	{
+		if (g_iLimitHuntingRifle >=0 && GetActiveWeapons(WEAPON_HUNTING_RIFLE) >= g_iLimitHuntingRifle) // If ammount of active hunting rifles are at the limit
+		{
+			return Plugin_Handled;
+		}
+	}
+	else if(StrEqual(classname, WEAPON_AUTOSHOTGUN))
+	{
+		if (g_iLimitAutoShotgun >=0 && GetActiveWeapons(WEAPON_AUTOSHOTGUN) >= g_iLimitAutoShotgun)
+		{
+			return Plugin_Handled;
+		}
+	}
+	else if(StrEqual(classname, WEAPON_RIFLE))
+	{
+		if (g_iLimitRifle >=0 && GetActiveWeapons(WEAPON_RIFLE) >= g_iLimitRifle)
+		{
+			return Plugin_Handled;
+		}
+	}
+	else if(StrEqual(classname, WEAPON_PUMPSHOTGUN))
+	{
+		if (g_iLimitPumpShotgun >=0 && GetActiveWeapons(WEAPON_PUMPSHOTGUN) >= g_iLimitPumpShotgun) 
+		{
+			return Plugin_Handled;
+		}
+	}
+	else if(StrEqual(classname, WEAPON_SMG))
+	{
+		if (g_iLimitSmg >=0 && GetActiveWeapons(WEAPON_SMG) >= g_iLimitSmg) 
+		{
+			return Plugin_Handled;
+		}
+	}
+
+	return Plugin_Continue;
+}
