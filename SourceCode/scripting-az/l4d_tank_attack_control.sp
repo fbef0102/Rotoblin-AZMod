@@ -139,15 +139,21 @@ public Action:OnPlayerRunCmd(client, &buttons)
 
 	if(buttons & IN_ATTACK2)
 	{
+		if(unlock_play_list(client)) return Plugin_Continue;
+
 		g_seqQueuedThrow[client] = OneOverhand;
 	}
 	else if (buttons & IN_USE)
 	{
+		if(unlock_play_list(client)) return Plugin_Continue;
+
 		g_seqQueuedThrow[client] = Underhand;
 		buttons |= IN_ATTACK2;
 	}
 	else if (buttons & IN_RELOAD)
 	{
+		if(unlock_play_list(client)) return Plugin_Continue;
+		
 		g_seqQueuedThrow[client] = TwoOverhand;
 		buttons |= IN_ATTACK2;
 	}
