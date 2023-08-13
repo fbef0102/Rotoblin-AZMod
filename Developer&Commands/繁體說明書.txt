@@ -714,6 +714,10 @@
 [199] l4d_tongue_float_fix
 //解決偶而發生的bug，舌頭拉人瞬間直接拖走倖存者不留機會的問題
 
+[200] l4d_fix_nextbot_collision
+//官方的問題: nb_update_frequency數值變低 -> 殭屍與witch的碰撞偵測頻率高 -> 卡住, 卡門, 黏牆壁, 殭屍圍毆時反覆來回彈開
+//裝上此插件修復上敘的問題
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

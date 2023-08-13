@@ -303,7 +303,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Dissolves the witch, common, survivor or special infected when killed.
 	* Only works in some certain maps that have water
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
-  
+* Reduce the possibility that commons jiggle around when close to each other. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_nextbot_collision)
+	* A well-known issue happens when setting ```nb_update_frequency``` to low value.
+
 - - - -
 ### Gameplay / Balance Changes ###
 * Anti-baiting Timer: 30s.
@@ -331,7 +333,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Can't spawn in saferoom or any "this is restricted area" rooms (one of l4d1 original feature)
     * Allow duck fastspeed exploit when infected ghost state (one of l4d1 original feature)
 	* Allow water bhop and swim (one of l4d1 original feature)
-    * NSpecial infected cannot damage each other.(but still move back) The tank can damage other special infected.
+    * Special infected cannot damage each other.(but still move back) The tank can kill other special infected.
     * Can't M2 scratch when duck (one of l4d1 original feature)
     * Stop special infected getting bashed to death except for Boomer 
     * Players that try to bypass the Death Cam by spectating and switching back will be prevented from joining back for a few seconds.
@@ -413,7 +415,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Enlarge witch personal space: 500 (vanilla: 100)
     * Enlarge witch flashlight range: 750 (vanilla: 400)
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
-    * Glow for Infected Team, thanks to [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
+    * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
 	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
     * Instantly incapacitate Survivors
     * Prevent common infected from pushing witch away when witch not startled yet
