@@ -6,8 +6,8 @@ v8.5.3
     - [Server Install](#server-install)
     - [Server Anti Cheat](#server-anti-cheat)
     - [Server Admins](#server-admins)
-    - [Gamemodes](#gamemodesload-match-mode)
-    - [Votes Menu](#votes-menuvotes)
+    - [Gamemodes](#gamemodes)
+    - [Votes Menu](#votes-menu)
     - [Map Changes](#map-changes)
     - [Custom Map Support](#custom-map-support)
     - [Weapon Adjustments](#weapon-adjustments)
@@ -109,11 +109,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     > **Developer Comment:** make some changes to prevent idiots and griefers, so let newbies enjoy and play :D
 
 - - - -
-### Gamemodes(!load, !match, !mode) ###
+### Gamemodes ###
+> __Note__ Type !load, !match, !mode
 * 5v5
   * Hunters only
   * No Boomer
   * Hardcore
+
 * 4v4 
   * Hunters only
   * No Boomer
@@ -121,31 +123,37 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * [Classic](https://steamcommunity.com/groups/ibserver#announcements/detail/1688172020573940161) 
   * 4v4 Pub
   * 4v4 Pub Hunters only
+
 * 3v3
   * Hunters only
   * No Boomer
   * Hardcore
+
 * 2v2
   * Hunters only
   * No Boomer
   * Hardcore
+
 * 1v1
   * Hunters only
-* Special
-  * Dark Coop (A super difficult, dark, and challenging gamemode created by us, there are many cool things you will nerver see in realism game)
-  <br/><img src="https://i.imgur.com/IMVp3NI.jpg">
   
 * Skeet Practice
   * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
   <br/><img src="https://i.imgur.com/ycHlIRZ.jpg">
   * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
   <br/><img src="https://i.imgur.com/72oUS2W.jpg">
+
   > **Developer Comment:** Add glow effect to items in "Skeet Practice" mode, which helps players quickly get familiar with the maps
   > * Survivor can see pills、kits、weapons、ammo
   > * Infected can see hittable objects、alarm car
+
+* Special
+  * Dark Coop (A super difficult, dark, and challenging gamemode, there are many cool things you will nerver see in realism game)
+  <br/><img src="https://i.imgur.com/IMVp3NI.jpg">
       
 - - - -
-### Votes Menu(!votes) ###
+### Votes Menu ###
+> __Note__ Type !votes
 * Turn On/Off Ready Plugin
 * Give HP
 * Turn On Alltalk
@@ -185,20 +193,18 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Custom Map Support ###
-* List
-  * [City 17](https://www.gamemaps.com/details/27815)
-  * [Suicide Blitz](https://www.gamemaps.com/details/28744)
-  * [Dead Flag Blues](https://www.gamemaps.com/details/28743)
-  * [I Hate Mountains](https://www.gamemaps.com/details/28748)
-  * [Dead Before Dawn](https://www.gamemaps.com/details/27816)
-  * [The Arena of the Dead](https://www.gamemaps.com/details/28749)
-  * [Death Aboard](https://www.gamemaps.com/details/28747)
-  * [One 4 Nine](https://www.gamemaps.com/details/28745)
-  * [Dark Blood](https://www.gamemaps.com/details/28746)
-  * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
-  * [Precinct 84](https://www.gamemaps.com/details/27737)
-* Type !votes -> Change addon map
-* In some custom maps, fix the wrong .wav sound coming from common infected when been shot
+> __Note__ Type !votes -> Change addon map
+* [City 17](https://www.gamemaps.com/details/27815)
+* [Suicide Blitz](https://www.gamemaps.com/details/28744)
+* [Dead Flag Blues](https://www.gamemaps.com/details/28743)
+* [I Hate Mountains](https://www.gamemaps.com/details/28748)
+* [Dead Before Dawn](https://www.gamemaps.com/details/27816)
+* [The Arena of the Dead](https://www.gamemaps.com/details/28749)
+* [Death Aboard](https://www.gamemaps.com/details/28747)
+* [One 4 Nine](https://www.gamemaps.com/details/28745)
+* [Dark Blood](https://www.gamemaps.com/details/28746)
+* [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
+* [Precinct 84](https://www.gamemaps.com/details/27737)
 
 - - - -
 ### Weapon Adjustments ###
@@ -248,13 +254,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Blocking a rocket jump exploit (with pipebomb/molotov/tank rock/common head).
 * Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
 * Allows bots to shoot while a PipeBomb projectile is active on the map.
-* Fix common infected blocking the punch tracing.
 * Survivors cannot hear ghost footsteps and spawn sound.
 * Stops Shoves slowing the Tank Down
 * Fixed Players being able to exploit switching team to get earlier SI Spawns.
 * Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
 * Fixed no Survivor bots issue and more than 4 bots issue.
-* Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?p=1823208)
+* Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?t=198915)
      * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
      * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
      * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
@@ -297,23 +302,25 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
-* Prevents director or map overrides of z_common_limit. Kill common if overflow.
 * Remove restricted time between panic events (90s)
 * Prevent forced sliding when landing at head of enemies.
 * Dissolves the witch, common, survivor or special infected when killed.
 	* Only works in some certain maps that have water
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
-* Reduce the possibility that commons jiggle around when close to each other. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_nextbot_collision)
-	* A well-known issue happens when setting ```nb_update_frequency``` to low value.
 
 - - - -
 ### Gameplay / Balance Changes ###
-* Anti-baiting Timer: 30s.
-* Anti-baiting Sensitivity Delay: 15s.
-  * Survivors Must move forward, no time to stay put long, or the director will force panic event
-  * Baiting is a valid tactic, but nobody wants to fall asleep during very lengthy baiting sessions.
-  
-* Special Infected(!inf):
+* Common Infected
+  * Fix common infected blocking the tank punch tracing.
+  * In some custom maps, fix the wrong .wav sound coming from common infected when been shot
+  * Prevents director or map overrides of z_common_limit. Kill common if overflow.
+  * It always takes 5 scratches from an infected player to kill a common infected
+  * Prevent common infected from pushing witch away when witch not startled yet
+  * Reduce the possibility that commons jiggle around when close to each other. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_nextbot_collision)
+	  * A well-known issue happens when setting ```nb_update_frequency``` to low value. 
+  * Fix commons being immune to shoves when crouching, falling and landing. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_common_shove)
+
+* Special Infected:
   * **General:**
     * Spawntimers:
       - *(5v5)*: **15s**
@@ -341,7 +348,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * All SI are able to be on fire!!
     * All SI are now able to break doors with 1 scratch instead of 3
     * Hides all weapons and iteams from the infected team or dead survivor until they are (possibly) visible to one of the alive survivors to prevent SI scouting the map
-    * It always takes 5 scratches from an infected player to kill a common infected
     * Players cannot scratch while in the stumble animation.
     * ```sm_respec``` force the spectator player to respectate, only used by infected.
 	* show who the god damn pig S.I like kill teammates, stumble tank, kill witch, etc.
@@ -396,7 +402,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *(2v2)*: **3480**
       - *(1v1)*: **None**
     * Slay AI Tank in 1v1, 2v2 and 3v3  
-    * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?p=2646073)
+    * Lag compensation for tank rocks + custom damage & range values. [details here](https://forums.alliedmods.net/showthread.php?t=315345)
     * Ignites the rock thrown by the Tank when he is on fire.
     * Fixed an issue where tank rock is harder to land on survivors in saferoom area.
     * Disables the Car Alarm when a Tank hittable hits the alarmed car.
@@ -415,10 +421,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Enlarge witch personal space: 500 (vanilla: 100)
     * Enlarge witch flashlight range: 750 (vanilla: 400)
     * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
-    * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?p=2656161)
+    * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?t=316965)
 	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
     * Instantly incapacitate Survivors
-    * Prevent common infected from pushing witch away when witch not startled yet
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
     * Prevents the witch from randomly loosing target.
 	
@@ -464,9 +469,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Boomer can be getting bashed to death
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
     * Recharge CD: 20s (vanilla: 30s)
-    * Boom Horde limit
+    * amount of zombies boomer vomit on
       - *(5v5)*: **35**
-      - *(4v4)*: **26**
+      - *(4v4)*: **30**
       - *(3v3)*: **21**
       - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
@@ -504,7 +509,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * No Tank Spawn as the rescue vehicle is coming
   * ```sm_voteboss <tank> <witch>``` Boss Percents Vote
     
-* Survivors(!sur):
+* Survivors:
+  * Anti-baiting Timer: 30s.
+  * Anti-baiting Sensitivity Delay: 15s.
+    * Survivors Must move forward, no time to stay put long, or the director will force panic event
+    * Baiting is a valid tactic, but nobody wants to fall asleep during very lengthy baiting sessions.
   * Water Slowdown outside of Tank fights.
      * *Water speed*: **170** (original: 175)
      * *Deep water speed*: **136** (original: 140)
@@ -547,7 +556,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Received:
      * *(Incap)*: **0s**
      * *(Hangledge)*: **0s**
-  * Common Extra Time: 
+  * Common Infected Extra Time: 
      * *(Hunter)*: **+0s**
      * *(Smoker)*: **+1.8s**
   * FF Extra Time: 
@@ -559,7 +568,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
   * Prevent infected slowdown being overridden by other damage.
   
-* Spectators(!s):
+* Spectators:
   * ```sm_spechud``` toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.
   * Spectators can see the witch glow, hittable prop glow and tank rock glow.

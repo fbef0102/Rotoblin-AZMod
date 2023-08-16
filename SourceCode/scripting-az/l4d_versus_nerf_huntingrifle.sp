@@ -216,9 +216,13 @@ Action COLD_DOWN(Handle timer, int iClient) //拉勾動畫
 	if(!IsValidEntity(iViewModel))
 		return Plugin_Continue;
 
+	int iActiveWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	if(iActiveWeapon <= MaxClients && !IsValidEntity(iActiveWeapon))
+		return Plugin_Continue;
+
 	if(iConVar_Huntrifle_FireLayer <= 0) return Plugin_Continue;
 		
-	SetEntPropFloat(GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon"), Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
+	SetEntPropFloat(iActiveWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
 	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_FireLayer); //16
 	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
 	

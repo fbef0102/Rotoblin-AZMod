@@ -2,12 +2,12 @@
 #include <sdktools>
 #define DEBUG 0
 
-#define PLUGIN_VERSION "1.0.4"
+#define PLUGIN_VERSION "1.0.5"
 
 public Plugin:myinfo = 
 {
 	name = "Stuck Zombie Melee Fix",
-	author = "AtomicStryker, HarryPotter",
+	author = "AtomicStryker",
 	description = "Smash nonstaggering Zombies",
 	version = PLUGIN_VERSION,
 	url = "http://forums.alliedmods.net/showthread.php?p=932416"
@@ -16,53 +16,54 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	HookEvent("entity_shoved", Event_EntShoved);
-	AddNormalSoundHook(HookSound_Callback); //my melee hook since they didnt include an event for it
+	AddNormalSoundHook(NormalSHook:HookSound_Callback); //my melee hook since they didnt include an event for it
 	
 	CreateConVar("l4d_stuckzombiemeleefix_version", PLUGIN_VERSION, " Version of L4D Stuck Zombie Melee Fix on this server ", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 }
 
 new bool:MeleeDelay[MAXPLAYERS+1];
 
-public Action:HookSound_Callback(Clients[64], &NumClients, String:StrSample[PLATFORM_MAX_PATH], &Entity, &iChannel, &Float:fVolume, &fLevel, &iPitch, &iFlags)
+public Action HookSound_Callback(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, \
+				float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
 	//to work only on melee sounds, its 'swish' or 'weaponswing'
-	if (StrContains(StrSample, "Swish", false) == -1) return Plugin_Continue;
+	if (StrContains(sample, "Swish", false) == -1) return Plugin_Continue;
 	//so the client has the melee sound playing. OMG HES MELEEING!
-	
-	if (Entity > MAXPLAYERS) return Plugin_Continue; // bugfix for some people on L4D2
-	
+
+	if (entity > MaxClients) return Plugin_Continue; // bugfix for some people on L4D2
+
 	//add in a 1 second delay so this doesnt fire every frame
-	if (MeleeDelay[Entity]) return Plugin_Continue; //note 'Entity' means 'client' here
-	MeleeDelay[Entity] = true;
-	CreateTimer(1.0, ResetMeleeDelay, Entity);
-	
+	if (MeleeDelay[entity]) return Plugin_Continue; //note 'Entity' means 'client' here
+	MeleeDelay[entity] = true;
+	CreateTimer(1.0, ResetMeleeDelay, entity);
+
 	#if DEBUG
 	PrintToChatAll("Melee detected via soundhook.");
 	#endif
-	
-	new entid = GetClientAimTarget(Entity, false);
+
+	new entid = GetClientAimTarget(entity, false);
 	if (entid <= 0) return Plugin_Continue;
-	
+
 	decl String:entclass[96];
 	GetEntityNetClass(entid, entclass, sizeof(entclass));
 	if (!StrEqual(entclass, "Infected")) return Plugin_Continue;
-	
+
 	decl Float:clientpos[3], Float:entpos[3];
 	GetEntityAbsOrigin(entid, entpos);
-	GetClientEyePosition(Entity, clientpos);
+	GetClientEyePosition(entity, clientpos);
 	if (GetVectorDistance(clientpos, entpos) < 50) return Plugin_Continue; //else you could 'jedi melee' Zombies from a distance
-	
+
 	#if DEBUG
 	PrintToChatAll("Youre meleeing and looking at Zombie id #%i", entid);
 	#endif
-	
+
 	//now to make this Zombie fire a event to be caught by the actual 'fix'
-	
+
 	new Handle:newEvent = CreateEvent("entity_shoved", true);
-	SetEventInt(newEvent, "attacker", Entity); //the client being called Entity is a bit unfortunate
+	SetEventInt(newEvent, "attacker", entity); //the client being called Entity is a bit unfortunate
 	SetEventInt(newEvent, "entityid", entid);
 	FireEvent(newEvent, true);
-	
+
 	return Plugin_Continue;
 }
 
@@ -100,19 +101,11 @@ public Action:CheckForMovement(Handle:timer, Handle:data)
 	ResetPack(data); //this resets our 'reading' position in the data pack, to start from the beginning
 	
 	new zombieid = ReadPackCell(data); //get the Zombie id
-	if (!IsValidEntity(zombieid))
-	{
-		CloseHandle(data);
-		return Plugin_Handled; //did the zombie get disappear somehow?
-	}
+	if (!IsValidEntity(zombieid)) return Plugin_Handled; //did the zombie get disappear somehow?
 	
 	decl String:entclass[96];
 	GetEntityNetClass(zombieid, entclass, sizeof(entclass));
-	if (!StrEqual(entclass, "Infected"))
-	{
-		CloseHandle(data);
-		return Plugin_Handled; //make sure it STILL IS a zombie.
-	}
+	if (!StrEqual(entclass, "Infected")) return Plugin_Handled; //make sure it STILL IS a zombie.
 	
 	decl Float:oldpos[3];
 	oldpos[0] = ReadPackFloat(data); //get the old Zombie position (half a sec ago)
