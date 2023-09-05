@@ -2042,6 +2042,11 @@
 		"en"	"Infected MIC"
 		"zho"	"特感MIC"
 	}
+	"Players Speaking:"
+	{
+		"en"		"Players Speaking:"
+		"zho"		"玩家MIC:"
+	}
 	///////////////l4d_jukebox_spawner.smx//////////////
 	"stopped jukebox playing."
 	{

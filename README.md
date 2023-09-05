@@ -243,7 +243,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 ### Score Calculation(!health/!bonus) ###
 * ( AD + HB + PILLS ) x Alive x Map 
    * AD = Average distance
-   * HB = Health Bonus , Floor(PermanentHealth/2)+RoundToNearest(TemporaryHealth/4)
+   * HB = Health Bonus, (PermanentHealth/2) + (TemporaryHealth/4)
    * PILLS = 15 Health Bonus per pill
    * Alive = Number of players that survived
    * Map = That level's score multiplier
@@ -316,9 +316,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Prevents director or map overrides of z_common_limit. Kill common if overflow.
   * It always takes 5 scratches from an infected player to kill a common infected
   * Prevent common infected from pushing witch away when witch not startled yet
+  * Despawn infected commons who is too far behind the survivors.
   * Reduce the possibility that commons jiggle around when close to each other. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_nextbot_collision)
 	  * A well-known issue happens when setting ```nb_update_frequency``` to low value. 
   * Fix commons being immune to shoves when crouching, falling and landing. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_common_shove)
+  * Remove BattleField Navigation limit when panic horde stage, which means common infected no longer spawns behind when survivor rush forward.
 
 * Special Infected:
   * **General:**
@@ -469,14 +471,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Boomer can be getting bashed to death
     * Stumble Tank for 3 seconds long (one of l4d1 original feature)
     * Recharge CD: 20s (vanilla: 30s)
-    * amount of zombies boomer vomit on
+    * Amount of zombies boomer vomit on
       - *(5v5)*: **35**
-      - *(4v4)*: **30**
+      - *(4v4)*: **28**
       - *(3v3)*: **21**
       - *(2v2)*: **13**
     * If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
-      - *87%*: **3 Hunters + 1 Smoker**
-      - *13%*: **4 Hunters**
+      - *90%*: **3 Hunters + 1 Smoker**
+      - *10%*: **4 Hunters**
     * Explode after 3 times shove (original: 5)
     * Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
     * Fixes boomer teleport whenever hes close enough to ladder

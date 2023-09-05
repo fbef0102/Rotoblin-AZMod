@@ -40,12 +40,14 @@ static	const	String:	CLASSNAME_PHYSPROPS[]				= "prop_physics";
 
 static	const	Float:	TRACE_TOLERANCE 					= 75.0;
 static	const	Float:	COMMON_CHECK_INTERVAL 				= 1.0;
-static	const	Float:	COMMON_RESPAWN_INTERVAL 			= 0.5;
+static	const	Float:	COMMON_RESPAWN_INTERVAL_MIN 		= 0.1;
+static	const	Float:	COMMON_RESPAWN_INTERVAL_MAX 		= 0.5;
 
-static	const	Float:	DESPAWN_DISTANCE					= 700.0;
-static	const	Float:	MIN_ADVANCE_DISTANCE				= 33.0;
-static	const	Float:	MIN_COMMON_LIFETIME					= 15.0;
-static 	const	Float:	NEAR_SAFEROOM_DISTANCE				= 1000.0;
+static	const	Float:	DESPAWN_DISTANCE					= 650.0; //700
+static	const	Float:	SAFE_DISTANCE						= 1500.0; //1500
+static	const	Float:	MIN_ADVANCE_DISTANCE				= 33.0; //33
+static	const	Float:	MIN_COMMON_LIFETIME					= 3.0; //15
+static 	const	Float:	NEAR_SAFEROOM_DISTANCE				= 800.0; //1000
 
 static			Handle:	g_hCommonTimer						= INVALID_HANDLE;
 static			Float:	g_fCommonLifetime[MAX_EDICTS+1]		= {0.0};
@@ -54,6 +56,9 @@ static			Float:	g_fLastLowestSurvivorFlow			= 0.0;
 
 static					g_iDebugChannel						= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]				= "DespawnInfected";
+
+static bool g_bHookSpawnedInfected;
+static bool g_bIsFinaleActive;
 
 // **********************************************
 //                   Forwards
@@ -80,11 +85,15 @@ public _DespawnInfected_OnPluginStart()
  */
 public _DI_OnPluginEnabled()
 {
+	g_bIsFinaleActive = false;
 	for (new i = 1; i <= MAX_EDICTS; i++) g_fCommonLifetime[i] = 0.0;
 
+	delete g_hCommonTimer;
 	g_hCommonTimer = CreateTimer(COMMON_CHECK_INTERVAL, _DI_Check_Timer, _, TIMER_REPEAT);
 
 	HookEvent("round_start", _DI_RoundStart_Event, EventHookMode_PostNoCopy);
+	HookEvent("finale_start", _DI_OnFinaleStart_Event, EventHookMode_PostNoCopy);
+	HookEvent("finale_radio_start", _DI_OnFinaleStart_Event, EventHookMode_PostNoCopy);
 	HookPublicEvent(EVENT_ONENTITYCREATED, _DI_OnEntityCreated);
 	HookPublicEvent(EVENT_ONENTITYDESTROYED, _DI_OnEntityDestroyed);
 	DebugPrintToAllEx("Module is now loaded");
@@ -97,9 +106,11 @@ public _DI_OnPluginEnabled()
  */
 public _DI_OnPluginDisabled()
 {
-	CloseHandle(g_hCommonTimer);
+	delete g_hCommonTimer;
 
 	UnhookEvent("round_start", _DI_RoundStart_Event, EventHookMode_PostNoCopy);
+	UnhookEvent("finale_start", _DI_OnFinaleStart_Event, EventHookMode_PostNoCopy);
+	UnhookEvent("finale_radio_start", _DI_OnFinaleStart_Event, EventHookMode_PostNoCopy);
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _DI_OnEntityCreated);
 	UnhookPublicEvent(EVENT_ONENTITYDESTROYED, _DI_OnEntityDestroyed);
 	DebugPrintToAllEx("Module is now unloaded");
@@ -115,7 +126,26 @@ public _DI_OnPluginDisabled()
 public _DI_OnEntityCreated(entity, const String:classname[])
 {
 	if (!StrEqual(classname, CLASSNAME_INFECTED, false)) return;
+
 	g_fCommonLifetime[entity] = GetGameTime();
+
+	if(g_bHookSpawnedInfected)
+	{
+		//LogMessage("Respawn Infected %d, Rush!", entity);
+		//g_bHookSpawnedInfected = false;
+
+		RequestFrame(OnNextFrame, EntIndexToEntRef(entity));
+	}
+}
+
+void OnNextFrame(int entityRef)
+{
+	int infected = EntRefToEntIndex(entityRef);
+
+	if (infected == INVALID_ENT_REFERENCE)
+		return;
+
+	SetEntProp(infected, Prop_Send, "m_mobRush", 1);
 }
 
 /**
@@ -139,7 +169,12 @@ public _DI_OnEntityDestroyed(entity)
  */
 public _DI_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	for (new i = 1; i <= MAX_EDICTS; i++) g_fCommonLifetime[i] = 0.0;
+	for (new i = 1; i <= MAX_EDICTS; i++) 
+		g_fCommonLifetime[i] = 0.0;
+
+	g_iCommonSpawnQueue = 0;
+	g_fLastLowestSurvivorFlow = 0.0;
+	g_bIsFinaleActive = false;
 	DebugPrintToAllEx("Round start, resetting common life time");
 }
 
@@ -152,13 +187,12 @@ public _DI_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
  */
 public Action:_DI_Check_Timer(Handle:timer)
 {
-	if (!IsServerProcessing()) return Plugin_Continue; // If no survivors or server is empty, return plugin_continue
+	if (!IsServerProcessing() || g_bIsFinaleActive) return Plugin_Continue; // If no survivors or server is empty, return plugin_continue
 
 	new Float:lastSurvivorFlow = 0.0;
 	new Float:firstSurvivorFlow = 0.0;
 	new Float:checkAgainst = 0.0;
-	new bool:foundOne = false;
-	new firstSurvivor = 0;
+	int firstSurvivor = 0, lastSurvivor = 0;
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -168,8 +202,8 @@ public Action:_DI_Check_Timer(Handle:timer)
 
 			if (checkAgainst < lastSurvivorFlow || lastSurvivorFlow == 0.0)
 			{
+				lastSurvivor = i;
 				lastSurvivorFlow = checkAgainst;
-				foundOne = true;
 			}
 
 			if (checkAgainst > firstSurvivorFlow || firstSurvivorFlow == 0.0)
@@ -180,11 +214,11 @@ public Action:_DI_Check_Timer(Handle:timer)
 		}
 	}
 
-	if (!foundOne) return Plugin_Continue; // No valid survivors, return plugin_continue
+	if (firstSurvivor == 0 || lastSurvivor == 0) return Plugin_Continue; // No valid survivors, return plugin_continue
 
 	DebugPrintToAllEx("Found valid survivors, lowest flow %f, highest flow %f", lastSurvivorFlow, firstSurvivorFlow);
 
-	DespawningCommons(lastSurvivorFlow, firstSurvivor);
+	DespawningCommons(lastSurvivorFlow, firstSurvivor, lastSurvivor);
 	g_fLastLowestSurvivorFlow = lastSurvivorFlow;
 
 	return Plugin_Continue;
@@ -197,14 +231,28 @@ public Action:_DI_Check_Timer(Handle:timer)
  * @return				Plugin_Stop to stop repeating, any other value for
  *						default behavior.
  */
-public Action:_DI_RespawnInfected_Timer(Handle:timer)
+Action _DI_RespawnInfected_Timer(Handle timer, DataPack hPack)
 {
-	if (g_iCommonSpawnQueue < 1) return Plugin_Stop; // only work if there is a respawn needed, kill timer if not
+	hPack.Reset();
+	int firstSurvivor = GetClientOfUserId(hPack.ReadCell());
+	bool m_mobRush = hPack.ReadCell();
 
-	CheatCommand(_, "z_spawn", "infected auto");
+	if (g_iCommonSpawnQueue <= 0) return Plugin_Continue; // only work if there is a respawn needed, kill timer if not
+
+	if(m_mobRush) g_bHookSpawnedInfected = true;
+
+	if(!firstSurvivor || !IsClientInGame(firstSurvivor) || GetClientTeam(firstSurvivor) != 2)
+	{
+		CheatCommand(_, "z_spawn", "infected auto");
+	}
+	else
+	{
+		CheatCommand(firstSurvivor, "z_spawn", "infected auto");
+	}
+	g_bHookSpawnedInfected = false;
 	g_iCommonSpawnQueue--;
 
-	DebugPrintToAllEx("Respawned common. Commons left in queue %i", g_iCommonSpawnQueue);
+	//LogMessage("Respawned common. Commons left in queue %i", g_iCommonSpawnQueue);
 
 	return Plugin_Continue;
 }
@@ -243,39 +291,42 @@ public bool:_DI_TraceFilter(entity, contentsMask)
  * @param firstSurvivor	The survivor futherest ahead in the flow.
  * @noreturn
  */
-static DespawningCommons(Float:lastSurvivorFlow, firstSurvivor)
+static void DespawningCommons(float lastSurvivorFlow, int firstSurvivor, int lastSurvivor)
 {
 	if (lastSurvivorFlow < DESPAWN_DISTANCE) return;
 
 	new Float:flowDifference = (lastSurvivorFlow - g_fLastLowestSurvivorFlow);
 	if (flowDifference < MIN_ADVANCE_DISTANCE)
 	{
-		DebugPrintToAllEx("Survivors haven't advanced enough, stop despawning. Difference from last check %f (min %f)", flowDifference, MIN_ADVANCE_DISTANCE);
+		//LogMessage("Survivors haven't advanced enough, stop despawning. Difference from last check %f (min %f)", flowDifference, MIN_ADVANCE_DISTANCE);
 		return;
 	}
 
 	if (IsNearEndSafeRoom(firstSurvivor))
 	{
-		DebugPrintToAllEx("Survivors are too close to the end saferoom, stop despawning");
+		//LogMessage("Survivors are too close to the end saferoom, stop despawning");
 		return;
 	}
 
 	decl Float:commonFlow, Float:vOrigin[3];
 	
 	new entity = MaxClients + 1;
+	DataPack hPack;
 	while ((entity = FindEntityByClassname(entity, CLASSNAME_INFECTED)) != INVALID_ENT_REFERENCE)
 	{
 		if(!IsValidEntity(entity)) continue;
 
 		if (g_fCommonLifetime[entity] == 0.0) continue;
 
+		if (GetEntProp(entity, Prop_Data, "m_iHealth") <= 0) continue; // is dead 
+
 		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", vOrigin);
 		commonFlow = L4D2Direct_GetTerrorNavAreaFlow(L4D2Direct_GetTerrorNavArea(vOrigin));
 
 		if (commonFlow <= 0)
-			commonFlow = L4D2Direct_GetTerrorNavAreaFlow(Address:L4D_GetNearestNavArea(vOrigin));
+			commonFlow = L4D2Direct_GetTerrorNavAreaFlow(view_as<Address>(L4D_GetNearestNavArea(vOrigin)));
 		
-		if (commonFlow <= 0) continue; // common is in a infected-only areas, continue
+		if (commonFlow <= 0) continue; // common is in a infected-only areas, continue, (out of nav)
 
 		if ((lastSurvivorFlow - DESPAWN_DISTANCE) <= commonFlow) continue; // common is close to the survivors, continue
 
@@ -283,14 +334,20 @@ static DespawningCommons(Float:lastSurvivorFlow, firstSurvivor)
 
 		if (IsVisibleToSurvivors(entity)) continue; // Common is visible to the survivors, continue
 
-		// Remove common and add to respawn queue
-		RemoveEntity(entity);
+		if (IsNearSurvivor(vOrigin, lastSurvivor)) continue; // Common is near the survivors, continue
 
-		if (g_iCommonSpawnQueue < 1)
-		{
-			CreateTimer(COMMON_RESPAWN_INTERVAL, _DI_RespawnInfected_Timer, _, TIMER_REPEAT);
-		}
+		//PrintToServer("despawn infected: %d - m_mobRush: %d", entity, GetEntProp(entity, Prop_Send, "m_mobRush"));
+
+		// Add to respawn queue
 		g_iCommonSpawnQueue++;
+
+		hPack = new DataPack();
+		hPack.WriteCell(GetClientUserId(firstSurvivor));
+		hPack.WriteCell(GetEntProp(entity, Prop_Send, "m_mobRush"));
+		CreateTimer(GetRandomFloat(COMMON_RESPAWN_INTERVAL_MIN, COMMON_RESPAWN_INTERVAL_MAX), _DI_RespawnInfected_Timer, hPack, TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+
+		// Remove common
+		RemoveEntity(entity);
 
 		//PrintToChatAll("Despawned common %i and added to the respawn queue", entity);
 	}
@@ -387,4 +444,30 @@ static DebugPrintToAllEx(const String:format[], any:...)
 	decl String:buffer[DEBUG_MESSAGE_LENGTH];
 	VFormat(buffer, sizeof(buffer), format, 2);
 	DebugPrintToAll(g_iDebugChannel, buffer);
+}
+
+static bool IsNearSurvivor(float fInfectedOrigin[3], int lastSurvivor)
+{
+	float fSurvivorOrigin[3], fVector[3];
+	GetClientAbsOrigin(lastSurvivor, fSurvivorOrigin);
+
+	MakeVectorFromPoints(fInfectedOrigin, fSurvivorOrigin, fVector);
+	//LogMessage("infected distance: %.1f", GetVectorLength(fVector));
+	if (GetVectorLength(fVector, true) < Pow(SAFE_DISTANCE, 2.0)) return true;
+
+	return false;
+}
+
+/**
+ * Called when finale start event is fired.
+ *
+ * @param event			Handle to event.
+ * @param name			String containing the name of the event.
+ * @param dontBroadcast	True if event was not broadcast to clients, false
+ *						otherwise.
+ * @noreturn
+ */
+public _DI_OnFinaleStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	g_bIsFinaleActive = true;
 }

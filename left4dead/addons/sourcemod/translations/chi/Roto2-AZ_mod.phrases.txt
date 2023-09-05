@@ -1524,6 +1524,10 @@
 	{
 		"chi"	"特感MIC"
 	}
+	"Players Speaking:"
+	{
+		"chi"		"玩家语音:"
+	}
 	///////////////l4d_jukebox_spawner.smx//////////////
 	"stopped jukebox playing."
 	{

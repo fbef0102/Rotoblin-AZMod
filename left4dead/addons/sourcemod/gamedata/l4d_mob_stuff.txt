@@ -1,0 +1,38 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"ZombieManager::m_mobLocation"
+			{
+				"linux"		"368"
+				"windows"	"368"
+			}
+
+			"ZombieManager::m_nPendingMobCount"
+			{
+				"linux"		"364"
+				"windows"	"364"
+			}
+
+			"CDirector::m_nPanicEventWave"
+			{
+				"linux"		"1700"
+				"windows"	"1704"
+			}
+
+			"CDirector::m_bPanicEventActive"
+			{
+				"linux"		"1713"
+				"windows"	"1717"
+			}
+
+			"CDirector::m_panicEventStage"
+			{
+				"linux"		"1680"
+				"windows"	"1684"
+			}
+		}
+	}
+}

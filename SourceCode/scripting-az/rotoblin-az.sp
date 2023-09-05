@@ -92,7 +92,7 @@ bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
 
 // Modules
 #include "rotoblin/rotoblin.2vs2mod.sp"
-//#include "rotoblin/rotoblin.despawninfected.sp"
+#include "rotoblin/rotoblin.despawninfected.sp"
 #include "rotoblin/rotoblin.ghosttank.sp"
 #include "rotoblin/rotoblin.hordecontrol.sp"
 #include "rotoblin/rotoblin.exploitfixes.sp"
@@ -190,7 +190,7 @@ public OnPluginStartEx()
 	_GhostTank_OnPluginStart();
 	_Pause_OnPluginStart();
 	_InfExloitFixes_OnPluginStart();
-	//_DespawnInfected_OnPluginStart();
+	_DespawnInfected_OnPluginStart();
 	_HordeControl_OnPluginStart();
 	_2vs2Mod_OnPluginStart();
 	_ReportStatus_OnPluginStart();

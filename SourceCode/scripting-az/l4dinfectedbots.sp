@@ -468,14 +468,17 @@ static ZOMBIECLASS_TANK; // This value varies depending on which L4D game it is,
 static GetSpawnTime[MAXPLAYERS+1]; // Used for the HUD on getting spawn times of players
 static PlayersInServer;
 
+#define NUM_TYPES_INFECTED_MAX 3 // for spawning
+int SI_SMOKER = 0;
+int SI_BOOMER = 1;
+int SI_HUNTER = 2;
+Handle g_hSpawnColdDownTimer[NUM_TYPES_INFECTED_MAX];
+
 
 // Booleans
 static bool:b_HasRoundStarted; // Used to state if the round started or not
 static bool:b_HasRoundEnded; // States if the round has ended or not
 static bool:b_LeftSaveRoom; // States if the survivors have left the safe room
-static bool:canSpawnBoomer; // States if we can spawn a boomer (releated to spawn restrictions)
-static bool:canSpawnSmoker; // States if we can spawn a smoker (releated to spawn restrictions)
-static bool:canSpawnHunter; // States if we can spawn a hunter (releated to spawn restrictions)
 static bool:DirectorSpawn; // Can allow either the director to spawn the infected (normal l4d behavior), or allow the plugin to spawn them
 static bool:SpecialHalt; // Loop Breaker, prevents specials spawning, while Director is spawning, from spawning again
 static bool:TankFrustStop; // Prevents the tank frustration event from firing as it counts as a tank spawn
@@ -657,9 +660,13 @@ public OnPluginStart()
 	// Such as PlayerDeath, PlayerSpawn and others.
 	
 	HookEvent("round_start", evtRoundStart);
-	HookEvent("round_end", evtRoundEnd, EventHookMode_Pre);
+	HookEvent("round_end",				evtRoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
+	HookEvent("map_transition", 		evtRoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
+	HookEvent("mission_lost", 			evtRoundEnd,		EventHookMode_PostNoCopy); //all survivors wipe out in coop mode (also triggers round_end)
+	HookEvent("finale_vehicle_leaving", evtRoundEnd,		EventHookMode_PostNoCopy); //final map final rescue vehicle leaving  (does not trigger round_end)
+	
 	// We hook some events ...
-	HookEvent("player_death", evtPlayerDeath, EventHookMode_Pre);
+	HookEvent("player_death", evtPlayerDeath);
 	HookEvent("player_team", evtPlayerTeam);
 	HookEvent("player_spawn", evtPlayerSpawn);
 	HookEvent("create_panic_event", evtSurvivalStart);
@@ -1419,42 +1426,20 @@ public Action:evtRoundEnd (Handle:event, const String:name[], bool:dontBroadcast
 		for (new i = 1; i <= MaxClients; i++)
 		{
 			PlayerHasEnteredStart[i] = false;
-			if (FightOrDieTimer[i] != INVALID_HANDLE)
-			{
-				KillTimer(FightOrDieTimer[i]);
-				FightOrDieTimer[i] = INVALID_HANDLE;
-			}
 		}
-		
-		#if DEBUGCLIENTS
-		PrintToChatAll("Round Ended");
-		#endif
-		#if DEBUGSERVER
-		LogMessage("Round Ended");
-		#endif
-	}
 	
+		ResetTimer();
+	}
 }
 
 public OnMapEnd()
 {
-	#if DEBUGSERVER
-	LogMessage("Map has ended");
-	#endif
-	
 	b_HasRoundStarted = false;
 	b_HasRoundEnded = true;
 	b_LeftSaveRoom = false;
 	roundInProgress = false;
-	
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (FightOrDieTimer[i] != INVALID_HANDLE)
-		{
-			KillTimer(FightOrDieTimer[i]);
-			FightOrDieTimer[i] = INVALID_HANDLE;
-		}
-	}
+
+	ResetTimer();
 }
 
 public Action:PlayerLeftStart(Handle:Timer)
@@ -1487,9 +1472,6 @@ public Action:PlayerLeftStart(Handle:Timer)
 			
 			
 			// We reset some settings
-			canSpawnBoomer = true;
-			canSpawnSmoker = true;
-			canSpawnHunter = true;
 			InitialSpawn = true;
 			
 			// We check if we need to spawn bots
@@ -1527,9 +1509,6 @@ public Action:evtSurvivalStart(Handle:event, const String:name[], bool:dontBroad
 			b_LeftSaveRoom = true;
 			
 			// We reset some settings
-			canSpawnBoomer = true;
-			canSpawnSmoker = true;
-			canSpawnHunter = true;
 			InitialSpawn = true;
 			
 			// We check if we need to spawn bots
@@ -1988,10 +1967,10 @@ public Action:DisposeOfCowards(Handle:timer, any:coward)
 	FightOrDieTimer[coward] = INVALID_HANDLE;
 }
 
-public Action:evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+public void evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	// If round has ended .. we ignore this
-	if (b_HasRoundEnded || !b_LeftSaveRoom) return Plugin_Continue;
+	if (b_HasRoundEnded || !b_LeftSaveRoom) return;
 	
 	// We get the client id and time
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -2003,38 +1982,33 @@ public Action:evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadca
 	}
 	
 	
-	if (!client || !IsClientInGame(client)) return Plugin_Continue;
+	if (!client || !IsClientInGame(client)) return;
 	
-	if (GetClientTeam(client) !=TEAM_INFECTED) return Plugin_Continue;
+	if (GetClientTeam(client) !=TEAM_INFECTED) return;
 	
-
 	if (IsPlayerTank(client))
 	{
 		TankWasSeen[client] = false;
 	}
 	
-	// if victim was a bot, we setup a timer to spawn a new bot ...
-	if (GetEventBool(event, "victimisbot") && (GameMode == 2) && (!DirectorSpawn))
+	int SpawnTime;
+	if (IsFakeClient(client) && (GameMode == 2) && (!DirectorSpawn))
 	{
 		if (!IsPlayerTank(client))
 		{
-			new SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
+			SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
 			if (GetConVarBool(h_AdjustSpawnTimes) && MaxPlayerZombies != HumansOnInfected())
 				SpawnTime = SpawnTime / (MaxPlayerZombies - HumansOnInfected());
 			CreateTimer(float(SpawnTime), Spawn_InfectedBot, _, 0);
 			InfectedBotQueue++;
 		}
-		
-		#if DEBUGCLIENTS
-		PrintToChatAll("An infected bot has been added to the spawn queue...");
-		#endif
 	}
 	// This spawns a bot in coop/survival regardless if the special that died was controlled by a player, MI 5
 	else if ((GameMode != 2) && (!DirectorSpawn))
 	{
 		if (!GetConVarBool(h_CoopPlayableTank) && !IsPlayerTank(client) || GetConVarBool(h_CoopPlayableTank))
 		{
-			new SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
+			SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
 			if (GameMode == 1 && GetConVarBool(h_AdjustSpawnTimes))
 				SpawnTime = SpawnTime - TrueNumberOfSurvivors();
 			CreateTimer(float(SpawnTime), Spawn_InfectedBot, _, 0);
@@ -2044,14 +2018,10 @@ public Action:evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadca
 		
 		if (IsPlayerTank(client))
 			CheckIfBotsNeeded(false, false);
-		
-		#if DEBUGCLIENTS
-		PrintToChatAll("An infected bot has been added to the spawn queue...");
-		#endif
 	}
 	else if (GameMode != 2 && DirectorSpawn)
 	{
-		new SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
+		SpawnTime = GetURandomIntRange(GetConVarInt(h_InfectedSpawnTimeMin), GetConVarInt(h_InfectedSpawnTimeMax));
 		GetSpawnTime[client] = SpawnTime;
 	}
 	
@@ -2070,8 +2040,84 @@ public Action:evtPlayerDeath(Handle:event, const String:name[], bool:dontBroadca
 	// This fixes the spawns when the spawn timer is set to 5 or below and fixes the spitter spit glitch
 	if (IsFakeClient(client))
 		CreateTimer(0.1, kickbot, client);
-	
-	return Plugin_Continue;
+
+	int zClass = GetEntProp(client, Prop_Send, "m_zombieClass");
+	int iLeftAliveCounts;
+	switch(zClass)
+	{
+		case ZOMBIECLASS_SMOKER:
+		{
+			if(SmokerLimit == 0) return;
+			else if(SmokerLimit == 1)
+			{
+				delete g_hSpawnColdDownTimer[SI_SMOKER];
+				g_hSpawnColdDownTimer[SI_SMOKER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_SMOKER);
+			}
+			else if(SmokerLimit > 1)
+			{
+				for (int i=1;i<=MaxClients;i++)
+				{
+					if (IsClientInGame(i) && GetClientTeam(i) == TEAM_INFECTED && IsPlayerAlive(i) && IsPlayerSmoker(i))
+					{
+						iLeftAliveCounts++;
+					}
+				}
+
+				if(iLeftAliveCounts != SmokerLimit - 1) return;
+
+				delete g_hSpawnColdDownTimer[SI_SMOKER];
+				g_hSpawnColdDownTimer[SI_SMOKER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_SMOKER);
+			}
+		}
+		case ZOMBIECLASS_BOOMER:
+		{
+			if(BoomerLimit == 0) return;
+			else if(BoomerLimit == 1)
+			{
+				delete g_hSpawnColdDownTimer[SI_BOOMER];
+				g_hSpawnColdDownTimer[SI_BOOMER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_BOOMER);
+			}
+			else if(BoomerLimit > 1)
+			{
+				for (int i=1;i<=MaxClients;i++)
+				{
+					if (IsClientInGame(i) && GetClientTeam(i) == TEAM_INFECTED && IsPlayerAlive(i) && IsPlayerBoomer(i))
+					{
+						iLeftAliveCounts++;
+					}
+				}
+
+				if(iLeftAliveCounts != BoomerLimit - 1) return;
+
+				delete g_hSpawnColdDownTimer[SI_BOOMER];
+				g_hSpawnColdDownTimer[SI_BOOMER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_BOOMER);
+			}
+		}
+		case ZOMBIECLASS_HUNTER:
+		{
+			if(HunterLimit == 0) return;
+			else if(HunterLimit == 1)
+			{
+				delete g_hSpawnColdDownTimer[SI_HUNTER];
+				g_hSpawnColdDownTimer[SI_HUNTER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_HUNTER);
+			}
+			else if(HunterLimit > 1)
+			{
+				for (int i=1;i<=MaxClients;i++)
+				{
+					if (IsClientInGame(i) && GetClientTeam(i) == TEAM_INFECTED && IsPlayerAlive(i) && IsPlayerHunter(i))
+					{
+						iLeftAliveCounts++;
+					}
+				}
+
+				if(iLeftAliveCounts != HunterLimit - 1) return;
+
+				delete g_hSpawnColdDownTimer[SI_HUNTER];
+				g_hSpawnColdDownTimer[SI_HUNTER] = CreateTimer(float(SpawnTime)-0.1, Timer_SpawnColdDown, SI_HUNTER);
+			}
+		}
+	}
 }
 
 public Action:Spawn_InfectedBot_Director(Handle:timer, any:BotNeeded)
@@ -2974,37 +3020,28 @@ BotTypeNeeded()
 	new random = GetURandomIntRange(1, 5);
 	
 	new i=0;
-	while(i++<10)
+	while(i++<5)
 	{
 		if (random == 1)
 		{
-			if (hunters < HunterLimit && canSpawnHunter)
+			if (hunters < HunterLimit && g_hSpawnColdDownTimer[SI_HUNTER] == null)
 			{
-				#if DEBUGSERVER
-				LogMessage("Returning Hunter");
-				#endif
 				return 1;
 			}
 			random++;
 		}
 		if (random == 2)
 		{
-			if ((smokers < SmokerLimit) && (canSpawnSmoker)) // we need a smoker ???? can we spawn a smoker ??? is smoker bot allowed ??
+			if ((smokers < SmokerLimit) && g_hSpawnColdDownTimer[SI_SMOKER] == null) // we need a smoker ???? can we spawn a smoker ??? is smoker bot allowed ??
 			{
-				#if DEBUGSERVER
-				LogMessage("Returning Smoker");
-				#endif
 				return 2;
 			}
 			random++;
 		}
 		if (random == 3)
 		{
-			if ((boomers < BoomerLimit) && (canSpawnBoomer))
+			if ((boomers < BoomerLimit) && g_hSpawnColdDownTimer[SI_BOOMER] == null)
 			{
-				#if DEBUGSERVER
-				LogMessage("Returning Boomer");
-				#endif
 				return 3;
 			}
 			random=1;
@@ -3015,9 +3052,6 @@ BotTypeNeeded()
 			
 			if (tanks < GetConVarInt(h_TankLimit) && random2 == 1)
 			{
-				#if DEBUGSERVER
-				LogMessage("Bot type returned Tank");
-				#endif
 				return 7;
 			}
 			else if(random2 == 2)
@@ -3029,9 +3063,6 @@ BotTypeNeeded()
 		{
 			if (witches < GetConVarInt(h_WitchLimit))
 			{
-				#if DEBUGSERVER
-				LogMessage("Bot type returned Witch");
-				#endif
 				return 8;
 			}
 		}
@@ -4372,6 +4403,25 @@ bool IsTooClose(int client, float distance)
 		}
 	}
 	return false;
+}
+
+void ResetTimer()
+{
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		delete FightOrDieTimer[i];
+	}
+
+	for(int i = 0; i < NUM_TYPES_INFECTED_MAX; i++)
+	{
+		delete g_hSpawnColdDownTimer[i];
+	}
+}
+
+Action Timer_SpawnColdDown(Handle timer, int SI_TYPE)
+{
+	g_hSpawnColdDownTimer[SI_TYPE] = null;
+	return Plugin_Continue;
 }
 
 ///////////////////////////////////////////////////////////////////////////

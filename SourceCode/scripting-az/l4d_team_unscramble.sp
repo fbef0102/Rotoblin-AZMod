@@ -48,7 +48,6 @@ static String:g_sLogPatch[128];
 
 static	Handle:g_hTrine, Handle:g_fwdOnUnscrambleEnd, bool:g_bCvarEnabled, bool:g_bCvarNotify, bool:g_bCvarNoVotes, Float:g_fCvarTime, g_iCvarAttempts, bool:g_bCheked[MAXPLAYERS+1], bool:g_bJoinTeamUsed[MAXPLAYERS+1],
 		g_iFailureCount[MAXPLAYERS+1], bool:g_bMapTranslition, bool:g_bTeamLock, g_isOldTeamFlipped, g_isNewTeamFlipped, g_iTrineSize, UserMsg:g_iVotePassMessageId;
-//bool g_bCvarUnlocker;
 
 public Plugin myinfo =
 {
@@ -87,10 +86,6 @@ public OnPluginStart()
 	g_bCvarNotify = GetConVarBool(cVar);
 	HookConVarChange(cVar, OnCvarChange_Notify);
 
-	//cVar = CreateConVar("rotoblin_choosemenu_unlocker", "1", "0=Off, 1=Allows spectator/infected players to join the survivor team even if the survivor bot is dead (through M button).", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	//g_bCvarUnlocker = GetConVarBool(cVar);
-	//HookConVarChange(cVar, OnCvarChange_Unlocker);
-
 	cVar = CreateConVar("rotoblin_unscramble_novotes", "1", "0=Off, 1=Prevents calling votes until unscramble completes.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_bCvarNoVotes = GetConVarBool(cVar);
 	HookConVarChange(cVar, OnCvarChange_NoVotes);
@@ -107,9 +102,6 @@ public OnPluginStart()
 	g_bCvarEnabled = GetConVarBool(cVar);
 	UM_OnPluginEnabled();
 	HookConVarChange(cVar, OnCvarChange_Enabled);
-
-	//AutoExecConfig(true, "r2comp_unscramble");
-	//AddCommandListener(US_cmdh_JoinTeam, "jointeam");
 
 	RegAdminCmd("sm_keepteams", Command_KeepTeams, ADMFLAG_ROOT, "Force to store players team data.");
 	RegAdminCmd("sm_unscramble_start", Command_UnscrambleStart, ADMFLAG_ROOT, "Force to puts players on the right team.");
@@ -162,6 +154,8 @@ UM_OnPluginDisabled()
 
 	UnhookEvent("round_end", US_ev_RoundEnd, EventHookMode_PostNoCopy);
 	UnhookEvent("vote_passed", US_ev_VotePassed);
+
+	RegServerCmd("changelevel", ServerCmd_changelevel);
 }
 
 public Action:Command_KeepTeams(client, args)
@@ -194,60 +188,15 @@ public Action:US_cmdh_Vote(client, const String:command[], argc)
 	return Plugin_Continue;
 }
 
-// public Action:US_cmdh_JoinTeam(client, const String:command[], argc)
-// {
-// 	if (g_bTeamLock && !g_bJoinTeamUsed[client]){
+Action ServerCmd_changelevel(int args)
+{
+	if(args > 0)
+	{
+		US_KeepTeams();
+	}
 
-// 		#if UNSCRABBLE_LOG
-// 			LogToFile(g_sLogPatch, "%N use '%s' cmd, but blocked!", client, command);
-// 		#endif
-
-// 		return Plugin_Handled;
-// 	}
-
-// 	if (g_bCvarUnlocker){
-
-// 		decl String:sAgr[32];
-// 		GetCmdArg(1, sAgr, 32);
-
-// 		if (/*only chooseteam menu!*/StrEqual(sAgr, "survivor", false) && GetClientTeam(client) != 2){
-// 			#if UNSCRABBLE_LOG
-// 				LogToFile(g_sLogPatch, "%N use '%s' cmd, args '%s'", client, command, sAgr);
-// 			#endif
-
-// 			for (new i = 1; i <= MaxClients; i++){
-// 				if (IsSurvivor(i) && IsFakeClient(i) && IsPlayerAlive(i))
-// 					return Plugin_Continue;
-// 			}
-
-// 			decl String:sSurvivor[16];
-// 			new bool:bAnyBot;
-
-// 			for (new i = 1; i <= MaxClients; i++){
-// 				if (!IsSurvivor(i) || IsPlayerAlive(i) || !IsFakeClient(i)) continue;
-
-// 				bAnyBot = true;
-
-// 				if (!GetCharacterName(i, SZF(sSurvivor)))
-// 					return Plugin_Continue;
-
-// 				break;
-// 			}
-
-// 			if (!bAnyBot) return Plugin_Continue;
-
-// 			CheatCommandEx(client, "sb_takecontrol", sSurvivor);
-
-// 			#if UNSCRABBLE_LOG
-// 				LogToFile(g_sLogPatch, "[chooseteam] %N trying to join survivor (%s) (%s)", client, sSurvivor, GetClientTeam(client) == 2 ? "Okay" : "Fail");
-// 			#endif
-
-// 			return Plugin_Handled;
-// 		}
-// 	}
-
-// 	return Plugin_Continue;
-// }
+	return Plugin_Continue;
+}
 
 public US_ev_VotePassed(Handle:event, const String:sName[], bool:DontBroadCast)
 {
@@ -606,12 +555,7 @@ public void OnCvarChange_Notify(ConVar cVar, const char[] sOldVal, const char[] 
 {
 	g_bCvarNotify = GetConVarBool(cVar);
 }
-/*
-public void OnCvarChange_Unlocker(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
-{
-	g_bCvarUnlocker = GetConVarBool(cVar);
-}
-*/
+
 public void OnCvarChange_NoVotes(ConVar cVar, const char[] sOldVal, const char[] sNewVal)
 {
 	g_bCvarNoVotes = GetConVarBool(cVar);

@@ -151,42 +151,41 @@ public Event_PlayerPounced(Handle:event, const String:name[], bool:dontBroadcast
 		#if DEBUG
 		PrintToServer("Pounce: max: %d min: %d dmg: %d dist: %d dmg: %.01f",max,min,maxDmg,distance, dmg);
 		#endif
-		Format(pounceLine,sizeof(pounceLine),"{default}[{olive}TS{default}] %t","pounceannounce1",attackerName,victimName,dmg,maxDmg + 1);
-		
-		showDistance = GetConVarInt(hShowDistance);
-		if(showDistance != None)
-		{
-			switch(showDistance)
-			{
-				case Units:
-				{
-					Format(distanceBuffer,sizeof(distanceBuffer)," %t","PounceDistanceDisplay1",distance);
-				}
-				case UnitsAndFeet:
-				{ //units / 16 = feet in game
-					Format(distanceBuffer,sizeof(distanceBuffer)," %t","PounceDistanceDisplay2",distance, distance / 16);
-				}
-				case UnitsAndMeters:
-				{	//0.0213 = conversion rate for units to meters
-					Format(distanceBuffer,sizeof(distanceBuffer)," %t","PounceDistanceDisplay3",distance, distance * 0.0213);
-				}
-				case Feet:
-				{
-					Format(distanceBuffer,sizeof(distanceBuffer)," over %t","PounceDistanceDisplay4", distance / 16); 
-				}
-				case Meters:
-				{
-					Format(distanceBuffer,sizeof(distanceBuffer)," %t","PounceDistanceDisplay5", distance * 0.0213);
-				}
-			}
-			StrCat(pounceLine,sizeof(pounceLine),distanceBuffer);
-		}
 
 		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i) && !IsFakeClient(i))
 			{
-				SetGlobalTransTarget(i);
+				FormatEx(pounceLine,sizeof(pounceLine),"{default}[{olive}TS{default}] %T","pounceannounce1",i, attackerName,victimName,dmg,maxDmg + 1);
+				
+				showDistance = GetConVarInt(hShowDistance);
+				if(showDistance != None)
+				{
+					switch(showDistance)
+					{
+						case Units:
+						{
+							FormatEx(distanceBuffer,sizeof(distanceBuffer)," %T","PounceDistanceDisplay1",i, distance);
+						}
+						case UnitsAndFeet:
+						{ //units / 16 = feet in game
+							FormatEx(distanceBuffer,sizeof(distanceBuffer)," %T","PounceDistanceDisplay2",i, distance, distance / 16);
+						}
+						case UnitsAndMeters:
+						{	//0.0213 = conversion rate for units to meters
+							FormatEx(distanceBuffer,sizeof(distanceBuffer)," %T","PounceDistanceDisplay3",i, distance, distance * 0.0213);
+						}
+						case Feet:
+						{
+							FormatEx(distanceBuffer,sizeof(distanceBuffer)," over %T","PounceDistanceDisplay4", i, distance / 16); 
+						}
+						case Meters:
+						{
+							FormatEx(distanceBuffer,sizeof(distanceBuffer)," %T","PounceDistanceDisplay5", i, distance * 0.0213);
+						}
+					}
+					StrCat(pounceLine,sizeof(pounceLine),distanceBuffer);
+				}
 				CPrintToChat(i, "%s", pounceLine);
 			}
 		}

@@ -75,7 +75,7 @@ public OnPluginStart()
 	HCVAR_Z_VS_SMOKER_LIMIT = FindConVar("z_versus_smoker_limit");
 	HCVAR_Z_VS_BOOMER_LIMIT = FindConVar("z_versus_boomer_limit");
 	HCVAR_Z_HUNTER_LIMIT = FindConVar("z_hunter_limit");
-	hCvar3HT1SProbability = CreateConVar("sm_3ht1s_percent_chance", "87", "X% chance of 3+1 and 100-X% remaining chance of 4ht after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
+	hCvar3HT1SProbability = CreateConVar("sm_3ht1s_percent_chance", "90", "X% chance of 3+1 and 100-X% remaining chance of 4ht after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
 	
 	CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_SMOKER_LIMIT);
 	CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_BOOMER_LIMIT);

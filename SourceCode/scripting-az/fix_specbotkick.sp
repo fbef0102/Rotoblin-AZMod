@@ -9,10 +9,10 @@
 public Plugin:myinfo =
 {
 	name = "Spec Kick Bots Fix",
-	author = "raziEiL [disawar1],modify by Harry",
+	author = "Harry",
 	description = "Fixed no Survivor bots issue. Fix more Survivor bots issue.",
 	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/id/raziEiL"
+	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
 
 static	Handle:g_hSurvivorLimit, g_iCvarSurvLimit;
@@ -104,7 +104,7 @@ SF_Fix()
 
 		SetCommandFlags(ADD_BOT, iFlag & ~FCVAR_CHEAT)
 
-		while (iSurvivorCount != g_iCvarSurvLimit){
+		while (iSurvivorCount < g_iCvarSurvLimit){
 			LogMessage("Bug detected. Trying to add a bot %d/%d", iSurvivorCount, g_iCvarSurvLimit);
 			ServerCommand(ADD_BOT);
 			iSurvivorCount++;
@@ -114,7 +114,7 @@ SF_Fix()
 	}
 	
 	if (iSurvivorCount > g_iCvarSurvLimit){
-		while (iSurvivorCount != g_iCvarSurvLimit){
+		while (iSurvivorCount > g_iCvarSurvLimit){
 			LogMessage("Bug detected. Trying to kick a bot %d/%d", iSurvivorCount, g_iCvarSurvLimit);
 			SurFakeClient = false;
 			for (new i = 1; i <= MaxClients; i++)

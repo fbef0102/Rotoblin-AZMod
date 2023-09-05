@@ -7,7 +7,7 @@
 #include <left4dhooks_anim>
 #include <actions>
 
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 
 public Plugin myinfo = 
 {
@@ -194,6 +194,7 @@ public void OnActionCreated(BehaviorAction action, int actor, const char[] name)
 	if (name[0] == 'I' && strcmp(name, "InfectedShoved") == 0)
 	{
 		action.OnStart = InfectedShoved_OnStart;
+		action.OnShoved = InfectedShoved_OnShoved;
 		action.OnLandOnGroundPost = InfectedShoved_OnLandOnGroundPost;
 	}
 }
@@ -252,6 +253,19 @@ Action InfectedShoved_OnStart(BehaviorAction action, int actor, any priorAction,
 	return Plugin_Continue;
 }
 
+Action InfectedShoved_OnShoved(BehaviorAction action, int actor, int entity, ActionDesiredResult result)
+{
+	if (GetEntPropEnt(actor, Prop_Data, "m_hGroundEntity") != -1) // falling check
+	{
+		if (g_iShoveFlag & SHOVE_CROUCHING)
+		{
+			Infected__GetBodyInterface(actor).SetDesiredPosture(STAND); // force standing to activate shoves
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
 Action InfectedShoved_OnLandOnGroundPost(BehaviorAction action, int actor, int entity, ActionDesiredResult result)
 {
 	if (~g_iShoveFlag & SHOVE_FALLING || g_PendingShoveStore.GetState(actor) != PendingShove_Yes)
@@ -291,13 +305,12 @@ ZombieBotBody Infected__GetBodyInterface(int infected)
 
 stock bool IsInfected(int entity)
 {
-	if(entity > MaxClients && IsValidEntity(entity))
+	if (entity > MaxClients && IsValidEdict(entity))
 	{
 		char cls[64];
-		GetEntityClassname(entity, cls, sizeof(cls));
+		GetEdictClassname(entity, cls, sizeof(cls));
 		return strcmp(cls, "infected") == 0;
 	}
-
 	return false;
 }
 
