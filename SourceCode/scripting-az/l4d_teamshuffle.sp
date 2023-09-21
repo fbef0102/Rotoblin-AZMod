@@ -4,6 +4,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <multicolors>
+#include <left4dhooks>
 
 
 #define TEAM_SPECTATOR      1
@@ -24,11 +25,6 @@
 
 // globals
 
-new             g_iTeamSize = 4;
-
-new             g_iPreviousCount[4];                // for each GetClientTeam(), the # players in it
-new             g_iPreviousTeams[4][MAXPLAYERS+1];       // for each GetClientTeam(), the players in it
-
 // voting
 new     bool:   g_bSrvVoted = false;                // whether anyone in survivor team voted using the command
 new     bool:   g_bInfVoted = false;
@@ -44,8 +40,8 @@ public Plugin:myinfo = {
     name = "Team Shuffle",
     author = "Tabun (L4D1 port by Harry)",
     description = "Allows teamshuffles by voting or admin-forced during readyup.",
-    version = "1.1",
-    url = "none"
+    version = "1.2",
+    url = "https://steamcommunity.com/profiles/76561198026784913/"
 };
 
 public OnPluginStart ()
@@ -125,7 +121,7 @@ public Event_RoundStart (Handle:hEvent, const String:name[], bool:dontBroadcast)
     g_shuffle = false;
 }
 
-stock TeamShuffleVote ( client )
+TeamShuffleVote ( client )
 {
     if ( !IS_VALID_SURVIVOR(client) && !IS_VALID_INFECTED(client) ) { return; }
     
@@ -198,7 +194,7 @@ public Action: Timer_ShuffleTeamsRequest ( Handle:timer )
    g_bInfVoted = false;
 }
 
-stock ShuffleTeams ( client = -1 , bool: adm = false)
+ShuffleTeams ( client = -1 , bool: adm = false)
 {
     if ( !Is_Ready_Plugin_On() || !IsInReady() )
     {
@@ -209,30 +205,6 @@ stock ShuffleTeams ( client = -1 , bool: adm = false)
         }
         return;
     }
-   
-    g_iTeamSize = GetConVarInt( FindConVar("survivor_limit") );
-    
-    // save current player / team setup
-    new tmpTeam;
-    for ( new i = 1; i <= MaxClients; i++ )
-    {
-        if ( !IS_VALID_INGAME( i ) || IsFakeClient(i) ) { continue; }
-        
-        tmpTeam = GetClientTeam(i);
-        g_iPreviousTeams[tmpTeam][ g_iPreviousCount[tmpTeam] ] = i;
-        g_iPreviousCount[tmpTeam]++;
-    }
-    
-    // check amount
-    new iTotal = g_iPreviousCount[TEAM_SURVIVOR] + g_iPreviousCount[TEAM_INFECTED];
-    new bool: bSpecs = false;
-    new i, j;
-    
-    if ( iTotal < (2 * g_iTeamSize) )
-    {
-        iTotal += g_iPreviousCount[TEAM_SPECTATOR];
-        bSpecs = true;
-    }
     
     if(adm)
     {
@@ -241,154 +213,47 @@ stock ShuffleTeams ( client = -1 , bool: adm = false)
 	
     g_shuffle = true;
 	
-    // move specs to teams, to see available totals
-    if ( bSpecs )
+    int iClientCount, iClients[MAXPLAYERS+1];
+
+    for(int i = 1; i <= MaxClients; i++)
     {
-        for ( j = TEAM_SURVIVOR; j <= TEAM_INFECTED; j++ )
-        {
-            while ( g_iPreviousCount[j] < g_iTeamSize && g_iPreviousCount[TEAM_SPECTATOR] > 0 )
-            {
-                g_iPreviousCount[TEAM_SPECTATOR]--;
-                g_iPreviousTeams[j][ g_iPreviousCount[j] ] = g_iPreviousTeams[TEAM_SPECTATOR][ g_iPreviousCount[TEAM_SPECTATOR] ];
-                g_iPreviousCount[j]++;
-            }
-        }
+        if(!IsClientInGame(i)) continue;
+        if(IsFakeClient(i)) continue;
+        if(GetClientTeam(i) <= 1) continue;
+
+        iClients[iClientCount++] = i;
     }
-    
-    
-    // if there are uneven players, move one to the other
-    new tmpDif = g_iPreviousCount[TEAM_SURVIVOR] - g_iPreviousCount[TEAM_INFECTED];
-    if ( tmpDif > 1 )
-    {
-        g_iPreviousCount[TEAM_SURVIVOR]--;
-        g_iPreviousTeams[TEAM_INFECTED][ g_iPreviousCount[TEAM_INFECTED] ] = g_iPreviousTeams[TEAM_SURVIVOR][ g_iPreviousCount[TEAM_SURVIVOR] ];
-        g_iPreviousCount[TEAM_INFECTED]++;
-        
-    }
-    else if ( tmpDif < -1 )
-    {
-        g_iPreviousCount[TEAM_INFECTED]--;
-        g_iPreviousTeams[TEAM_SURVIVOR][ g_iPreviousCount[TEAM_SURVIVOR] ] = g_iPreviousTeams[TEAM_INFECTED][ g_iPreviousCount[TEAM_INFECTED] ];
-        g_iPreviousCount[TEAM_SURVIVOR]++;
-    }
-    
-    // if the teams are too full (for whatever glitchy reason), truncate
-    for ( j = TEAM_SURVIVOR; j <= TEAM_INFECTED; j++ )
-    {
-        while( g_iPreviousCount[j] > g_iTeamSize )
-        {
-            g_iPreviousCount[j]--;
-            g_iPreviousTeams[TEAM_SPECTATOR][ g_iPreviousCount[TEAM_SPECTATOR] ] = g_iPreviousTeams[j][ g_iPreviousCount[j] ];
-            g_iPreviousCount[TEAM_SPECTATOR]++;
-        }
-    }
-    
-    // do shuffle: swap at least teamsize/2 rounded up players
-    new bool: bShuffled[MAXPLAYERS+1];
-    new iShuffleCount = RoundToCeil( float( (g_iPreviousCount[TEAM_INFECTED] > g_iPreviousCount[TEAM_SURVIVOR]) ? g_iPreviousCount[TEAM_INFECTED] : g_iPreviousCount[TEAM_SURVIVOR]  ) / 2.0 );
-    
-    new pickA, pickB;
-    new spotA, spotB;
-    
-    for ( j = 0; j < iShuffleCount; j++ )
-    {
-        pickA = -1;
-        pickB = -1;
-        
-        while ( pickA == -1 || bShuffled[pickA] ) {
-            spotA = GetRandomInt( 0, g_iPreviousCount[TEAM_SURVIVOR] - 1 );
-            pickA = g_iPreviousTeams[TEAM_SURVIVOR][ spotA ];
-        }
-        while ( pickB == -1 || bShuffled[pickB] ) {
-            spotB = GetRandomInt( 0, g_iPreviousCount[TEAM_INFECTED] - 1 );
-            pickB = g_iPreviousTeams[TEAM_INFECTED][ spotB ];
-        }
-        
-        bShuffled[pickA] = true;
-        bShuffled[pickB] = true;
-        
-        g_iPreviousTeams[TEAM_SURVIVOR][spotA] = pickB;
-        g_iPreviousTeams[TEAM_INFECTED][spotB] = pickA;
-    }
-    
+
+    //打亂陣列
+    ShuffleArray(iClients, iClientCount);
+
     // set all players to spec
-    for ( i = 1; i <= MaxClients; i++ )
+    for ( int i = 1; i <= MaxClients; i++ )
     {
         if ( !IS_VALID_INGAME(i) || IsFakeClient(i) ) { continue; }
-        ChangePlayerTeam( i, TEAM_SPECTATOR );
+        ChangeClientTeam( i, TEAM_SPECTATOR );
     }
-    
-    // now place all the players in the teams according to previousteams (silly name now, but ok)
-    for ( j = TEAM_SURVIVOR; j <= TEAM_INFECTED; j++ )
+
+    int target;
+    for ( int i = 0; i < iClientCount; i++ )
     {
-        for ( i = 0; i < g_iPreviousCount[j]; i++ )
-        {
-            ChangePlayerTeam( g_iPreviousTeams[j][i], j );
-        }
+        target = iClients[i];
+        if(i%2 == 0) CreateTimer(i*0.1, MoveToSurvivor, GetClientUserId(target), TIMER_FLAG_NO_MAPCHANGE);
+        else if(i%2 == 1) CreateTimer(i*0.1, MoveToInfected, GetClientUserId(target), TIMER_FLAG_NO_MAPCHANGE);
     }
-    
+
+
     CPrintToChatAll("[{olive}TS{default}] %t","Teams were shuffled.");
     g_bSrvVoted = false;
     g_bInfVoted = false;
+    g_shuffle = false;
 	
     // set timeout
     g_iTimeout = GetTime() + TIMEOUT_TIME;
     
 }
 
-stock bool: ChangePlayerTeam(client, team )
-{
-    if ( !IS_VALID_INGAME(client) || GetClientTeam(client) == team )
-    {
-        return true;
-    }
-    
-    if ( team != TEAM_SURVIVOR )
-    {
-        ChangeClientTeam( client, team );
-        return true;
-    }
-    else
-    {
-        new bot = FindSurvivorBot();
-        if ( bot > 0 )
-        {
-            CheatCommand( client, "sb_takecontrol", "" );
-            return true;
-        }
-    }
-    return false;
-}
-
-stock FindSurvivorBot()
-{
-    for ( new client = 1; client <= MaxClients; client++ )
-    {
-        if ( IS_VALID_SURVIVOR(client) && IsFakeClient(client) )
-        {
-            return client;
-        }
-    }
-    return -1;
-}
-
-CheatCommand(client, const String:command[], const String:arguments[])
-{
-    if ( !client ) { return; }
-    
-    new admindata = GetUserFlagBits(client);
-    SetUserFlagBits(client, ADMFLAG_ROOT);
-    
-    new flags = GetCommandFlags(command);
-    SetCommandFlags(command, flags & ~FCVAR_CHEAT);
-    
-    FakeClientCommand(client, "%s %s", command, arguments);
-    
-    SetCommandFlags(command, flags);
-    SetUserFlagBits(client, admindata);
-}
-
-stock GetTeamMaxHumans(team)
+GetTeamMaxHumans(team)
 {
 	if(team == 2)
 	{
@@ -402,7 +267,7 @@ stock GetTeamMaxHumans(team)
 	return -1;
 }
 
-stock GetTeamHumanCount(team)
+GetTeamHumanCount(team)
 {
 	new humans = 0;
 	
@@ -421,4 +286,70 @@ stock GetTeamHumanCount(team)
 bool:IsClientInGameHuman(client)
 {
 	return IsClientInGame(client) && !IsFakeClient(client) && ((GetClientTeam(client) == L4D_TEAM_SURVIVORS || GetClientTeam(client) == L4D_TEAM_INFECTED));
+}
+
+Action MoveToSurvivor(Handle timer, any targetplayer)
+{
+    targetplayer = GetClientOfUserId(targetplayer);
+    if(!targetplayer || !IsClientInGame(targetplayer)) return Plugin_Continue;
+
+    int bot = FindBotToTakeOver(true);
+    if (bot==0)
+    {
+        bot = FindBotToTakeOver(false);
+    }
+    if (bot>0)
+    {
+        L4D_SetHumanSpec(bot, targetplayer);
+        L4D_TakeOverBot(targetplayer);
+    }
+
+    return Plugin_Continue;
+}
+
+Action MoveToInfected(Handle timer, any targetplayer)
+{
+    targetplayer = GetClientOfUserId(targetplayer);
+    if(!targetplayer || !IsClientInGame(targetplayer)) return Plugin_Continue;
+
+    ChangeClientTeam(targetplayer, 3);
+
+    return Plugin_Continue;
+}
+
+int FindBotToTakeOver(bool alive)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && IsFakeClient(i) && GetClientTeam(i)==TEAM_SURVIVOR && !HasIdlePlayer(i) && IsPlayerAlive(i) == alive)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+bool HasIdlePlayer(int bot)
+{
+	if(HasEntProp(bot, Prop_Send, "m_humanSpectatorUserID"))
+	{
+		if(GetEntProp(bot, Prop_Send, "m_humanSpectatorUserID") > 0)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+void ShuffleArray(int[] iClients, int iClientCount)
+{
+	int temp, random;
+	for(int i = 0; i < iClientCount; i++)
+	{
+		random = GetRandomInt(0, iClientCount-1);
+		temp = iClients[i];
+		iClients[i] = iClients[random];
+		iClients[random] = temp;
+	}
 }
