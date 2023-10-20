@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
 v8.5.3
-<br/>CopyRight @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
+<br/>Developer @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
     - [Server Install](#server-install)

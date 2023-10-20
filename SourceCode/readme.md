@@ -1,7 +1,10 @@
 Roto-AZ mod plugins work @ 2017-2023 Harry
-* using sourcemod compiler v1.11-git6919
+* Using [sourcemod compiler v1.11-git6919](https://www.sourcemod.net/smdrop/1.11/)
+    * 使用 sourcemod v1.11-git6919 的編譯環境
+* This project is licensed under the [GNU General Public License, version 3](https://svn.alliedmods.net/viewvc.cgi/trunk/public/licenses/LICENSE.txt?revision=2255&root=sourcemod).
+    * 此專案內所有開源碼皆在授權條款下: [GNU General Public License, version 3](https://svn.alliedmods.net/viewvc.cgi/trunk/public/licenses/LICENSE.txt?revision=2255&root=sourcemod)
 
-Credit
+Credit | 靈感與來源
 * [l4d1 roto1](https://code.google.com/archive/p/rotoblin/source)
 * [l4d1 roto2](https://github.com/raziEiL/rotoblin2/tree/left4dhooks/src)
 * [raziEiL/l4d competitive plugins](https://bitbucket.org/disawar1/l4d-competitive-plugins/src/left4dhooks/)
@@ -9,6 +12,6 @@ Credit
 * [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/addons/sourcemod/scripting)
 * [Alliedmodders](http://www.sourcemod.net/plugins.php?mod=6&search=1)
 
-Looking for more?
+Looking for more? | 想看更多?
 * [L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)
 
