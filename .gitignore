@@ -1,3 +1,4 @@
 #ignore zip
 *.zip
 *.dat
+.vscode
