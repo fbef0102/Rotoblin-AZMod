@@ -49,8 +49,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/skeet_database) records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/pounce_database) records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
-* [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors): Changes the colors of players chat based on config file.
-* [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly): Attaches an extra flashlight to spectators and dead survivors.
+* [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors) Changes the colors of players chat based on config file.
+* [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly) Attaches an extra flashlight to spectators and dead survivors.
+* [Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin#l4d12-plugin-list--l4d1%E5%92%8C2%E6%8F%92%E4%BB%B6%E5%88%97%E8%A1%A8) Harry personal private plugins (Paid)
 
 - - - -	
 ### Server Anti Cheat ###

@@ -1,6 +1,6 @@
 Roto-AZ mod plugins work @ 2017-2023 Harry
-* Using [sourcemod compiler v1.11-git6919](https://www.sourcemod.net/smdrop/1.11/)
-    * 使用 sourcemod v1.11-git6919 的編譯環境
+* Using [sourcemod compiler v1.11-git6945](https://www.sourcemod.net/smdrop/1.11/)
+    * 使用 sourcemod v1.11-git6945 的編譯環境
 * This project is licensed under the [GNU General Public License, version 3](https://svn.alliedmods.net/viewvc.cgi/trunk/public/licenses/LICENSE.txt?revision=2255&root=sourcemod).
     * 此專案內所有開源碼皆在授權條款下: [GNU General Public License, version 3](https://svn.alliedmods.net/viewvc.cgi/trunk/public/licenses/LICENSE.txt?revision=2255&root=sourcemod)
 
@@ -14,4 +14,5 @@ Credit | 靈感與來源
 
 Looking for more? | 想看更多?
 * [L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)
+* [Game-Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin)
 
