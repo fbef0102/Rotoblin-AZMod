@@ -98,7 +98,7 @@ public Action sm_addabot(int client, int args)
 			PerformTeleport(client, bot, g_pos[client], true);
 		}
 		
-		CreateTimer(0.1, Timer_KickFakeBot, bot, TIMER_REPEAT);
+		CreateTimer(0.1, Timer_KickFakeBot, GetClientUserId(bot));
 	}
 	return Plugin_Handled;
 }
@@ -160,13 +160,14 @@ void PerformTeleport(int client, int target, float pos[3], bool addbot = false)
 	}
 }
 
-public Action Timer_KickFakeBot(Handle timer, int fakeclient)
+Action Timer_KickFakeBot(Handle timer, int fakeclient)
 {
-	if(IsClientConnected(fakeclient))
+	fakeclient = GetClientOfUserId(fakeclient);
+	if(fakeclient && IsClientInGame(fakeclient))
 	{
-		KickClient(fakeclient, "Kicking Fake Bot by l4d_wind");	
-		return Plugin_Stop;
+		KickClient(fakeclient, "Kicking FakeClient");	
 	}	
+
 	return Plugin_Continue;
 }
 

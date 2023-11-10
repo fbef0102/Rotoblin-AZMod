@@ -15,7 +15,6 @@ new Handle:SurvivorLimit 		= INVALID_HANDLE;
 new Handle:InfectedLimit 		= INVALID_HANDLE;
 new Handle:L4DSurvivorLimit 	= INVALID_HANDLE;
 new Handle:L4DInfectedLimit 	= INVALID_HANDLE;
-new bool:Useful[MAXPLAYERS+1];
 
 public Plugin:myinfo =
 {
@@ -54,10 +53,6 @@ public OnPluginStart()
 	HookConVarChange(InfectedLimit, FIL);
 
 	HookEvent("round_start",Event_RoundStart);
-	HookEvent("heal_begin",Event_UsefulBegin);
-	HookEvent("heal_end",Event_UsefulEnd);
-	HookEvent("revive_begin",Event_UsefulBegin);
-	HookEvent("revive_end",Event_UsefulEnd);
 	HookEvent("finale_vehicle_leaving", Event_FinaleVehicleLeaving);
 }
 
@@ -90,7 +85,7 @@ public int TeamPlayers(any:team)
 	return k;
 }
 
-bool:RealPlayersInGame ()
+stock bool RealPlayersInGame ()
 {
 	for (new i=1;i<=MaxClients;i++)
 		if (IsClientConnected(i) && IsClientInGame(i) && !IsFakeClient(i))
@@ -101,7 +96,7 @@ bool:RealPlayersInGame ()
 public OnClientDisconnect(client)
 {
 	if (IsFakeClient(client)) return;
-	if (!RealPlayersInGame()) { new i; for (i=1;i<=MaxClients;i++) CreateTimer(0.1, KickFakeClient, i); }
+	//if (!RealPlayersInGame()) { new i; for (i=1;i<=MaxClients;i++) CreateTimer(0.1, KickFakeClient, i); }
 }
 
 SpawnFakeClient()
@@ -110,8 +105,12 @@ SpawnFakeClient()
 	if (Bot == 0) return;
 
 	ChangeClientTeam(Bot, 2);
-	DispatchKeyValue(Bot, "classname", "SurvivorBot");
-	CreateTimer(0.1, KickFakeClient, Bot);
+	if(DispatchKeyValue(Bot, "classname", "SurvivorBot") == false)
+	{
+		return;
+	}
+
+	CreateTimer(0.1, Timer_KickFakeBot, GetClientUserId(Bot));
 }
 public Action:SpawnTick(Handle:hTimer, any:Junk)
 {    
@@ -120,7 +119,6 @@ public Action:SpawnTick(Handle:hTimer, any:Junk)
 
 	if (NumSurvivors < 4)
 	{
-
 		SpawnTimer = INVALID_HANDLE;
 		return Plugin_Stop;
 	}
@@ -145,9 +143,9 @@ public Action:KickTick(Handle:hTimer, any:Junk)
 	}
 	for (new i=1;i<=MaxClients;i++)
 	{
-		if(IsClientConnected(i)&&IsFakeClient(i)&&IsUseless(i)&&NumSurvivors>MaxSurvivors)
+		if(IsClientInGame(i) && IsFakeClient(i) && GetClientTeam(i) == 2 && NumSurvivors > MaxSurvivors)
 		{
-			CreateTimer(0.1, KickFakeClient, i);
+			CreateTimer(0.1, Timer_KickFakeBot, GetClientUserId(i));
 			NumSurvivors--;
 		}
 	}
@@ -156,19 +154,15 @@ public Action:KickTick(Handle:hTimer, any:Junk)
 	return Plugin_Stop;
 }
 
-public Action:KickFakeClient(Handle:hTimer, any:Client)
+Action Timer_KickFakeBot(Handle timer, int fakeclient)
 {
-	if(IsClientConnected(Client) && IsFakeClient(Client))
+	fakeclient = GetClientOfUserId(fakeclient);
+	if(fakeclient && IsClientInGame(fakeclient))
 	{
-		KickClient(Client, "Kicking Fake Bot by l4d_superversus");
-	}
-	return Plugin_Handled;
-}
+		KickClient(fakeclient, "Kicking FakeClient");	
+	}	
 
-bool:IsUseless(client)
-{
-	if(Useful[client] == false) return true;
-	return false;
+	return Plugin_Continue;
 }
 
 public Event_FinaleVehicleLeaving(Handle:event, const String:name[], bool:dontBroadcast)
@@ -188,18 +182,6 @@ public Event_FinaleVehicleLeaving(Handle:event, const String:name[], bool:dontBr
 			TeleportEntity(i, pos, NULL_VECTOR, NULL_VECTOR);
 		}
 	}
-}
-
-public Event_UsefulBegin(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	Useful[GetClientOfUserId(GetEventInt(event, "userid"))] = true; //Healer
-	Useful[GetClientOfUserId(GetEventInt(event, "subject"))] = true; //Target
-}
-
-public Event_UsefulEnd(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	Useful[GetClientOfUserId(GetEventInt(event, "userid"))] = false; //Healer
-	Useful[GetClientOfUserId(GetEventInt(event, "subject"))] = false; //Target
 }
 
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
