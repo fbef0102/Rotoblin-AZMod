@@ -4,9 +4,9 @@
 #include <sourcemod>
 #include <sdktools>
 #include <geoip>
-#include <string>
+#include <basecomm>
 
-#define PLUGIN_VERSION "1.7"
+#define PLUGIN_VERSION "2.0-2023/10/29"
 
 ConVar hostport;
 char sHostport[10];
@@ -41,19 +41,6 @@ public void OnPluginStart()
 	g_hCvarConsole.AddChangeHook(ConVarChanged_Cvars);
 
 	HookEvent("player_disconnect", 	event_PlayerDisconnect);
-
-	/* Say commands */
-	RegConsoleCmd("say", Command_Say);
-	RegConsoleCmd("say_team", Command_SayTeam);
-
-	char date[21];
-	char logFile[100];
-	/* Format date for log filename */
-	FormatTime(date, sizeof(date), "%d%m%y", -1);
-
-	/* Create name of logfile to use */
-	Format(logFile, sizeof(logFile), "/logs/chat%s.log", date);
-	BuildPath(Path_SM, chatFile, PLATFORM_MAX_PATH, logFile);
 }
 
 public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -68,7 +55,7 @@ void GetCvars()
 	hostport.GetString(sHostport, sizeof(sHostport));
 }
 
-public Action Command_Say(int client, int args)
+public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
 {
 	if(g_bCvarEnable == false)
 		return Plugin_Continue;
@@ -76,19 +63,18 @@ public Action Command_Say(int client, int args)
 	if(client < 0 || client > MaxClients)
 		return Plugin_Continue;
 
-	LogChat(client, args, false);
-	return Plugin_Continue;
-}
+	if (client > 0 && BaseComm_IsClientGagged(client) == true) //this client has been gagged
+		return Plugin_Continue;	
 
-public Action Command_SayTeam(int client, int args)
-{
-	if(g_bCvarEnable == false)
-		return Plugin_Continue;
+	if (strcmp(command, "say_team") == 0)
+	{
+		LogChat2(client, sArgs, true);
+	}
+	else
+	{
+		LogChat2(client, sArgs, false);
+	}
 
-	if(client < 0 || client > MaxClients)
-		return Plugin_Continue;
-
-	LogChat(client, args, true);
 	return Plugin_Continue;
 }
 
@@ -155,7 +141,7 @@ public void OnClientPostAdminCheck(int client)
 	}
 	
 	FormatTime(time, sizeof(time), "%H:%M:%S", -1);
-	FormatEx(msg, sizeof(msg), "[%s] (%s | %s) %-25N has joined",
+	FormatEx(msg, sizeof(msg), "[%s] (%-20s | %-15s) %-25N has joined.",
 		time,
 		steamID,
 		playerIP,
@@ -164,7 +150,7 @@ public void OnClientPostAdminCheck(int client)
 	SaveMessage(msg);
 }
 
-public void event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
+void event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
 {
 	if(g_bCvarEnable == false)
 		return;
@@ -190,7 +176,7 @@ public void event_PlayerDisconnect(Event event, const char[] name, bool dontBroa
 		}
 		
 		FormatTime(time, sizeof(time), "%H:%M:%S", -1);
-		FormatEx(msg, sizeof(msg), "[%s] (%s | %s) %-25N has left",
+		FormatEx(msg, sizeof(msg), "[%s] (%-20s | %-15s) %-25N has left.",
 			time,
 			steamID,
 			playerIP,
@@ -199,11 +185,8 @@ public void event_PlayerDisconnect(Event event, const char[] name, bool dontBroa
 		SaveMessage(msg);
 	}
 }
-
 /*
- * Extract all relevant information and format 
- */
-stock void LogChat(int client, int args, bool teamchat)
+void LogChat(int client, int args, bool teamchat)
 {
 	static char msg[2048];
 	static char time[21];
@@ -217,11 +200,9 @@ stock void LogChat(int client, int args, bool teamchat)
 	StripQuotes(text);
 	
 	if (client == 0 || !IsClientInGame(client)) {
-		/* Don't try and obtain client country/team if this is a console message */
 		//FormatEx(country, sizeof(country), "  ");
 		FormatEx(teamName, sizeof(teamName), "");
 	} else {
-		/* Get 2 digit country code for current player */
 		if(GetClientIP(client, playerIP, sizeof(playerIP), true) == false) {
 			//country   = "  ";
 		} else {
@@ -245,6 +226,45 @@ stock void LogChat(int client, int args, bool teamchat)
 
 	SaveMessage(msg);
 }
+*/
+
+void LogChat2(int client, const char[] sArgs, bool teamchat)
+{
+	static char msg[2048];
+	static char time[21];
+	static char country[3];
+	static char playerIP[50];
+	static char teamName[20];
+	static char steamID[128];
+	
+	if (client == 0 || !IsClientInGame(client)) {
+		//FormatEx(country, sizeof(country), "  ");
+		FormatEx(teamName, sizeof(teamName), "");
+	} else {
+		if(GetClientIP(client, playerIP, sizeof(playerIP), true) == false) {
+			//country   = "  ";
+		} else {
+			if(GeoipCode2(playerIP, country) == false) {
+				//country = "  ";
+			}
+		}
+		my_GetTeamName(GetClientTeam(client), teamName, sizeof(teamName));
+		GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID));
+	}
+	FormatTime(time, sizeof(time), "%H:%M:%S", -1);
+
+	FormatEx(msg, sizeof(msg), "[%s] (%-20s | %-15s) [%s] %-25N : %s%s",
+		time,
+		steamID,
+		playerIP,
+		teamName,
+		client,
+		teamchat == true ? "(TEAM) " : "",
+		sArgs);
+
+	SaveMessage(msg);
+}
+
 
 stock void LogCommand(int client, int args)
 {
@@ -259,6 +279,8 @@ stock void LogCommand(int client, int args)
 		strncmp(cmd, "choose_", 7, false) == 0 || // choose_opendoor / choose_closedoor
 		strncmp(cmd, "Vote", 4, false) == 0 || // Vote Yes / Vote No
 		strncmp(cmd, "achievement_", 12, false) == 0 || // achievement_earned x x
+		strncmp(cmd, "joingame", 8, false) == 0 || // joingame
+		strncmp(cmd, "demo", 4, false) == 0 || // demorestart
 		strncmp(cmd, "menuselect", 10, false) == 0 ) //menuselect 1~9
 	{
 		return;
@@ -316,7 +338,6 @@ void SaveMessage(const char[] message)
 			return;
 		}
 	}
-	
 	WriteFileLine(fileHandle, message);
 	delete fileHandle;
 }

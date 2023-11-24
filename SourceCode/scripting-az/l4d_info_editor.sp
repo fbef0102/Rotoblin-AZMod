@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.24"
+#define PLUGIN_VERSION		"1.25"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.25 (25-Oct-2023)
+	- Test plugins will now throw an error if running, to notify server owners they should only be using for testing and as an example.
 
 1.24 (19-Sep-2023)
 	- Update for L4D2:
@@ -169,7 +172,8 @@
 #define CONFIG_WEAPONS			"data/l4d_info_editor_weapons.cfg"
 #define CONFIG_MANIFEST			"scripts/melee/melee_manifest.txt"
 #define MAX_STRING_LENGTH		4096
-#define MAX_STRING_MELEE		64 // Maximum string length of melee weapons
+#define MAX_MELEE_STRING		64 // Maximum string length of melee weapons
+#define MAX_MELEE_LIMITS		16 // Maximum number of melee weapons that can be enabled (Valve limit)
 #define DEBUG_VALUES			false
 
 bool g_bGameMode;
@@ -433,7 +437,7 @@ public void OnPluginStart()
 		RegAdminCmd("sm_info_melee",	CmdInfoMelee,		ADMFLAG_ROOT, "Lists the maps current melee weapons allowed and report any issues.");
 
 		// Add stock melee weapons, used to remove from manifest
-		g_alMeleeDefault = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+		g_alMeleeDefault = new ArrayList(ByteCountToCells(MAX_MELEE_STRING));
 		g_alMeleeDefault.PushString("baseball_bat");
 		g_alMeleeDefault.PushString("cricket_bat");
 		g_alMeleeDefault.PushString("crowbar");
@@ -528,8 +532,8 @@ Action CmdInfoMelee(int client, int args)
 {
 	char sTemp[256];
 
-	ArrayList aTabs = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
-	ArrayList aMiss = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+	ArrayList aTabs = new ArrayList(ByteCountToCells(MAX_MELEE_STRING));
+	ArrayList aMiss = new ArrayList(ByteCountToCells(MAX_MELEE_STRING));
 
 	// StringTable data
 	int table = INVALID_STRING_TABLE;
@@ -598,7 +602,7 @@ Action CmdInfoMelee(int client, int args)
 		}
 
 		// Verify lists match
-		char sTabs[MAX_STRING_MELEE];
+		char sTabs[MAX_MELEE_STRING];
 
 		if( lenMiss < lenTabs )
 			max = lenMiss;
@@ -820,7 +824,7 @@ void SetMissionData()
 	static char extra[MAX_STRING_LENGTH];
 	static char check[MAX_STRING_LENGTH];
 	static char defs[MAX_STRING_LENGTH];
-	static char temp[MAX_STRING_MELEE];
+	static char temp[MAX_MELEE_STRING];
 
 	// Loop through Info Editor config
 	bool write;
@@ -927,9 +931,9 @@ void SetMissionData()
 					Format(value, sizeof(value), "%s;%s", extra[1], value);
 				}
 
-				// Prevent setting over 16 melee weapons
+				// Prevent setting over melee weapons limit
 				pos = 0;
-				for( int x = 0; x < 16; x++ )
+				for( int x = 0; x < MAX_MELEE_LIMITS; x++ )
 				{
 					last = FindCharInString(value[pos], ';');
 					if( last == -1 ) break;
@@ -1103,7 +1107,7 @@ void LoadManifest()
 	if( g_bLeft4Dead2 )
 	{
 		delete g_alMeleeCustoms;
-		g_alMeleeCustoms = new ArrayList(ByteCountToCells(MAX_STRING_MELEE));
+		g_alMeleeCustoms = new ArrayList(ByteCountToCells(MAX_MELEE_STRING));
 
 		File hFile = OpenFile(CONFIG_MANIFEST, "r", true);
 		if( hFile )

@@ -1,6 +1,6 @@
 /*
 *	Info Editor - Test Weapons
-*	Copyright (C) 2022 Silvers
+*	Copyright (C) 2023 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.2"
+#define PLUGIN_VERSION		"1.3"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.3 (25-Oct-2023)
+	- Test plugins will now throw an error if running, to notify server owners they should only be using for testing and as an example.
 
 1.2 (20-Oct-2022)
 	- Changes to fix warnings when compiling on SourceMod 1.11.
@@ -71,6 +74,8 @@ public void OnAllPluginsLoaded()
 	{
 		SetFailState("Info Editor Test cannot start 'l4d_info_editor.smx' plugin not loaded.");
 	}
+
+	LogError("\n==========\nThis is an example and test plugin, do not be used on a live server.\nPlease delete \"l4d_info_test\" plugin, unless you're intentionally testing this.\n==========");
 }
 
 public void OnPluginStart()

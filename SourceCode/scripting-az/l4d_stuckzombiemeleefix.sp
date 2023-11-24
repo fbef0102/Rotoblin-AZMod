@@ -101,18 +101,26 @@ public Action:CheckForMovement(Handle:timer, Handle:data)
 	ResetPack(data); //this resets our 'reading' position in the data pack, to start from the beginning
 	
 	new zombieid = ReadPackCell(data); //get the Zombie id
-	if (!IsValidEntity(zombieid)) return Plugin_Handled; //did the zombie get disappear somehow?
+	if (!IsValidEntity(zombieid))
+	{
+		delete data;
+		return Plugin_Handled; //did the zombie get disappear somehow?
+	}
 	
 	decl String:entclass[96];
 	GetEntityNetClass(zombieid, entclass, sizeof(entclass));
-	if (!StrEqual(entclass, "Infected")) return Plugin_Handled; //make sure it STILL IS a zombie.
+	if (!StrEqual(entclass, "Infected"))
+	{
+		delete data;
+		return Plugin_Handled; //did the zombie get disappear somehow?
+	}
 	
 	decl Float:oldpos[3];
 	oldpos[0] = ReadPackFloat(data); //get the old Zombie position (half a sec ago)
 	oldpos[1] = ReadPackFloat(data);
 	oldpos[2] = ReadPackFloat(data);
 	
-	CloseHandle(data); //Dispose of the Handle. It shouldn't have messed with the family
+	delete data; //Dispose of the Handle. It shouldn't have messed with the family
 	
 	decl Float:newpos[3];
 	GetEntityAbsOrigin(zombieid, newpos); //get the Zombies current position
