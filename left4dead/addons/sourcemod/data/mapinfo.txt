@@ -890,6 +890,11 @@
 				"min"		"31"
 				"max"		"37"
 			}
+			"The End of the Map"
+			{
+				"min"		"74"
+				"max"		"100"
+			}
 		}
 	}
 	"l4d_darkblood03_platform"
