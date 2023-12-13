@@ -726,6 +726,12 @@
 //官方的問題: 開地圖機關之後，小殭屍只能生成在NAV帶有BattleField屬性的區域內，人類往前跑, 小殭屍只會在後面重生成
 //裝上此插件之後: 開地圖機關之後，小殭屍可以生成任何地方，即使人類往前跑, 小殭屍會隨機在人類附近生成
 
+[203] l4d_fix_falling_punch
+//Tank不會因為落地而取消已經揮拳的動作
+
+[203] l4d_despawn_out_of_sight
+//特感看不見人類的15秒後可以自行重生 (需要超過一定距離，官方指令 "z_discard_min_range 100")
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

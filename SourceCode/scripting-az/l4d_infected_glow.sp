@@ -1,6 +1,6 @@
 /*
 *	Infected Glow
-*	Copyright (C) 2022 Silvers
+*	Copyright (C) 2023 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.11"
+#define PLUGIN_VERSION 		"1.13"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,12 @@
 
 ========================================================================================
 	Change Log:
+
+1.13 (11-Dec-2023)
+	- Added cvar "l4d_infected_glow_death" to decide if the glow disappears on death or remains in last position.
+
+1.12 (11-Dec-2022)
+	- Changes to fix compile warnings on SourceMod 1.11.
 
 1.11 (05-Jun-2022)
 	- Fixed glow duration not following the burn duration. Thanks to "gongo" for reporting.
@@ -86,9 +92,9 @@
 #define MAX_LIGHTS			8
 
 
-ConVar g_hCvarAllow, g_hCvarColor, g_hCvarDist, g_hCvarInfected, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog;
+ConVar g_hCvarAllow, g_hCvarColor, g_hCvarDeath, g_hCvarDist, g_hCvarInfected, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog;
 int g_iCvarInfected, g_iEntities[MAX_LIGHTS][2], g_iTick[MAX_LIGHTS], g_iClassTank;
-bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2, g_bFrameProcessing, g_bWatch;
+bool g_bCvarAllow, g_bMapStarted, g_bLeft4Dead2, g_bFrameProcessing, g_bWatch, g_bCvarDeath;
 char g_sCvarCols[12];
 float g_fFaderTick[MAX_LIGHTS], g_fFaderStart[MAX_LIGHTS], g_fFaderEnd[MAX_LIGHTS], g_fCvarDist;
 Handle g_hTimer[MAX_LIGHTS];
@@ -134,6 +140,7 @@ public void OnPluginStart()
 	g_hCvarModesOff =		CreateConVar(	"l4d_infected_glow_modes_off",		"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
 	g_hCvarModesTog =		CreateConVar(	"l4d_infected_glow_modes_tog",		"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
 	g_hCvarColor =			CreateConVar(	"l4d_infected_glow_color",			"255 50 0",		"The light color. Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", CVAR_FLAGS );
+	g_hCvarDeath =			CreateConVar(	"l4d_infected_glow_death",			"0",			"0=Glow disappears on death (even if ragdoll is burning). 1=Glow remains in last position until flames would likely disappear.", CVAR_FLAGS );
 	g_hCvarDist =			CreateConVar(	"l4d_infected_glow_distance",		"200.0",		"How far does the dynamic light illuminate the area.", CVAR_FLAGS );
 	g_hCvarInfected =		CreateConVar(	"l4d_infected_glow_infected",		"511",			"1=Common, 2=Witch, 4=Smoker, 8=Boomer, 16=Hunter, 32=Spitter, 64=Jockey, 128=Charger, 256=Tank, 511=All.", CVAR_FLAGS );
 	CreateConVar(							"l4d_infected_glow_version",		PLUGIN_VERSION,	"Molotov and Gascan Glow plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
@@ -145,6 +152,7 @@ public void OnPluginStart()
 	g_hCvarModes.AddChangeHook(ConVarChanged_Allow);
 	g_hCvarModesOff.AddChangeHook(ConVarChanged_Allow);
 	g_hCvarAllow.AddChangeHook(ConVarChanged_Allow);
+	g_hCvarDeath.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarDist.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarColor.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarInfected.AddChangeHook(ConVarChanged_Cvars);
@@ -208,6 +216,7 @@ void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newV
 
 void GetCvars()
 {
+	g_bCvarDeath = g_hCvarDeath.BoolValue;
 	g_fCvarDist = g_hCvarDist.FloatValue;
 	g_hCvarColor.GetString(g_sCvarCols, sizeof(g_sCvarCols));
 	g_iCvarInfected = g_hCvarInfected.IntValue;
@@ -328,19 +337,24 @@ public void OnEntityDestroyed(int entity)
 		{
 			if( entity == g_iEntities[i][INDEX_TARGET] && IsValidEntRef(g_iEntities[i][INDEX_ENTITY]) )
 			{
-				int parent = GetEntPropEnt(entity, Prop_Data, "m_hMoveParent");
-				if( parent > 0 && parent <= MaxClients && IsValidEntity(parent) )
+				if( g_bCvarDeath )
 				{
-					float vVec[3];
-					GetEntPropVector(parent, Prop_Data, "m_vecVelocity", vVec);
+					int parent = GetEntPropEnt(entity, Prop_Data, "m_hMoveParent");
+					if( parent > 0 && parent <= MaxClients && IsValidEntity(parent) )
+					{
+						float vVec[3];
+						GetEntPropVector(parent, Prop_Data, "m_vecVelocity", vVec);
 
-					AcceptEntityInput(g_iEntities[i][INDEX_ENTITY], "ClearParent");
+						AcceptEntityInput(g_iEntities[i][INDEX_ENTITY], "ClearParent");
 
-					delete g_hTimer[i];
-					g_hTimer[i] = CreateTimer(GetVectorLength(vVec) <= 250.0 ? 7.0 : 0.1, TimerDestroy, i);
-				} else {
-					CreateTimer(0.1, TimerDestroy, i);
+						delete g_hTimer[i];
+						g_hTimer[i] = CreateTimer(GetVectorLength(vVec) <= 250.0 ? 7.0 : 0.1, TimerDestroy, i);
+
+						continue;
+					}
 				}
+
+				CreateTimer(0.1, TimerDestroy, i);
 			}
 			else if( IsValidEntRef(g_iEntities[i][INDEX_TARGET]) == true )
 			{
@@ -360,7 +374,7 @@ public void OnEntityDestroyed(int entity)
 // ====================================================================================================
 //					LIGHTS
 // ====================================================================================================
-Action TimerCreate(Handle timer, any target)
+Action TimerCreate(Handle timer, int target)
 {
 	if( (target = EntRefToEntIndex(target)) != INVALID_ENT_REFERENCE )
 	{
@@ -501,7 +515,7 @@ void OnFrameFadeIn()
 	}
 }
 
-Action TimerDestroy(Handle timer, any index)
+Action TimerDestroy(Handle timer, int index)
 {
 	g_hTimer[index] = null;
 

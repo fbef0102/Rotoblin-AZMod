@@ -369,6 +369,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
 	* Prevent ghost infected players from spawning inside checkpoint area
+  * Allow SI to despawn when losing sight of survivors.
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -416,6 +417,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix punch get-up varying in length, along with flexible setting to it.
     * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
     * Fixed passing Tank (going AI) triggering next stage of script finales.
+    * Fix tank's punch getting cancelled when they heavily land on ground.
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
@@ -567,9 +569,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * *(Smoker)*: **+0.8s**
   * Hittables(Cars, dumpsters, etc) and Witches always deal damage with or without god frames
     > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
-  * Trigger car alarms when Survivors simply touch the car.
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
-  * Prevent infected slowdown being overridden by other damage.
+  * Fixed slowdown which caused by common infected is overridden by other damage.
   
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud
