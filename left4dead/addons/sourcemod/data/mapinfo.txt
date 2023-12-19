@@ -131,7 +131,7 @@
 	}
 	"l4d_vs_airport01_greenhouse"
 	{
-		"pill_limit" "0"
+		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
@@ -562,6 +562,19 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.1"
+		"tank_ban_flow"
+		{
+			"the start of the map"
+			{
+				"min"		"0"
+				"max"		"17"
+			}
+			"alley"
+			{
+				"min"		"24"
+				"max"		"31"
+			}
+		}
 	}
 	"l4d_dbd_anna_is_gone"
 	{
@@ -1019,6 +1032,75 @@
 				"max"		"75"
 			}
 		}
+	}
+	"cotd01_apartments_redux"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.0"
+		"tank_ban_flow"
+		{
+			"elevator"
+			{
+				"min"		"40"
+				"max"		"74"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"elevator"
+			{
+				"min"		"40"
+				"max"		"74"
+			}
+		}
+	}
+	"cotd02_streets_redux"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"one way drop"
+			{
+				"min"		"80"
+				"max"		"83"
+			}
+		}
+	}
+	"cotd03_sewers_redux"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"the end of the map"
+			{
+				"min"		"87"
+				"max"		"100"
+			}
+		}
+	}
+	"cotd04_mall_redux"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"the end of the map"
+			{
+				"min"		"83"
+				"max"		"100"
+			}
+		}
+	}
+	"cotd05_rooftop_redux"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
 	}
 	"c1m1_hotel"
 	{

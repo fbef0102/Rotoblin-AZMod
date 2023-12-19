@@ -206,6 +206,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Dark Blood](https://www.gamemaps.com/details/28746)
 * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
 * [Precinct 84](https://www.gamemaps.com/details/27737)
+* [City Of The Dead](https://www.gamemaps.com/details/25778)
 
 - - - -
 ### Weapon Adjustments ###
@@ -369,7 +370,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
 	* Prevent ghost infected players from spawning inside checkpoint area
-  * Allow SI to despawn when losing sight of survivors.
+  * Allows gravity when infected players are staggering + allows staggering over a ledge and falling.
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -571,6 +572,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
   * Fixed slowdown which caused by common infected is overridden by other damage.
+  * Allows gravity when survivors are staggering + allows staggering over a ledge and falling.
   
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

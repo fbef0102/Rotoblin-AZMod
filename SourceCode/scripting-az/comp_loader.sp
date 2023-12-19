@@ -8,7 +8,7 @@
 #define FULL_VERSION 1			//8 or just 4 configs
 #define NO_BOOMER_CFG 1			//enable or disable no boomer configs and convars
 
-#define PLUGIN_VERSION "2.4"
+#define PLUGIN_VERSION "2.5"
 
 #define L4D_MAXCLIENTS MaxClients
 #define L4D_MAXCLIENTS_PLUS1 (L4D_MAXCLIENTS + 1)
@@ -2308,7 +2308,7 @@ public Action:Map_Changer(client, args)
 		static char mapInfo3[MAPINFPMAXLEN];
 		static char mapInfo4[MAPINFPMAXLEN];
 		static char mapInfo5[MAPINFPMAXLEN];
-		//static char mapInfo5[MAPINFPMAXLEN];
+		static char mapInfo6[MAPINFPMAXLEN];
 		#endif
 		static char mapInfo9[MAPINFPMAXLEN];
 		Format(mapInfo, MAPINFPMAXLEN,    "|----------------------|-----------------------------------|\n");
@@ -2364,6 +2364,9 @@ public Action:Map_Changer(client, args)
 		Format(mapInfo5, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo5)
 		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm p84              | Change Map to Precinct 84         |\n",mapInfo5);
 		Format(mapInfo5, MAPINFPMAXLEN, "%s| !cm precinct 84      |                                   |",mapInfo5);
+		Format(mapInfo6, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm cotd             | Change Map to City Of The Dead    |\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm cityofthedead    |                                   |\n",mapInfo6);
 		#endif		
 		Format(mapInfo9, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
 		if(isAdmin == true) Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel all requests               |\n", mapInfo9);
@@ -2383,7 +2386,7 @@ public Action:Map_Changer(client, args)
 			PrintToConsole(client, mapInfo3);
 			PrintToConsole(client, mapInfo4);
 			PrintToConsole(client, mapInfo5);
-			//PrintToConsole(client, mapInfo5);
+			PrintToConsole(client, mapInfo6);
 			#endif
 			PrintToConsole(client, mapInfo9);
 		}
@@ -2423,6 +2426,7 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsDB = 0;
 		new AdminValueIsBHA = 0;
 		new AdminValueIsP84 = 0;
+		new AdminValueIsCOTD = 0;
 		#endif
 
 		if(StrEqual(Admin_Map, "nm", false)) AdminValueIsNM = 1;
@@ -2461,6 +2465,8 @@ public Action:Map_Changer(client, args)
 		else if((StrEqual(Admin_Map, "bloodharvestapocalypse", false))) AdminValueIsBHA = 1;
 		else if(StrEqual(Admin_Map, "p84", false)) AdminValueIsP84 = 1;
 		else if((StrEqual(Admin_Map, "precinct84", false))) AdminValueIsP84 = 1;
+		else if((StrEqual(Admin_Map, "cotd", false))) AdminValueIsCOTD = 1;
+		else if((StrEqual(Admin_Map, "cityofthedead", false))) AdminValueIsCOTD = 1;
 		#endif
 
 		if(AdminValueIsNM == 1)
@@ -2634,6 +2640,16 @@ public Action:Map_Changer(client, args)
 			CampaignchangeDelayed();
 			return Plugin_Handled;
 		}
+		else if(AdminValueIsCOTD == 1)
+		{
+			Admin_Cancel_Lite();
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			AdminMapToExecuteName = "cotd01_apartments_redux";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","City Of The Dead");
+			CampaignchangeDelayed();
+			return Plugin_Handled;
+		}
 		#endif
 
 		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
@@ -2687,6 +2703,7 @@ public Action:Map_Changer(client, args)
 				new ValueIsDB = 0;
 				new ValueIsBHA = 0;
 				new ValueIsP84 = 0;
+				new ValueIsCOTD = 0;
 				#endif
 				
 				if(StrEqual(PlayerMap, "nm", false)) ValueIsNM = 1;
@@ -2725,6 +2742,8 @@ public Action:Map_Changer(client, args)
 				else if((StrEqual(PlayerMap, "bloodharvestapocalypse", false))) ValueIsBHA = 1;
 				else if(StrEqual(PlayerMap, "p84", false)) ValueIsP84 = 1;
 				else if((StrEqual(PlayerMap, "precinct84", false))) ValueIsP84 = 1;
+				else if((StrEqual(PlayerMap, "cotd", false))) ValueIsCOTD = 1;
+				else if((StrEqual(PlayerMap, "cityofthedead", false))) ValueIsCOTD = 1;
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2863,6 +2882,12 @@ public Action:Map_Changer(client, args)
 					PlayerMapChat = "P84";
 					bIsValidMap = true;
 				}
+				else if(ValueIsCOTD == 1)
+				{
+					PlayerMap = "City Of The Dead";
+					PlayerMapChat = "COTD";
+					bIsValidMap = true;
+				}
 				#endif
 
 				if(!bIsValidMap)
@@ -2997,6 +3022,12 @@ public Action:Map_Changer(client, args)
 							else if(StrEqual(PlayerMap, "Precinct 84", false))
 							{
 								MapToExecuteName = "l4d_noprecinct01_crash";
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "City Of The Dead", false))
+							{
+								MapToExecuteName = "cotd01_apartments_redux";
 								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}

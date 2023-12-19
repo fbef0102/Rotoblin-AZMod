@@ -20,12 +20,12 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.4.1"
+#define READY_VERSION "8.5.3"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
 #define READY_RESTART_ROUND_DELAY 5.0
-#define READY_RESTART_MAP_DELAY 2
+#define READY_RESTART_MAP_DELAY 1
 #define PreventSpecBlockInfectedTeamIcon_DELAY 5.0
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 
@@ -212,8 +212,12 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	return APLRes_Success;
 }
 
+ConVar sv_cheats, sb_stop;
+
 public OnPluginStart()
 {
+	sv_cheats = FindConVar("sv_cheats");
+	sb_stop = FindConVar("sb_stop");
 	LoadTranslations("common.phrases");
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	
@@ -969,6 +973,7 @@ public void OnClientDisconnect(int client)
 public Action:COLD_DOWN(Handle:timer,any:client)
 {
 	if(checkrealplayerinSV(0)) return;
+	if(sv_cheats.BoolValue == true) return;
 	
 	
 	ServerCommand("exec rotoblin_pub.cfg");
@@ -2491,7 +2496,7 @@ readyOn()
 	if(g_bNoSafeStartAreaMap)
 	{
 		inLiveCountdown = true;
-		FindConVar("sb_stop").IntValue = 1;
+		if(sv_cheats.BoolValue == false) sb_stop.IntValue = 1;
 	}
 	
 	if(!unreadyTimerExists)
@@ -3050,7 +3055,7 @@ RoundIsLive()
 		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
 	}
 
-	SetConVarInt(FindConVar("sb_stop"), SB_STOP_CONVAR);
+	if(sv_cheats.BoolValue == false) sb_stop.IntValue = SB_STOP_CONVAR;
 	SetConVarInt(g_hDirectorNoDeathCheck, 0);
 	UnfreezeAllPlayers();
 	readyOff();
@@ -3401,7 +3406,7 @@ InitiateLiveCountdown()
 		SetTeamFrozen(true);
 		PrintHintTextToAll("%t","ReadyPlugin_34");
 		inLiveCountdown = true;
-		FindConVar("sb_stop").IntValue = 1;
+		if(sv_cheats.BoolValue == false) sb_stop.IntValue = 1;
 		readyDelay = READY_LIVE_COUNTDOWN;
 		readyCountdownTimer = CreateTimer(1.0, ReadyCountdownDelay_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -3485,7 +3490,7 @@ public ConVarChanged_GameMode(Handle:convar, const String:oldValue[], const Stri
 
 public OnConfigsExecuted()
 {
-	SB_STOP_CONVAR = GetConVarInt(FindConVar("sb_stop"));
+	SB_STOP_CONVAR = GetConVarInt(sb_stop);
 }
 
 public Action:Secret_Cmd(client, args)

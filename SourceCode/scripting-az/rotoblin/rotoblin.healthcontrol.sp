@@ -629,8 +629,6 @@ static DebugPrintToAllEx(const String:format[], any:...)
 
 public FindSurvivorStart()
 {
-	new EntityCount = GetEntityCount();
-	new String:EdictClassName[128];
 	//Search entities for either a locked saferoom door,
 	int ent_safedoor_check = L4D_GetCheckpointFirst();
 	if (ent_safedoor_check != -1)
@@ -639,17 +637,14 @@ public FindSurvivorStart()
 		return;
 	}
 	//or a survivor start point.
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	int entity = -1;
+	while ((entity = FindEntityByClassname(entity, "info_survivor_position")) != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
-		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if (StrContains(EdictClassName, "info_survivor_position", false) != -1)
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", SurvivorStart);
-				return;
-			}
-		}
+		if (!IsValidEntity(entity))
+			continue;	
+
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", SurvivorStart);
+		break;
 	}
 }
 
@@ -661,48 +656,41 @@ public RemoveMedkits()
 	g_iSaferoomKits[3] = -1;
 	
 	new k = 0;
-	new EntityCount = GetEntityCount();
-	new String:EdictClassName[128];
 	new Float:NearestMedkit[3];
 	new Float:Location[3];
 	//Look for the nearest medkit from where the survivors start,
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	int entity = -1;
+	while ((entity = FindEntityByClassname(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
+		if (!IsValidEntity(entity))
+			continue;	
+
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", Location);
+		//LogMessage("SurvivorStart: %.1f %.1f %.1f, Location: %.1f %.1f %.1f: distance: %.1f", SurvivorStart[0], SurvivorStart[1], SurvivorStart[2], Location[0], Location[1], Location[2], GetVectorDistance(SurvivorStart, Location, false));
+		//If NearestMedkit is zero, then this must be the first medkit we found.
+		if ((NearestMedkit[0] + NearestMedkit[1] + NearestMedkit[2]) == 0.0)
 		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				//If NearestMedkit is zero, then this must be the first medkit we found.
-				if ((NearestMedkit[0] + NearestMedkit[1] + NearestMedkit[2]) == 0.0)
-				{
-					NearestMedkit = Location;
-					continue;
-				}
-				//If this medkit is closer than the last medkit, record its location.
-				if (GetVectorDistance(SurvivorStart, Location, false) < GetVectorDistance(SurvivorStart, NearestMedkit, false)) NearestMedkit = Location;
-			}
+			NearestMedkit = Location;
+			continue;
 		}
+		//If this medkit is closer than the last medkit, record its location.
+		if (GetVectorDistance(SurvivorStart, Location, true) < GetVectorDistance(SurvivorStart, NearestMedkit, true)) NearestMedkit = Location;
 	}
 	//then remove the kits
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	entity = -1;
+	while ((entity = FindEntityByClassname(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
-		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				if (GetVectorDistance(NearestMedkit, Location, false) < 400)
-				{			
-					AcceptEntityInput(i, "Kill");
+		if (!IsValidEntity(entity))
+			continue;	
 
-					if(k == 4) continue;
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", Location);
+		if (GetVectorDistance(NearestMedkit, Location, false) < 600)
+		{			
+			AcceptEntityInput(entity, "Kill");
 
-					g_iSaferoomKits[k++] = i;
-				}
-			}
+			if(k == 4) continue;
+
+			g_iSaferoomKits[k++] = entity;
 		}
 	}
 }
@@ -715,48 +703,41 @@ public void ReplaceSafeRoomMedkits()
 	g_iSaferoomKits[3] = -1;
 	
 	new k = 0;
-	new EntityCount = GetEntityCount();
-	new String:EdictClassName[128];
 	new Float:NearestMedkit[3];
 	new Float:Location[3];
 	//Look for the nearest medkit from where the survivors start,
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	int entity = -1;
+	while ((entity = FindEntityByClassname(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
+		if (!IsValidEntity(entity))
+			continue;	
+
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", Location);
+		//If NearestMedkit is zero, then this must be the first medkit we found.
+		if ((NearestMedkit[0] + NearestMedkit[1] + NearestMedkit[2]) == 0.0)
 		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				//If NearestMedkit is zero, then this must be the first medkit we found.
-				if ((NearestMedkit[0] + NearestMedkit[1] + NearestMedkit[2]) == 0.0)
-				{
-					NearestMedkit = Location;
-					continue;
-				}
-				//If this medkit is closer than the last medkit, record its location.
-				if (GetVectorDistance(SurvivorStart, Location, false) < GetVectorDistance(SurvivorStart, NearestMedkit, false)) NearestMedkit = Location;
-			}
+			NearestMedkit = Location;
+			continue;
 		}
+		//If this medkit is closer than the last medkit, record its location.
+		if (GetVectorDistance(SurvivorStart, Location, false) < GetVectorDistance(SurvivorStart, NearestMedkit, false)) NearestMedkit = Location;
 	}
+
 	//then replace the kits
-	for (new i = MaxClients + 1; i <= EntityCount; i++)
+	entity = -1;
+	while ((entity = FindEntityByClassname(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 	{
-		if (IsValidEntity(i) && IsValidEdict(i))
+		if (!IsValidEntity(entity))
+			continue;	
+
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", Location);
+		if (GetVectorDistance(NearestMedkit, Location, false) < 400)
 		{
-			GetEdictClassname(i, EdictClassName, sizeof(EdictClassName));
-			if (StrContains(EdictClassName, "weapon_first_aid_kit", false) != -1)
-			{
-				GetEntPropVector(i, Prop_Send, "m_vecOrigin", Location);
-				if (GetVectorDistance(NearestMedkit, Location, false) < 400)
-				{
-					//decl Float:entityPos[3];
-					//GetEntPropVector(i, Prop_Send, "m_vecOrigin", entityPos);	
-					//LogMessage("saferoom KIT here %d: %f %f %f",i,entityPos[0],entityPos[1],entityPos[2]);	
-					ReplaceKitWithPills(i);	
-					g_iSaferoomKits[k++] = i;
-				}
-			}
+			//decl Float:entityPos[3];
+			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
+			//LogMessage("saferoom KIT here %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);	
+			ReplaceKitWithPills(entity);	
+			g_iSaferoomKits[k++] = entity;
 		}
 
 		if(k == 4)

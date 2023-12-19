@@ -57,40 +57,45 @@
 	}
 	"12"
 	{
+		"mapinfo"		"cotd01_apartments_redux"
+		"mapname"		"死亡之城 City of the Dead"
+	}
+	"13"
+	{
 		"mapinfo"		"c1m1_hotel"
 		"mapname"		"死亡都心 L4D2C1"
 	}
-	"13"
+	"14"
 	{
 		"mapinfo"		"c2m1_highway"
 		"mapname"		"黑色嘉年華 L4D2C2"
 	}
-	"14"
+	"15"
 	{
 		"mapinfo"		"c3m1_plankcountry"
 		"mapname"		"沼澤瘧疾 L4D2C3"
 	}
-	"15"
+	"16"
 	{
 		"mapinfo"		"c4m1_milltown_a"
 		"mapname"		"大雨 L4D2C4"
 	}
-	"16"
+	"17"
 	{
 		"mapinfo"		"c5m1_waterfront"
 		"mapname"		"教區 L4D2C5"
 	}
-	"17"
+	"18"
 	{
 		"mapinfo"		"c6m1_riverbank"
 		"mapname"		"短暫之時 L4D2C6"
 	}
-	"18"
+	"19"
 	{
 		"mapinfo"		"c13m1_alpinecreek"
 		"mapname"		"冷澗溪流 L4D2C13"
 	}
-	"19"
+	"20"
 	{
 		"mapinfo"		"c14m1_junkyard"
 		"mapname"		"最後一刻 L4D2C14"

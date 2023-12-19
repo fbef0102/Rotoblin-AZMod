@@ -78,6 +78,10 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_noprecinct01_crash"
 		}
+		"City of the Dead"
+		{
+			"cmd" "sm_rcon changelevel cotd01_apartments_redux"
+		}
 		"L4D2C1"
 		{
 			"cmd" "sm_rcon changelevel c1m1_hotel"

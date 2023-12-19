@@ -42,6 +42,7 @@
 9. Dark Blood
 10. Blood Harvest APOCALYPSE
 11. Precinct 84
+12 City Of The Dead
 
 * 支援二代地圖，想要地圖請聯繫哈利
 * 名稱: "left4deadDLC4-l4d2onl4d1" Mod
@@ -729,8 +730,8 @@
 [203] l4d_fix_falling_punch
 //Tank不會因為落地而取消已經揮拳的動作
 
-[203] l4d_despawn_out_of_sight
-//特感看不見人類的15秒後可以自行重生 (需要超過一定距離，官方指令 "z_discard_min_range 100")
+[204] l4d_stagger_gravity
+//就算在空中或跳起來依然被震直到時間結束
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
