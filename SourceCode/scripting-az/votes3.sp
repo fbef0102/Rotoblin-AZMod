@@ -1283,6 +1283,8 @@ ParseCampaigns()
 			break;
 		}
 	}
+
+	CloseHandle(g_kvCampaigns);
 }
 
 stock IsIncapacitated(client)

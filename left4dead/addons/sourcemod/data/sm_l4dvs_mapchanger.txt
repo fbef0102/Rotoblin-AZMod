@@ -80,9 +80,54 @@
 		"next mission map" "l4d_vs_farm01_hilltop"
 		"next mission name" "Blood Harvest (5 Maps)"
 	}
-	"l4d_noprecinct04_precinct"
+	"cotd05_rooftop_redux"
 	{
-		"next mission map" "l4d_vs_hospital01_apartment"
-		"next mission name" "No Mercy (5 Maps)"
+		"next mission map" "l4d_river01_docks"
+		"next mission name" "The Sacrifice (3 Maps)"
+	}
+	"hotel05_rooftop_two"
+	{
+		"next mission map" "l4d_vs_smalltown01_caves"
+		"next mission name" "Death Toll (5 Maps)"
+	}	
+	"c1m4_atrium"
+	{
+		"next mission map" "c2m1_highway"
+		"next mission name" "Dark Carnival (5 Maps)"
+	}	
+	"c2m5_concert"
+	{
+		"next mission map" "c3m1_plankcountry"
+		"next mission name" "Swamp Fever (4 Maps)"
+	}	
+	"c3m4_plantation"
+	{
+		"next mission map" "c4m1_milltown_a"
+		"next mission name" "Hard Rain (5 Maps)"
+	}
+	"c4m5_milltown_escape"
+	{
+		"next mission map" "c5m1_waterfront"
+		"next mission name" "The Parish (5 Maps)"
+	}
+	"c5m5_bridge"
+	{
+		"next mission map" "c6m1_riverbank"
+		"next mission name" "The Passing (3 Maps)"
+	}
+	"c6m3_port"
+	{
+		"next mission map" "c13m1_alpinecreek"
+		"next mission name" "Cold Stream (4 Maps)"
+	}
+	"c13m4_cutthroatcreek"
+	{
+		"next mission map" "c14m1_junkyard"
+		"next mission name" "The Last Stand (2 Maps)"
+	}
+	"c14m2_lighthouse"
+	{
+		"next mission map" "c1m1_hotel"
+		"next mission name" "Dead Center (4 Maps)"
 	}
 }

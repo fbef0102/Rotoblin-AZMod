@@ -2367,6 +2367,9 @@ public Action:Map_Changer(client, args)
 		Format(mapInfo6, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
 		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm cotd             | Change Map to City Of The Dead    |\n",mapInfo6);
 		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm cityofthedead    |                                   |\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm dv               | Change Map to Dead Vacation       |\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm deadvacation     |                                   |\n",mapInfo6);
 		#endif		
 		Format(mapInfo9, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
 		if(isAdmin == true) Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel all requests               |\n", mapInfo9);
@@ -2427,6 +2430,7 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsBHA = 0;
 		new AdminValueIsP84 = 0;
 		new AdminValueIsCOTD = 0;
+		new AdminValueIsDV = 0;
 		#endif
 
 		if(StrEqual(Admin_Map, "nm", false)) AdminValueIsNM = 1;
@@ -2467,6 +2471,8 @@ public Action:Map_Changer(client, args)
 		else if((StrEqual(Admin_Map, "precinct84", false))) AdminValueIsP84 = 1;
 		else if((StrEqual(Admin_Map, "cotd", false))) AdminValueIsCOTD = 1;
 		else if((StrEqual(Admin_Map, "cityofthedead", false))) AdminValueIsCOTD = 1;
+		else if((StrEqual(Admin_Map, "dv", false))) AdminValueIsDV = 1;
+		else if((StrEqual(Admin_Map, "deadvacation", false))) AdminValueIsDV = 1;
 		#endif
 
 		if(AdminValueIsNM == 1)
@@ -2650,6 +2656,16 @@ public Action:Map_Changer(client, args)
 			CampaignchangeDelayed();
 			return Plugin_Handled;
 		}
+		else if(AdminValueIsDV == 1)
+		{
+			Admin_Cancel_Lite();
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			AdminMapToExecuteName = "hotel01_market_two";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Dead Vacation");
+			CampaignchangeDelayed();
+			return Plugin_Handled;
+		}
 		#endif
 
 		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
@@ -2704,6 +2720,7 @@ public Action:Map_Changer(client, args)
 				new ValueIsBHA = 0;
 				new ValueIsP84 = 0;
 				new ValueIsCOTD = 0;
+				new ValueIsDV = 0;
 				#endif
 				
 				if(StrEqual(PlayerMap, "nm", false)) ValueIsNM = 1;
@@ -2744,6 +2761,8 @@ public Action:Map_Changer(client, args)
 				else if((StrEqual(PlayerMap, "precinct84", false))) ValueIsP84 = 1;
 				else if((StrEqual(PlayerMap, "cotd", false))) ValueIsCOTD = 1;
 				else if((StrEqual(PlayerMap, "cityofthedead", false))) ValueIsCOTD = 1;
+				else if((StrEqual(PlayerMap, "dv", false))) ValueIsDV = 1;
+				else if((StrEqual(PlayerMap, "deadvacation", false))) ValueIsDV = 1;
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2888,6 +2907,12 @@ public Action:Map_Changer(client, args)
 					PlayerMapChat = "COTD";
 					bIsValidMap = true;
 				}
+				else if(ValueIsDV == 1)
+				{
+					PlayerMap = "Dead Vacation";
+					PlayerMapChat = "DV";
+					bIsValidMap = true;
+				}
 				#endif
 
 				if(!bIsValidMap)
@@ -3028,6 +3053,12 @@ public Action:Map_Changer(client, args)
 							else if(StrEqual(PlayerMap, "City Of The Dead", false))
 							{
 								MapToExecuteName = "cotd01_apartments_redux";
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
+								return Plugin_Handled;														
+							}
+							else if(StrEqual(PlayerMap, "Dead Vacation", false))
+							{
+								MapToExecuteName = "hotel01_market_two";
 								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}

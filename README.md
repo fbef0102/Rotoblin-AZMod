@@ -207,6 +207,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
 * [Precinct 84](https://www.gamemaps.com/details/27737)
 * [City Of The Dead](https://www.gamemaps.com/details/25778)
+* [Dead Vacation](https://www.gamemaps.com/details/30523)
 
 - - - -
 ### Weapon Adjustments ###
@@ -432,6 +433,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Instantly incapacitate Survivors
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
     * Prevents the witch from randomly loosing target.
+    * Survivor will startle witch if shoot boomer nearby.
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -489,6 +491,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
     * Boomer's vomit is now able to pass through fence and barricade
     <br/><img src="https://i.imgur.com/MV6azfX.gif">
+    * Boomer's exploding can trigger alarm car and startle witch
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!

@@ -82,6 +82,10 @@
 		{
 			"cmd" "sm_rcon changelevel cotd01_apartments_redux"
 		}
+		"Dead Vacation"
+		{
+			"cmd" "sm_rcon changelevel hotel01_market_two"
+		}
 		"L4D2C1"
 		{
 			"cmd" "sm_rcon changelevel c1m1_hotel"

@@ -1102,6 +1102,102 @@
 		"pill_limit" "1"
 		"VersusModifier"		"2.0"
 	}
+	"hotel01_market_two"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.0"
+		"no_start_area" "1"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"Alarm car"
+			{
+				"min"		"23"
+				"max"		"28"
+			}
+		}
+	}
+	"hotel02_sewer_two"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+		"WaterSlowDown_map" 	"1"
+		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"The End of the map"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"The End of the map"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
+	}
+	"hotel03_ramsey_two"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"WaterSlowDown_map" 	"1"
+	}
+	"hotel04_scaling_two"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"The Start of the map"
+			{
+				"min"		"0"
+				"max"		"25"
+			}
+			"Sewer"
+			{
+				"min"		"76"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"The Start of the map"
+			{
+				"min"		"0"
+				"max"		"25"
+			}
+			"Sewer"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
+	}
+	"hotel05_rooftop_two"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"tank_map_off" "1"
+		"no_final_first_tank" "0"
+		"witch_ban_flow"
+		{
+			"The Start"
+			{
+				"min"		"0"
+				"max"		"70"
+			}
+			"The Final"
+			{
+				"min"		"80"
+				"max"		"100"
+			}
+		}
+	}
 	"c1m1_hotel"
 	{
 		"pill_limit" "1"
