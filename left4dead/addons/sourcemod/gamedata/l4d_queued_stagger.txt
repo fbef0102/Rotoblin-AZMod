@@ -1,0 +1,126 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"CTerrorPlayer::UpdateStagger"
+			{
+				"signature"		"CTerrorPlayer::UpdateStagger"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+			}
+
+			"CTerrorPlayer::UpdatePounce"
+			{
+				"signature"		"CTerrorPlayer::UpdatePounce"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"ignore"
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"MemPatches"
+		{
+			"CTerrorPlayer::UpdateStagger__GetGroundEntity_force_exit"
+			{
+				"signature"		"CTerrorPlayer::UpdateStagger"
+				"linux"
+				{
+					"offset"	"110h"
+					"verify"	"\x0F\x84"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"13Eh"
+					"verify"	"\x74"
+					"patch"		"\xEB"
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorPlayer::UpdateStagger"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer13UpdateStaggerEv"
+				"windows"		"\x2A\x2A\x56\x8B\xF1\x2A\x2A\x2A\x83\xBE\x2A\x2A\x2A\x2A\x00\x57\x0F\x84"
+								/* ? ? 56 8B F1 ? ? ? 83 BE ? ? ? ? 00 57 0F 84 */
+			}
+
+			"CTerrorPlayer::UpdatePounce"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer12UpdatePounceEv"
+				"windows"		"\x81\xEC\x8C\x01\x00\x00\x53\x56\x57\x8B"
+								/* 81 EC 8C 01 00 00 53 56 57 8B */
+			}
+
+			// Search string "SmokerZombie.Warn", the second call below.
+			"CTerrorPlayer::SetMainActivity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer15SetMainActivityE8Activityb"
+				"windows"		"\x83\xEC\x08\x53\x56\x57\x8B\x3D\x2A\x2A\x2A\x2A\x8B\x07\x8B\x50"
+								/* 83 EC 08 53 56 57 8B 3D ? ? ? ? 8B 07 8B 50 */
+			}
+
+			// Doesn't exist in windows
+			// Only 2 xrefs: "CTerrorPlayer::UpdateSurvivorMainActivity" "CTerrorPlayer::UpdateInfectedMainActivity"
+			// Unused
+			"CTerrorPlayer::SetMainActivity [clone]"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer15SetMainActivityE8Activityb.constprop.83"
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"MemPatches"
+		{
+			"CTerrorPlayer::UpdateStagger__GetGroundEntity_force_exit"
+			{
+				"signature"		"CTerrorPlayer::UpdateStagger"
+				"linux"
+				{
+					"offset"	"218H"
+					"verify"	"\x0F\x84"
+					"patch"		"\x90\xE9"
+				}
+				"windows"
+				{
+					"offset"	"1A9h"
+					"verify"	"\x74"
+					"patch"		"\xEB"
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorPlayer::UpdateStagger"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer13UpdateStaggerEv"
+				"windows"		"\x2A\x56\x8B\xF1\x2A\x2A\x2A\x83\xBE\x2A\x2A\x2A\x2A\x2A\x57\x0F\x84"
+								/* ? 56 8B F1 ? ? ? 83 BE ? ? ? ? ? 57 0F 84 */
+			}
+
+			"CTerrorPlayer::UpdatePounce"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer12UpdatePounceEv"
+				"windows"		"\x55\x8B\xEC\x81\xEC\x9C\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\xF1"
+								/* 55 8B EC 81 EC 9C 01 00 00 A1 ? ? ? ? 33 ? ? ? ? 53 56 57 8B F1 */
+			}
+		}
+	}
+}

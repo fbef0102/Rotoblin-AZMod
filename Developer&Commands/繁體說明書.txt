@@ -731,11 +731,17 @@
 [203] l4d_fix_falling_punch
 //Tank不會因為落地而取消已經揮拳的動作
 
-[204] l4d_stagger_gravity
+[204] l4d_boomer_alarm_witch
+//如果打死Boomer時，Witch在旁觀則會驚擾
+
+[205] l4d_stagger_gravity
 //就算在空中或跳起來依然被震直到時間結束
 
-[205] l4d_boomer_alarm_witch
-//如果打死Boomer時，Witch在旁觀則會驚擾
+[206] l4d_fix_long_stagger
+//Boomer與Tank能夠設置硬直時間
+
+[207] l4d_queued_stagger
+//特感在空中被推後真正落地的時間點 (API)
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

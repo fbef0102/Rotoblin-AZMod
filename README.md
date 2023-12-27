@@ -224,7 +224,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
   * Ammo: 128->96
-  * Limit: 3
+  * Limit: None
   * FF Protect Range: 37
 
 * **Pistol**
@@ -452,7 +452,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
     * Allow Bunny hop pounce (one of l4d1 original feature)
-    * Maximum pounce damage: **40**
+    * Maximum pounce damage: **35**
     * Wallkick/Backjumps
       - *(5v5)*: **✔**
       - *(4v4)*: **✔**

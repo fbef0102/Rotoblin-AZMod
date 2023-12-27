@@ -4,13 +4,6 @@
 #include <sourcemod>
 #include <left4dhooks>
 
-static const int deadstopSequences[] = {60, 64, 67};
-//static const deadstopSequences2[] = {68,59};
-//踢牆:68,59
-//飛著:67,60,64
-//蹲著:8,14
-//站著:3,4,5
-//跳著:51
 ConVar hCvarFlags;
 ConVar hCvarFlags2;
 int g_iCvarcontrolvalue;
@@ -37,7 +30,7 @@ public Plugin myinfo =
 	name = "L4D No Hunter Deadstops",
 	author = "Spoon, Luckylock, A1m`, l4d1 port by Harry",
 	description = "Self-descriptive",
-	version = "1.0.5",
+	version = "1.0.6-2023/12/27",
 	url = "https://github.com/luckyserv"
 };
 
@@ -54,32 +47,8 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
 	HookEvent("ability_use", Event_AbilityUse, EventHookMode_Post);
 	HookEvent("player_team", Event_PlayerTeam);
-	#if DEBUG
-		HookEvent("player_shoved", Event_PlayerShoved);
-	#endif
 
 	cvarHunterGroundM2Godframes = CreateConVar("hunter_ground_m2_godframes", "0.25", "m2 godframes after a hunter lands on the ground", _, true, 0.0, true, 1.0);
-}
-
-public Action L4D_OnShovedBySurvivor(int shover, int shovee, const float vecDir[3])
-{
-	if (!IsSurvivor(shover) || !IsHunter(shovee) || IsPluginDisable()) 
-		return Plugin_Continue;
-
-	#if DEBUG
-		PrintToChatAll("\x01%N Invoked \"L4D_OnShovedBySurvivor\x01 on \x03%N\x01, vecDir: %f, %f, %f", shover, shovee, vecDir[0], vecDir[1], vecDir[2]);
-	#endif
-
-	// (IsPlayingDeadstopAnimation(entity) && IsPlayerOnPlayer(entity)) to check if hunter uses bunny jump in l4d1
-	if( (IsPlayingDeadstopAnimation(shovee) && IsPlayerOnPlayer(shovee)) || Shove_Handler(shovee))
-	{
-	#if DEBUG 
-		PrintToChatAll("\x04 Hunter %N is still pouncing!", shovee);
-	#endif
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
 }
 
 public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecDir[3], bool bIsHighPounce)
@@ -91,11 +60,32 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecD
  		PrintToChatAll("\x01%N Invoked \"L4D2_OnEntityShoved\x01 on \x03%N\x01, bIsHighPounce: %d", client, entity, bIsHighPounce);
  	#endif	 
 	
-	// (IsPlayingDeadstopAnimation(entity) && IsPlayerOnPlayer(entity)) to check if hunter uses bunny jump in l4d1
-	if( bIsHighPounce || (IsPlayingDeadstopAnimation(entity) && IsPlayerOnPlayer(entity)) || Shove_Handler(entity) )
+	if( bIsHighPounce || IsPlayingPounceAnimation(entity) || Shove_Handler(entity) )
 	{
 	#if DEBUG 
 		PrintToChatAll("\x04Hunter %N is still pouncing!",entity);
+	#endif
+		bIsPouncingStopTime[entity] = 0.0;
+		bIsPouncing[entity] = true;
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action L4D_OnShovedBySurvivor(int shover, int shovee, const float vecDir[3])
+{
+	if (!IsSurvivor(shover) || !IsHunter(shovee) || IsPluginDisable()) 
+		return Plugin_Continue;
+
+	#if DEBUG
+		PrintToChatAll("\x01%N Invoked \"L4D_OnShovedBySurvivor\x01 on \x03%N\x01, vecDir: %f, %f, %f", shover, shovee, vecDir[0], vecDir[1], vecDir[2]);
+	#endif
+
+	if( IsPlayingPounceAnimation(shovee) || Shove_Handler(shovee))
+	{
+	#if DEBUG 
+		PrintToChatAll("\x04 Hunter %N is still pouncing!", shovee);
 	#endif
 		return Plugin_Handled;
 	}
@@ -103,16 +93,7 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecD
 	return Plugin_Continue;
 }
 
-public void Event_PlayerShoved(Event event, const char[] name, bool dontBroadcast)
-{
-	int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
- 	if (!IsSurvivor(attacker) || !IsHunter(victim) ) return;
-
- 	PrintToChatAll("\x01%N Invoked \"Event_PlayerShoved\x01 on \x03%N\x01", attacker, victim);
-}
-
-public void OnCvarChange_control(ConVar convar, const char[] oldValue, const char[] newValue)
+void OnCvarChange_control(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
 }
@@ -194,7 +175,7 @@ bool HasTarget(int hunter)
 	return (IsSurvivor(target) && IsPlayerAlive(target));
 }
 
-public void Event_RoundStart(Event hEvent, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	// clear SI tracking stats
 	for (int i = 1; i <= MaxClients; i++)
@@ -203,7 +184,7 @@ public void Event_RoundStart(Event hEvent, const char[] name, bool dontBroadcast
 	}
 }
 
-public void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
+void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(hEvent.GetInt("userid"));
 
@@ -216,7 +197,7 @@ public void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcas
 }
 
 // hunters pouncing / tracking
-public void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
+void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	// track hunters pouncing
 	char abilityName[64];
@@ -239,7 +220,7 @@ public void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast
 	}
 }
 
-public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast) 
+void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast) 
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	bIsPouncing[client] = false;
@@ -255,7 +236,7 @@ public void OnGameFrame()
 			if (fNow - bIsPouncingStartTime[client] > 0.04) {
 
 				if (bIsPouncingStopTime[client] == 0.0) {
-					if ( (GetEntityFlags(client) & FL_ONGROUND /*&& !IsPlayerOnPlayer(client)*/) || GetEntityMoveType(client) == MOVETYPE_LADDER) {
+					if ( (GetEntityFlags(client) & FL_ONGROUND) || GetEntityMoveType(client) == MOVETYPE_LADDER) {
 						#if DEBUG
 							PrintToChatAll("Hunter %N grounded or ladder (buffer = %f s)", client, cvarHunterGroundM2Godframes.FloatValue);
 						#endif
@@ -272,24 +253,33 @@ public void OnGameFrame()
 	} 
 }
 
-stock bool IsPlayerOnPlayer(int client)
+bool IsPlayingPounceAnimation(int hunter)  
 {
-	int entity = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
-	if ( !IsSurvivor(entity)){ return false; }
-	return ( (GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) && IsPlayerAlive( entity ) ) ;
-}
-
-bool IsPlayingDeadstopAnimation(int hunter)  
-{
-	int sequence = GetEntProp(hunter, Prop_Send, "m_nSequence");
+	int Activity = L4D1_GetMainActivity(hunter);
 	
 	#if DEBUG
-		PrintToChatAll("\x04%N\x01 playing sequence \x04%d\x01", hunter, sequence);
+		PrintToChatAll("\x04%N\x01 playing Activity \x04%d\x01", hunter, Activity);
 	#endif
 
-	for (int i = 0; i < sizeof(deadstopSequences); i++)
+	switch (Activity) 
 	{
-		if (deadstopSequences[i] == sequence) return true;
+		case L4D1_ACT_TERROR_HUNTER_LUNGE_OFF_WALL_SPIN_RIGHT, //1238
+		L4D1_ACT_TERROR_HUNTER_LUNGE_OFF_WALL_SPIN_LEFT, //1239
+		L4D1_ACT_TERROR_HUNTER_LUNGE_OFF_WALL_BACK, //1240
+		L4D1_ACT_TERROR_HUNTER_LUNGE_IDLE,  //1241
+		L4D1_ACT_TERROR_HUNTER_LUNGE_ONTO_WALL,  //1242
+		L4D1_ACT_TERROR_HUNTER_POUNCE, //1243
+		L4D1_ACT_TERROR_HUNTER_POUNCE_IDLE: //1244
+			return true;
 	}
+
 	return false;
+}
+
+int L4D1_GetMainActivity(int client) {
+	static int s_iOffs_m_eCurrentMainSequenceActivity = -1;
+	if (s_iOffs_m_eCurrentMainSequenceActivity == -1)
+		s_iOffs_m_eCurrentMainSequenceActivity = FindSendPropInfo("CTerrorPlayer", "m_iProgressBarDuration") + 476;
+	
+	return LoadFromAddress(GetEntityAddress(client) + view_as<Address>(s_iOffs_m_eCurrentMainSequenceActivity), NumberType_Int32);
 }

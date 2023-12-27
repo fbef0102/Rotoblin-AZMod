@@ -1,0 +1,53 @@
+"Games"
+{
+	"left4dead"
+	{
+		"MemPatches"
+		{
+			"CTerrorPlayer::UpdateStagger__AreHumanZombiesAllowed_ignore"
+			{
+				"signature"		"CTerrorPlayer::UpdateStagger"
+				"linux"
+				{
+					"offset"	"36h"
+					"verify"	"\x74"
+					"patch"		"\x90\x90"
+				}
+				"windows"
+				{
+					"offset"	"A9h"
+					"verify"	"\x74"
+					"patch"		"\x90\x90"
+				}
+			}
+
+			"CTerrorPlayer::UpdateStagger__IsA_Hunter_forced_pass"
+			{
+				"signature"		"CTerrorPlayer::UpdateStagger"
+				"linux"
+				{
+					"offset"	"B8h"
+					"verify"	"\x75"
+					"patch"		"\x90\x90"
+				}
+				"windows"
+				{
+					"offset"	"E9h"
+					"verify"	"\x74"
+					"patch"		"\x90\x90"
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorPlayer::UpdateStagger"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer13UpdateStaggerEv"
+				"windows"		"\x2A\x2A\x56\x8B\xF1\x2A\x2A\x2A\x83\xBE\x2A\x2A\x2A\x2A\x00\x57\x0F\x84"
+								/* ? ? 56 8B F1 ? ? ? 83 BE ? ? ? ? 00 57 0F 84 */
+			}
+		}
+	}
+}

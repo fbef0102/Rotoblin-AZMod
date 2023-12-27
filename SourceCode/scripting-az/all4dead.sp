@@ -93,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PLUGIN_NAME       "All4Dead"
 #define PLUGIN_TAG  	    "[A4D] "
 #define MAX_PLAYERS				18
-#define MENU_DISPLAY_TIME 15		
+#define MENU_DISPLAY_TIME MENU_TIME_FOREVER		
 
 // Include necessary files
 #include <sourcemod>
