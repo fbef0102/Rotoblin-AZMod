@@ -33,7 +33,6 @@ new     Float:      g_fPlayerStuck          [MAXPLAYERS + 1];                   
 new     Float:      g_fPlayerLocation       [MAXPLAYERS + 1][3];                        // where was the survivor last during the flight?
 
 new     Handle:     g_hCvarDeStuckTime                          = INVALID_HANDLE;       // convar: how long to wait and de-stuckify a punched player
-new 	Handle: 	tpsf_debug_print;
 new modelnum[MAXPLAYERS + 1];
 static bool:TankPounchClient[MAXPLAYERS + 1];
 
@@ -42,7 +41,7 @@ public Plugin:myinfo =
     name =          "Tank Punch Ceiling Stuck Fix",
     author =        "Tabun, Visor, HarryPotter",
     description =   "Fixes the problem where tank-punches get a survivor stuck in the roof,L4D1 windows signature by Harry",
-    version =       "0.5",
+    version =       "0.5-2024/1/2",
     url =           "nope"
 }
 
@@ -59,10 +58,14 @@ public Native_IsTankPounchClient(Handle:plugin, numParams)
    return TankPounchClient[num1];
 }
 
+ConVar sv_lagcompensationforcerestore;
+
 public OnPluginStart()
 {
     LoadTranslations("Roto2-AZ_mod.phrases");
-    // hook already existing clients if loading late
+
+    sv_lagcompensationforcerestore = FindConVar("sv_lagcompensationforcerestore");
+
     if (g_bLateLoad) {
         for (new i = 1; i < MaxClients+1; i++) {
             if (IsClientInGame(i)) {
@@ -73,7 +76,6 @@ public OnPluginStart()
     
     // cvars
     g_hCvarDeStuckTime = CreateConVar(      "sm_punchstuckfix_unstucktime",     "1.0",      "How many seconds to wait before detecting and unstucking a punched motionless player.", FCVAR_NOTIFY, true, 0.05, false);
-    tpsf_debug_print = CreateConVar("tpsf_debug_print", "1","Enable the Debug Print?", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	
     // hooks
     HookEvent("round_start", RoundStart_Event, EventHookMode_PostNoCopy);
@@ -111,7 +113,7 @@ public Action: RoundStart_Event (Handle:event, const String:name[], bool:dontBro
  *     GOT MY EYES ON YOU, PUNCH
  * -------------------------------------- */
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
     if (damagetype != DMG_CLUB || !IsTankWeapon(inflictor)) {
         return Plugin_Continue;
@@ -158,7 +160,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
     return Plugin_Continue;
 }
 
-public Action Timer_CheckPunch(Handle hTimer, int userid)
+Action Timer_CheckPunch(Handle hTimer, int userid)
 {
     int client = GetClientOfUserId(userid);
     // stop the timer when we no longer have a proper client
@@ -183,7 +185,6 @@ public Action Timer_CheckPunch(Handle hTimer, int userid)
     || (iSeq == SEQ_FLIGHT_FRANCIS && modelnum[client] == 3 ) 
     || (iSeq == SEQ_FLIGHT_ZOEY && modelnum[client] == 2) ) ) )
     {
-        
         new Float: vOrigin[3];
         GetEntPropVector(client, Prop_Send, "m_vecOrigin", vOrigin);
         
@@ -216,13 +217,13 @@ public Action Timer_CheckPunch(Handle hTimer, int userid)
                         g_bPlayerFlight[client] = false;
                         g_fPlayerStuck[client] = 0.0;
 
+                        /*
                         CTerrorPlayer_WarpToValidPositionIfStuck(client);
-                        if(GetConVarBool(tpsf_debug_print)) 
-                        {
-                            decl String:clientName[128];
-                            GetClientName(client,clientName,128);
-                            CPrintToChatAll("%t","l4d_tankpunchstuckfix", clientName);
+                        decl String:clientName[128];
+                        GetClientName(client,clientName,128);
+                        CPrintToChatAll("%t","l4d_tankpunchstuckfix", clientName);
                         }
+                        */
                         return Plugin_Stop;
                     }
                 }
@@ -345,4 +346,14 @@ bool IsTankWeapon(int entity)
 	}
 
 	return false;
+}
+
+public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int player)
+{
+	sv_lagcompensationforcerestore.BoolValue = false;
+}
+
+public void L4D_TankClaw_DoSwing_Post(int tank, int claw)
+{
+	sv_lagcompensationforcerestore.BoolValue = true;
 }

@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
 v8.5.3
-<br/>Developer @ 2017-2023 [Harry](http://steamcommunity.com/profiles/76561198026784913)
+<br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
     - [Server Install](#server-install)
@@ -206,7 +206,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Dark Blood](https://www.gamemaps.com/details/28746)
 * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
 * [Precinct 84](https://www.gamemaps.com/details/27737)
-* [City Of The Dead](https://www.gamemaps.com/details/25778)
+* City Of The Dead
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 
 - - - -
