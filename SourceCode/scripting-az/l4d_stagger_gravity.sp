@@ -618,6 +618,13 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 		}
 		else
 		{
+			if(L4D_IsPlayerStaggering(client) == false) //沒有被震 for some reason (硬質期間被震第二次有機會不會被震)
+			{
+				g_bFrameStagger[client] = true;
+				g_bStaggerNew[client] = false;
+				RequestFrame(OnFrameStagger, GetClientUserId(client));
+			}
+
 			float vPos[3];
 			GetClientAbsOrigin(client, vPos);
 			GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
@@ -635,6 +642,7 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 
 // Hunter/Smoker/被修改stagger time的boomer 硬質時間到時會觸發此涵式 (Boomer/Tank不會)
 // Hunter/Smoker/Boomer 硬質期間被推第二次也會觸發此涵式 (Tank不會)
+// 人類硬質期間被重新震第二次也會觸發此涵式
 public Action L4D_OnCancelStagger(int client)
 {
 	if( !g_bCvarAllow || !g_bRoundStarted) return Plugin_Continue;
@@ -771,14 +779,22 @@ void OnFrameStagger(int client)
 		int team = GetClientTeam(client);
 		if( team == 2 )
 		{
-			if(L4D_GetPinnedInfected(client) > 0) return;
-			if(L4D_IsPlayerHangingFromLedge(client)) return;
-			if(L4D_IsPlayerIncapacitated(client)) return;
-			if(g_bHurtByTank[client]) return;
+			if(L4D_GetPinnedInfected(client) > 0 
+			|| L4D_IsPlayerHangingFromLedge(client)
+			|| L4D_IsPlayerIncapacitated(client) 
+			|| (g_bHurtByTank[client]) )
+			{
+				g_bFrameStagger[client] = false;
+				return;
+			}
 		}
 		else if( team == 3 )
 		{
-			if(L4D_GetPinnedSurvivor(client) > 0) return;
+			if(L4D_GetPinnedSurvivor(client) > 0)
+			{
+				g_bFrameStagger[client] = false;
+				return;
+			}
 		}
 
 		if(g_bStaggerNew[client] == false && g_fTtime[client] > GetGameTime())
