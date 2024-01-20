@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION 		"1.2h-2023/12/25"
+#define PLUGIN_VERSION 		"1.2h-2024/11/12"
 #define DEBUG 		0
 
 /*======================================================================================
@@ -22,8 +22,11 @@
 
 #define CVAR_FLAGS			FCVAR_NOTIFY
 #define BLOCK_TIME			0.3		// How long to block shooting/shoving/moving when staggering
-#define L4D1_TANK_STAGGER_TIME 2.9 //tank 被推/震時間
-#define L4D1_BOOMER_STAGGER_TIME 2.7 //boomer 被推/震時間
+#define L4D1_TANK_STAGGER_TIME 2.9 //tank 被推/震時間 (L4D1 對抗寫死)
+#define L4D1_BOOMER_STAGGER_TIME 2.7 //boomer 被推/震時間 (L4D1 對抗寫死)
+
+ConVar survivor_max_tongue_stagger_duration, z_max_stagger_duration;
+float g_fCvar_survivor_max_tongue_stagger_duration, g_fCvar_z_max_stagger_duration;
 
 ConVar g_hCvarAllow, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog;
 bool g_bCvarAllow, g_bMapStarted, g_bRoundStarted;
@@ -36,7 +39,11 @@ bool
 	g_bHurtByTank[MAXPLAYERS+1],
 	g_bStaggerNew[MAXPLAYERS+1];
 
-float g_vStart[MAXPLAYERS+1][3], g_fDist[MAXPLAYERS+1], g_fTtime[MAXPLAYERS+1], g_fTimeBlock[MAXPLAYERS+1];
+float 
+	g_vStart[MAXPLAYERS+1][3], 
+	g_fDist[MAXPLAYERS+1], 
+	g_fTtime[MAXPLAYERS+1], 
+	g_fTimeBlock[MAXPLAYERS+1];
 
 
 
@@ -79,6 +86,13 @@ public void OnAllPluginsLoaded()
 
 public void OnPluginStart()
 {
+	survivor_max_tongue_stagger_duration = FindConVar("survivor_max_tongue_stagger_duration");
+	z_max_stagger_duration = FindConVar("z_max_stagger_duration");
+
+	GetCvars();
+	survivor_max_tongue_stagger_duration.AddChangeHook(ConVarChanged_Cvars);
+	z_max_stagger_duration.AddChangeHook(ConVarChanged_Cvars);
+
 	g_hCvarAllow = CreateConVar(		"l4d_stagger_gravity_allow",		"1",			"0=Plugin off, 1=Plugin on.", CVAR_FLAGS );
 	g_hCvarModes = CreateConVar(		"l4d_stagger_gravity_modes",		"",				"Turn on the plugin in these game modes, separate by commas (no spaces). (Empty = all).", CVAR_FLAGS );
 	g_hCvarModesOff = CreateConVar(		"l4d_stagger_gravity_modes_off",	"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
@@ -129,8 +143,21 @@ void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newV
 	IsAllowed();
 }
 
+
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+    g_fCvar_survivor_max_tongue_stagger_duration = survivor_max_tongue_stagger_duration.FloatValue;
+    g_fCvar_z_max_stagger_duration = z_max_stagger_duration.FloatValue;
+}
+
 void IsAllowed()
 {
+	GetCvars();
 	bool bCvarAllow = g_hCvarAllow.BoolValue;
 	bool bAllowMode = IsAllowedGameMode();
 
@@ -345,6 +372,7 @@ Action CmdTest(int client, int args)
 public Action L4D_OnMotionControlledXY(int client, int activity)
 {
 	if( !g_bCvarAllow || !g_bRoundStarted ) return Plugin_Continue;
+	if( GetEntityMoveType(client) == MOVETYPE_NOCLIP) return Plugin_Continue;
 
 	int team = GetClientTeam(client);
 
@@ -367,14 +395,16 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 		}
 	}
 	
+	int m_hGroundEntity = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
 	// Verify air stagger
-	if( GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") == -1 && !bBusy)
+	if(m_hGroundEntity == -1 && !bBusy)
 	{
 		//DebugPrint("%N L4D_OnMotionControlledXY 1", client);
 		g_bBlockXY[client] = true;
 
 		//SetAttack(client);
 		g_bStagger[client] = true;
+
 		return Plugin_Handled;
 	}
 	else
@@ -392,14 +422,16 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 		//在地上
 		if( g_bStagger[client] )
 		{
-			float vPos[3];
-			GetClientAbsOrigin(client, vPos);
-			GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
+			//float vStart[3];
+			//GetEntPropVector(client, Prop_Send, "m_staggerStart", vStart);
+			//if(vStart[0] + vStart[1] + vStart[2] != 0.0) g_vStart[client] = vStart;
 
-			float dist = GetVectorDistance(g_vStart[client], vPos);
-			g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
-			g_fDist[client] -= dist;
-			if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
+			//float vPos[3];
+			//GetClientAbsOrigin(client, vPos);
+			//float dist = GetVectorDistance(g_vStart[client], vPos);
+			//g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
+			//g_fDist[client] -= dist;
+			//if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
 
 			//g_fTtime[client] = GetEntPropFloat(client, Prop_Send, "m_staggerTimer", 1);
 
@@ -416,7 +448,7 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 			RequestFrame(OnFrameStagger, GetClientUserId(client));
 
 			//SetAttack(client);
-			if(GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") >= 0) return Plugin_Continue;
+			if(m_hGroundEntity >= 0) return Plugin_Continue;
 			return Plugin_Handled;
 		}
 
@@ -425,14 +457,14 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 			g_fTimeBlock[client] = GetGameTime() + 0.5;
 
 			//SetAttack(client);
-			if(GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") >= 0)  return Plugin_Continue;
+			if(m_hGroundEntity >= 0)  return Plugin_Continue;
 			return Plugin_Handled;
 		}
 
 		if( g_fTimeBlock[client] - GetGameTime() > 0.0 )
 		{
 			//SetAttack(client);
-			if(GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") >= 0)  return Plugin_Continue;
+			if(m_hGroundEntity >= 0)  return Plugin_Continue;
 			return Plugin_Handled;
 		}
 	}
@@ -440,7 +472,7 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 	if( g_bBlockXY[client] )
 	{
 		//SetAttack(client);
-		if(GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") >= 0) return Plugin_Continue;
+		if(m_hGroundEntity >= 0) return Plugin_Continue;
 		return Plugin_Handled;
 	}
 
@@ -498,17 +530,19 @@ public void L4D2_OnStagger_Post(int client, int source)
 		if(L4D_IsPlayerHangingFromLedge(client)) return;
 		if(L4D_IsPlayerIncapacitated(client)) return;
 
-		if( source > 0 && source <= MaxClients && IsClientInGame(source) && GetClientTeam(source) == L4D_TEAM_INFECTED && GetZombieClass(source) == ZC_HUNTER) //人類被hunter震 1.0秒
+		if( source > 0 && source <= MaxClients && IsClientInGame(source) && GetClientTeam(source) == L4D_TEAM_INFECTED && GetZombieClass(source) == ZC_HUNTER)
 		{
-			g_fTtime[client] = GetGameTime() + 1.0;
+			//人類被hunter震 1.0秒
+			g_fTtime[client] = GetGameTime() + g_fCvar_z_max_stagger_duration+0.1;
 			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
 		}
 		else
 		{
-			//人類被boomer震 1.5秒 (遵守 survivor_max_tongue_stagger_duration)
-			//人類被瓦斯桶/氧氣灌震 1.5秒 (遵守 survivor_max_tongue_stagger_duration)
+			//人類被boomer炸 1.5秒 (遵守 survivor_max_tongue_stagger_duration)
+			//人類被瓦斯桶/氧氣灌炸 1.5秒 (遵守 survivor_max_tongue_stagger_duration)
 			//人類被Witch震 1.5秒 (遵守 survivor_max_tongue_stagger_duration)
-			g_fTtime[client] = GetEntPropFloat(client, Prop_Send, "m_staggerTimer", 1);
+			g_fTtime[client] = GetGameTime() + g_fCvar_survivor_max_tongue_stagger_duration;
+			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
 		}
 	}
 	else if(team == 3) 
@@ -541,14 +575,15 @@ public void L4D2_OnStagger_Post(int client, int source)
 		return;
 	}
 
-	float vPos[3];
-	GetClientAbsOrigin(client, vPos);
-	GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
+	//GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
+	GetEntPropVector(source, Prop_Data, "m_vecAbsOrigin", g_vStart[client]);
 
-	float dist = GetVectorDistance(g_vStart[client], vPos);
-	g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
-	g_fDist[client] -= dist;
-	if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
+	//float vPos[3];
+	//GetClientAbsOrigin(client, vPos);
+	//float dist = GetVectorDistance(g_vStart[client], vPos);
+	//g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
+	//g_fDist[client] -= dist;
+	//if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
 }
 
 //API from l4d_queued_stagger
@@ -575,23 +610,73 @@ public void L4D_OnQueuedStagger_Post(int client)
 		else
 		{
 			// hunter/smoker 被推 0.9秒 (遵守z_max_stagger_duration)
-			g_fTtime[client] = GetEntPropFloat(client, Prop_Send, "m_staggerTimer", 1);
+			g_fTtime[client] = GetGameTime() + g_fCvar_z_max_stagger_duration;
+			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
 		}
 
-		float vPos[3];
-		GetClientAbsOrigin(client, vPos);
 		GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
 
-		float dist = GetVectorDistance(g_vStart[client], vPos);
-		g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
-		g_fDist[client] -= dist;
-		if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
+		//float vPos[3];
+		//GetClientAbsOrigin(client, vPos);
+		//float dist = GetVectorDistance(g_vStart[client], vPos);
+		//g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
+		//g_fDist[client] -= dist;
+		//if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
 	}
 }
+/*
+public Action L4D2_OnPounceOrLeapStumble(int client, int attacker)
+{
+	g_bHurtByTank[client] = false;
+	g_bStaggerNew[client] = false;
+	// Verify air stagger
+	if( g_bCvarAllow && g_bRoundStarted )
+	{
+		#if DEBUG
+		DebugPrint("%N L4D2_OnPounceOrLeapStumble", client);
+		#endif
+
+		int team = GetClientTeam(client);
+
+		if(GetClientTeam(client) == 2)
+		{
+			if(L4D_GetPinnedInfected(client) > 0) return Plugin_Continue;
+			if(L4D_IsPlayerHangingFromLedge(client)) return Plugin_Continue;
+			if(L4D_IsPlayerIncapacitated(client)) return Plugin_Continue;
+		}
+		else if(team == 3) 
+		{
+			return Plugin_Continue;
+		}
+		
+		if( GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") == -1)
+		{
+			L4D_StaggerPlayer(client, attacker, NULL_VECTOR);
+		}
+		else
+		{
+			GetEntPropVector(attacker, Prop_Data, "m_vecAbsOrigin", g_vStart[client]);
+
+			g_fTtime[client] = GetGameTime() + g_fCvar_z_max_stagger_duration+0.1;
+
+			#if DEBUG
+			DebugPrint("L4D2_OnPounceOrLeapStumble->OnFrameStagger %N ", client);
+			#endif
+			//強制震
+			OnFrameStagger(GetClientUserId(client));
+			return Plugin_Handled;
+		}
+	}
+
+	return Plugin_Continue;
+}
+*/
 
 //人類身旁的隊友被hunter撲導致被震 0.9秒 (遵守z_max_stagger_duration)
 public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 {
+	g_bHurtByTank[client] = false;
+	g_bStaggerNew[client] = false;
 	// Verify air stagger
 	if( g_bCvarAllow && g_bRoundStarted )
 	{
@@ -618,24 +703,21 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 		}
 		else
 		{
-			if(L4D_IsPlayerStaggering(client) == false) //沒有被震 for some reason (硬質期間被震第二次有機會不會被震)
-			{
-				g_bFrameStagger[client] = true;
-				g_bStaggerNew[client] = false;
-				RequestFrame(OnFrameStagger, GetClientUserId(client));
-			}
-
-			float vPos[3];
-			GetClientAbsOrigin(client, vPos);
 			GetEntPropVector(client, Prop_Send, "m_staggerStart", g_vStart[client]);
+			//GetEntPropVector(attacker, Prop_Data, "m_vecAbsOrigin", g_vStart[client]);
 
-			float dist = GetVectorDistance(g_vStart[client], vPos);
-			g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
-			g_fDist[client] -= dist;
-			if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
+			//float vPos[3];
+			//GetClientAbsOrigin(client, vPos);
+			//float dist = GetVectorDistance(g_vStart[client], vPos);
+			//g_fDist[client] = GetEntPropFloat(client, Prop_Send, "m_staggerDist");
+			//g_fDist[client] -= dist;
+			//if(g_fDist[client] < 10.0) g_fDist[client] = 10.0;
 
-			g_fTtime[client] = GetGameTime() + 1.0;
+			g_fTtime[client] = GetGameTime() + g_fCvar_z_max_stagger_duration+0.1;
 			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
+
+			//查看是否有被震，沒有則強制震
+			CreateTimer(0.01, Timer_OnFrameStagger, GetClientUserId(client));
 		}
 	}
 }
@@ -645,7 +727,7 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 // 人類硬質期間被重新震第二次也會觸發此涵式
 public Action L4D_OnCancelStagger(int client)
 {
-	if( !g_bCvarAllow || !g_bRoundStarted) return Plugin_Continue;
+	if( !g_bCvarAllow || !g_bRoundStarted ) return Plugin_Continue;
 
 	#if DEBUG
 	DebugPrint("%N L4D_OnCancelStagger - %d", client, g_bFrameStagger[client]);
@@ -656,7 +738,11 @@ public Action L4D_OnCancelStagger(int client)
 	// Maybe fallen off a ledge that wants to cancel the stagger, block the cancel
 	if(team == 3)
 	{
-		if(IsFakeClient(client)) return Plugin_Continue; //bot無限觸發
+		if(IsFakeClient(client))
+		{
+			g_bStagger[client] = false;
+			return Plugin_Continue; //bot無限觸發
+		}
 
 		if( g_bFrameStagger[client] )
 		{
@@ -666,7 +752,11 @@ public Action L4D_OnCancelStagger(int client)
 	}
 	else if( team == 2 )
 	{
-		if(IsFakeClient(client)) return Plugin_Continue; //bot無限觸發
+		if(IsFakeClient(client))
+		{
+			g_bStagger[client] = false;
+			return Plugin_Continue; //bot無限觸發
+		}
 		
 		if( g_bFrameStagger[client] )
 		{
@@ -736,7 +826,7 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 					g_bStaggerNew[client] = false;
 					RequestFrame(OnFrameStagger, GetClientUserId(client));
 				}
-
+				
 				return Plugin_Changed;
 			}
 
@@ -769,7 +859,19 @@ void SetAttack(int client)
 
 	SetEntPropFloat(client, Prop_Send, "m_flNextShoveTime", GetGameTime() + BLOCK_TIME);
 	SetEntPropFloat(client, Prop_Send, "m_jumpSupressedUntil", GetGameTime() + BLOCK_TIME);
-}*/
+}
+*/
+
+Action Timer_OnFrameStagger(Handle timer, int userid)
+{
+	int client = GetClientOfUserId(userid);
+	if(client && IsClientInGame(client) && IsPlayerAlive(client))
+	{
+		if(IsPlayerStaggeringAnimation(client) == false) OnFrameStagger(userid);
+	}
+
+	return Plugin_Continue;
+}
 
 void OnFrameStagger(int client)
 {
@@ -801,13 +903,18 @@ void OnFrameStagger(int client)
 		{
 			#if DEBUG
 			DebugPrint("L4D_StaggerPlayer again %N", client);
-			DebugPrint("g_fTtime: %.1f, now: %.1f", g_fTtime[client], GetGameTime());
+			DebugPrint("g_fTtime: %.1f, now: %.1f, g_vStart: %.1f %.1f %.1f, Dist: %.1f", g_fTtime[client], GetGameTime(), g_vStart[client][0], g_vStart[client][1], g_vStart[client][2], g_fDist[client]);
 			#endif
 
 			g_bStaggerSelf[client] = true;
 			L4D_StaggerPlayer(client, client, g_vStart[client]);
-			SetEntPropFloat(client, Prop_Send, "m_staggerDist", g_fDist[client]);
+			//SetEntPropFloat(client, Prop_Send, "m_staggerDist", g_fDist[client]);
+			SetEntPropFloat(client, Prop_Send, "m_staggerDist", 400.0);
 			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
+		}
+		else
+		{
+			g_bFrameStagger[client] = false;
 		}
 	}
 }
@@ -828,4 +935,23 @@ stock void DebugPrint(const char[] Message, any ...)
 	char DebugBuff[128];
 	VFormat(DebugBuff, sizeof(DebugBuff), Message, 2);
 	PrintToChatAll("%s",DebugBuff);
+}
+
+stock bool IsPlayerStaggeringAnimation(int client)
+{
+	static int Activity;
+	Activity = L4D1_GetMainActivity(client);
+	#if DEBUG
+	DebugPrint("%N %d", client, Activity);
+	#endif
+	switch (Activity) 
+	{
+		case L4D1_ACT_TERROR_SHOVED_FORWARD, // 1145, 1146, 1147, 1148: stumble
+			L4D1_ACT_TERROR_SHOVED_BACKWARD,
+			L4D1_ACT_TERROR_SHOVED_LEFTWARD,
+			L4D1_ACT_TERROR_SHOVED_RIGHTWARD: 
+				return true;
+	}
+
+	return false;
 }

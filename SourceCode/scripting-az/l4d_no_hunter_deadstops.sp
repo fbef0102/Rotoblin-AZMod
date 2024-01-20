@@ -17,8 +17,8 @@ int g_iCvarcontrolvalue2;
 bool bIsPouncing[MAXPLAYERS + 1]; // whether hunter player is currently pouncing/lunging
 
 float 
-	bIsPouncingStartTime[MAXPLAYERS + 1],  // Pouncing stop time 
-	bIsPouncingStopTime[MAXPLAYERS + 1];  // Pouncing stop time 
+	g_fPouncingStartTime[MAXPLAYERS + 1],  // Pouncing stop time 
+	g_fPouncingStopTime[MAXPLAYERS + 1];  // Pouncing stop time 
 
 ConVar
 	cvarHunterGroundM2Godframes;
@@ -65,7 +65,7 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecD
 	#if DEBUG 
 		PrintToChatAll("\x04Hunter %N is still pouncing!",entity);
 	#endif
-		bIsPouncingStopTime[entity] = 0.0;
+		g_fPouncingStopTime[entity] = 0.0;
 		bIsPouncing[entity] = true;
 		return Plugin_Handled;
 	}
@@ -214,8 +214,8 @@ void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 
 
 		// Hunter pounce
-		bIsPouncingStopTime[client] = 0.0;
-		bIsPouncingStartTime[client] = GetEngineTime();
+		g_fPouncingStopTime[client] = 0.0;
+		g_fPouncingStartTime[client] = GetEngineTime();
 		bIsPouncing[client] = true;
 	}
 }
@@ -233,16 +233,16 @@ public void OnGameFrame()
 		bIsPouncing[client] = bIsPouncing[client] && IsClientInGame(client) && IsPlayerAlive(client);
 
 		if (bIsPouncing[client]) {
-			if (fNow - bIsPouncingStartTime[client] > 0.04) {
+			if (fNow - g_fPouncingStartTime[client] > 0.04) {
 
-				if (bIsPouncingStopTime[client] == 0.0) {
+				if (g_fPouncingStopTime[client] == 0.0) {
 					if ( (GetEntityFlags(client) & FL_ONGROUND) || GetEntityMoveType(client) == MOVETYPE_LADDER) {
 						#if DEBUG
 							PrintToChatAll("Hunter %N grounded or ladder (buffer = %f s)", client, cvarHunterGroundM2Godframes.FloatValue);
 						#endif
-						bIsPouncingStopTime[client] = fNow;    
+						g_fPouncingStopTime[client] = fNow;    
 					}
-				} else if (fNow - bIsPouncingStopTime[client] > cvarHunterGroundM2Godframes.FloatValue) {
+				} else if (fNow - g_fPouncingStopTime[client] > cvarHunterGroundM2Godframes.FloatValue) {
 					#if DEBUG
 						PrintToChatAll("\x05%N Not pouncing anymore.", client);
 					#endif
@@ -274,12 +274,4 @@ bool IsPlayingPounceAnimation(int hunter)
 	}
 
 	return false;
-}
-
-int L4D1_GetMainActivity(int client) {
-	static int s_iOffs_m_eCurrentMainSequenceActivity = -1;
-	if (s_iOffs_m_eCurrentMainSequenceActivity == -1)
-		s_iOffs_m_eCurrentMainSequenceActivity = FindSendPropInfo("CTerrorPlayer", "m_iProgressBarDuration") + 476;
-	
-	return LoadFromAddress(GetEntityAddress(client) + view_as<Address>(s_iOffs_m_eCurrentMainSequenceActivity), NumberType_Int32);
 }
