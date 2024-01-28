@@ -144,7 +144,13 @@ public void Event_RoundEnd(Event hEvent, const char[] name, bool dontBroadcast)
 
 public void OnMapEnd()
 {
-	hClientSettingsArray.Clear();
+	delete hClientSettingsArray;
+
+    #if SOURCEMOD_V_MINOR > 9
+        hClientSettingsArray = new ArrayList(sizeof(NetsettingsStruct));
+    #else
+        hClientSettingsArray = new ArrayList(view_as<int>(NetsettingsStruct));
+    #endif
 }
 
 public void OnTeamChange(Event hEvent, const char[] name, bool dontBroadcast)

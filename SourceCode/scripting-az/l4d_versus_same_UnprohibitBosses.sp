@@ -216,8 +216,10 @@ public Action:COLD_DOWN(Handle:timer)
 	{
 		KvJumpToKey(g_hMIData, g_sCurMap);
 
-		hValidTankFlows.Clear();
-		hValidWitchFlows.Clear();
+		delete hValidTankFlows;
+		delete hValidWitchFlows;
+		hValidTankFlows = new ArrayList(2);
+		hValidWitchFlows = new ArrayList(2);
 		g_fTankFlow = g_fWitchFlow = 0.0;
 		float fSurvivorflow = GetSurCurrentFloat();
 

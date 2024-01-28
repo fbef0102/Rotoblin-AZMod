@@ -430,7 +430,6 @@ int GetSurvivorOfFlowRank(int iRank)
 
 	hFlowArray.GetArray(iArrayIndex, strSurvArray, sizeof(strSurvArray));
 
-	hFlowArray.Clear();
 	delete hFlowArray;
 
 	return strSurvArray.eiSurvivorIndex;
@@ -482,7 +481,6 @@ int GetSurvivorOfFlowRank(int iRank)
 
 	hFlowArray.GetArray(iArrayIndex, strSurvArray[0], sizeof(strSurvArray));
 
-	hFlowArray.Clear();
 	delete hFlowArray;
 
 	return strSurvArray[eiSurvivorIndex];

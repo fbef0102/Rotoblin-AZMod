@@ -717,7 +717,11 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
 
 			//查看是否有被震，沒有則強制震
-			CreateTimer(0.01, Timer_OnFrameStagger, GetClientUserId(client));
+
+			DataPack hPack;
+			CreateDataTimer(0.02, Timer_OnFrameStagger, hPack, TIMER_FLAG_NO_MAPCHANGE);
+			hPack.WriteCell(GetClientUserId(attacker));
+			hPack.WriteCell(GetClientUserId(client));
 		}
 	}
 }
@@ -862,12 +866,20 @@ void SetAttack(int client)
 }
 */
 
-Action Timer_OnFrameStagger(Handle timer, int userid)
+Action Timer_OnFrameStagger(Handle timer, DataPack hPack)
 {
+	hPack.Reset();
+	int attacker = GetClientOfUserId(hPack.ReadCell());
+	int userid = hPack.ReadCell();
 	int client = GetClientOfUserId(userid);
-	if(client && IsClientInGame(client) && IsPlayerAlive(client))
+	if( attacker && IsClientInGame(attacker) && IsPlayerAlive(attacker)
+		&& client && IsClientInGame(client) && IsPlayerAlive(client))
 	{
-		if(IsPlayerStaggeringAnimation(client) == false) OnFrameStagger(userid);
+		if(IsPlayerStaggeringAnimation(client) == false)
+		{
+			GetEntPropVector(attacker, Prop_Data, "m_vecAbsOrigin", g_vStart[client]);
+			OnFrameStagger(userid);
+		}
 	}
 
 	return Plugin_Continue;

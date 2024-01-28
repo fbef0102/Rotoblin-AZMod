@@ -84,7 +84,12 @@ public Action EntCheck_Timer(Handle hTimer)
 
 public void RoundStart_Event(Event hEvent, const char[] name, bool dontBroadcast)
 {
-	hBlockedEntities.Clear();
+	delete hBlockedEntities;
+	#if SOURCEMOD_V_MINOR > 9
+		hBlockedEntities = new ArrayList(sizeof(EntInfo));
+	#else
+		hBlockedEntities = new ArrayList(view_as<int>(EntInfo));
+	#endif
 	CreateTimer(3.0, RoundStartDelay_Timer, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 

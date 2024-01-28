@@ -49,7 +49,8 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 		UTIL_ReleaseAllExceptSurv();
 	}
 	
-	g_aDeathFallClients.Clear();
+	delete g_aDeathFallClients;
+	g_aDeathFallClients = new ArrayList();
 }
 
 // Fix intro cameras locking view on L4D1

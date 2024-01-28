@@ -324,6 +324,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	  * A well-known issue happens when setting ```nb_update_frequency``` to low value. 
   * Fix commons being immune to shoves when crouching, falling and landing. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_common_shove)
   * Remove BattleField Navigation limit when panic horde stage, which means common infected no longer spawns behind when survivor rush forward.
+  * Resolves single-directional stumbling for commons
 
 * Special Infected:
   * **General:**
@@ -372,6 +373,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fixed Tank/Witch not spawning consistently for both sides.
 	* Prevent ghost infected players from spawning inside checkpoint area
   * Allows gravity when infected players are staggering + allows staggering over a ledge and falling.
+    * Infected still gets stumble even in the air
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -471,7 +473,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
     * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
-    * m2 godframes after a hunter lands on the ground: 0.25s
+    * M2 godframes after a hunter lands on the ground: 0.25s
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
@@ -576,6 +578,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
   * Fixed slowdown which caused by common infected is overridden by other damage.
   * Allows gravity when survivors are staggering + allows staggering over a ledge and falling.
+    * Survivor still gets stumble even in the air
   
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

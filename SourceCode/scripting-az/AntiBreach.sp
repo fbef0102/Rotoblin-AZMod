@@ -67,7 +67,8 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 
 public Action DelayRoundStart(Handle timer)
 {
-	aSaferoomDoors.Clear();
+	delete aSaferoomDoors;
+	aSaferoomDoors = new ArrayList();
 
 	int entity = L4D_GetCheckpointFirst();
 	if(entity != -1) aSaferoomDoors.Push(EntIndexToEntRef(entity));

@@ -730,7 +730,8 @@ public void OnGameFrame()
 		}
 		if (iArraySize < 1)
 		{
-			alVocalize.Clear();
+			delete alVocalize;
+			alVocalize = new ArrayList(MAX_VOCALIZE_LENGTH);
 			bUnvocalizedCommands = false;
 		}
 	}
@@ -747,7 +748,8 @@ public void OnMapEnd()
 	{
 		PopStack(asScene);
 	}
-	alVocalize.Clear();
+	delete alVocalize;
+	alVocalize = new ArrayList(MAX_VOCALIZE_LENGTH);
 	
 	for (int i = 1; i < 2049; i++)
 	{

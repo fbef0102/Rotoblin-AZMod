@@ -743,6 +743,9 @@
 [207] l4d_queued_stagger
 //特感在空中被推後真正落地的時間點 (API)
 
+[208] l4d2_shove_fix
+//小殭屍被推同一個方向或不同方向時能重置被推的動畫
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

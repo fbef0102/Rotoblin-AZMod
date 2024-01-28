@@ -181,7 +181,6 @@ public void OnPluginStart()
 
 void BuildMaps()
 {
-    g_smPropModelToClassname.Clear();
     g_smPropModelToClassname.SetString(MODEL_GASCAN, "weapon_gascan");
     g_smPropModelToClassname.SetString(MODEL_PROPANECANISTER, "weapon_propanetank");
     g_smPropModelToClassname.SetString(MODEL_OXYGENTANK, "weapon_oxygentank");
@@ -241,8 +240,11 @@ void LoadConfigs()
     KeyValues kv = new KeyValues(DATA_FILENAME);
     kv.ImportFromFile(path);
 
-    g_smClassnameConfig.Clear();
-    g_smModelConfig.Clear();
+    delete g_smClassnameConfig;
+    g_smClassnameConfig = new StringMap();
+
+    delete g_smModelConfig;
+    g_smModelConfig = new StringMap();
 
     int default_enable;
     int default_team;
@@ -869,7 +871,8 @@ void RemoveAll()
             AcceptEntityInput(entity, "Kill");
     }
 
-    g_alPluginEntities.Clear();
+    delete g_alPluginEntities;
+    g_alPluginEntities = new ArrayList();
 }
 
 // ====================================================================================================

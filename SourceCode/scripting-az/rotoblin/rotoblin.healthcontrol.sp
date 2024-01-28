@@ -202,9 +202,11 @@ public _HC_OnPluginDisable()
 public _HC_OnMapStart()
 {
 	g_bIsRound1Over = false;
+
 	for (new i = 0; i < view_as<int>(IL_Max); i++)
 	{
-		g_hItemSpawns[i].Clear();
+		delete g_hItemSpawns[i];
+		g_hItemSpawns[i] = new ArrayList(sizeof(ItemTracking)); 
 	}
 }
 

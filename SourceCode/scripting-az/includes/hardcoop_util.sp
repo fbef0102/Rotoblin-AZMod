@@ -1,6 +1,7 @@
 // Thanks to L4DUtil for many stock functions and enumerations
 
 #pragma semicolon 1
+#pragma newdecls required //強制1.7以後的新語法
 #include <sourcemod>
 
 #if defined HARDCOOP_UTIL_included
@@ -14,36 +15,34 @@
 #define TEAM_CLASS(%1) (%1 == ZC_SMOKER ? "smoker" : (%1 == ZC_BOOMER ? "boomer" : (%1 == ZC_HUNTER ? "hunter" : (%1 == ZC_WITCH ? "witch" : (%1 == ZC_TANK ? "tank" : "None")))))
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 
-enum L4D_Infected {
-    L4DInfected_Smoker = 1,
-    L4DInfected_Boomer,
-    L4DInfected_Hunter,
-    L4DInfected_Witch,
-    L4DInfected_Tank
-};
+#define L4DTeam_Spectator 1
+#define L4DTeam_Survivor 2
+#define L4DTeam_Infected 3
+
+#define L4DInfected_Smoker 1
+#define L4DInfected_Boomer 2
+#define L4DInfected_Hunter 3
+#define L4DInfected_Witch 4
+#define L4DInfected_Tank 5
 
 // alternative enumeration
 // Special infected classes
-enum ZombieClass {
-    ZC_NONE = 0, 
-    ZC_SMOKER, 
-    ZC_BOOMER, 
-    ZC_HUNTER,
-    ZC_WITCH, 
-    ZC_TANK, 
-    ZC_NOTINFECTED
-};
+#define ZC_NONE 0
+#define ZC_SMOKER 1
+#define ZC_BOOMER 2
+#define ZC_HUNTER 3
+#define ZC_WITCH 4
+#define ZC_TANK 5
+#define ZC_NOTINFECTED 6
 
 // 0=Anywhere, 1=Behind, 2=IT, 3=Specials in front, 4=Specials anywhere, 5=Far Away, 6=Above
-enum SpawnDirection {
-    ANYWHERE = 0,
-    BEHIND,
-    IT,
-    SPECIALS_IN_FRONT,
-    SPECIALS_ANYWHERE,
-    FAR_AWAY,
-    ABOVE   
-};
+#define ANYWHERE 0
+#define BEHIND 1
+#define IT 2
+#define SPECIALS_IN_FRONT 3
+#define SPECIALS_ANYWHERE 4
+#define FAR_AWAY 5
+#define ABOVE 6
 
 /***********************************************************************************************************************************************************************************
 
@@ -57,16 +56,16 @@ enum SpawnDirection {
  * @param client: client ID
  * @return bool
  */
-stock bool:IsSurvivor(client) {
-	if( IsValidClient(client) && GetClientTeam(client) == view_as<int>(L4DTeam_Survivor) ) {
+stock bool IsSurvivor(int client) {
+	if( IsValidClient(client) && GetClientTeam(client) == L4DTeam_Survivor ) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-stock bool:IsPinned(client) {
-	new bool:bIsPinned = false;
+stock bool IsPinned(int client) {
+	bool bIsPinned = false;
 	if (IsSurvivor(client)) {
 		// check if held by:
 		if( GetEntPropEnt(client, Prop_Send, "m_tongueOwner") > 0 ) bIsPinned = true; // smoker
@@ -78,13 +77,12 @@ stock bool:IsPinned(client) {
 /**
  * @return: The highest %map completion held by a survivor at the current point in time
  */
- /*
-stock GetMaxSurvivorCompletion() {
-	new Float:flow = 0.0;
-	decl Float:tmp_flow;
-	decl Float:origin[3];
-	decl Address:pNavArea;
-	for ( new client = 1; client <= MaxClients; client++ ) {
+ 
+stock int GetMaxSurvivorCompletion() {
+	float flow = 0.0;
+	float tmp_flow;
+	float origin[3];
+	for ( int client = 1; client <= MaxClients; client++ ) {
 		if ( IsSurvivor(client) && IsPlayerAlive(client) ) {
 			GetClientAbsOrigin(client, origin);
 			tmp_flow = GetFlow(origin);
@@ -92,7 +90,7 @@ stock GetMaxSurvivorCompletion() {
 		}
 	}
 	
-	new current = RoundToNearest(flow * 100 / L4DDirect_GetMapMaxFlowDistance());
+	int current = RoundToNearest(flow * 100 / L4D2Direct_GetMapMaxFlowDistance());
 		
 		#if DEBUG_FLOW
 			Client_PrintToChatAll( true, "Current: {G}%d%%", current );
@@ -100,17 +98,18 @@ stock GetMaxSurvivorCompletion() {
 		
 	return current;
 }
-*/
+
+
 /**
  * @return: the farthest flow distance currently held by a survivor
  */
-stock Float:GetFarthestSurvivorFlow() {
-	new Float:farthest_flow = 0.0;
-	decl Float:origin[3];
-	for (new client = 1; client <= MaxClients; client++) {
+stock float GetFarthestSurvivorFlow() {
+	float farthest_flow = 0.0;
+	float origin[3];
+	for (int client = 1; client <= MaxClients; client++) {
         if ( IsSurvivor(client) && IsPlayerAlive(client) ) {
             GetClientAbsOrigin(client, origin);
-            new Float:flow = GetFlow(origin)*1.0;
+            float flow = GetFlow(origin);
             if ( flow > farthest_flow ) {
             	farthest_flow = flow;
             }
@@ -122,46 +121,47 @@ stock Float:GetFarthestSurvivorFlow() {
 /**
  * Returns the average flow distance covered by each survivor
  */
-stock Float:GetAverageSurvivorFlow() {
-    new survivor_count = 0;
-    new Float:total_flow = 0.0;
-    decl Float:origin[3];
-    for (new client = 1; client <= MaxClients; client++) {
+stock float GetAverageSurvivorFlow() {
+    int survivor_count = 0;
+    float total_flow = 0.0;
+    float origin[3];
+    for (int client = 1; client <= MaxClients; client++) {
         if ( IsSurvivor(client) && IsPlayerAlive(client) ) {
             survivor_count++;
             GetClientAbsOrigin(client, origin);
-            new Float:client_flow = GetFlow(origin)*1.0;
-            if ( client_flow != -1.0 ) {
-            	total_flow += client_flow;
+            if ( GetFlow(origin) != -1.0 ) {
+            	total_flow++;
             }
         }
     }
     return (total_flow / float(survivor_count));
 }
 
+
 /**
  * Returns the flow distance from given point to closest alive survivor. 
  * Returns -1.0 if either the given point or the survivors as a whole are not upon a valid nav mesh
  */
-stock GetFlowDistToSurvivors(const Float:pos[3]) {
-	new spawnpoint_flow;
-	new lowest_flow_dist = -1;
+
+stock float GetFlowDistToSurvivors(const float pos[3]) {
+	float spawnpoint_flow;
+	float lowest_flow_dist = -1.0;
 	
 	spawnpoint_flow = GetFlow(pos);
-	if ( spawnpoint_flow == -1) {
-		return -1;
+	if ( spawnpoint_flow < 0) {
+		return -1.0;
 	}
 	
-	for ( new j = 0; j <= MaxClients; j++ ) {
+	for ( int j = 0; j < MaxClients; j++ ) {
 		if ( IsSurvivor(j) && IsPlayerAlive(j) ) {
-			new Float:origin[3];
-			new flow_dist;
+			float origin[3];
+			float flow_dist;
 			
 			GetClientAbsOrigin(j, origin);
 			flow_dist = GetFlow(origin);
 			
-			// have we found a new valid(i.e. != -1) lowest flow_dist
-			if ( flow_dist != -1 && FloatCompare(FloatAbs(float(flow_dist) - float(spawnpoint_flow)), float(lowest_flow_dist)) ==  -1 ) {
+			// have we found a int valid(i.e. != -1) lowest flow_dist
+			if ( flow_dist > 0.0 && FloatCompare(FloatAbs(flow_dist - spawnpoint_flow), lowest_flow_dist) == -1 ) {
 				lowest_flow_dist = flow_dist;
 			}
 		}
@@ -173,18 +173,17 @@ stock GetFlowDistToSurvivors(const Float:pos[3]) {
 /**
  * Returns the flow distance of a given point
  */
- 
- stock int GetFlow(const Float:o[3]) {
- 	new Float:origin[3]; //non constant var
+ stock float GetFlow(const float o[3]) {
+ 	float origin[3]; //non constant var
  	origin[0] = o[0];
  	origin[1] = o[1];
  	origin[2] = o[2];
- 	decl Address:pNavArea;
+ 	Address pNavArea;
  	pNavArea = L4D2Direct_GetTerrorNavArea(origin);
  	if ( pNavArea != Address_Null ) {
- 		return RoundToNearest(L4D2Direct_GetTerrorNavAreaFlow(pNavArea));
+ 		return L4D2Direct_GetTerrorNavAreaFlow(pNavArea);
  	} else {
- 		return -1;
+ 		return -1.0;
  	}
  }
  
@@ -194,8 +193,8 @@ stock GetFlowDistToSurvivors(const Float:pos[3]) {
  * @param client client ID
  * @return bool
  */
-stock bool:IsIncapacitated(client) {
-    return bool:GetEntProp(client, Prop_Send, "m_isIncapacitated");
+stock bool IsIncapacitated(int client) {
+    return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
 }
 
 /**
@@ -204,17 +203,16 @@ stock bool:IsIncapacitated(client) {
  * @param excludeSurvivor: ignores this survivor
  * @return: the entity index of the closest survivor
 **/
-stock GetClosestSurvivor( Float:referencePos[3], excludeSurvivor = -1 ) {
-	new Float:survivorPos[3];
-	new closestSurvivor = my_GetRandomSurvivor();	
-	if(closestSurvivor == -1) return -1;
-
+stock int GetClosestSurvivor( float referencePos[3], int excludeSurvivor = -1 ) {
+	float survivorPos[3];
+	int closestSurvivor = GetRandomSurvivor(1, -1);	
+	if (closestSurvivor <= 0) return -1;
 	GetClientAbsOrigin( closestSurvivor, survivorPos );
-	new iClosestAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );
-	for (new client = 1; client <= MaxClients; client++) {
+	int iClosestAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );
+	for (int client = 1; client < MaxClients; client++) {
 		if( IsSurvivor(client) && IsPlayerAlive(client) && client != excludeSurvivor ) {
 			GetClientAbsOrigin( client, survivorPos );
-			new iAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );			
+			int iAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );			
 			if( iClosestAbsDisplacement < 0 ) { // Start with the absolute displacement to the first survivor found:
 				iClosestAbsDisplacement = iAbsDisplacement;
 				closestSurvivor = client;
@@ -233,11 +231,11 @@ stock GetClosestSurvivor( Float:referencePos[3], excludeSurvivor = -1 ) {
  * @param specificSurvivor: the index of the survivor to be measured, -1 to search for distance to closest survivor
  * @return: the distance
  */
-stock GetSurvivorProximity( const Float:rp[3], specificSurvivor = -1 ) {
+stock int GetSurvivorProximity( const float rp[3], int specificSurvivor = -1 ) {
 	
-	new targetSurvivor = -1;
-	new Float:targetSurvivorPos[3];
-	new Float:referencePos[3]; // non constant var
+	int targetSurvivor;
+	float targetSurvivorPos[3];
+	float referencePos[3]; // non constant var
 	referencePos[0] = rp[0];
 	referencePos[1] = rp[1];
 	referencePos[2] = rp[2];
@@ -249,28 +247,10 @@ stock GetSurvivorProximity( const Float:rp[3], specificSurvivor = -1 ) {
 		targetSurvivor = GetClosestSurvivor( referencePos );
 	}
 	
-	if(targetSurvivor != -1)
-	{
-		GetEntPropVector( targetSurvivor, Prop_Send, "m_vecOrigin", targetSurvivorPos );
-		return RoundToNearest( GetVectorDistance(referencePos, targetSurvivorPos) );
-	}
+	if (targetSurvivor <= 0) return -1;
 
-	return targetSurvivor;
-}
-
-/** @return: the index to a random survivor */
-stock my_GetRandomSurvivor() {
-	new survivors[MAXPLAYERS];
-	new numSurvivors = 0;
-	for( new i = 0; i < MAXPLAYERS; i++ ) {
-		if( IsSurvivor(i) && IsPlayerAlive(i) ) {
-		    survivors[numSurvivors] = i;
-		    numSurvivors++;
-		}
-	}
-
-	if(numSurvivors == 0) return -1;
-	else return survivors[GetRandomInt(0, numSurvivors - 1)];
+	GetEntPropVector( targetSurvivor, Prop_Send, "m_vecOrigin", targetSurvivorPos );
+	return RoundToNearest( GetVectorDistance(referencePos, targetSurvivorPos) );
 }
 
 /***********************************************************************************************************************************************************************************
@@ -282,12 +262,12 @@ stock my_GetRandomSurvivor() {
 /**
  * @return: the special infected class of the client
  */
-stock L4D_Infected:GetInfectedClass(client) {
-    return L4D_Infected:GetEntProp(client, Prop_Send, "m_zombieClass");
+stock int GetInfectedClass(int client) {
+    return GetEntProp(client, Prop_Send, "m_zombieClass");
 }
 
-stock bool:IsInfected(client) {
-    if (!IsClientInGame(client) || GetClientTeam(client) != view_as<int>(L4DTeam_Infected)) {
+stock bool IsInfected(int client) {
+    if (!IsClientInGame(client) || GetClientTeam(client) != L4DTeam_Infected) {
         return false;
     }
     return true;
@@ -296,7 +276,7 @@ stock bool:IsInfected(client) {
 /**
  * @return: true if client is a special infected bot
  */
-stock bool:IsBotInfected(client) {
+stock bool IsBotInfected(int client) {
     // Check the input is valid
     if (!IsValidClient(client))return false;
     
@@ -307,17 +287,17 @@ stock bool:IsBotInfected(client) {
     return false; // otherwise
 }
 
-stock bool:IsBotHunter(client) {
-	return (IsBotInfected(client) && GetInfectedClass(client) == L4D_Infected:L4DInfected_Hunter);
+stock bool IsBotHunter(int client) {
+	return (IsBotInfected(client) && GetInfectedClass(client) == L4DInfected_Hunter);
 }
 
 // @return: the number of a particular special infected class alive in the game
-stock CountSpecialInfectedClass(ZombieClass:targetClass) {
-    new count = 0;
-    for (new i = 1; i <= MaxClients; i++) {
+stock int CountSpecialInfectedClass(int targetClass) {
+    int count = 0;
+    for (int i = 1; i <= MaxClients; i++) {
         if ( IsBotInfected(i) && IsPlayerAlive(i) && !IsClientInKickQueue(i) ) {
-            new playerClass = GetEntProp(i, Prop_Send, "m_zombieClass");
-            if (playerClass == _:targetClass) {
+            int playerClass = GetEntProp(i, Prop_Send, "m_zombieClass");
+            if (playerClass == targetClass) {
                 count++;
             }
         }
@@ -326,9 +306,9 @@ stock CountSpecialInfectedClass(ZombieClass:targetClass) {
 }
 
 // @return: the total special infected bots alive in the game
-stock CountSpecialInfectedBots() {
-    new count = 0;
-    for (new i = 1; i <= MaxClients; i++) {
+stock int CountSpecialInfectedBots() {
+    int count = 0;
+    for (int i = 1; i <= MaxClients; i++) {
         if (IsBotInfected(i) && IsPlayerAlive(i)) {
             count++;
         }
@@ -345,9 +325,9 @@ stock CountSpecialInfectedBots() {
 /**
  *@return: true if client is a tank
  */
-stock bool:IsTank(client) {
+stock bool IsTank(int client) {
     return IsClientInGame(client)
-        && GetClientTeam(client) == view_as<int>(L4DTeam_Infected)
+        && GetClientTeam(client) == L4DTeam_Infected
         && GetInfectedClass(client) == L4DInfected_Tank;
 }
 
@@ -357,8 +337,8 @@ stock bool:IsTank(client) {
  * @param iTankClient client index to begin searching from
  * @return client ID or -1 if not found
  */
-stock FindTankClient(iTankClient) {
-    for (new i = iTankClient < 0 ? 1 : iTankClient+1; i < MaxClients+1; i++) {
+stock int FindTankClient(int iTankClient) {
+    for (int i = iTankClient < 0 ? 1 : iTankClient+1; i < MaxClients+1; i++) {
         if (IsTank(i)) {
             return i;
         }
@@ -372,17 +352,21 @@ stock FindTankClient(iTankClient) {
  *
  * @return bool
  */
-stock bool:IsTankInPlay() {
-    return bool:(FindTankClient(-1) != -1);
+stock bool IsTankInPlay() {
+	if(FindTankClient(-1) != -1)
+	{
+		return true;
+	}
+	return false;
 }
 
-stock bool:IsBotTank(client) {
+stock bool IsBotTank(int client) {
 	// Check the input is valid
 	if (!IsValidClient(client)) return false;
 	// Check if player is on the infected team, a hunter, and a bot
-	if (GetClientTeam(client) == view_as<int>(L4DTeam_Infected)) {
-		new L4D_Infected:zombieClass = L4D_Infected:GetEntProp(client, Prop_Send, "m_zombieClass");
-		if (zombieClass == L4D_Infected:L4DInfected_Tank) {
+	if (GetClientTeam(client) == L4DTeam_Infected) {
+		int zombieClass = GetEntProp(client, Prop_Send, "m_zombieClass");
+		if (zombieClass == L4DInfected_Tank) {
 			if(IsFakeClient(client)) {
 				return true;
 			}
@@ -397,74 +381,13 @@ stock bool:IsBotTank(client) {
                                                                     
 ***********************************************************************************************************************************************************************************/
 
-/**
- * Executes a cheat command through a dummy client
- *
- * @param command: The command to execute
- * @param argument1: Optional argument for command
- * @param argument2: Optional argument for command
- * @param dummyName: The name to use for the dummy client 
- *
-**/
-stock CheatCommand( String:commandName[], String:argument1[] = "", String:argument2[] = "", bool:doUseCommandBot = false ) {
-    new flags = GetCommandFlags(commandName);       
-    if ( flags != INVALID_FCVAR_FLAGS ) {
-		new commandDummy = -1;
-		if( doUseCommandBot ) {
-			// Search for an existing bot named '[CommandBot]'
-			for( new i = 1; i < MAXPLAYERS; i++ ) {
-				if( IsValidClient(i) && IsClientInGame(i) && IsFakeClient(i) ) {
-					new String:clientName[32];
-					GetClientName( i, clientName, sizeof(clientName) );
-					if( StrContains( clientName, "[CommandBot]", true ) != -1 ) {
-						commandDummy = i;
-					}
-				}  		
-			}
-			// Create a command bot if necessary
-			if ( !IsValidClient(commandDummy) || IsClientInKickQueue(commandDummy) ) { // Command bot may have been kicked by SMAC_Antispam.smx
-			    commandDummy = CreateFakeClient("[CommandBot]");
-			    if( IsValidClient(commandDummy) ) {
-			    	ChangeClientTeam(commandDummy, view_as<int>(L4DTeam_Spectator));	
-			    } else {
-			    	commandDummy = my_GetRandomSurvivor(); // wanted to use a bot, but failed; last resort
-			    }			
-			}
-		} else {
-			commandDummy = my_GetRandomSurvivor();
-		}
-		
-		// Execute command
-		if ( IsValidClient(commandDummy) ) {
-		    new originalUserFlags = GetUserFlagBits(commandDummy);
-		    new originalCommandFlags = GetCommandFlags(commandName);            
-		    SetUserFlagBits(commandDummy, ADMFLAG_ROOT); 
-		    SetCommandFlags(commandName, originalCommandFlags ^ FCVAR_CHEAT);               
-		    FakeClientCommand(commandDummy, "%s %s %s", commandName, argument1, argument2);
-		    SetCommandFlags(commandName, originalCommandFlags);
-		    SetUserFlagBits(commandDummy, originalUserFlags);            
-		} else {
-			new String:pluginName[128];
-			GetPluginFilename( INVALID_HANDLE, pluginName, sizeof(pluginName) );        
-			LogError( "%s could not find or create a client through which to execute cheat command %s", pluginName, commandName );
-		}   
-    }
-}
-
-// Executes vscript code through the "script" console command
-stock ScriptCommand(const String:arguments[], any:...) {
-    // format vscript input
-    new String:vscript[PLATFORM_MAX_PATH];
-    VFormat(vscript, sizeof(vscript), arguments, 2);
-    
-    // Execute vscript input
-    CheatCommand("script", vscript, "");
-}
-
-// Sets the spawn direction for SI, relative to the survivors
-// Yet to test whether map specific scripts override this option, and if so, how to rewrite this script line
-stock SetSpawnDirection(SpawnDirection:direction) {
-    ScriptCommand("g_ModeScript.DirectorOptions.PreferredSpecialDirection<-%i", _:direction);   
+stock void CheatServerCommand(char[] command)
+{
+    int flags = GetCommandFlags(command);
+    SetCommandFlags(command, flags & ~FCVAR_CHEAT);
+    ServerCommand("%s", command);
+    ServerExecute();
+    SetCommandFlags(command, flags);
 }
 
 /**
@@ -473,7 +396,7 @@ stock SetSpawnDirection(SpawnDirection:direction) {
  * @param client: client ID
  * @return bool
  */
-stock bool:IsValidClient(client) {
+stock bool IsValidClient(int client) {
     if( client > 0 && client <= MaxClients && IsClientInGame(client) ) {
     	return true;
     } else {
@@ -481,13 +404,6 @@ stock bool:IsValidClient(client) {
     }    
 }
 
-stock bool:IsGenericAdmin(client) {
+stock bool IsGenericAdmin(int client) {
 	return CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, false); 
-}
-
-// Kick dummy bot 
-public Action:Timer_KickBot(Handle:timer, any:client) {
-	if (IsClientInGame(client) && (!IsClientInKickQueue(client))) {
-		if (IsFakeClient(client))KickClient(client);
-	}
 }

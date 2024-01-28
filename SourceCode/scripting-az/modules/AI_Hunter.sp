@@ -1,5 +1,5 @@
 #pragma semicolon 1
-
+#pragma newdecls required //強制1.7以後的新語法
 #include <sdktools>
 #define DEBUG_HUNTER_AIM 0
 #define DEBUG_HUNTER_RNG 0
@@ -12,51 +12,63 @@
 #define Z 2
 
 // Vanilla Cvars
-new Handle:hCvarHunterCommittedAttackRange;
-new Handle:hCvarHunterPounceReadyRange;
-new Handle:hCvarHunterLeapAwayGiveUpRange; 
-new Handle:hCvarHunterPounceMaxLoftAngle; 
-new Handle:hCvarLungeInterval; 
+ConVar hCvarHunterCommittedAttackRange;
+ConVar hCvarHunterPounceReadyRange;
+ConVar hCvarHunterLeapAwayGiveUpRange; 
+ConVar hCvarHunterPounceMaxLoftAngle; 
+ConVar hCvarLungeInterval; 
+ConVar z_pounce_damage_interrupt;
 // Gaussian random number generator for pounce angles
-new Handle:hCvarPounceAngleMean;
-new Handle:hCvarPounceAngleStd; // standard deviation
+ConVar hCvarPounceAngleMean;
+ConVar hCvarPounceAngleStd; // standard deviation
 // Pounce vertical angle
-new Handle:hCvarPounceVerticalAngle;
+ConVar hCvarPounceVerticalAngle;
 // Distance at which hunter begins pouncing fast
-new Handle:hCvarFastPounceProximity; 
+ConVar hCvarFastPounceProximity; 
 // Distance at which hunter considers pouncing straight
-new Handle:hCvarStraightPounceProximity;
+ConVar hCvarStraightPounceProximity;
 // Aim offset(degrees) sensitivity
-new Handle:hCvarAimOffsetSensitivityHunter;
+ConVar hCvarAimOffsetSensitivityHunter;
 // Wall detection
-new Handle:hCvarWallDetectionDistance;
+ConVar hCvarWallDetectionDistance;
 
-new bool:bHasQueuedLunge[MAXPLAYERS];
-new bool:bCanLunge[MAXPLAYERS];
+static ConVar g_hCvarEnable; 
+static bool g_bCvarEnable;
 
-public Hunter_OnModuleStart() {
+bool bHasQueuedLunge[MAXPLAYERS];
+bool bCanLunge[MAXPLAYERS];
+
+public void Hunter_OnModuleStart() {
+	g_hCvarEnable 		= CreateConVar( "AI_HardSI_Hunter_enable",   "1",   "0=Improves the Hunter behaviour off, 1=Improves the Hunter behaviour on.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+
+	GetCvars();
+	g_hCvarEnable.AddChangeHook(ConVarChanged_EnableCvars);
+
 	// Set aggressive hunter cvars		
 	hCvarHunterCommittedAttackRange = FindConVar("hunter_committed_attack_range"); // range at which hunter is committed to attack	
 	hCvarHunterPounceReadyRange = FindConVar("hunter_pounce_ready_range"); // range at which hunter prepares pounce	
 	hCvarHunterLeapAwayGiveUpRange = FindConVar("hunter_leap_away_give_up_range"); // range at which shooting a non-committed hunter will cause it to leap away	
 	hCvarLungeInterval = FindConVar("z_lunge_interval"); // cooldown on lunges
 	hCvarHunterPounceMaxLoftAngle = FindConVar("hunter_pounce_max_loft_angle"); // maximum vertical angle hunters can pounce
-	SetConVarInt(hCvarHunterCommittedAttackRange, 10000);
-	SetConVarInt(hCvarHunterPounceReadyRange, 500);
-	SetConVarInt(hCvarHunterLeapAwayGiveUpRange, 0); 
-	SetConVarInt(hCvarHunterPounceMaxLoftAngle, 0);
-	
+	z_pounce_damage_interrupt = FindConVar("z_pounce_damage_interrupt");
+
+	if(g_bCvarEnable) _OnModuleStart();
+	hCvarHunterCommittedAttackRange.AddChangeHook(OnHunterCvarChange);
+	hCvarHunterPounceReadyRange.AddChangeHook(OnHunterCvarChange);
+	hCvarHunterLeapAwayGiveUpRange.AddChangeHook(OnHunterCvarChange);
+	hCvarHunterPounceMaxLoftAngle.AddChangeHook(OnHunterCvarChange);
+
 	// proximity to nearest survivor when plugin starts to force hunters to lunge ASAP
 	hCvarFastPounceProximity = CreateConVar("ai_fast_pounce_proximity", "1000", "At what distance to start pouncing fast");
-	
+
 	// Verticality
 	hCvarPounceVerticalAngle = CreateConVar("ai_pounce_vertical_angle", "7", "Vertical angle to which AI hunter pounces will be restricted");
-	
+
 	// Pounce angle
 	hCvarPounceAngleMean = CreateConVar( "ai_pounce_angle_mean", "10", "Mean angle produced by Gaussian RNG" );
 	hCvarPounceAngleStd = CreateConVar( "ai_pounce_angle_std", "20", "One standard deviation from mean as produced by Gaussian RNG" );
 	hCvarStraightPounceProximity = CreateConVar( "ai_straight_pounce_proximity", "200", "Distance to nearest survivor at which hunter will consider pouncing straight");
-	
+
 	// Aim offset sensitivity
 	hCvarAimOffsetSensitivityHunter = CreateConVar("ai_aim_offset_sensitivity_hunter",
 									"30",
@@ -65,24 +77,54 @@ public Hunter_OnModuleStart() {
 									true, 0.0, true, 179.0 );
 	// How far in front of hunter to check for a wall
 	hCvarWallDetectionDistance = CreateConVar("ai_wall_detection_distance", "-1", "How far in front of himself infected bot will check for a wall. Use '-1' to disable feature");
-	
-	SetConVarInt(FindConVar("z_pounce_damage_interrupt"), 150);
 }
 
-public Hunter_OnModuleEnd() {
+static void _OnModuleStart()
+{
+	hCvarHunterCommittedAttackRange.SetInt(10000);
+	hCvarHunterPounceReadyRange.SetInt(1000);
+	hCvarHunterLeapAwayGiveUpRange.SetInt(0); 
+	hCvarHunterPounceMaxLoftAngle.SetInt(0);
+	z_pounce_damage_interrupt.SetInt(150);
+}
+
+public void Hunter_OnModuleEnd() {
 	// Reset aggressive hunter cvars
 	ResetConVar(hCvarHunterCommittedAttackRange);
 	ResetConVar(hCvarHunterPounceReadyRange);
 	ResetConVar(hCvarHunterLeapAwayGiveUpRange);
 	ResetConVar(hCvarHunterPounceMaxLoftAngle);
-	
-	ResetConVar(FindConVar("z_pounce_damage_interrupt"));
+	ResetConVar(z_pounce_damage_interrupt);
 }
 
-public Action:Hunter_OnSpawn(botHunter) {
+static void ConVarChanged_EnableCvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+    GetCvars();
+    if(g_bCvarEnable)
+    {
+        _OnModuleStart();
+    }
+    else
+    {
+        Hunter_OnModuleEnd();
+    }
+}
+
+static void GetCvars()
+{
+    g_bCvarEnable = g_hCvarEnable.BoolValue;
+}
+
+// Game tries to reset these cvars
+public void OnHunterCvarChange(ConVar convar, const char[] oldValue, const char[] newValue) {
+	if(g_bCvarEnable) _OnModuleStart();
+}
+
+public void Hunter_OnSpawn(int botHunter) {
+	if(!g_bCvarEnable) return;
+
 	bHasQueuedLunge[botHunter] = false;
 	bCanLunge[botHunter] = true;
-	return Plugin_Handled;
 }
 
 /***********************************************************************************************************************************************************************************
@@ -91,16 +133,18 @@ public Action:Hunter_OnSpawn(botHunter) {
 
 ***********************************************************************************************************************************************************************************/
 
-public Action:Hunter_OnPlayerRunCmd(hunter, &buttons, &impulse, Float:vel[3], Float:eyeAngles[3], &weapon) {	
+public Action Hunter_OnPlayerRunCmd(int hunter, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon ) {	
+	if(!g_bCvarEnable) return Plugin_Continue;
+
 	buttons &= ~IN_ATTACK2; // block scratches
-	new flags = GetEntityFlags(hunter);
+	int flags = GetEntityFlags(hunter);
 	//Proceed if the hunter is in a position to pounce
 	if( (flags & FL_DUCKING) && (flags & FL_ONGROUND) ) {		
-		new Float:hunterPos[3];
+		float hunterPos[3];
 		GetClientAbsOrigin(hunter, hunterPos);	
 		if(GetRandomSurvivor() == -1) return Plugin_Continue;	
-		new iSurvivorsProximity = GetSurvivorProximity(hunterPos);
-		new bool:bHasLOS = bool:GetEntProp(hunter, Prop_Send, "m_hasVisibleThreats"); // Line of sight to survivors		
+		int iSurvivorsProximity = GetSurvivorProximity(hunterPos);
+		bool bHasLOS = view_as<bool>(GetEntProp(hunter, Prop_Send, "m_hasVisibleThreats")); // Line of sight to survivors		
 		// Start fast pouncing if close enough to survivors
 		if( bHasLOS ) {
 			if( iSurvivorsProximity < GetConVarInt(hCvarFastPounceProximity) ) {
@@ -109,7 +153,7 @@ public Action:Hunter_OnPlayerRunCmd(hunter, &buttons, &impulse, Float:vel[3], Fl
 				if (!bHasQueuedLunge[hunter]) { // check lunge interval timer has not already been initiated
 					bCanLunge[hunter] = false;
 					bHasQueuedLunge[hunter] = true; // block duplicate lunge interval timers
-					CreateTimer(GetConVarFloat(hCvarLungeInterval), Timer_LungeInterval, any:hunter, TIMER_FLAG_NO_MAPCHANGE);
+					CreateTimer(hCvarLungeInterval.FloatValue, Timer_LungeInterval, hunter, TIMER_FLAG_NO_MAPCHANGE);
 				} else if (bCanLunge[hunter]) { // end of lunge interval; lunge!
 					buttons |= IN_ATTACK;
 					bHasQueuedLunge[hunter] = false; // unblock lunge interval timer
@@ -126,25 +170,24 @@ public Action:Hunter_OnPlayerRunCmd(hunter, &buttons, &impulse, Float:vel[3], Fl
 
 ***********************************************************************************************************************************************************************************/
 
-public Action:Hunter_OnPounce(botHunter) {
-
-	if(GetRandomSurvivor() == -1) return Plugin_Continue;
+public Action Hunter_OnPounce(int botHunter) {	
+	if(!g_bCvarEnable) return Plugin_Continue;
 	
-	new entLunge = GetEntPropEnt(botHunter, Prop_Send, "m_customAbility"); // get the hunter's lunge entity				
-	new Float:lungeVector[3]; 
+	int entLunge = GetEntPropEnt(botHunter, Prop_Send, "m_customAbility"); // get the hunter's lunge entity				
+	float lungeVector[3]; 
 	GetEntPropVector(entLunge, Prop_Send, "m_queuedLunge", lungeVector); // get the vector from the lunge entity
 	
 	// Avoid pouncing straight forward if there is a wall close in front
-	new Float:hunterPos[3];
-	new Float:hunterAngle[3];
+	float hunterPos[3];
+	float hunterAngle[3];
 	GetClientAbsOrigin(botHunter, hunterPos);
 	GetClientEyeAngles(botHunter, hunterAngle); 
 	// Fire traceray in front of hunter 
 	TR_TraceRayFilter( hunterPos, hunterAngle, MASK_PLAYERSOLID, RayType_Infinite, TracerayFilter, botHunter );
-	new Float:impactPos[3];
+	float impactPos[3];
 	TR_GetEndPosition( impactPos );
 	// Check first object hit
-	if( GetVectorDistance(hunterPos, impactPos) < GetConVarInt(hCvarWallDetectionDistance) ) { // wall detected in front
+	if( GetVectorDistance(hunterPos, impactPos) < hCvarWallDetectionDistance.IntValue ) { // wall detected in front
 		if( GetRandomInt(0, 1) ) { // 50% chance left or right
 			AngleLunge( entLunge, 45.0 );
 		} else {
@@ -158,15 +201,15 @@ public Action:Hunter_OnPounce(botHunter) {
 	} else {
 		// Angle pounce if survivor is watching the hunter approach
 		GetClientAbsOrigin(botHunter, hunterPos);		
-		if( IsTargetWatchingAttacker(botHunter, GetConVarInt(hCvarAimOffsetSensitivityHunter)) && GetSurvivorProximity(hunterPos) > GetConVarInt(hCvarStraightPounceProximity) ) {			
-			new Float:pounceAngle = GaussianRNG( float(GetConVarInt(hCvarPounceAngleMean)), float(GetConVarInt(hCvarPounceAngleStd)) );
+		if( IsTargetWatchingAttacker(botHunter, hCvarAimOffsetSensitivityHunter.IntValue) && GetSurvivorProximity(hunterPos) > hCvarStraightPounceProximity.IntValue ) {			
+			float pounceAngle = GaussianRNG( hCvarPounceAngleMean.FloatValue, hCvarPounceAngleStd.FloatValue );
 			AngleLunge( entLunge, pounceAngle );
 			LimitLungeVerticality( entLunge );
 			
 				#if DEBUG_HUNTER_AIM
-					new target = GetClientAimTarget(botHunter);
+					int target = GetClientAimTarget(botHunter);
 					if( IsSurvivor(target) ) {
-						new String:targetName[32];
+						char targetName[32];
 						GetClientName(target, targetName, sizeof(targetName));
 						PrintToChatAll("The aim of hunter's target(%s) is %f degrees off", targetName, GetPlayerAimOffset(target, botHunter));
 						PrintToChatAll("Angling pounce to throw off survivor");
@@ -180,21 +223,21 @@ public Action:Hunter_OnPounce(botHunter) {
 	return Plugin_Continue;
 }
 
-public bool:TracerayFilter( impactEntity, contentMask, any:rayOriginEntity ) {
+public bool TracerayFilter( int impactEntity, int contentMask, any rayOriginEntity ) {
 	return impactEntity != rayOriginEntity;
 }
 // Credits to High Cookie and Standalone for working out the math behind hunter lunges
-AngleLunge( lungeEntity, Float:turnAngle ) {	
+void AngleLunge( int lungeEntity, float turnAngle ) {	
 	// Get the original lunge's vector
-	new Float:lungeVector[3];
+	float lungeVector[3];
 	GetEntPropVector(lungeEntity, Prop_Send, "m_queuedLunge", lungeVector);
-	new Float:x = lungeVector[X];
-	new Float:y = lungeVector[Y];
-	new Float:z = lungeVector[Z];
+	float x = lungeVector[X];
+	float y = lungeVector[Y];
+	float z = lungeVector[Z];
     
-    // Create a new vector of the desired angle from the original
+    // Create a int vector of the desired angle from the original
 	turnAngle = DegToRad(turnAngle); // convert angle to radian form
-	new Float:forcedLunge[3];
+	float forcedLunge[3];
 	forcedLunge[X] = x * Cosine(turnAngle) - y * Sine(turnAngle); 
 	forcedLunge[Y] = x * Sine(turnAngle)   + y * Cosine(turnAngle);
 	forcedLunge[Z] = z;
@@ -203,18 +246,18 @@ AngleLunge( lungeEntity, Float:turnAngle ) {
 }
 
 // Stop pounces being too high
-LimitLungeVerticality( lungeEntity ) {
+void LimitLungeVerticality( int lungeEntity ) {
 	// Get vertical angle restriction
-	new Float:vertAngle = float(GetConVarInt(hCvarPounceVerticalAngle));
+	float vertAngle = hCvarPounceVerticalAngle.FloatValue;
 	// Get the original lunge's vector
-	new Float:lungeVector[3];
+	float lungeVector[3];
 	GetEntPropVector(lungeEntity, Prop_Send, "m_queuedLunge", lungeVector);
-	new Float:x = lungeVector[X];
-	new Float:y = lungeVector[Y];
-	new Float:z = lungeVector[Z];
+	float x = lungeVector[X];
+	float y = lungeVector[Y];
+	float z = lungeVector[Z];
 	
 	vertAngle = DegToRad(vertAngle);	
-	new Float:flatLunge[3];
+	float flatLunge[3];
 	// First rotation
 	flatLunge[Y] = y * Cosine(vertAngle) - z * Sine(vertAngle);
 	flatLunge[Z] = y * Sine(vertAngle) + z * Cosine(vertAngle);
@@ -230,40 +273,40 @@ LimitLungeVerticality( lungeEntity ) {
  * Random number generator fit to a bellcurve. Function to generate Gaussian Random Number fit to a bellcurve with a specified mean and std
  * Uses Polar Form of the Box-Muller transformation
 */
-Float:GaussianRNG( Float:mean, Float:std ) {	 	
+float GaussianRNG( float mean, float std ) {	 	
 	// Randomising positive/negative
-	new Float:chanceToken = GetRandomFloat( 0.0, 1.0 );
-	new signBit;	
+	float chanceToken = GetRandomFloat( 0.0, 1.0 );
+	int signBit;	
 	if( chanceToken >= 0.5 ) {
 		signBit = POSITIVE;
 	} else {
 		signBit = NEGATIVE;
 	}	   
 	
-	new Float:x1;
-	new Float:x2;
-	new Float:w;
+	float x1;
+	float x2;
+	float w;
 	// Box-Muller algorithm
 	do {
 	    // Generate random number
-	    new Float:random1 = GetRandomFloat( 0.0, 1.0 );	// Random number between 0 and 1
-	    new Float:random2 = GetRandomFloat( 0.0, 1.0 );	// Random number between 0 and 1
+	    float random1 = GetRandomFloat( 0.0, 1.0 );	// Random number between 0 and 1
+	    float random2 = GetRandomFloat( 0.0, 1.0 );	// Random number between 0 and 1
 	 
-	    x1 = (2.0 * random1) - 1.0;
-	    x2 = (2.0 * random2) - 1.0;
-	    w = (x1 * x1) + (x2 * x2);
+	    x1 = 2.0 * random1 - 1.0;
+	    x2 = 2.0 * random2 - 1.0;
+	    w = x1 * x1 + x2 * x2;
 	 
 	} while( w >= 1.0 );	 
-	static Float:e = 2.71828;
-	w = SquareRoot( ( -2.0 * (Logarithm(w, e) / w ) )  ); 
+	static float e = 2.71828;
+	w = SquareRoot( -2.0 * ( Logarithm(w, e)/ w )); 
 
 	// Random normal variable
-	new Float:y1 = (x1 * w);
-	new Float:y2 = (x2 * w);
+	float y1 = x1 * w;
+	float y2 = x2 * w;
 	 
 	// Random gaussian variable with std and mean
-	new Float:z1 = (y1 * std) + mean;
-	new Float:z2 = (y2 * std) - mean;
+	float z1 = y1 * std + mean;
+	float z2 = y2 * std - mean;
 	
 	#if DEBUG_HUNTER_RNG	
 		if( signBit == NEGATIVE )PrintToChatAll("Angle: %f", z1);
@@ -276,6 +319,8 @@ Float:GaussianRNG( Float:mean, Float:std ) {
 }
 
 // After the given interval, hunter is allowed to pounce/lunge
-public Action:Timer_LungeInterval(Handle:timer, any:client) {
+public Action Timer_LungeInterval(Handle timer, any client) {
 	bCanLunge[client] = true;
+
+	return Plugin_Continue;
 }
