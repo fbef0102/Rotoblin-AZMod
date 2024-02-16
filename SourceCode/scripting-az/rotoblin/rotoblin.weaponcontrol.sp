@@ -289,7 +289,7 @@ public _WC_OnEntityCreated(entity, const String:classname[])
  * @param data			Data passed to CreateTimer() when timer was created.
  * @noreturn
  */
-public Action:_WC_ReplaceTier2_Delayed_Timer(Handle:timer, Handle:pack)
+Action _WC_ReplaceTier2_Delayed_Timer(Handle timer, DataPack pack)
 {
 	decl String:classname[256], String:model[256], String:newClassname[256], String:newModel[256];
 
@@ -301,7 +301,6 @@ public Action:_WC_ReplaceTier2_Delayed_Timer(Handle:timer, Handle:pack)
 	ReadPackString(pack, newClassname, sizeof(newClassname));
 	ReadPackString(pack, newModel, sizeof(newModel));
 	new count = ReadPackCell(pack);
-	CloseHandle(pack);
 
 	/* Check for entity invalidation */
 	new bool:entInvalid = false;
@@ -325,12 +324,14 @@ public Action:_WC_ReplaceTier2_Delayed_Timer(Handle:timer, Handle:pack)
 	{
 		DebugPrintToAllEx("ERROR: Replaced delayed tier 2 weapon; Lost a tier 2 weapon! Time to panic, search for all tier 2 weapons of that classname!");
 		ReplaceAllTier2(classname, model, newClassname, newModel, count); // Time to panic
-		return;
+		return Plugin_Continue;
 	}
 
 	StoreTier2(entity, model); // Store the tier 2 in the array
 	ReplaceEntity(entity, newClassname, newModel, count); // Replace with tier 1
 	DebugPrintToAllEx("Replaced delayed tier 2 weapon; entity %i, classname \"%s\", new classname \"%s\", count %i", entity, classname, newClassname, count);
+	
+	return Plugin_Continue;
 }
 
 // **********************************************
@@ -363,14 +364,14 @@ static UpdateWeaponStyle()
  */
 static ReplaceTier2_Delayed(entityRef, const String:classname[], const String:model[], const String:newClassname[], const String:newModel[], count, const Float:time)
 {
-	new Handle:pack = CreateDataPack();
+	DataPack pack;
+	CreateDataTimer(time, _WC_ReplaceTier2_Delayed_Timer, pack);
 	WritePackCell(pack, entityRef);
 	WritePackString(pack, classname);
 	WritePackString(pack, model);
 	WritePackString(pack, newClassname);
 	WritePackString(pack, newModel);
 	WritePackCell(pack, count);
-	CreateTimer(time, _WC_ReplaceTier2_Delayed_Timer, pack);
 }
 
 /**

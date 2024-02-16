@@ -24,20 +24,17 @@ public Plugin myinfo =
 #define CVAR_FLAGS                    FCVAR_NOTIFY
 #define CVAR_FLAGS_PLUGIN_VERSION     FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY
 
-ConVar g_hCvarEnable, g_hCvarAssaultReminderInterval;
+ConVar g_hCvarEnable;
 bool g_bCvarEnable;
-float g_fCvarAssaultReminderInterval;
 
 bool bHasBeenShoved[MAXPLAYERS]; // shoving resets SI movement 
 
 public void OnPluginStart() { 
 	// Cvars
 	g_hCvarEnable 				 	= CreateConVar( "AI_HardSI_enable",        		"1",   	"0=Plugin off, 1=Plugin on.", CVAR_FLAGS, true, 0.0, true, 1.0);
-	g_hCvarAssaultReminderInterval 	= CreateConVar( "ai_assault_reminder_interval", "2", 	"Frequency(sec) at which the 'nb_assault' command is fired to make SI attack" );
 
 	GetCvars();
 	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
-	g_hCvarAssaultReminderInterval.AddChangeHook(ConVarChanged_Cvars);
 
 	// Event hooks
 	HookEvent("player_spawn", InitialiseSpecialInfected);
@@ -68,27 +65,6 @@ void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVa
 void GetCvars()
 {
 	g_bCvarEnable = g_hCvarEnable.BoolValue;
-	g_fCvarAssaultReminderInterval = g_hCvarAssaultReminderInterval.FloatValue;
-}
-
-/***********************************************************************************************************************************************************************************
-
-																	KEEP SI AGGRESSIVE
-																	
-***********************************************************************************************************************************************************************************/
-
-public Action L4D_OnFirstSurvivorLeftSafeArea(int client) {
-	CreateTimer( g_fCvarAssaultReminderInterval, Timer_ForceInfectedAssault, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE );
-
-	return Plugin_Continue;
-}
-
-Action Timer_ForceInfectedAssault( Handle timer ) {
-	if(!g_bCvarEnable) return Plugin_Continue;
-
-	CheatServerCommand("nb_assault");
-
-	return Plugin_Continue;
 }
 
 /***********************************************************************************************************************************************************************************

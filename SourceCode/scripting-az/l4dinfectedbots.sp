@@ -2649,11 +2649,11 @@ public Action:TankSpawner(Handle:timer, any:client)
 						TankWasSeen[i] = true;
 				}
 				WillBeTank[i] = false;
-				new Handle:datapack = CreateDataPack();
+				DataPack datapack;
+				CreateDataTimer(1.0, TankRespawner, datapack);
 				WritePackCell(datapack, tankhealth);
 				WritePackCell(datapack, tankonfire);
 				WritePackCell(datapack, i);
-				CreateTimer(1.0, TankRespawner, datapack);
 			}
 		}
 		
@@ -2677,7 +2677,7 @@ public Action:TankSpawner(Handle:timer, any:client)
 }
 
 
-public Action:TankRespawner(Handle:timer, any:datapack)
+Action TankRespawner(Handle timer, DataPack datapack)
 {
 	// This function is used to check if the tank successfully spawned, and if not, respawn him
 	
@@ -2691,11 +2691,11 @@ public Action:TankRespawner(Handle:timer, any:datapack)
 	if (IsClientInGame(client) && IsFakeClient(client) && IsPlayerTank(client) && PlayerIsAlive(client))
 	{
 		CreateTimer(0.1, kickbot, client);
-		return;
+		return Plugin_Continue;
 	}
 	
 	if (IsPlayerTank(client) && PlayerIsAlive(client))
-		return;
+		return Plugin_Continue;
 	
 	WillBeTank[client] = true;
 	
@@ -2776,16 +2776,18 @@ public Action:TankRespawner(Handle:timer, any:datapack)
 					TankWasSeen[i] = true;
 			}
 			WillBeTank[i] = false;
-			datapack = CreateDataPack();
-			WritePackCell(datapack, tankhealth);
-			WritePackCell(datapack, tankonfire);
-			WritePackCell(datapack, i);
-			CreateTimer(1.0, TankRespawner, datapack);
+			DataPack datapack2;
+			CreateDataTimer(1.0, TankRespawner, datapack2);
+			WritePackCell(datapack2, tankhealth);
+			WritePackCell(datapack2, tankonfire);
+			WritePackCell(datapack2, i);
 		}
 	}
 	
 	// If client was temp, we setup a timer to kick the fake player
 	if (temp) CreateTimer(0.1,kickbot,anyclient);
+
+	return Plugin_Continue;
 }
 
 public Action:TankBugFix(Handle:timer, any:client)
@@ -2876,11 +2878,11 @@ public Action:TankBugFix(Handle:timer, any:client)
 	if (tankonfire)
 		CreateTimer(0.1, PutTankOnFireTimer, bot, TIMER_FLAG_NO_MAPCHANGE);
 	
-	new Handle:datapack = CreateDataPack();
+	DataPack datapack;
+	CreateDataTimer(1.0, TankRespawner, datapack);
 	WritePackCell(datapack, tankhealth);
 	WritePackCell(datapack, tankonfire);
 	WritePackCell(datapack, bot);
-	CreateTimer(1.0, TankRespawner, datapack);
 	
 	// If client was temp, we setup a timer to kick the fake player
 	if (temp) CreateTimer(0.1,kickbot,anyclient);

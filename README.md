@@ -1,22 +1,22 @@
 # Rotoblin-AZMod
-v8.5.3
+v8.5.4
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
-    - [Server Install](#server-install)
-    - [Server Anti Cheat](#server-anti-cheat)
-    - [Server Admins](#server-admins)
-    - [Gamemodes](#gamemodes)
-    - [Votes Menu](#votes-menu)
-    - [Map Changes](#map-changes)
-    - [Custom Map Support](#custom-map-support)
-    - [Weapon Adjustments](#weapon-adjustments)
-    - [Score Calculation](#score-calculationhealthbonus)
-    - [Bug / Exploit Fixes](#bug--exploit-fixes)
-    - [Gameplay / Balance Changes](#gameplay--balance-changes)
-    - [Miscellaneous](#miscellaneous)
-    - [Support L4D2onL4D1 maps](#roto-az-l4d2onl4d1)
-    - [Others](#others)
+    - [Server Install | 如何安裝](#server-install)
+    - [Server Anti Cheat | 反作弊插件](#server-anti-cheat)
+    - [Server Admins | 管理員選項](#server-admins)
+    - [Gamemodes | 遊戲模式](#gamemodes)
+    - [Votes Menu | 投票介面](#votes-menu)
+    - [Map Changes | 地圖路線變更](#map-changes)
+    - [Custom Map Support | 支援的三方圖](#custom-map-support)
+    - [Weapon Adjustments | 武器調整](#weapon-adjustments)
+    - [Score Calculation | 對抗分數計算方式](#score-calculationhealthbonus)
+    - [Bug / Exploit Fixes | Bugs修復](#bug--exploit-fixes)
+    - [Gameplay / Balance Changes | 遊戲平衡改動](#gameplay--balance-changes)
+    - [Miscellaneous | 雜項](#miscellaneous)
+    - [Support L4D2onL4D1 maps | 支援二代圖](#roto-az-l4d2onl4d1)
+    - [Others | 其他](#others)
     - [Chinese | 繁體中文說明](/Developer%26Commands/繁體說明書.txt)
     - [Developer | 作者介紹](/Developer%26Commands/Roto-AZMod%20Developer.cfg)
     - [Project Source Code | 專案源碼](/SourceCode)
@@ -206,7 +206,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Dark Blood](https://www.gamemaps.com/details/28746)
 * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
 * [Precinct 84](https://www.gamemaps.com/details/27737)
-* City Of The Dead
+* [City Of The Dead](https://www.gamemaps.com/details/25778)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 
 - - - -
@@ -422,6 +422,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
     * Fixed passing Tank (going AI) triggering next stage of script finales.
     * Fix tank's punch getting cancelled when they heavily land on ground.
+    * Stops the Tanks footsteps causing the screen to shake.
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
@@ -450,6 +451,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *After a successful hit*: 15s -> 13s
       - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
       - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
+    * Fix unable to stagger smoker when smoker is shooting tongue
 	
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)

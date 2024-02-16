@@ -167,7 +167,7 @@ public EF_ev_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 #if debug
 			PrintToChatAll("m_idrowndmg = %d, dmg = %d, temp hp to restote = %d", GetEntProp(client, Prop_Data, "m_idrowndmg"), damage, g_iHealthToRestore[client]);
 #endif
-			decl Handle:hdataPack;
+			DataPack hdataPack;
 			CreateDataTimer(0.1, EF_t_SetDrownDmg, hdataPack, TIMER_FLAG_NO_MAPCHANGE);
 			WritePackCell(hdataPack, client);
 			WritePackCell(hdataPack, GetEntProp(client, Prop_Data, "m_idrowndmg") + g_iLastKnownHealth[client]);

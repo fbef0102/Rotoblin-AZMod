@@ -80,8 +80,8 @@ public Event_EntShoved(Handle:event, const String:name[], bool:dontBroadcast)
 	GetEntityNetClass(entid, entclass, sizeof(entclass));
 	if (!StrEqual(entclass, "Infected")) return; //make sure it IS a zombie.
 	
-	new Handle:data = CreateDataPack() //a data pack because i need multiple values saved
-	CreateTimer(0.5, CheckForMovement, data); //0.5 seemed both long enough for a normal zombie to stumble away and for a stuck one to DIEEEEE
+	DataPack data //a data pack because i need multiple values saved
+	CreateDataTimer(0.5, CheckForMovement, data); //0.5 seemed both long enough for a normal zombie to stumble away and for a stuck one to DIEEEEE
 	
 	WritePackCell(data, entid); //save the Zombie id
 	
@@ -96,14 +96,13 @@ public Event_EntShoved(Handle:event, const String:name[], bool:dontBroadcast)
 	#endif
 }
 
-public Action:CheckForMovement(Handle:timer, Handle:data)
+Action CheckForMovement(Handle timer, DataPack data)
 {
 	ResetPack(data); //this resets our 'reading' position in the data pack, to start from the beginning
 	
 	new zombieid = ReadPackCell(data); //get the Zombie id
 	if (!IsValidEntity(zombieid))
 	{
-		delete data;
 		return Plugin_Handled; //did the zombie get disappear somehow?
 	}
 	
@@ -111,7 +110,6 @@ public Action:CheckForMovement(Handle:timer, Handle:data)
 	GetEntityNetClass(zombieid, entclass, sizeof(entclass));
 	if (!StrEqual(entclass, "Infected"))
 	{
-		delete data;
 		return Plugin_Handled; //did the zombie get disappear somehow?
 	}
 	
@@ -119,8 +117,6 @@ public Action:CheckForMovement(Handle:timer, Handle:data)
 	oldpos[0] = ReadPackFloat(data); //get the old Zombie position (half a sec ago)
 	oldpos[1] = ReadPackFloat(data);
 	oldpos[2] = ReadPackFloat(data);
-	
-	delete data; //Dispose of the Handle. It shouldn't have messed with the family
 	
 	decl Float:newpos[3];
 	GetEntityAbsOrigin(zombieid, newpos); //get the Zombies current position

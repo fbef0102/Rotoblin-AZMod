@@ -389,7 +389,7 @@ ClientGetInfected(attacker,victim)
 		return;
 	ClientIsInfected[victim] = true;
 	
-	new Handle:dataPack;
+	DataPack dataPack;
 	CreateDataTimer(INFECTION_INTERVAL, TimerInfection, dataPack,TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 	WritePackCell(dataPack, victim);
 	WritePackCell(dataPack, attacker);

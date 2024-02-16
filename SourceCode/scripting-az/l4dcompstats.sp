@@ -757,11 +757,15 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 				new assist_shots = g_iShotsDealt[victim][assisters[0][0]];
 				// Construct assisters string
 				Format(assister_string, sizeof(assister_string), "\x05%N \x01(\x04%d\x01/\x04%d \x01shot%s)",assisters[0][0],assisters[0][1],g_iShotsDealt[victim][assisters[0][0]],assist_shots == 1 ? "":"s");
+				int assister;
 				for (i = 1; i < assister_count; i++)
 				{
-					assist_shots = g_iShotsDealt[victim][assisters[i][0]];
+					assister = assisters[i][0];
+					if( assister <= 0 || assister > MaxClients || !IsClientInGame(assister)) continue;
+
+					assist_shots = g_iShotsDealt[victim][assister];
 					Format(buf, sizeof(buf), ",\x05 %N \x01(\x04%d\x01/\x04%d \x01shot%s)",
-						assisters[i][0],
+						assister,
 						assisters[i][1],
 						assist_shots,
 						assist_shots == 1 ? "":"s");
@@ -771,8 +775,11 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 				// Print to assisters
 				for (i = 0; i < assister_count; i++)
 				{
-					CPrintToChat(assisters[i][0], "{default}[{olive}TS{default}]{olive} %N {default}teamskeeted{red} %N{default} for{green} %d {default}damage in{green} %d {default}shot%s.",attacker, victim, damage, shots, plural);
-					CPrintToChat(assisters[i][0], "{blue}{default}|| Assisted by: %s.", assister_string);
+					assister = assisters[i][0];
+					if( assister <= 0 || assister > MaxClients || !IsClientInGame(assister)) continue;
+
+					CPrintToChat(assister, "{default}[{olive}TS{default}]{olive} %N {default}teamskeeted{red} %N{default} for{green} %d {default}damage in{green} %d {default}shot%s.",attacker, victim, damage, shots, plural);
+					CPrintToChat(assister, "{blue}{default}|| Assisted by: %s.", assister_string);
 				}
 				// Print to victim
 				CPrintToChat(victim, "{default}[{olive}TS{default}] You were teamskeeted by{blue} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", attacker, damage, shots, plural);

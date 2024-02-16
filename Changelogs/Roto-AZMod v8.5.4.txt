@@ -1,0 +1,61 @@
+v8.5.4
+
+This project is licensed under the GNU General Public License, version 3
+
+------------------New------------------
+-New Custom Map Support
+	1. City Of The Dead Map
+	2. Dead Vacation
+
+-plugins\l4d_queued_stagger.smx
+-plugins\l4d_fix_long_stagger.smx
+-plugins\l4d_stagger_gravity.smx
+* Allows gravity when infected players are staggering + allows staggering over a ledge and falling.
+	* Infected still gets stumble even in the air
+	* Survivor still gets stumble even in the air
+
+-plugins\l4d_boomer_alarm_witch.smx
+* Survivor will startle witch if shoot boomer nearby.
+* Boomer's exploding can trigger alarm car and startle witch
+
+-plugins\l4d_fix_falling_punch.smx
+* Fix tank's punch getting cancelled when they heavily land on ground.
+
+-plugins\l4d_mob_stuff.smx
+* Despawn infected commons who is too far behind the survivors.
+* Remove BattleField Navigation limit when panic horde stage, which means common infected no longer spawns behind when survivor rush forward.
+
+-plugins\l4d_fix_common_shove.smx
+* Fix commons being immune to shoves when crouching, falling and landing.
+
+-plugins\l4d_fix_nextbot_collision.smx
+* Reduce the possibility that commons jiggle around when close to each other.
+* A well-known issue happens when setting nb_update_frequency to low value.
+
+-plugins\l4d2_shove_fix.smx
+* Resolves single-directional stumbling for commons
+
+-cfg\cheats.cfg
+* for test reason
+
+------------------Change------------------
+-Weapons
+* **Pumpshotgun** limit: None (was 3)
+
+-Hunter
+* Maximum pounce damage: 35 (was 40)
+
+-Tank
+* Stops the Tanks footsteps causing the screen to shake.
+
+-Boomer
+* If Boomer dies last, then next Special Infected Spawn: 100% Quad Caps
+	* 90%: 3 Hunters + 1 Smoker (was 87%)
+	* 10%: 4 Hunters	(was 10%)
+
+* Amount of zombies boomer vomit on
+	* 4v4: 28 (was 30)
+
+
+
+
