@@ -217,4 +217,3 @@ float GetPlayerAimOffset( int attacker, int target ) {
 	resultAngle = RadToDeg(ArcCosine(GetVectorDotProduct(aimVector, directVector)));
 	return resultAngle;
 }
-

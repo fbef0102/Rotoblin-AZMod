@@ -84,9 +84,6 @@ public Action Tank_OnPlayerRunCmd( int tank, int &buttons, int &impulse, float v
 		
 		// Near survivors
 		if( bHasSight && (400 > iSurvivorsProximity > 100) && currentspeed > 190.0 ) { // Random number to make bhop?
-			if( hCvarTankBhop.BoolValue == false && hCvarTankRock.BoolValue == false) {
-				buttons &= ~IN_ATTACK2;	
-			} // Block throwing rock
 			if (flags & FL_ONGROUND) {
 				buttons |= IN_DUCK;
 				buttons |= IN_JUMP;
@@ -151,15 +148,4 @@ stock void Client_Push(int client, float clientEyeAngle[3], float power, int ove
 	}
 	
 	TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, newVel);
-}
-
-public Action L4D2_OnSelectTankAttack(int client, int &sequence) {
-	if(!g_bCvarEnable) return Plugin_Continue;
-
-	if (IsFakeClient(client) && sequence == 50) {
-		sequence = GetRandomInt(0, 1) ? 49 : 51;
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
 }
