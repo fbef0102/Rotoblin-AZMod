@@ -207,7 +207,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("Is_Ready_Plugin_On",Native_Is_Ready_Plugin_On);
 	CreateNative("ToggleReadyPanel",		Native_ToggleReadyPanel);
 
-	fwdOnReadyRoundRestarted = CreateGlobalForward("L4D_OnRoundIsLive", ET_Ignore);
+	fwdOnReadyRoundRestarted = CreateGlobalForward("OnRoundIsLive", ET_Ignore);
 
 	return APLRes_Success;
 }

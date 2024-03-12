@@ -276,7 +276,7 @@ public Action TimerStart(Handle timer)
 	return Plugin_Continue;
 }
 
-public void L4D_OnRoundIsLive()
+public void OnRoundIsLive()
 {
 	cvar_enable.SetBool(false);
 }
