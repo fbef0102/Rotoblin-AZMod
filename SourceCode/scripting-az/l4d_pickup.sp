@@ -158,7 +158,7 @@ public void OnPluginStart()
 	
 	InitSwitchCookie();
 	
-	RegConsoleCmd("sm_secondary", ChangeSecondaryFlags);
+	//RegConsoleCmd("sm_secondary", ChangeSecondaryFlags);
 	
 	if (bLateLoad)
 		for (int i = 1; i <= MaxClients; i++)
@@ -192,8 +192,7 @@ void InitSwitchCookie()
 public void OnClientPutInServer(int client)
 {
 	HookValidClient(client, true);
-	if (!QuerySwitchCookie(client, iSwitchFlags[client]))
-		iSwitchFlags[client] = SwitchFlags;
+	iSwitchFlags[client] = SwitchFlags;
 }
 
 public void OnClientDisconnect(int client)
@@ -203,7 +202,7 @@ public void OnClientDisconnect(int client)
 	if (!IsFakeClient(client))
 		SetSwitchCookie(client, iSwitchFlags[client]);
 }
-
+/*
 Action ChangeSecondaryFlags(int client, int args)
 {
 	if (client && IsClientInGame(client)) {
@@ -217,7 +216,7 @@ Action ChangeSecondaryFlags(int client, int args)
 	}
 	return Plugin_Handled;
 }
-
+*/
 
 /* ---------------------------------
 //                                 |
@@ -415,7 +414,7 @@ MRESReturn DTR_OnRemoveSecondWeapon_Ev(int weapon, DHookReturn hReturn)
 //        Stocks, Functions        |
 //                                 |
 // -------------------------------*/
-bool QuerySwitchCookie(int client, int &val)
+stock bool QuerySwitchCookie(int client, int &val)
 {
 	char buffer[8] = "";
 	g_hSwitchCookie.Get(client, buffer, sizeof(buffer));

@@ -310,6 +310,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Dissolves the witch, common, survivor or special infected when killed.
 	* Only works in some certain maps that have water
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
+* Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
+  * e.g. You won't slide on ice surfaces.
 
 - - - -
 ### Gameplay / Balance Changes ###

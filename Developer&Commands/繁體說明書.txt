@@ -749,6 +749,9 @@
 [209] l4d_fix_smoker_stagger_immune
 //修復Smoker吐出舌頭，舌頭碰到倖存者之前不會被震開
 
+[210] l4d_fix_linux_surface
+//修復 linux專用服 走在冰面上不會滑動
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
