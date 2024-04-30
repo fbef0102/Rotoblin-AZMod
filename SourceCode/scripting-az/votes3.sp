@@ -863,7 +863,7 @@ CreateVoteforcespectateMenu(client)
 	{
 		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i)==team)
 		{
-			Format(playerid,sizeof(playerid),"%d",i);
+			Format(playerid,sizeof(playerid),"%d",GetClientUserId(i));
 			if(GetClientName(i,name,sizeof(name)))
 			{
 				AddMenuItem(menu, playerid, name);				
@@ -880,11 +880,20 @@ public Menu_Votesforcespectate(Handle:menu, MenuAction:action, param1, param2)
 	{
 		new String:info[32] , String:name[32];
 		GetMenuItem(menu, param2, info, sizeof(info), _, name, sizeof(name));
-		forcespectateid = StringToInt(info);
-		forcespectateid = GetClientUserId(forcespectateid);
-		forcespectateplayername = name;
-		
-		DisplayVoteforcespectateMenu(param1);		
+
+		int UserId = StringToInt(info);
+		int target = GetClientOfUserId(UserId);
+		if( target && IsClientInGame(target))
+		{
+			forcespectateid = GetClientUserId(target);
+			forcespectateplayername = name;	
+			DisplayVoteforcespectateMenu(param1);		
+		}
+		else
+		{
+			CPrintToChat(param1, "{default}[{olive}TS{default}] %t", "votes3_18");
+			CreateVoteforcespectateMenu(param1);
+		}
 	}
 	else if ( action == MenuAction_Cancel)
 	{

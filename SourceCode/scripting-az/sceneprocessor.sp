@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "1.33.2"
+#define PLUGIN_VERSION "1.33.3"
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -11,7 +11,7 @@
 
 int iSkippedFrames;
 char sVocalizeScene[MAXPLAYERS+1][MAX_VOCALIZE_LENGTH];
-bool bSceneHasInitiator[MAXPLAYERS+1], bScenesUnprocessed, bUnvocalizedCommands, bJailbreakVocalize, bIsL4D;
+bool bSceneHasInitiator[MAXPLAYERS+1], bScenesUnprocessed, bUnvocalizedCommands, bJailbreakVocalize, bIsL4D1;
 
 float fStartTimeStamp, fVocalizePreDelay[MAXPLAYERS+1], fVocalizePitch[MAXPLAYERS+1];
 Handle hSceneStageForward, hVocalizeCommandForward;
@@ -40,11 +40,17 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	EngineVersion evGame = GetEngineVersion();
 	if (evGame == Engine_Left4Dead)
 	{
-		bIsL4D = true;
+		bIsL4D1 = true;
 	}
 	else if (evGame != Engine_Left4Dead2)
 	{
 		strcopy(error, err_max, "[SP] Plugin Supports L4D And L4D2 Only!");
+		return APLRes_Failure;
+	}
+	
+	if( LibraryExists("sceneprocessor") )
+	{
+		strcopy(error, err_max, "[SP] You have two sceneprocessor plugins installed!");
 		return APLRes_Failure;
 	}
 	
@@ -220,24 +226,23 @@ public int SP_SetScenePreDelay(Handle plugin, int numParams)
 	
 	SetEntPropFloat(scene, Prop_Data, "m_flPreDelay", fPreDelay);
 	nSceneData[scene].fPreDelayData = fPreDelay;
-
 	return 0;
 }
 
-public int SP_GetScenePitch(Handle plugin, int numParams)
+public any SP_GetScenePitch(Handle plugin, int numParams)
 {
 	if (numParams == 0)
 	{
-		return 0;
+		return 0.0;
 	}
 	
 	int scene = GetNativeCell(1);
 	if (!IsValidScene(scene))
 	{
-		return 0;
+		return 0.0;
 	}
 	
-	return view_as<int>(nSceneData[scene].fPitchData);
+	return nSceneData[scene].fPitchData;
 }
 
 public int SP_SetScenePitch(Handle plugin, int numParams)
@@ -257,7 +262,6 @@ public int SP_SetScenePitch(Handle plugin, int numParams)
 	
 	SetEntPropFloat(scene, Prop_Data, "m_fPitch", fPitch);
 	nSceneData[scene].fPitchData = fPitch;
-
 	return 0;
 }
 
@@ -287,7 +291,6 @@ public int SP_CancelScene(Handle plugin, int numParams)
 	{
 		AcceptEntityInput(scene, "Kill");
 	}
-
 	return 0;
 }
 
@@ -340,7 +343,6 @@ public int SP_PerformScene(Handle plugin, int numParams)
 	}
 	
 	Scene_Perform(client, sVocalize, sFile, fPreDelay, fPitch, iInitiator);
-
 	return 0;
 }
 
@@ -392,7 +394,6 @@ public int SP_PerformSceneEx(Handle plugin, int numParams)
 	}
 	
 	Scene_Perform(client, sVocalize, sFile, fPreDelay, fPitch, iInitiator, true);
-
 	return 0;
 }
 
@@ -411,7 +412,7 @@ public void OnPluginStart()
 	hVocalizeCommandForward = CreateGlobalForward("OnVocalizeCommand", ET_Hook, Param_Cell, Param_String, Param_Cell);
 	
 	CreateConVar("sceneprocessor_version", PLUGIN_VERSION, "Scene Processor Version", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	if (!bIsL4D)
+	if (!bIsL4D1)
 	{
 		ConVar spJailbreakVocalize = CreateConVar("sceneprocessor_jailbreak_vocalize", "1", "Enable/Disable Jailbreak Vocalizations", FCVAR_SPONLY|FCVAR_NOTIFY);
 		spJailbreakVocalize.AddChangeHook(OnSPCVarChanged);
@@ -460,13 +461,13 @@ public Action OnVocalizeCmd(int client, const char[] command, int args)
 	static char sVocalize[128];
 	GetCmdArg(1, sVocalize, sizeof(sVocalize));
 	
-	if (!bIsL4D && args != 2)
+	if (!bIsL4D1 && args != 2)
 	{
 		if (bJailbreakVocalize)
 		{
 			JailbreakVocalize(client, sVocalize);
+			return Plugin_Handled;
 		}
-		return Plugin_Handled;
 	}
 	
 	int iTick = GetGameTickCount();
@@ -475,11 +476,11 @@ public Action OnVocalizeCmd(int client, const char[] command, int args)
 	{
 		iVocalizeInitiator[client] = client;
 		
-		if (!bIsL4D && args > 1 && StrEqual(sVocalize, "smartlook", false))
+		if (!bIsL4D1 && args > 1 && strcmp(sVocalize, "smartlook", false) == 0)
 		{
 			static char sTime[32];
 			GetCmdArg(2, sTime, sizeof(sTime));
-			if (StrEqual(sTime, "auto", false))
+			if (strcmp(sTime, "auto", false) == 0)
 			{
 				iVocalizeInitiator[client] = SCENE_INITIATOR_WORLD;
 			}
@@ -518,7 +519,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 		return;
 	}
 	
-	if (StrEqual(classname, "instanced_scripted_scene"))
+	if (strcmp(classname, "instanced_scripted_scene") == 0)
 	{
 		SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
 		SceneData_SetStage(entity, SceneStage_Created);
@@ -622,7 +623,7 @@ public void OnEntityDestroyed(int entity)
 	
 	static char sEntityClass[64];
 	GetEdictClassname(entity, sEntityClass, sizeof(sEntityClass));
-	if (!StrEqual(sEntityClass, "instanced_scripted_scene"))
+	if (strcmp(sEntityClass, "instanced_scripted_scene") != 0)
 	{
 		return;
 	}
@@ -833,7 +834,7 @@ void Scene_Perform(int client, const char[] sVocalizeParam, const char[] sFilePa
 			fVocalizePreDelay[client] = fScenePreDelay;
 			fVocalizePitch[client] = fScenePitch;
 			
-			if (bIsL4D)
+			if (bIsL4D1)
 			{
 				FakeClientCommandEx(client, "vocalize %s", sVocalizeParam);
 			}

@@ -3,7 +3,8 @@
 #pragma newdecls required //強制1.7以後的新語法
 #include <sourcemod>
 #include <sdktools>
-#include <sceneprocessor>
+#include <sceneprocessor> // https://forums.alliedmods.net/showpost.php?p=2766130&postcount=59
+#include <multicolors>
 
 native bool IsInReady();
 
@@ -13,7 +14,7 @@ public Plugin myinfo =
 	name		= "Vocalize Anti-Flood",
 	author		= "Buster \"Mr. Zero\" Nielsen & HarryPotter",
 	description	= "Stops vocalize flooding when reaching token limit",
-	version		= "1.3",
+	version		= "1.0h-2024/4/28",
 	url			= "https://forums.alliedmods.net/showthread.php?t=241588"
 }
 
@@ -31,14 +32,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 }
 
 
-ConVar hConVar1, hConVar2, hConVar3, hConVar4, hConVar5, g_hImmueAccess;
-
-int g_iPlayerTokenTime;
-int g_iWorldTokenTime;
-int g_iPlayerTokenLimit;
-int g_iWorldTokenLimit;
+ConVar hConVar1, hConVar2, hConVar3, hConVar4, hConVar5, 
+	g_hCvarMapTalkDelete, g_hImmueAccess;
+int g_iPlayerTokenTime, g_iWorldTokenTime, g_iPlayerTokenLimit, g_iWorldTokenLimit;
 char g_sImmueAcclvl[16];
-bool g_bMessage;
+bool g_bCvarMapTalkDelete, g_bMessage;
 
 float g_flLastVocalizeTimeStamp[MAXPLAYERS + 1];
 float g_flLastWorldVocalizeTimeStamp[MAXPLAYERS + 1];
@@ -52,22 +50,31 @@ public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 
-	hConVar1 = CreateConVar("l4d_vocalize_antiflood_player_token_time", "60", "Time interval to decrease a player token. (second)", FCVAR_NOTIFY, true, 1.0);
-	hConVar2 = CreateConVar("l4d_vocalize_antiflood_word_token_time", "5", "Time interval to decrease a word token. (second)", FCVAR_NOTIFY, true, 1.0);
-	hConVar3 = CreateConVar("l4d_vocalize_antiflood_player_token_limit", "2", "Max Player Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
-	hConVar4 = CreateConVar("l4d_vocalize_antiflood_world_token_limit", "-1", "Max World Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
-	hConVar5 = CreateConVar("l4d_vocalize_antiflood_notify", "1", "If 1, notify antiflood message to player.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_hImmueAccess = CreateConVar("l4d_vocalize_antiflood_immue_flag", "-1", "Players with these flags have immune to token limit. (Empty=Everyone, -1=Nobody)", FCVAR_NOTIFY);
+	hConVar1 					= CreateConVar("l4d_vocalize_antiflood_player_token_time", 		"30", "Time interval to decrease a player token. (second)", FCVAR_NOTIFY, true, 1.0);
+	hConVar2 					= CreateConVar("l4d_vocalize_antiflood_word_token_time", 		"5", "Time interval to decrease a word token. (second)", FCVAR_NOTIFY, true, 1.0);
+	hConVar3 					= CreateConVar("l4d_vocalize_antiflood_player_token_limit", 	"3", "Max Player Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
+	hConVar4 					= CreateConVar("l4d_vocalize_antiflood_world_token_limit",		"-1", "Max World Token limit. (-1 = No Limit)", FCVAR_NOTIFY, true, -1.0);
+	hConVar5 					= CreateConVar("l4d_vocalize_antiflood_notify", 				"1", "If 1, notify antiflood message to player.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarMapTalkDelete 		= CreateConVar("l4d_vocalize_antiflood_remove_maptalk", 		"0", "If 1, prevent all vocalizing talk triggered by the map (Remove all instanced_scripted_scene entities)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hImmueAccess			 	= CreateConVar("l4d_vocalize_antiflood_immue_flag", 			"-1", "Players with these flags have immune to token limit. (Empty=Everyone, -1=Nobody)", FCVAR_NOTIFY);
 	
 	GetCvars();
-	HookConVarChange(hConVar1, ConVarChanged_ConVar1);
-	HookConVarChange(hConVar2, ConVarChanged_ConVar2);
-	HookConVarChange(hConVar3, ConVarChanged_Cvars);
-	HookConVarChange(hConVar4, ConVarChanged_Cvars);
-	HookConVarChange(hConVar5, ConVarChanged_Cvars);
-	HookConVarChange(g_hImmueAccess, ConVarChanged_Cvars);	
+	hConVar1.AddChangeHook(ConVarChanged_Cvars);
+	hConVar2.AddChangeHook(ConVarChanged_Cvars);
+	hConVar3.AddChangeHook(ConVarChanged_Cvars);
+	hConVar4.AddChangeHook(ConVarChanged_Cvars);
+	hConVar5.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarMapTalkDelete.AddChangeHook(ConVarChanged_Cvars);
+	g_hImmueAccess.AddChangeHook(ConVarChanged_Cvars);	
 }
-	
+
+// Cvars-------------------------------
+
+void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	GetCvars();
+}
+
 void GetCvars()
 {
 	g_iPlayerTokenTime = hConVar1.IntValue;
@@ -75,24 +82,35 @@ void GetCvars()
 	g_iPlayerTokenLimit = hConVar3.IntValue;
 	g_iWorldTokenLimit = hConVar4.IntValue;
 	g_bMessage = hConVar5.BoolValue;
+	g_bCvarMapTalkDelete = g_hCvarMapTalkDelete.BoolValue;
 	g_hImmueAccess.GetString(g_sImmueAcclvl,sizeof(g_sImmueAcclvl));
 }
 
-public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
+//Sourcemod API Forward-------------------------------
+
+public void OnClientPostAdminCheck(int client)
 {
-	GetCvars();
+	if(!IsFakeClient(client)) iClientFlags[client] = GetUserFlagBits(client);
 }
 
-public void ConVarChanged_ConVar1(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnEntityCreated(int entity, const char[] classname)
 {
-	GetCvars();
-	
+	if (!g_bCvarMapTalkDelete || !IsValidEntityIndex(entity))
+		return;
+
+	switch (classname[0])
+	{
+		case 'i':
+		{
+			if (StrEqual(classname, "instanced_scripted_scene"))
+			{
+				RemoveEntity(entity);
+			}
+		}
+	}
 }
 
-public void ConVarChanged_ConVar2(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	GetCvars();
-}
+// sceneprocessor-------------------------------
 
 public void OnSceneStageChanged(int scene, SceneStages stage)
 {
@@ -102,7 +120,7 @@ public void OnSceneStageChanged(int scene, SceneStages stage)
 	}
 	
 	int client = GetActorFromScene(scene);
-	if (client <= 0 || client > MaxClients)
+	if (client <= 0 || client > MaxClients || !IsClientInGame(client))
 	{
 		return;
 	}
@@ -121,11 +139,13 @@ public void OnSceneStageChanged(int scene, SceneStages stage)
 	CancelScene(scene);
 }
 
-public Action OnVocalizationProcess(int client, const char[] vocalize, int initiator)
+public Action OnVocalizeCommand(int client, const char[] vocalize, int initiator)
 {
 	g_VocalizeFloodCheckTick[client] = GetGameTickCount();
 	return (IsPlayerVocalizeFlooding(client, initiator) ? Plugin_Stop : Plugin_Continue);
 }
+
+// Function-------------------------------
 
 bool IsPlayerVocalizeFlooding(int client, int initiator)
 {
@@ -164,7 +184,7 @@ bool IsPlayerVocalizeFlooding(int client, int initiator)
 
 		if (g_VocalizeTokens[client] >= g_iPlayerTokenLimit) 
 		{
-			if(g_bMessage) PrintToChat(client, "[\x05TS\x01] %T", "l4d_vocalize_antiflood", client);
+			if(g_bMessage) CPrintToChat(client, "%T", "l4d_vocalize_antiflood", client);
 			return true;
 		}
 
@@ -176,25 +196,26 @@ bool IsPlayerVocalizeFlooding(int client, int initiator)
 	return false;
 }
 
-public void OnClientPostAdminCheck(int client)
-{
-	if(!IsFakeClient(client)) iClientFlags[client] = GetUserFlagBits(client);
-}
-
-public bool HasAccess(int client, char[] g_sAcclvl)
+bool HasAccess(int client, char[] sAcclvl)
 {
 	// no permissions set
-	if (strlen(g_sAcclvl) == 0)
+	if (strlen(sAcclvl) == 0)
 		return true;
 
-	else if (StrEqual(g_sAcclvl, "-1"))
+	else if (StrEqual(sAcclvl, "-1"))
 		return false;
 
 	// check permissions
-	if ( iClientFlags[client] & ReadFlagString(g_sAcclvl) || (iClientFlags[client] & ADMFLAG_ROOT) )
+	int userFlags = GetUserFlagBits(client);
+	if ( userFlags & ReadFlagString(sAcclvl) || (userFlags & ADMFLAG_ROOT))
 	{
 		return true;
 	}
 
 	return false;
+}
+
+bool IsValidEntityIndex(int entity)
+{
+    return (MaxClients+1 <= entity <= GetMaxEntities());
 }
