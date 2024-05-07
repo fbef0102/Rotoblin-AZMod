@@ -175,7 +175,7 @@ new bool:Allow[MAXPLAYERS];
 #define ANIM_L4D_FRANCIS	547
 #define ANIM_L4D_BILL		546
 new g_iClone[MAXPLAYERS];
-#define GAMEDATA			"l4d_shove_penalty"
+#define GAMEDATA			"l4d_storm"
 #define MAX_COUNT			26
 new g_ByteCount, g_ByteSaved[MAX_COUNT];
 new Address:g_Address;
@@ -209,6 +209,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
+	// GameData
 	char sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "gamedata/%s.txt", GAMEDATA);
 	if( FileExists(sPath) == false ) SetFailState("\n==========\nMissing required file: \"%s\".\nRead installation instructions again.\n==========", sPath);
@@ -233,7 +234,7 @@ public OnPluginStart()
 		g_ByteSaved[i] = LoadFromAddress(g_Address + view_as<Address>(i), NumberType_Int8);
 	}
 
-	if( g_ByteSaved[0] != (g_ByteCount == 1 ? 0x0F : 0xE8) ) SetFailState("Failed to load, byte mis-match. %d (0x%02X != 0xE8)", offset, g_ByteSaved[0]);
+	if( g_ByteSaved[0] != (g_ByteCount == 1 ? 0x75 : 0xE8) ) SetFailState("Failed to load, byte mis-match. %d (0x%02X != 0xE8)", offset, g_ByteSaved[0]);
 
 	delete hGameData;
 
@@ -4577,9 +4578,10 @@ void PatchAddress(bool patch)
 		// Linux
 		if( g_ByteCount == 1 )
 		{
-			StoreToAddress(g_Address + view_as<Address>(1), 0x89, NumberType_Int8);
+			StoreToAddress(g_Address, 0x79, NumberType_Int8); // 0x75 JNZ (jump short if non zero) to 0x79 JS (Jump short if not sign) - always not jump
 		}
 		else
+		// Windows
 		{
 			for( int i = 0; i < g_ByteCount; i++ )
 				StoreToAddress(g_Address + view_as<Address>(i), 0x90, NumberType_Int8);
@@ -4588,6 +4590,7 @@ void PatchAddress(bool patch)
 	else if( patched && !patch )
 	{
 		patched = false;
+
 		for( int i = 0; i < g_ByteCount; i++ )
 			StoreToAddress(g_Address + view_as<Address>(i), g_ByteSaved[i], NumberType_Int8);
 	}

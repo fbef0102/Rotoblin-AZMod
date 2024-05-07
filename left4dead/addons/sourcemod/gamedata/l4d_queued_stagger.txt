@@ -31,7 +31,7 @@
 				"signature"		"CTerrorPlayer::UpdateStagger"
 				"linux"
 				{
-					"offset"	"110h"
+					"offset"	"10Bh"
 					"verify"	"\x0F\x84"
 					"patch"		"\x90\xE9"
 				}
@@ -69,57 +69,6 @@
 				"linux"			"@_ZN13CTerrorPlayer15SetMainActivityE8Activityb"
 				"windows"		"\x83\xEC\x08\x53\x56\x57\x8B\x3D\x2A\x2A\x2A\x2A\x8B\x07\x8B\x50"
 								/* 83 EC 08 53 56 57 8B 3D ? ? ? ? 8B 07 8B 50 */
-			}
-
-			// Doesn't exist in windows
-			// Only 2 xrefs: "CTerrorPlayer::UpdateSurvivorMainActivity" "CTerrorPlayer::UpdateInfectedMainActivity"
-			// Unused
-			"CTerrorPlayer::SetMainActivity [clone]"
-			{
-				"library"		"server"
-				"linux"			"@_ZN13CTerrorPlayer15SetMainActivityE8Activityb.constprop.83"
-			}
-		}
-	}
-
-	"left4dead2"
-	{
-		"MemPatches"
-		{
-			"CTerrorPlayer::UpdateStagger__GetGroundEntity_force_exit"
-			{
-				"signature"		"CTerrorPlayer::UpdateStagger"
-				"linux"
-				{
-					"offset"	"218H"
-					"verify"	"\x0F\x84"
-					"patch"		"\x90\xE9"
-				}
-				"windows"
-				{
-					"offset"	"1A9h"
-					"verify"	"\x74"
-					"patch"		"\xEB"
-				}
-			}
-		}
-
-		"Signatures"
-		{
-			"CTerrorPlayer::UpdateStagger"
-			{
-				"library"		"server"
-				"linux"			"@_ZN13CTerrorPlayer13UpdateStaggerEv"
-				"windows"		"\x2A\x56\x8B\xF1\x2A\x2A\x2A\x83\xBE\x2A\x2A\x2A\x2A\x2A\x57\x0F\x84"
-								/* ? 56 8B F1 ? ? ? 83 BE ? ? ? ? ? 57 0F 84 */
-			}
-
-			"CTerrorPlayer::UpdatePounce"
-			{
-				"library"		"server"
-				"linux"			"@_ZN13CTerrorPlayer12UpdatePounceEv"
-				"windows"		"\x55\x8B\xEC\x81\xEC\x9C\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\xF1"
-								/* 55 8B EC 81 EC 9C 01 00 00 A1 ? ? ? ? 33 ? ? ? ? 53 56 57 8B F1 */
 			}
 		}
 	}

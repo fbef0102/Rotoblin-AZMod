@@ -6,7 +6,7 @@
 #include <sourcescramble>
 #include <dhooks>
 
-#define PLUGIN_VERSION "1.4"
+#define PLUGIN_VERSION "1.5"
 
 public Plugin myinfo = 
 {
@@ -25,6 +25,7 @@ public Plugin myinfo =
 #define KEY_SETPASSENTITY "CTraceFilterSimple::SetPassEntity"
 
 #define PATCH_ARG "__AddEntityToIgnore_argpatch"
+#define PATCH_COOP_ARG "__AddEntityToIgnore_noncompetitive_argpatch"
 #define PATCH_PASSENT "__TraceFilterTongue_passentpatch"
 #define PATCH_DUMMY "__AddEntityToIgnore_dummypatch"
 #define PATCH_COOP_DUMMY "__AddEntityToIgnore_noncompetitive_dummypatch"
@@ -85,6 +86,8 @@ public void OnPluginStart()
 	
 	if (GetEngineVersion() == Engine_Left4Dead)
 	{
+		CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_COOP_ARG);
+
 		hPatch = CreateEnabledPatch(conf, KEY_ISTARGETVISIBLE...PATCH_DUMMY);
 		PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
 		

@@ -9,7 +9,7 @@
 				"signature"		"CTerrorPlayer::UpdateStagger"
 				"linux"
 				{
-					"offset"	"36h"
+					"offset"	"3Ch"
 					"verify"	"\x74"
 					"patch"		"\x90\x90"
 				}
@@ -26,7 +26,7 @@
 				"signature"		"CTerrorPlayer::UpdateStagger"
 				"linux"
 				{
-					"offset"	"B8h"
+					"offset"	"BBh"
 					"verify"	"\x75"
 					"patch"		"\x90\x90"
 				}

@@ -23,7 +23,8 @@
 			"UpdateZombieFrustration_SaferoomCheck"
 			{
 				"windows"	"310"   /* call sub_10223D10 (v1.0.3.7 2019/1/29) */
-				"linux"		"475"  /* call _ZNK9CDirector29IsAnySurvivorInExitCheckpointEv (v1.0.3.7 2019/1/29)*/
+				"linux"		"810"  /* call _ZNK9CDirector29IsAnySurvivorInExitCheckpointEv (2024/5/2)*/
+				// "linux"		"475"  /* call _ZNK9CDirector29IsAnySurvivorInExitCheckpointEv (v1.0.3.7 2019/1/29)*/
 			}
 		}
 		

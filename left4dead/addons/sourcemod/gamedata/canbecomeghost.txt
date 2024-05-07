@@ -9,7 +9,7 @@
 				"signature"		"CTerrorPlayer::CanBecomeGhost"
 				"linux"
 				{
-					"offset"	"520"
+					"offset"	"1038"
 					"verify"	"\x65"
 					"patch"		"\x64"
 				}

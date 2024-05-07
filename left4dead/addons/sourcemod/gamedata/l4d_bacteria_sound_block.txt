@@ -43,7 +43,7 @@
 				"signature"		"Music::OnBoomerAlert"
 				"linux"
 				{
-					"offset"	"49h"
+					"offset"	"45h"
 					"verify"	"\x0F\x86"
 					"patch"		"\x90\xE9"
 				}

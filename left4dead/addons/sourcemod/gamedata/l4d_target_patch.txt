@@ -28,7 +28,7 @@
 				"signature"		"TankAttack::Update"
 				"linux"
 				{
-					"offset"	"1158"
+					"offset"	"276"
 					"verify"	"\x0F\x84"
 					"patch"		"\x90\xE9"
 				}

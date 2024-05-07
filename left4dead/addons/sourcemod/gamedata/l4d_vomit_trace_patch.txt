@@ -28,7 +28,7 @@
 				"signature"			"CTraceFilterSimpleListNoInfectedOrGhosts_ShouldHitEntity"
 				"linux"
 				{
-					"offset"		"95"
+					"offset"		"101"
 					
 					/*
 					 *	8B 06					mov     eax, [esi]
@@ -37,16 +37,20 @@
 					 *	OUR_PATCH:
 					 *	FF 90 24 01 00 00		call    dword ptr [eax+124h]	; CBaseEntity::MyInfectedPointer(void)
 					 *	85 C0					test    eax, eax
+					 *	8B 54 24 0C				mov     edx, [esp+2Ch+var_20]
 					 *	75 CB					jnz     short loc_2A614C		; return 0 (no collision)
 					 */
-					"verify"		"\xFF\x90\x2A\x2A\x2A\x2A\x85\xC0\x75"
+					"verify"		"\xFF\x90\x2A\x2A\x2A\x2A\x85\xC0\x2A\x2A\x2A\x2A\x75"
+
+					"preserve"		"\x00\x00\x00\x00\x00\x00\x00\x00\xFF\xFF\xFF\xFF\x00"
 					
 					/*
 					 *	E8  ?  ?  ?  ?			call    CBaseEntity::GetTeamNumber(void)
 					 *	83 F8 03				cmp     eax, 3
+					 *	8B 54 24 0C				mov     edx, [esp+2Ch+var_20]
 					 *	74 CB					jz      short loc_2A614C		; return 0 (no collision)
 					 */
-					"patch"			"\xE8\x00\x00\x00\x00\x83\xF8\x03\x74"
+					"patch"			"\xE8\x00\x00\x00\x00\x83\xF8\x03\x90\x90\x90\x90\x74"
 				}
 				"windows"
 				{
@@ -81,7 +85,7 @@
 				"signature"			"OnVomitCollide"
 				"linux"
 				{
-					"offset"		"15Bh"
+					"offset"		"16Eh"
 					"verify"		"\x0B\x40\x00\x46"
 					"patch"			"\x03\x40\x00\x46"
 				}
@@ -98,7 +102,7 @@
 				"signature"			"OnVomitCollide"
 				"linux"
 				{
-					"offset"		"253h"
+					"offset"		"252h"
 					"verify"		"\x0B\x40\x00\x46"
 					"patch"			"\x03\x40\x00\x46"
 				}

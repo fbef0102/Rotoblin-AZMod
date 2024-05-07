@@ -22,7 +22,7 @@
 			"TrySwing_Offset"
 			{
 				"windows"		"244" // 0xF4
-				"linux"			"282" // 0x11A
+				"linux"			"247" // 0xF7
 			}
 			"TrySwing_Count"
 			{

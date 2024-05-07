@@ -20,7 +20,7 @@
 				"signature"		"CTerrorPlayer::OnPreThinkGhostState"
 				"linux"
 				{
-					"offset"	"3F8h"
+					"offset"	"333h"
 					"verify"	"\x00\x80\x01\x00"
 					"patch"		"\x00\x80\x00\x00"
 				}
@@ -37,7 +37,7 @@
 				"signature"		"CTerrorPlayer::OnPreThinkGhostState"
 				"linux"
 				{
-					"offset"	"875h"
+					"offset"	"794h"
 					"verify"	"\x00\x80\x01\x00"
 					"patch"		"\x00\x80\x00\x00"
 				}
@@ -62,7 +62,7 @@
 			"CTerrorPlayer::OnPreThinkGhostState"
 			{
 				"library"		"server"
-				"linux"			"@_ZN13CTerrorPlayer20OnPreThinkGhostStateEv.part.837"
+				"linux"			"@_ZN13CTerrorPlayer20OnPreThinkGhostStateEv.part.603"
 				"windows"		"\x55\x8B\x2A\x83\x2A\x2A\x81\x2A\x2A\x2A\x2A\x2A\x53\x56\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x57\xE8"
 			}
 		}

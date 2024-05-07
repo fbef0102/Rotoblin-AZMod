@@ -291,9 +291,9 @@ void RegisterSettings(int client)
             }
         }
         
-        CPrintToChat(client,"%T","ratemonitor1",client, 
-                player.Client_Cmdrate, player.Client_Updaterate, player.Client_Rate, 
-                iCmdRate, iUpdateRate, iRate, sCounter);
+        //CPrintToChat(client,"%T","ratemonitor1",client, 
+        //       player.Client_Cmdrate, player.Client_Updaterate, player.Client_Rate, 
+        //       iCmdRate, iUpdateRate, iRate, sCounter);
         
         player.Client_Cmdrate = iCmdRate;
         player.Client_Updaterate = iUpdateRate;
@@ -308,7 +308,7 @@ void RegisterSettings(int client)
         player.Client_Changes = 0;
         
         hClientSettingsArray.PushArray(player, sizeof(NetsettingsStruct));
-        CPrintToChat(client,"%T","ratemonitor2",client,player.Client_Cmdrate, player.Client_Updaterate, player.Client_Rate);
+        //CPrintToChat(client,"%T","ratemonitor2",client,player.Client_Cmdrate, player.Client_Updaterate, player.Client_Rate);
     }
 #else
     NetsettingsStruct player[NetsettingsStruct];
@@ -334,9 +334,9 @@ void RegisterSettings(int client)
             }
         }
         
-        CPrintToChat(client,"%T","ratemonitor1",client, 
-                        player[Client_Cmdrate], player[Client_Updaterate], player[Client_Rate], 
-                        iCmdRate, iUpdateRate, iRate, sCounter);
+        //CPrintToChat(client,"%T","ratemonitor1",client, 
+        //                player[Client_Cmdrate], player[Client_Updaterate], player[Client_Rate], 
+        //                iCmdRate, iUpdateRate, iRate, sCounter);
         
         player[Client_Cmdrate] = iCmdRate;
         player[Client_Updaterate] = iUpdateRate;
@@ -351,7 +351,7 @@ void RegisterSettings(int client)
         player[Client_Changes] = 0;
         
         hClientSettingsArray.PushArray(player[0], view_as<int>(NetsettingsStruct));
-        CPrintToChat(client,"%T","ratemonitor2",client,player[Client_Cmdrate], player[Client_Updaterate], player[Client_Rate]);
+        //CPrintToChat(client,"%T","ratemonitor2",client,player[Client_Cmdrate], player[Client_Updaterate], player[Client_Rate]);
     }
 #endif
 }

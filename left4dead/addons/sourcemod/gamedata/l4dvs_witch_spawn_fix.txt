@@ -9,9 +9,9 @@
 				"signature"			"CDirectorVersusMode::UpdateVersusBossSpawning"
 				"linux"
 				{
-					"offset"		"186"
-					"verify"		"\x7F"	// jg short
-					"patch"			"\x90\x90"	// NOPs
+					"offset"		"199"
+					"verify"		"\x0F\x8F"	// jg near
+					"patch"			"\x90\x90\x90\x90\x90\x90"	// NOPs
 				}
 				"windows"
 				{

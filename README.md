@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.4
+v8.5.5
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -35,9 +35,10 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
   * Make sure your server is stopped.
   * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
+  * Go [Releases Page](https://github.com/fbef0102/Rotoblin-AZMod/releases) and download **l4d1_Roto-AZMod.zip**
 * Requirements:
-  * [Windows Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Windows_Server_files.zip) or [Linux Server files](https://github.com/fbef0102/L4D1-Server4Dead/releases/download/v4.0/Linux_Server_files.zip)(depending on the operating system of your server), this contains Sourcemod v1.11 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
-  * [Roto-AZMod main files](https://github.com/fbef0102/Rotoblin-AZMod/archive/master.zip), this contains the configs, plugins, gamedate, and other server settings.
+  * Install "Windows Server files" or "Linux Server files" (depending on the operating system of your server), this contains Sourcemod v1.11 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
+  * Install "Roto-AZMod Main files", this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
   * ```-console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0```
@@ -629,8 +630,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
 
-> **Developer Comment:** The following files are **PRIVATE**, please contact Harry to request download.
-
 * **Play L4D2 maps in l4d1 game**
   1. **C1 - Dead Center**
   2. **C2 - Dark Carnival**
@@ -651,6 +650,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * <details><summary> <b>"left4deadDLC4-l4d2onl4d1" Mod</b> </summary>
 
+  > 🟥 **Important:** Files are **PRIVATE**, please contact Harry to request download.
+
   <img src="https://user-images.githubusercontent.com/12229810/216926232-6d92f80f-1829-4af8-ae25-8f1009ef6e15.png" alt="11460c3797f5.png">
 
   * 6 GB files
@@ -658,6 +659,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 </details>
 
 * <details><summary> <b>L4D2 Map Modify</b> </summary>
+
+  > 🟥 **Important:** Files are **PRIVATE**, please contact Harry to request download.
 
   <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png" alt="11460c3797f5.png">
 
@@ -669,26 +672,21 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * <details><summary> <b>Plugin Support</b> </summary>
 
-  <img src="https://user-images.githubusercontent.com/12229810/215238179-010e8b4f-f44e-4989-8b37-b5772ab6fc88.png" alt="b5772ab6fc88.png">
-
-  * **In c1m4, c6m3, c14m2 map. there is a problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field, so these three plugins fix that**
+  * **(c1m4, c6m3, c14m2) Fix the problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field**
     ```php
     l4d_random_beam_item.smx
     l4d_random_entity_color.smx
     l4d1_glow_gascan.smx
     ```
-
-  * **Put the single smg and shotgun on saferoom because there are no any weapons in c1m1 saferoom and c4m1 saferoom**
+  * **(c1m1, c4m1) Put the single smg and shotgun on saferoom because there are no any weapons in the saferoom**
     ```php
     l4d_weapon_spawn.smx
     ```
-
-  * **Spawn "bride witch model" on the wedding scene in c6m1**
+  * **(c6m1) Spawn "bride witch model" on the wedding scene**
     ```php
     l4d1_random_witch_model.smx
     ```
-
-  * **In c1m4, c6m3, c14m2 map, give special infected fire immune, so they won't burn**
+  * **(c1m4, c6m3, c14m2) give special infected fire immune, so they won't burn**
     ```php
     si_fire_immunity.smx
     ```

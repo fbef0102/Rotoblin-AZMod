@@ -9,7 +9,7 @@
 				"signature"		"CBreakableProp::OnTakeDamage"
 				"linux"
 				{
-					"offset"	"2CEh"
+					"offset"	"1A4h"
 					"verify"	"\x75"
 					"patch"		"\xEB"
 				}
@@ -26,7 +26,7 @@
 				"signature"		"CBreakable::OnTakeDamage"
 				"linux"
 				{
-					"offset"	"FBh"
+					"offset"	"170h"
 					"verify"	"\x0F\x85"
 					"patch"		"\x90\xE9"
 				}

@@ -9,9 +9,9 @@
 				"signature"		"CTerrorPlayer::UpdateSurvivorMainActivity"
 				"linux"
 				{
-					"offset"	"3BDh"
-					"verify"	"\x0F\x45\xF8" // cmovnz  edi, eax
-					"patch"		"\x90\x89\xC7" // nop + mov  edi, eax
+					"offset"	"2A6h"
+					"verify"	"\x25" // and     eax, 61Ah
+					"patch"		"\xB8" // mov     eax, 61Ah
 				}
 				"windows"
 				{
@@ -26,7 +26,7 @@
 				"signature"		"CTerrorPlayer::UpdateSurvivorMainActivity"
 				"linux"
 				{
-					"offset"	"396h"
+					"offset"	"288h"
 					"verify"	"\xD9\x83"					// fld  dword ptr [ebx+offs]
 					"preserve"	"\x00\x00\xFF\xFF\xFF\xFF"
 					"patch"		"\xD9\x05\x90\x90\x90\x90"	// fld  ds:my_float

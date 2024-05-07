@@ -212,30 +212,27 @@ public Action PlayerNameCheck(Handle timer,any client)
 	int team = GetClientTeam(client);
 	
 	//PrintToChatAll("client: %N - %d",client,team);
-	if (IsClientAndInGame(client) && !IsFakeClient(client))
+	char sOldname[256], sNewname[256];
+	GetClientName(client, sOldname, sizeof(sOldname));
+	if (team == TEAM_SPECTATOR)
 	{
-		char sOldname[256], sNewname[256];
-		GetClientName(client, sOldname, sizeof(sOldname));
-		if (team == TEAM_SPECTATOR)
+		if(!CheckClientHasPreFix(sOldname))
 		{
-			if(!CheckClientHasPreFix(sOldname))
-			{
-				Format(sNewname, sizeof(sNewname), "%s%s", g_sPrefixType, sOldname);
-				CS_SetClientName(client, sNewname);
-				
-				//PrintToChatAll("sNewname: %s",sNewname);
-			}
+			Format(sNewname, sizeof(sNewname), "%s%s", g_sPrefixType, sOldname);
+			CS_SetClientName(client, sNewname);
+			
+			//PrintToChatAll("sNewname: %s",sNewname);
 		}
-		else
+	}
+	else
+	{
+		if(CheckClientHasPreFix(sOldname))
 		{
-			if(CheckClientHasPreFix(sOldname))
-			{
-				ReplaceString(sOldname, sizeof(sOldname), g_sPrefixType, "", true);
-				strcopy(sNewname,sizeof(sOldname),sOldname);
-				CS_SetClientName(client, sNewname);
-				
-				//PrintToChatAll("sNewname: %s",sNewname);
-			}
+			ReplaceString(sOldname, sizeof(sOldname), g_sPrefixType, "", true);
+			strcopy(sNewname,sizeof(sOldname),sOldname);
+			CS_SetClientName(client, sNewname);
+			
+			//PrintToChatAll("sNewname: %s",sNewname);
 		}
 	}
 	

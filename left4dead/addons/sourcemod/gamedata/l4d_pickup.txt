@@ -34,7 +34,7 @@
 				"signature"		"CTerrorGun::EquipSecondWeapon"
 				"linux"
 				{
-					"offset"	"100h"
+					"offset"	"10Ah"
 					"verify"	"\x0F\x84"
 					"patch"		"\x90\xE9"
 				}
@@ -46,7 +46,6 @@
 				}
 			}
 		}
-		
 		"Signatures"
 		{
 			/**
@@ -82,6 +81,20 @@
 				"linux"			"@_ZN10CTerrorGun18RemoveSecondWeaponEv"
 				"windows"		"\x55\x56\x8B\x2A\x80\x2A\x2A\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x2A\x2A\x0F\x84"
 								/* 55 56 8B ? 80 ? ? ? ? ? ? 8D ? ? ? ? ? 0F 84 */
+			}
+			
+			/**
+			 * CBaseCombatWeapon::SetViewModel()
+			 *
+			 * How to find on Windows:
+			 * 1. Go to (Vtable start address) + (virtual offset) * 4
+			 **/
+			"CBaseCombatWeapon::SetViewModel"
+			{
+				"library"		"server"
+				"linux"			"@_ZN17CBaseCombatWeapon12SetViewModelEv"
+				"windows"		"\x57\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xC1\x2A\x2A\x8D\x2A\x2A\x2A\x85\x2A\x74\x2A\xC1\x2A\x2A\x39\x2A\x2A\x75\x2A\x8B\x2A\x85\x2A\x74\x2A\x8B"
+								/* 57 8B ? 8B ? ? ? ? ? 83 ? ? 0F 84 ? ? ? ? 8B ? ? ? ? ? 8B ? 81 ? ? ? ? ? C1 ? ? 8D ? ? ? 85 ? 74 ? C1 ? ? 39 ? ? 75 ? 8B ? 85 ? 74 ? 8B */
 			}
 		}
 	}

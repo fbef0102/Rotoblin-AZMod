@@ -7,15 +7,16 @@
 //如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
 --------引擎主要--------
-* sourcemod v1.11-git6934
-* metamod  v1.11-git1148
-* stripper v1.2.2-git141
-* l4dtoolz v1.1.0.2
-* Tickrate Enabler v1.5
-* REST in Pawn v1.3.1
-* Socket v3.0.2
-* sourcescramble v0.7.1.1
-* CollisionHooks v1.2
+* sourcemod v1.11
+* metamod v1.11
+* stripper
+* l4dtoolz
+* Tickrate Enabler
+* REST in Pawn
+* Socket
+* sourcescramble
+* Actions 
+* CollisionHooks
 
 --------地圖修改--------
 * 所有VS地圖均已解除屋頂限制
@@ -751,6 +752,24 @@
 
 [210] l4d_fix_linux_surface
 //修復 linux專用服 走在冰面上不會滑動
+
+[211] l4d_random_beam_item
+//(c1m4, c6m3, c14m2) 汽油桶發出額外光芒
+
+[212] l4d_random_entity_color
+//(c1m4, c6m3, c14m2) 修改汽油桶顏色
+
+[213] l4d1_glow_gascan
+//(c1m4, c6m3, c14m2) 汽油桶發光
+
+[214] l4d_weapon_spawn
+//(c1m1, c4m1) 單個武器生成在安全室
+
+[215] l4d1_random_witch_model
+//(c6m1) 生成Witch新娘
+
+[216] si_fire_immunity
+//(c1m4, c6m3, c14m2) 特感免疫火傷
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
