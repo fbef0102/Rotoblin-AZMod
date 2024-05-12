@@ -4,7 +4,7 @@
 #include <left4dhooks>
 #include <l4d_lib>
 
-#define SCORE_VERSION "8.3.9"
+#define SCORE_VERSION "8.5.5"
 
 #define SCORE_DEBUG 0
 #define SCORE_DEBUG_LOG 0
@@ -84,13 +84,11 @@ new bool:swapScoreBeginningLevel;
 
 new bool:roundCounterReset = false;
 
-new bool:clearedScores = false;
 new bool:roundRestarting = false;
 
 new bool:campaignScoresSwapped;
 
 /* Current Mission */
-new bool:pendingNewMission;
 new String:nextMap[128];
 
 /* Team Placement */
@@ -559,8 +557,6 @@ OnNewMission()
 	//game treats the scores as unswapped once again
 	if(!DetectScoresSwapped())
 		campaignScoresSwapped = false;
-	
-	pendingNewMission = false;
 }
 
 /**
@@ -591,24 +587,11 @@ public Action L4D_OnSetCampaignScores(int &scoreA, int &scoreB)
  */
 public Action L4D_OnClearTeamScores(bool newCampaign)
 {
-	//LogMessage("OnClearTeamScores()"); 
-	
-	/*
-	* this function gets called twice at the beginning of each map or restart the same level
-	* skip it the second time
-	*/
-	if(clearedScores)
-	{
-		clearedScores = false;
-	}
-	else
-	{
-		clearedScores = true;
+	//LogError("OnClearTeamScores()"); 
 		
-		CreateTimer(0.1, Timer_GetCampaignScores, _);
+	CreateTimer(0.1, Timer_GetCampaignScores, _);
 		
-		ResetRoundScores();
-	}
+	ResetRoundScores();
 	
 	return Plugin_Continue;
 }
@@ -621,7 +604,7 @@ public Action:Timer_GetCampaignScores(Handle:timer)
 		
 		scoreA = L4D2Direct_GetVSCampaignScore(0);
 		scoreB = L4D2Direct_GetVSCampaignScore(1);
-		DebugPrintToAll("Campaign scores are A=%d, B=%d", scoreA, scoreB);
+		//LogError("Campaign scores are A=%d, B=%d", scoreA, scoreB);
 		
 		//a mutual score of 0 can only mean one thing.. the campaign scores got reset
 		if(scoreA == 0 && scoreB == 0)
@@ -719,15 +702,8 @@ public OnMapStart()
 		
 		return;
 	}
-	
-	if(pendingNewMission)
-	{
-		OnNewMission();
-	}
-	else
-	{
-		mapCounter++;
-	}
+
+	mapCounter++;
 	
 	skippingLevel = false;
 	nextMap[0] = 0;
