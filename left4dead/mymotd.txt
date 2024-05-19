@@ -1,1 +1,26 @@
-http://m.qpic.cn/psb?/V12cgbNm31Hhoz/jsPu*WXqetyaaeVmVOsdB3kpeSYlkY8U9x2A6AJtuF8!/b/dE8BAAAAAAAA&bo=TAQmAkwEJgIDByI!&rf=viewer_4
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <style>
+            body {
+                background-image: url("http://m.qpic.cn/psb?/V12cgbNm31Hhoz/jsPu*WXqetyaaeVmVOsdB3kpeSYlkY8U9x2A6AJtuF8!/b/dE8BAAAAAAAA&bo=TAQmAkwEJgIDByI!&rf=viewer_4");
+                background-repeat: no-repeat;
+                background-size: 100% auto;
+            }
+            
+            .content {
+                color: #23bded;
+                text-align: center;
+                font-size: 32px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content"></div>
+    </body>
+</html>
