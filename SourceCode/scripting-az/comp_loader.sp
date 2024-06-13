@@ -8,7 +8,7 @@
 #define FULL_VERSION 1			//8 or just 4 configs
 #define NO_BOOMER_CFG 1			//enable or disable no boomer configs and convars
 
-#define PLUGIN_VERSION "2.5"
+#define PLUGIN_VERSION "2.6-2024/6/13"
 
 #define L4D_MAXCLIENTS MaxClients
 #define L4D_MAXCLIENTS_PLUS1 (L4D_MAXCLIENTS + 1)
@@ -2370,6 +2370,9 @@ public Action:Map_Changer(client, args)
 		Format(mapInfo6, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo6);
 		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm dv               | Change Map to Dead Vacation       |\n",mapInfo6);
 		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm deadvacation     |                                   |\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm uz               | Undead Zone                       |\n",mapInfo6);
+		Format(mapInfo6, MAPINFPMAXLEN, "%s| !cm undeadzone       |                                   |\n",mapInfo6);
 		#endif		
 		Format(mapInfo9, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
 		if(isAdmin == true) Format(mapInfo9, MAPINFPMAXLEN, "%s| !cm cancel           | cancel all requests               |\n", mapInfo9);
@@ -2431,6 +2434,7 @@ public Action:Map_Changer(client, args)
 		new AdminValueIsP84 = 0;
 		new AdminValueIsCOTD = 0;
 		new AdminValueIsDV = 0;
+		bool AdminValueIsUZ = false;
 		#endif
 
 		if(StrEqual(Admin_Map, "nm", false)) AdminValueIsNM = 1;
@@ -2473,6 +2477,8 @@ public Action:Map_Changer(client, args)
 		else if((StrEqual(Admin_Map, "cityofthedead", false))) AdminValueIsCOTD = 1;
 		else if((StrEqual(Admin_Map, "dv", false))) AdminValueIsDV = 1;
 		else if((StrEqual(Admin_Map, "deadvacation", false))) AdminValueIsDV = 1;
+		else if((StrEqual(Admin_Map, "uz", false))) AdminValueIsUZ = true;
+		else if((StrEqual(Admin_Map, "undeadzone", false))) AdminValueIsUZ = true;
 		#endif
 
 		if(AdminValueIsNM == 1)
@@ -2666,6 +2672,16 @@ public Action:Map_Changer(client, args)
 			CampaignchangeDelayed();
 			return Plugin_Handled;
 		}
+		else if(AdminValueIsUZ == true)
+		{
+			Admin_Cancel_Lite();
+			SetConVarInt(CompLoaderLoadActive, 0);
+			SetConVarInt(CompLoaderMapActive, 0);
+			AdminMapToExecuteName = "uz_crash";
+			CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader7","Undead Zone");
+			CampaignchangeDelayed();
+			return Plugin_Handled;
+		}
 		#endif
 
 		CPrintToChat(client, "[{olive}TS{default}] %T","Invalid Map.",client);	//debug, prints admin name, and the config entered *now prints to admin invalid config
@@ -2721,6 +2737,7 @@ public Action:Map_Changer(client, args)
 				new ValueIsP84 = 0;
 				new ValueIsCOTD = 0;
 				new ValueIsDV = 0;
+				bool ValueIsUZ = false;
 				#endif
 				
 				if(StrEqual(PlayerMap, "nm", false)) ValueIsNM = 1;
@@ -2763,6 +2780,8 @@ public Action:Map_Changer(client, args)
 				else if((StrEqual(PlayerMap, "cityofthedead", false))) ValueIsCOTD = 1;
 				else if((StrEqual(PlayerMap, "dv", false))) ValueIsDV = 1;
 				else if((StrEqual(PlayerMap, "deadvacation", false))) ValueIsDV = 1;
+				else if((StrEqual(PlayerMap, "uz", false))) ValueIsUZ = true;
+				else if((StrEqual(PlayerMap, "undeadzone", false))) ValueIsUZ = true;
 				#endif
 				
 				if(StrEqual(PlayerMap, "cancel", false))//cancel configs before validating config, if the args are "cancel"
@@ -2913,6 +2932,12 @@ public Action:Map_Changer(client, args)
 					PlayerMapChat = "DV";
 					bIsValidMap = true;
 				}
+				else if(ValueIsUZ == true)
+				{
+					PlayerMap = "Undead Zone";
+					PlayerMapChat = "UZ";
+					bIsValidMap = true;
+				}
 				#endif
 
 				if(!bIsValidMap)
@@ -3059,6 +3084,12 @@ public Action:Map_Changer(client, args)
 							else if(StrEqual(PlayerMap, "Dead Vacation", false))
 							{
 								MapToExecuteName = "hotel01_market_two";
+								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
+								return Plugin_Handled;		
+							}												
+							else if(StrEqual(PlayerMap, "Undead Zone", false))
+							{
+								MapToExecuteName = "uz_crash";
 								CreateTimer(1.0, Timer_Map_Change, _, TIMER_FLAG_NO_MAPCHANGE);	
 								return Plugin_Handled;														
 							}

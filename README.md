@@ -189,9 +189,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 * **Nav Remake:**
   * No Mercy Map 1~5
-  * Dead Air Map 1~5
+  * Crash Course Map 1~2
   * Death Toll Map 1~5
+  * Dead Air Map 1~5
   * Blood Harvest Map 1~5
+  * The Sacrifice Map 1~3
 
 - - - -
 ### Custom Map Support ###
@@ -209,6 +211,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Precinct 84](https://www.gamemaps.com/details/27737)
 * [City Of The Dead](https://www.gamemaps.com/details/25778)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
+* [Undead Zone](https://www.gamemaps.com/details/31513)
 
 - - - -
 ### Weapon Adjustments ###

@@ -200,7 +200,7 @@ public void OnPluginStart()
 	g_hCvarModesOff = CreateConVar(		"l4d_dissolve_modes_off",		"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
 	g_hCvarModesTog = CreateConVar(		"l4d_dissolve_modes_tog",		"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
 	g_hCvarChance = CreateConVar(		"l4d_dissolve_chance",			"100",			"Out of 100 the chance of dissolving a zombie when it dies. Note: stays activate for 0.5 seconds after triggering.", CVAR_FLAGS, true, 0.0, true, 100.0 );
-	g_hCvarInfected = CreateConVar(		"l4d_dissolve_infected",		"511",			"Dissolve these on death: 1=Common, 2=Witch, 4=Smoker, 8=Boomer, 16=Hunter, 32=Spitter, 64=Jockey, 128=Charger, 256=Tank, 511=All.", CVAR_FLAGS );
+	g_hCvarInfected = CreateConVar(		"l4d_dissolve_infected",		"509",			"Dissolve these on death: 1=Common, 2=Witch, 4=Smoker, 8=Boomer, 16=Hunter, 32=Spitter, 64=Jockey, 128=Charger, 256=Tank, 511=All.", CVAR_FLAGS );
 	g_hCvarSurvivor = CreateConVar(		"l4d_dissolve_survivor",		"1",			"If 1, Dissolve survivor death model", CVAR_FLAGS, true, 0.0, true, 1.0 );
 	g_hCvarTime = CreateConVar(			"l4d_dissolve_time",			"0.2",			"How long the particles stay for. Recommended values for best results from 0.0 (minimal particles) to 0.8.", CVAR_FLAGS, true, 0.0, true, 2.0 );
 	g_hCvarTimeMin = CreateConVar(		"l4d_dissolve_time_min",		"0.0",			"When time_min and time_max are not 0.0 the dissolve time will randomly be set to a value between these.", CVAR_FLAGS, true, 0.0, true, 2.0 );

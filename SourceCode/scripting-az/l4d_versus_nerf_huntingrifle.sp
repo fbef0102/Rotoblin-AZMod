@@ -54,7 +54,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
     if( test != Engine_Left4Dead )
     {
-        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
         return APLRes_SilentFailure;
     }
 

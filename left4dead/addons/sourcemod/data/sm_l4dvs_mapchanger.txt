@@ -94,6 +94,11 @@
 	{
 		"next mission map" "l4d_vs_smalltown01_caves"
 		"next mission name" "Death Toll (5 Maps)"
+	}		
+	"uz_escape"
+	{
+		"next mission map" "l4d_vs_smalltown01_caves"
+		"next mission name" "Death Toll (5 Maps)"
 	}	
 	"c1m4_atrium"
 	{

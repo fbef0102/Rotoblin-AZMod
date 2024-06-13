@@ -4,7 +4,7 @@
 #define PLUGIN_NAME                   "[L4D1] Glow Item (White)"
 #define PLUGIN_AUTHOR                 "Mart, Harry"
 #define PLUGIN_DESCRIPTION            "Add a white outline glow effect to items on the map"
-#define PLUGIN_VERSION                "1.0h"
+#define PLUGIN_VERSION                "1.1h-2024/6/9"
 #define PLUGIN_URL                    "https://forums.alliedmods.net/showthread.php?t=334222"
 
 // ====================================================================================================
@@ -66,7 +66,8 @@ public Plugin myinfo =
 #define CONFIG_BLINK_B                6
 #define CONFIG_BLINK_A                7
 #define CONFIG_FADEMAX                8
-#define CONFIG_ARRAYSIZE              9
+#define CONFIG_HITTABLE               9
+#define CONFIG_ARRAYSIZE              10
 
 #define MAXENTITIES                   2048
 #define ENTITY_SAFE_LIMIT             2000
@@ -253,6 +254,7 @@ void LoadConfigs()
     char default_blink_color[12];
     int default_blink_alpha;
     int default_fademax;
+    int default_tank_hittable_only;
 
     int iColor[3];
 
@@ -265,6 +267,7 @@ void LoadConfigs()
         kv.GetString("blink_color", default_blink_color, sizeof(default_blink_color), "0 0 0");
         default_blink_alpha = kv.GetNum("blink_alpha", 0);
         default_fademax = kv.GetNum("fademax", 0);
+        default_tank_hittable_only = kv.GetNum("tank_hittable_only", 0);
 
         iColor = ConvertRGBToIntArray(default_blink_color);
 
@@ -277,6 +280,7 @@ void LoadConfigs()
         g_iDefaultConfig[CONFIG_BLINK_B] = iColor[2];
         g_iDefaultConfig[CONFIG_BLINK_A] = default_blink_alpha;
         g_iDefaultConfig[CONFIG_FADEMAX] = default_fademax;
+        g_iDefaultConfig[CONFIG_HITTABLE] = default_tank_hittable_only;
     }
 
     kv.Rewind();
@@ -289,6 +293,7 @@ void LoadConfigs()
     char blink_color[12];
     int blink_alpha;
     int fademax;
+    int tank_hittable_only;
 
     int config[CONFIG_ARRAYSIZE];
 
@@ -308,6 +313,7 @@ void LoadConfigs()
                 kv.GetString("blink_color", blink_color, sizeof(blink_color), default_blink_color);
                 blink_alpha = kv.GetNum("blink_alpha", default_blink_alpha);
                 fademax = kv.GetNum("fademax", default_fademax);
+                tank_hittable_only = kv.GetNum("tank_hittable_only", default_tank_hittable_only);
 
                 iColor = ConvertRGBToIntArray(blink_color);
 
@@ -320,6 +326,7 @@ void LoadConfigs()
                 config[CONFIG_BLINK_B] = iColor[2];
                 config[CONFIG_BLINK_A] = blink_alpha;
                 config[CONFIG_FADEMAX] = fademax;
+                config[CONFIG_HITTABLE] = tank_hittable_only;
 
                 kv.GetSectionName(section, sizeof(section));
                 TrimString(section);
@@ -350,6 +357,7 @@ void LoadConfigs()
                 kv.GetString("blink_color", blink_color, sizeof(blink_color), default_blink_color);
                 blink_alpha = kv.GetNum("blink_alpha", default_blink_alpha);
                 fademax = kv.GetNum("fademax", default_fademax);
+                tank_hittable_only = kv.GetNum("tank_hittable_only", default_tank_hittable_only);
 
                 iColor = ConvertRGBToIntArray(blink_color);
 
@@ -362,6 +370,7 @@ void LoadConfigs()
                 config[CONFIG_BLINK_B] = iColor[2];
                 config[CONFIG_BLINK_A] = blink_alpha;
                 config[CONFIG_FADEMAX] = fademax;
+                config[CONFIG_HITTABLE] = tank_hittable_only;
 
                 kv.GetSectionName(modelname, sizeof(modelname));
                 TrimString(modelname);
@@ -452,16 +461,9 @@ void OnNextFrame(int entityRef)
     char classname[36];
     GetEntityClassname(entity, classname, sizeof(classname));
 
-    if (classname[0] == 'p') {
-        if(strncmp(classname, "prop_physics", 12, false) == 0)
-        {
-            if(!HasEntProp(entity, Prop_Send, "m_hasTankGlow"))
-                return;
-
-            if(GetEntProp(entity, Prop_Send, "m_hasTankGlow") == 0)
-                return;
-        }
-        else if(strncmp(classname, "prop_car_alarm", 14, false) == 0)
+    if (classname[0] == 'p') 
+    {
+        if(strncmp(classname, "prop_car_alarm", 14, false) == 0)
         {
             CreateTimer(1.0, Timer_AlarmCar, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);  //fix alarm car glass bugged and stuck 
             return;
@@ -484,6 +486,18 @@ void OnNextFrame(int entityRef)
 
     if (config[CONFIG_ENABLE] == 0)
         return;
+
+    if (classname[0] == 'p') 
+    {
+        if(strncmp(classname, "prop_physics", 12, false) == 0 && config[CONFIG_HITTABLE] == 1)
+        {
+            if(!HasEntProp(entity, Prop_Send, "m_hasTankGlow"))
+                return;
+
+            if(GetEntProp(entity, Prop_Send, "m_hasTankGlow") == 0)
+                return;
+        }
+    }
 
     if (HasEntProp(entity, Prop_Data, "m_itemCount")) // *_spawn entities
     {
@@ -1074,6 +1088,7 @@ Action CmdAdd(int client, int args)
     ge_iConfig[glow] = g_iDefaultConfig;
     ge_iConfig[glow][CONFIG_TEAM] = 0;
     ge_iConfig[glow][CONFIG_FADEMAX] = 0;
+    ge_iConfig[glow][CONFIG_HITTABLE] = 0;
 
     PrintToChat(client, "\x04Glow added to target entity.");
 
@@ -1116,6 +1131,7 @@ Action CmdAll(int client, int args)
         ge_iConfig[glow] = g_iDefaultConfig;
         ge_iConfig[glow][CONFIG_TEAM] = 0;
         ge_iConfig[glow][CONFIG_FADEMAX] = 0;
+        ge_iConfig[glow][CONFIG_HITTABLE] = 0;
     }
 
     if (IsValidClient(client))
@@ -1245,6 +1261,14 @@ Action Timer_AlarmCar(Handle timer, int entityRef)
     if (config[CONFIG_ENABLE] == 0)
         g_smClassnameConfig.GetArray("prop_car_alarm", config, sizeof(config));
 
+    if(config[CONFIG_HITTABLE] == 1)
+    {
+        if(!HasEntProp(entity, Prop_Send, "m_hasTankGlow"))
+            return Plugin_Continue;
+
+        if(GetEntProp(entity, Prop_Send, "m_hasTankGlow") == 0)
+            return Plugin_Continue;
+    }
 
     int glow = CreatePropGlow(entity, config);
     if(glow <= 0) return Plugin_Continue;

@@ -298,11 +298,15 @@ public OnPluginStart()
 	#endif
 	
 	RegAdminCmd("sm_restartmap", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
-	RegAdminCmd("sm_rs", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
+	#if READY_DEBUG
+		RegAdminCmd("sm_rs", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
+	#endif
 	//RegAdminCmd("sm_restartround", FakeRestartVoteCampaign, ADMFLAG_CHANGEMAP, "sm_restartround - executes a restart campaign vote and makes everyone votes yes");
 	
 	RegAdminCmd("sm_forcestart", compStart, ADMFLAG_BAN, "sm_forcestart");
-	RegAdminCmd("sm_fs", compStart, ADMFLAG_BAN, "sm_forcestart");
+	#if READY_DEBUG
+		RegAdminCmd("sm_fs", compStart, ADMFLAG_BAN, "sm_forcestart");
+	#endif
 	//sm_switch
 	RegAdminCmd("sm_switch", Switch_Client, ADMFLAG_BAN, "sm_switch <player1> <player2> - switch A to B's team, and B to A's team.");
 	

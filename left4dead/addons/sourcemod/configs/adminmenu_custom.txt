@@ -86,6 +86,10 @@
 		{
 			"cmd" "sm_rcon changelevel hotel01_market_two"
 		}
+		"Undead Zone"
+		{
+			"cmd" "sm_rcon changelevel uz_crash"
+		}
 		"L4D2C1"
 		{
 			"cmd" "sm_rcon changelevel c1m1_hotel"

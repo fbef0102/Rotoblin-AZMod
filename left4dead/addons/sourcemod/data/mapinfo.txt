@@ -381,6 +381,11 @@
 				"min"		"18"
 				"max"		"52"
 			}
+			"The End of the Map"
+			{
+				"min"		"88"
+				"max"		"100"
+			}
 		}
 		"witch_ban_flow"
 		{
@@ -1217,6 +1222,39 @@
 			}
 		}
 	}
+	"uz_crash"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+		"no_start_area" "1"
+	}
+	"uz_town"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+	}
+	"uz_desert"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.4"
+		"WaterSlowDown_map" 	"1"
+	}
+	"uz_bunker"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.6"
+		"WaterSlowDown_map" 	"1"
+	}
+	"uz_escape"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+		"tank_map_off" "1"
+		"no_final_first_tank" "0"
+	}
+
+
 	"c1m1_hotel"
 	{
 		"pill_limit" "1"
