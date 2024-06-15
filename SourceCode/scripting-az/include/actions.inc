@@ -11,13 +11,26 @@
 #include <actions_processors>
 #include <actions_constructor>
 
+/*
+ * Several plugins may provide a similar API. 
+ * Use the defines below to disable the corresponding definition.
+ * 
+ * #define _disable_actions_query_result_type
+ * #define _disable_actions_action_result_type
+ * #define _disable_actions_event_result_priority_type
+ * 
+ */
+
+#if !defined _disable_actions_query_result_type
 enum QueryResultType
 {
 	ANSWER_NO,
 	ANSWER_YES,
 	ANSWER_UNDEFINED
 };
+#endif
 
+#if !defined _disable_actions_action_result_type
 enum ActionResultType
 { 
 	CONTINUE,			// continue executing this action next frame - nothing has changed
@@ -26,7 +39,9 @@ enum ActionResultType
 	DONE,				// this action has finished, resume suspended action
 	SUSTAIN,			// for use with event handlers - a way to say "It's important to keep doing what I'm doing"
 };
+#endif
 
+#if !defined _disable_actions_event_result_priority_type
 enum EventResultPriorityType
 {
 	RESULT_NONE,		// no result
@@ -34,6 +49,7 @@ enum EventResultPriorityType
 	RESULT_IMPORTANT,	// try extra-hard to use this result
 	RESULT_CRITICAL		// this result must be used - emit an error if it can't be
 };
+#endif
 
 enum BehaviorAction
 {
@@ -848,6 +864,20 @@ methodmap BehaviorAction < BehaviorActionListeners
 		out[0] = view_as<float>(this.Get(offset, NumberType_Int32));
 		out[1] = view_as<float>(this.Get(offset + 4, NumberType_Int32));
 		out[2] = view_as<float>(this.Get(offset + 8, NumberType_Int32));
+	}
+
+ 	/**
+ 	* @brief Checks if action matches specified name
+ 	*
+ 	* @param name			Name to check against 
+ 	*
+ 	* @return 				true actions matches name, false otherwise 
+ 	*/
+	public bool Matches(const char[] match)
+	{
+		char name[ACTION_NAME_LENGTH];
+		this.GetName(name, sizeof name);
+		return !strcmp(name, match);
 	}
 
 	/**

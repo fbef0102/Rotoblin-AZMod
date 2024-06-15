@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.5
+v8.5.6
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
