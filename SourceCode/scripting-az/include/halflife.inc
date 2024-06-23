@@ -193,21 +193,24 @@ native bool IsDedicatedServer();
 
 /**
  * Returns a high-precision time value for profiling the engine.
- *
+ * 換圖之後會不歸0
+ * 遊戲被暫停，時間繼續
  * @return              A floating point time value.
  */
 native float GetEngineTime();
 
 /**
  * Returns the game time based on the game tick.
- *
+ * 換圖之後會歸0
+ * 遊戲被暫停，時間跟著凍結
  * @return              Game tick time.
  */
 native float GetGameTime();
 
 /**
  * Returns the game's internal tick count.
- *
+ * 換圖之後會歸0
+ * 遊戲被暫停，時間跟著凍結
  * @return              Game tick count.
  */
 native int GetGameTickCount();

@@ -771,6 +771,9 @@
 [216] si_fire_immunity
 //(c1m4, c6m3, c14m2) 特感免疫火傷
 
+[217] l4d2_tank_spawn_antirock_protect
+//剛拿到Tank的玩家短時間內不能丟石頭 (避免按錯右鍵)
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
