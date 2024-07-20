@@ -137,9 +137,9 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 							CPrintToChat(attacker,"[{olive}TS 1vHunter{default}] You have {green}%d{default} health remaining!", remaining_health);
 					}
 				
-					CreateTimer(0.01, ColdDown, attacker,_);
+					CreateTimer(0.01, ColdDown, GetClientUserId(attacker),_);
 					if(CvarSkipGetUpAnimation == 1)
-						CreateTimer(0.1, CancelGetup, victim,_);
+						CreateTimer(0.1, CancelGetup, GetClientUserId(victim),_);
 
 					if (remaining_health == 1&&CvarAnnounce == 1)
 					{
@@ -157,7 +157,10 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	return Plugin_Continue;
 }
 
-public Action:ColdDown(Handle:timer, any:attacker) {
+public Action:ColdDown(Handle:timer, any:attacker)
+{
+	attacker = GetClientOfUserId(attacker);
+	if (!attacker || !IsClientInGame(attacker) || GetClientTeam(attacker) != 3) return Plugin_Continue;
 
 	ForcePlayerSuicide(attacker);  
 }
@@ -167,9 +170,11 @@ public OnClientPutInServer(client)
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
-public Action:CancelGetup(Handle:timer, any:client) {
-    if (!IsClientConnected(client) || !IsClientInGame(client) || GetClientTeam(client) != 2) return Plugin_Stop;
+public Action:CancelGetup(Handle:timer, any:client) 
+{
+	client = GetClientOfUserId(client);
+	if (!client || !IsClientInGame(client) || GetClientTeam(client) != 2) return Plugin_Continue;
 
-    SetEntPropFloat(client, Prop_Send, "m_flCycle", 1000.0); // Jumps to frame 1000 in the animation, effectively skipping it.
-    return Plugin_Continue;
+	SetEntPropFloat(client, Prop_Send, "m_flCycle", 1000.0); // Jumps to frame 1000 in the animation, effectively skipping it.
+	return Plugin_Continue;
 }

@@ -31,11 +31,17 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+ConVar sv_cheats;
+bool g_bCvarSVCheats;
+
 public void OnPluginStart()
 {
+	sv_cheats = FindConVar("sv_cheats");
+
 	g_hPenalty = CreateConVar("l4d1_penalty", "1", "1 - kick clients, 0 - record players in log file, other value: ban minutes");
 	
-	g_iPenalty = g_hPenalty.IntValue;
+	GetCvars();
+	sv_cheats.AddChangeHook(ConVarChanged_Cvars);
 	g_hPenalty.AddChangeHook(ConVarChanged_Cvars);
 	
 	BuildPath(Path_SM, path, 256, "logs/mathack_cheaters.txt");
@@ -45,11 +51,19 @@ public void OnPluginStart()
 
 void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
+	GetCvars();
+}
+
+void GetCvars()
+{
+	g_bCvarSVCheats = sv_cheats.BoolValue;
 	g_iPenalty = g_hPenalty.IntValue;
 }
 
 Action CheckClients(Handle timer)
 {
+	if(g_bCvarSVCheats) return Plugin_Continue;
+	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && !IsFakeClient(client))

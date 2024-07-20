@@ -40,10 +40,10 @@ public OnPluginStart()
 
 	HookEvent("player_hurt", Event_PlayerHurt, EventHookMode_Post);
 	HookEvent("lunge_pounce", PlayerLunge_Pounce_Event);
-	HookEvent("player_spawn",		Event_PlayerSpawn,	EventHookMode_PostNoCopy);
-	HookEvent("player_death",		Event_PlayerDeath,	EventHookMode_PostNoCopy);
-	HookEvent("tank_spawn",			Event_TankSpawn,		EventHookMode_PostNoCopy);
-	HookEvent("witch_spawn",		WitchSpawn_Event,		EventHookMode_PostNoCopy);
+	HookEvent("player_spawn",		Event_PlayerSpawn);
+	HookEvent("player_death",		Event_PlayerDeath);
+	HookEvent("tank_spawn",			Event_TankSpawn);
+	HookEvent("witch_spawn",		WitchSpawn_Event);
 }
 
 public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)

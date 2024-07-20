@@ -1,6 +1,6 @@
 ﻿Support multi languages
 * Traditional Chinese 		- 繁體中文 	- zho 	, by Harry
-* English 			- English 	- en 	, by Harry
+* English 					- English 	- en 	, by Harry
 * Simplified Chinese 		- 简体中文 	- chi 	, by Target
 
 
