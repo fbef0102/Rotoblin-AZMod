@@ -1,10 +1,10 @@
-#define PLUGIN_VERSION 		"1.2h-2024/11/12"
+#define PLUGIN_VERSION 		"1.2h-2024/8/3"
 #define DEBUG 		0
 
 /*======================================================================================
 	Plugin Info:
 
-*	Name	:	[L4D & L4D2] Stagger Animation - Gravity Allowed
+*	Name	:	[L4D] Stagger Animation - Gravity Allowed
 *	Author	:	SilverShot, Harry
 *	Descrp	:	Allows gravity when players are staggering, otherwise they would float in the air until the animation completes. Also allows staggering over a ledge and falling.
 *	Link	:	https://forums.alliedmods.net/showthread.php?t=344297
@@ -53,7 +53,7 @@ float
 public Plugin myinfo =
 {
 	name = "[L4D] Stagger Animation - Gravity Allowed",
-	author = "SilverShot, HarryPotter",
+	author = "SilverShot, HarryPotter, Forgetest",
 	description = "Allows gravity when players are staggering, otherwise they would float in the air until the animation completes. Also allows staggering over a ledge and falling.",
 	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?t=344297"
@@ -78,12 +78,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
-public void OnAllPluginsLoaded()
-{
-    if( GetFeatureStatus(FeatureType_Native, "Left4DHooks_Version") != FeatureStatus_Available || Left4DHooks_Version() < 1139 )
-		SetFailState("\n==========\nThis plugin requires 'Left 4 DHooks' version 1.139 or newer. Please update that plugin.\n==========");
-}
-
 public void OnPluginStart()
 {
 	survivor_max_tongue_stagger_duration = FindConVar("survivor_max_tongue_stagger_duration");
@@ -98,7 +92,7 @@ public void OnPluginStart()
 	g_hCvarModesOff = CreateConVar(		"l4d_stagger_gravity_modes_off",	"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
 	g_hCvarModesTog = CreateConVar(		"l4d_stagger_gravity_modes_tog",	"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
 	CreateConVar(						"l4d_stagger_gravity_version",		PLUGIN_VERSION,	"Stagger Animation - Gravity Allowed plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	//AutoExecConfig(true,				"l4d_stagger_gravity");
+	AutoExecConfig(true,				"l4d_stagger_gravity");
 
 	g_hCvarMPGameMode = FindConVar("mp_gamemode");
 	g_hCvarMPGameMode.AddChangeHook(ConVarChanged_Allow);
@@ -590,6 +584,8 @@ public void L4D2_OnStagger_Post(int client, int source)
 //當在空中被推的特感(tank除外) 落地時真正觸發硬質動畫的時候 
 public void L4D_OnQueuedStagger_Post(int client)
 {
+	if(!g_bCvarAllow) return;
+
 	#if DEBUG
 	DebugPrint("%N L4D_OnQueuedStagger_Post", client);
 	#endif

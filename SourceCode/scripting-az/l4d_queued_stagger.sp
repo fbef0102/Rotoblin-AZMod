@@ -6,6 +6,34 @@
 #include <dhooks>
 #include <sourcescramble>
 
+GlobalForward g_FwdOnQueuedStagger_Pre, g_FwdOnQueuedStagger_Post, g_FwdOnQueuedStagger_PostHandled;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	g_FwdOnQueuedStagger_Pre = new GlobalForward("L4D_OnQueuedStagger", ET_Event, Param_Cell);
+	g_FwdOnQueuedStagger_Post = new GlobalForward("L4D_OnQueuedStagger_Post", ET_Ignore, Param_Cell);
+	g_FwdOnQueuedStagger_PostHandled = new GlobalForward("L4D_OnQueuedStagger_PostHandled", ET_Ignore, Param_Cell);
+
+	RegPluginLibrary("l4d_queued_stagger");
+	return APLRes_Success;
+}
+
+public Plugin myinfo =
+{
+	name = "[L4D] Queued Stagger",
+	author = "Forgetest",
+	description = "Create Forward API when special infected is about to do stagger animation on the ground (Get shoved on air)",
+	version = "1.0-2024/8/3",
+	url = "https://github.com/jensewe"
+}
+
 enum struct SDKCallParamsWrapper {
 	SDKType type;
 	SDKPassMethod pass;
@@ -65,17 +93,6 @@ Handle g_CallUpdateStagger;
 MemoryPatch g_PatchForceExit;
 bool g_bManualCall = false;
 int g_iManualCallTarget;
-GlobalForward g_FwdOnQueuedStagger_Pre, g_FwdOnQueuedStagger_Post, g_FwdOnQueuedStagger_PostHandled;
-
-public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max)
-{
-	g_FwdOnQueuedStagger_Pre = new GlobalForward("L4D_OnQueuedStagger", ET_Event, Param_Cell);
-	g_FwdOnQueuedStagger_Post = new GlobalForward("L4D_OnQueuedStagger_Post", ET_Ignore, Param_Cell);
-	g_FwdOnQueuedStagger_PostHandled = new GlobalForward("L4D_OnQueuedStagger_PostHandled", ET_Ignore, Param_Cell);
-	
-	RegPluginLibrary("l4d_queued_stagger");
-	return APLRes_Success;
-}
 
 public void OnPluginStart()
 {
@@ -89,8 +106,41 @@ public void OnPluginStart()
 	delete gd;
 }
 
+ConVar g_hCvarEnable;
+bool g_bCvarEnable = true;
+
+public void OnAllPluginsLoaded()
+{
+	g_hCvarEnable = FindConVar("l4d_stagger_gravity_allow");
+	if(g_hCvarEnable != null)
+	{
+		GetCvars();
+		g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
+	}
+}
+
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{    
+	g_bCvarEnable = g_hCvarEnable.BoolValue;
+	if(g_bCvarEnable)
+	{
+		g_PatchForceExit.Enable();
+	}
+	else
+	{
+		g_PatchForceExit.Disable();
+	}
+}
+
 MRESReturn DTR_UpdateStagger_Post(int client, DHookReturn hReturn)
 {
+	if(!g_bCvarEnable) return MRES_Ignored;
+
 	static int m_iQueuedStaggerType = -1;
 	if( m_iQueuedStaggerType == -1 )
 		m_iQueuedStaggerType = FindSendPropInfo("CTerrorPlayer", "m_staggerDist") + 4;
@@ -141,13 +191,16 @@ MRESReturn DTR_UpdateStagger_Post(int client, DHookReturn hReturn)
 
 MRESReturn DTR_UpdatePounce()
 {
+	if(!g_bCvarEnable) return MRES_Ignored;
+
 	if (g_bManualCall)
 	{
 		SDKCall(g_CallUpdateStagger, g_iManualCallTarget);
 	}
 	return MRES_Ignored;
 }
-/*
+
+/* test only
 public Action L4D_OnQueuedStagger(int client)
 {
 	PrintToChatAll("L4D_OnQueuedStagger : %N", client);
