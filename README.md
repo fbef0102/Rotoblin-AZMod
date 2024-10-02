@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.6
+v8.5.7
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -56,9 +56,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 
 - - - -	
 ### Server Anti Cheat ###
-* [Sourcemod_Anti-Cheat](https://github.com/fbef0102/L4D1-Server4Dead/releases): a server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
-* [Little-Anti-Cheat](https://github.com/J-Tanzanite/Little-Anti-Cheat): a free and open source anti-cheat for source games. Helpful in dealing with cheaters such as aimbot, bunnyhop, aimlock.
-  > **Developer Comment:** I highly recommend to install, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
+* [Sourcemod_Anti-Cheat-SMAC](https://github.com/fbef0102/SMAC): Server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
+* [Little-Anti-Cheat](https://github.com/fbef0102/Little-Anti-Cheat): Free and open source anti-cheat for source games. Helpful in dealing with cheaters such as aimbot, bunnyhop, aimlock.
+  > **Developer Comment:** I highly recommend to install both, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
 
 - - - -
 ### Server Admins! ###

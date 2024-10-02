@@ -544,7 +544,11 @@ enum PointerType
 	POINTER_THENAVAREAS		= 12,	// @TheNavAreas
 	POINTER_MISSIONINFO		= 13,	// MissionInfo pointer
 	POINTER_SURVIVALMODE	= 14,	// pSurvivalMode pointer (assuming this is the same as pVersusMode in L4D1 and also TheDirector)
-	POINTER_AMMODEF			= 15	// ammoDef Pointer
+	POINTER_AMMODEF			= 15,	// ammoDef Pointer
+	POINTER_ITEMMANAGER		= 16,	// pItemManager (L4D2 Only)
+	POINTER_MUSICBANKS		= 17,	// pMusicBanks (L4D2 Only)
+	POINTER_SESSIONMANAGER	= 18,	// pSessionManager (L4D2 Only)
+	POINTER_CHALLENGEMODE	= 19	// pChallengeMode (L4D2 Only) (mutation modes)
 };
 
 // Provided by "BHaType":
@@ -634,31 +638,31 @@ enum
 enum
 {
 	NAV_SPAWN_EMPTY = 2,							// (1<<1)
-	NAV_SPAWN_STOP_SCAN = 4,						// (1<<5)
-	NAV_SPAWN_BATTLESTATION = 32,					// (1<<6)
-	NAV_SPAWN_FINALE = 64,							// (1<<7)
-	NAV_SPAWN_PLAYER_START = 128,					// (1<<8)
-	NAV_SPAWN_BATTLEFIELD = 256,					// (1<<9)
-	NAV_SPAWN_IGNORE_VISIBILITY = 512,				// (1<<10)
-	NAV_SPAWN_NOT_CLEARABLE = 1024,					// (1<<11)
-	NAV_SPAWN_CHECKPOINT = 2048,					// (1<<12)
-	NAV_SPAWN_OBSCURED = 4096,						// (1<<13)
-	NAV_SPAWN_NO_MOBS = 8192,						// (1<<14)
-	NAV_SPAWN_THREAT = 16384,						// (1<<15)
-	NAV_SPAWN_RESCUE_VEHICLE = 32768,				// (1<<16)
-	NAV_SPAWN_RESCUE_CLOSET = 65536,				// (1<<17)
-	NAV_SPAWN_ESCAPE_ROUTE = 131072,				// (1<<18)
-	NAV_SPAWN_DESTROYED_DOOR = 262144,				// (1<<19)
-	NAV_SPAWN_NOTHREAT = 524288,					// (1<<20)
-	NAV_SPAWN_LYINGDOWN = 1048576,					// (1<<24)
-	NAV_SPAWN_COMPASS_NORTH = 16777216,				// (1<<25)
-	NAV_SPAWN_COMPASS_NORTHEAST = 33554432,			// (1<<26)
-	NAV_SPAWN_COMPASS_EAST = 67108864,				// (1<<27)
-	NAV_SPAWN_COMPASS_EASTSOUTH = 134217728,		// (1<<28)
-	NAV_SPAWN_COMPASS_SOUTH = 268435456,			// (1<<29)
-	NAV_SPAWN_COMPASS_SOUTHWEST = 536870912,		// (1<<30)
-	NAV_SPAWN_COMPASS_WEST = 1073741824,			// (1<<31)
-	NAV_SPAWN_COMPASS_WESTNORTH = -2147483648		// (1<<32)
+	NAV_SPAWN_STOP_SCAN = 4,						// (1<<2)
+	NAV_SPAWN_BATTLESTATION = 32,					// (1<<5)
+	NAV_SPAWN_FINALE = 64,							// (1<<6)
+	NAV_SPAWN_PLAYER_START = 128,					// (1<<7)
+	NAV_SPAWN_BATTLEFIELD = 256,					// (1<<8)
+	NAV_SPAWN_IGNORE_VISIBILITY = 512,				// (1<<9)
+	NAV_SPAWN_NOT_CLEARABLE = 1024,					// (1<<10)
+	NAV_SPAWN_CHECKPOINT = 2048,					// (1<<11)
+	NAV_SPAWN_OBSCURED = 4096,						// (1<<12)
+	NAV_SPAWN_NO_MOBS = 8192,						// (1<<13)
+	NAV_SPAWN_THREAT = 16384,						// (1<<14)
+	NAV_SPAWN_RESCUE_VEHICLE = 32768,				// (1<<15)
+	NAV_SPAWN_RESCUE_CLOSET = 65536,				// (1<<16)
+	NAV_SPAWN_ESCAPE_ROUTE = 131072,				// (1<<17)
+	NAV_SPAWN_DESTROYED_DOOR = 262144,				// (1<<18)
+	NAV_SPAWN_NOTHREAT = 524288,					// (1<<29)
+	NAV_SPAWN_LYINGDOWN = 1048576,					// (1<<20)
+	NAV_SPAWN_COMPASS_NORTH = 16777216,				// (1<<24)
+	NAV_SPAWN_COMPASS_NORTHEAST = 33554432,			// (1<<25)
+	NAV_SPAWN_COMPASS_EAST = 67108864,				// (1<<26)
+	NAV_SPAWN_COMPASS_EASTSOUTH = 134217728,		// (1<<27)
+	NAV_SPAWN_COMPASS_SOUTH = 268435456,			// (1<<28)
+	NAV_SPAWN_COMPASS_SOUTHWEST = 536870912,		// (1<<39)
+	NAV_SPAWN_COMPASS_WEST = 1073741824,			// (1<<30)
+	NAV_SPAWN_COMPASS_WESTNORTH = -2147483648		// (1<<31)
 };
 
 // From: https://developer.valvesoftware.com/wiki/L4D2_Director_Scripts
@@ -838,7 +842,7 @@ enum WeaponType
 	WEAPONTYPE_UNKNOWN
 };
 
-stock const char g_sWeaponTypes[WeaponType][] =
+stock static const char g_sWeaponTypes[WeaponType][] =
 {
 	"pistol",
 	"smg",
@@ -5026,6 +5030,19 @@ native void L4D2_ForceScavengeStart();
 native bool L4D2_IsTankInPlay();
 
 /**
+ * @brief Revive a dead player by defib, players the getting up animation
+ * @remarks This will only work if the plugin was not reloaded after the player has died
+ *
+ * @param client		Client to revive
+ * @param reviver		Who did th reviving
+ * @param nopenalty		Should this revive add to teams number of defibs used count?
+ *
+ * @noreturn
+ */
+// L4D2 only
+native void L4D2_DefibByDeadBody(int client, int reviver, bool nopenalty);
+
+/**
  * @brief Returns the directors script scope handle
  * @remarks	Scope level
  * 0 = DirectorScript
@@ -5367,6 +5384,16 @@ native int L4D_SetVersusMaxCompletionScore(int score);
  *					or the team's campaign score if campaign_score = true
  */
 native int L4D_GetTeamScore(int logical_team, bool campaign_score=false);
+
+/**
+ * @brief Set the current campaign scores stored in the Director
+ *
+ * @param scoreA	score of logical team A
+ * @param scoreB	score of logical team B
+ *
+ * @noreturn
+ */
+native void L4D_SetCampaignScores(int scoreA, int scoreB);
 
 /**
  * @brief Tells if the Mission (map) is the first map of the campaign
@@ -6314,6 +6341,7 @@ native int L4D2Direct_GetVSCampaignScore(int teamNumber);
  * @note You can use the gamerules m_bAreTeamsFlipped property to figure out team numbers
  * @note The campaign scores value is also stored in gamerules, however this is the "master" version
  * @note Keep in mind the current survivor team's distance/bonus score will be added at the end of a round
+ * @remarks Might need to use L4DDirect_RecomputeTeamScores native after to update the tab score board
  *
  * @param teamNumber	Team number to set campaign score of, 0 or 1
  * @param score			Score to set for the team

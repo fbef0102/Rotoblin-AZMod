@@ -2519,8 +2519,6 @@ public Action:TimerCountAdd(Handle:timer)
 
 		DrawReadyPanelList();
 		checkStatus();
-
-		MaterialHack_CheckClients();
 		
 		return Plugin_Continue;
 	}
@@ -3072,6 +3070,8 @@ RoundIsLive()
 	CreateTimer(1.5, timerLiveMessageCallback, _, _);
 
 	directorStart();
+
+	MaterialHack_CheckClients();
 
 	Call_StartForward(fwdOnReadyRoundRestarted);
 	Call_Finish();

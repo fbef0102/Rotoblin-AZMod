@@ -1,3 +1,5 @@
+//哈利有修改過
+
 /**
  * vim: set ts=4 :
  * =============================================================================
@@ -193,6 +195,7 @@ public Action Command_Who(int client, int args)
 
 		/* List all players */
 		char flagstring[255];
+		char ASCIIString[128];
 
 		for (int i=1; i<=MaxClients; i++)
 		{
@@ -212,6 +215,7 @@ public Action Command_Who(int client, int args)
 			}
 			else
 			{
+				FlagBitsToString(flags, ASCIIString, sizeof(ASCIIString)); // flags To ASCII characters
 				FlagsToString(flagstring, sizeof(flagstring), flags);
 			}
 			char name[MAX_NAME_LENGTH];
@@ -226,7 +230,7 @@ public Action Command_Who(int client, int args)
 			
 			if (is_admin)
 			{
-				PrintToConsole(client, "%2d. %-24.23s %-18.17s %s", i, name, username, flagstring);
+				PrintToConsole(client, "%2d. %-24.23s %-18.17s %d:%s (%s)", i, name, username, id.ImmunityLevel, ASCIIString, flagstring);
 			}
 			else
 			{

@@ -50,8 +50,8 @@ public OnPluginStart()
 {
     CreateConVar("stop_trolls_version", PLUGIN_VERSION, "StopTrolls plugin version", FCVAR_REPLICATED|FCVAR_NOTIFY);
     
-    g_hFlags = CreateConVar("stop_trolls_flags", "110", "Who can push trolls when climbs on the ladder. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
-    g_hImmune = CreateConVar("stop_trolls_immune", "0", "What class is immune. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
+    g_hFlags = CreateConVar("stop_trolls_flags", "110", "(The player who climbing the ladder) Who can push trolls when climbs on the ladder. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
+    g_hImmune = CreateConVar("stop_trolls_immune", "0", "(The player who blocking the ladder) What class is immune. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
     //AutoExecConfig(true, "StopTrollss"); // If u want a cfg file uncomment it. But I don't like.
     
     HookConVarChange(g_hFlags, OnCvarChange_Flags);
@@ -66,14 +66,14 @@ public OnClientPutInServer(client)
 {
     if (g_iCvarFlags && client)
         SDKHook(client, SDKHook_Touch, SDKHook_cb_Touch);
-    
 }
 
-
-public Action:SDKHook_cb_Touch(entity, other)
+// entity = The player who climbing the ladder
+// other = The player who blocking the ladder
+Action SDKHook_cb_Touch(int entity, int other)
 {
-    if (other > MaxClients || other < 1) return;
-    
+    if (other > MaxClients || other <= 0) return Plugin_Continue;
+
     if (IsGuyTroll(entity, other)){
         
         new iClass = GetEntProp(entity, Prop_Send, "m_zombieClass");
@@ -82,19 +82,23 @@ public Action:SDKHook_cb_Touch(entity, other)
             
             iClass = GetEntProp(other, Prop_Send, "m_zombieClass");
             
-            if (g_iCvarImmune & (1 << iClass)) return;
+            if (g_iCvarImmune & (1 << iClass)) return Plugin_Continue;
             
-            if (IsOnLadder(other)){
-                
-                decl Float:vOrg[3];
+            if (IsOnLadder(other))
+            {
+                float vOrg[3];
                 GetClientAbsOrigin(other, vOrg);
                 vOrg[2] += 2.5;
                 TeleportEntity(other, vOrg, NULL_VECTOR, NULL_VECTOR);
             }
             else
-            TeleportEntity(other, NULL_VECTOR, NULL_VECTOR, Float:{0.0, 0.0, 251.0});
+            {
+                TeleportEntity(other, NULL_VECTOR, NULL_VECTOR, Float:{0.0, 0.0, 251.0});
+            }
         }
     }
+
+    return Plugin_Continue;
 }
 
 bool:IsGuyTroll(victim, troll)

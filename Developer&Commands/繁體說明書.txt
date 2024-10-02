@@ -563,8 +563,9 @@
 [149] l4d_weapon_prop_give_fix
 //使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
 
-[150] l4d_unswap_empty_primary
+[xx] l4d_unswap_empty_primary
 //撿到空彈夾的主武器不會自動切換到手槍
+//移除, 沒作用
 
 [151] physics_object_pushfix
 //人類與特感不會再推擠物件
