@@ -111,7 +111,7 @@ bool g_bCvarEnable = true;
 
 public void OnAllPluginsLoaded()
 {
-	g_hCvarEnable = FindConVar("l4d_stagger_gravity_allow");
+	g_hCvarEnable = FindConVar("l4d_stagger_gravity_enable");
 	if(g_hCvarEnable != null)
 	{
 		GetCvars();

@@ -1,0 +1,117 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"CTerrorGameMovement::LadderMove"
+			{
+				"signature"		"CTerrorGameMovement::LadderMove"
+				"callconv"		"cdecl"
+				"return"		"int"
+				"arguments"
+				{
+					"this"
+					{
+						"type"	"objectptr"
+						"windows"
+						{
+							"register"	"ecx"
+						}
+					}
+				}
+			}
+
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				"signature"		"CTerrorGameMovement::CheckForLadders"
+				"linux"
+				{
+					"callconv"	"cdecl"
+				}
+				"windows"
+				{
+					"callconv"	"stdcall"
+				}
+				"return"		"void"
+				"arguments"
+				{
+					"this"
+					{
+						"type"	"objectptr"
+						"windows"
+						{
+							"register"	"ecx"
+						}
+					}
+					"a1"
+					{
+						"type"	"bool"
+					}
+				}
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"CTerrorGameMovement::pTerrorPlayer"
+			{
+				"linux"			"2092"
+				"windows"		"2092"
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorGameMovement::LadderMove"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19CTerrorGameMovement10LadderMoveEv"
+				"windows"		"\x56\x8B\xF1\x83\xBE\x2C\x08\x00\x00\x00\x75\x2A\x5E\xE9"
+								/* 56 8B F1 83 BE 2C 08 00 00 00 75 ? 5E E9 */
+			}
+
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19CTerrorGameMovement15CheckForLaddersEb"
+				"windows"		"\x56\x8B\xF1\x83\xBE\x2C\x08\x00\x00\x00\x74\x2A\x8B\x8E\x2C\x08\x00\x00"
+								/* 56 8B F1 83 BE 2C 08 00 00 00 74 ? 8B 8E 2C 08 00 00 */
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"CTerrorGameMovement::pTerrorPlayer"
+			{
+				"linux"			"2064"
+				"windows"		"2064"
+			}
+		}
+
+		"Signatures"
+		{
+			"CTerrorGameMovement::LadderMove"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19CTerrorGameMovement10LadderMoveEv"
+				"windows"		"\x57\x8B\xF9\x83\xBF\x10\x08\x00\x00\x00"
+								/* 57 8B F9 83 BF 10 08 00 00 00 */
+			}
+
+			"CTerrorGameMovement::CheckForLadders"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19CTerrorGameMovement15CheckForLaddersEb"
+				"windows"		"\x55\x8B\xEC\x56\x8B\xF1\x83\xBE\x10\x08\x00\x00\x00"
+								/* 55 8B EC 56 8B F1 83 BE 10 08 00 00 00 */
+			}
+		}
+	}
+}

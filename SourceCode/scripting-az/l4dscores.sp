@@ -4,7 +4,7 @@
 #include <left4dhooks>
 #include <l4d_lib>
 
-#define SCORE_VERSION "8.5.6"
+#define SCORE_VERSION "8.5.8"
 
 #define SCORE_DEBUG 0
 #define SCORE_DEBUG_LOG 0

@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.7
+v8.5.8
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -632,8 +632,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
-
-* **Play L4D2 maps in l4d1 game**
+> __Note__ Type !votes -> Change addon map
+* **[L4D2 on L4D1 Maps](https://www.gamemaps.com/details/32168)**
   1. **C1 - Dead Center**
   2. **C2 - Dark Carnival**
   3. **C3 - Swamp Fever**
@@ -651,21 +651,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   <br/><img src="https://i.imgur.com/BpH0wDk.jpg">
   <br/><img src="https://i.imgur.com/XKjIfTF.jpg">
 
-* <details><summary> <b>"left4deadDLC4-l4d2onl4d1" Mod</b> </summary>
+* <details><summary><b>L4D2 Map Modify</b></summary>
 
-  > 🟥 **Important:** Files are **PRIVATE**, please contact Harry to request download.
-
-  <img src="https://user-images.githubusercontent.com/12229810/216926232-6d92f80f-1829-4af8-ae25-8f1009ef6e15.png" alt="11460c3797f5.png">
-
-  * 6 GB files
-  * Have install instructions
-</details>
-
-* <details><summary> <b>L4D2 Map Modify</b> </summary>
-
-  > 🟥 **Important:** Files are **PRIVATE**, please contact Harry to request download.
-
-  <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png" alt="11460c3797f5.png">
+  <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png">
 
   * Add models, materials, objects, infected ladders, invisible blocks in 2019 L4D2 The Last Stand update. ([mapfixes](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_mapfixes.nut), [versus](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_versus.nut))
   * Add ammo, weapons, and objects, infected ladders, invisible blocks (Based on [L4D2-Comp-Stripper-Rework by Derpduck](https://github.com/Derpduck/L4D2-Comp-Stripper-Rework))
@@ -673,7 +661,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fix Fog, Gascan, cola, gnome issue and error
 </details>
 
-* <details><summary> <b>Plugin Support</b> </summary>
+* <details><summary><b>Plugin Support</b></summary>
 
   * **(c1m4, c6m3, c14m2) Fix the problem when you take the gascans, the white glow of gascan will disappear and sometimes survivor can not find any gascan on the field**
     ```php

@@ -16,7 +16,7 @@ new String:kickplayer_name[MAX_NAME_LENGTH];
 new String:kickplayer_SteamId[MAX_NAME_LENGTH];
 new String:forcespectateplayername[MAX_NAME_LENGTH];
 new String:votesmaps[MAX_NAME_LENGTH];
-new String:votesmapsname[64];
+new String:votesmapsname[MAX_NAME_LENGTH];
 Menu g_hVoteMenu = null;
 
 ConVar g_Cvar_Limits;
@@ -62,7 +62,7 @@ public Plugin:myinfo =
 	name = "Votes Menu",
 	author = "fenghf,l4d1 modify by Harry Potter and JJ",
 	description = "Votes Commands",
-	version = "1.8",
+	version = "1.9-2024/10/18",
 	url = "https://steamcommunity.com/profiles/76561198026784913/"
 };
 
@@ -634,7 +634,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 {
 	if (action == MenuAction_Select)
 	{
-		new String:info[32] , String:name[32];
+		new String:info[32] , String:name[MAX_NAME_LENGTH];
 		GetMenuItem(menu, param2, info, sizeof(info), _, name, sizeof(name));
 		int player = StringToInt(info);
 		player = GetClientOfUserId(player);
@@ -655,10 +655,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 				}
 				else
 				{
-					kickplayer_userid = GetClientUserId(player);
-					kickplayer_name = name;
-					GetClientAuthId(player, AuthId_Steam2,kickplayer_SteamId, sizeof(kickplayer_SteamId));
-					DisplayVoteKickMenu(param1);
+					DisplayVoteKickMenu(param1, player, name);
 				}
 			}
 		}
@@ -681,7 +678,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 			delete menu;
 }
 
-public DisplayVoteKickMenu(client)
+public DisplayVoteKickMenu(client, int player, const char name[MAX_NAME_LENGTH])
 {
 	if (!TestVoteDelay(client))
 	{
@@ -690,6 +687,10 @@ public DisplayVoteKickMenu(client)
 	
 	if(CanStartVotes(client))
 	{
+		kickplayer_userid = GetClientUserId(player);
+		kickplayer_name = name;
+		GetClientAuthId(player, AuthId_Steam2,kickplayer_SteamId, sizeof(kickplayer_SteamId));
+
 		decl String:SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: kick %s(%s)",  client, SteamId, kickplayer_name, kickplayer_SteamId);//紀錄在log文件
@@ -788,11 +789,9 @@ public MapMenuHandler(Handle:menu, MenuAction:action, client, itemNum)
 {
 	if ( action == MenuAction_Select ) 
 	{
-		new String:info[32] , String:name[64];
+		new String:info[MAX_NAME_LENGTH] , String:name[MAX_NAME_LENGTH];
 		GetMenuItem(menu, itemNum, info, sizeof(info), _, name, sizeof(name));
-		votesmaps = info;
-		votesmapsname = name;	
-		DisplayVoteMapsMenu(client);		
+		DisplayVoteMapsMenu(client, info, name);		
 	}
 	else if ( action == MenuAction_Cancel)
 	{
@@ -805,17 +804,20 @@ public MapMenuHandler(Handle:menu, MenuAction:action, client, itemNum)
 	else if ( action == MenuAction_End)
 			delete menu;
 }
-public DisplayVoteMapsMenu(client)
+public DisplayVoteMapsMenu(client, const char info[MAX_NAME_LENGTH], const char name[MAX_NAME_LENGTH])
 {
 	if (!TestVoteDelay(client))
 	{
 		return;
 	}
+
 	if(CanStartVotes(client))
 	{
+		votesmaps = info;
+		votesmapsname = name;	
 		decl String:SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
-		LogMessage("%N(%s) starts a vote: change map %s",  client, SteamId,votesmapsname);//紀錄在log文件
+		LogMessage("%N(%s) starts a vote: change map %s",  client, SteamId, votesmapsname);//紀錄在log文件
 		CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t %s", client,"starts a vote","Change map", votesmapsname);
 		
 		for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
@@ -878,16 +880,14 @@ public Menu_Votesforcespectate(Handle:menu, MenuAction:action, param1, param2)
 {
 	if (action == MenuAction_Select)
 	{
-		new String:info[32] , String:name[32];
+		new String:info[32] , String:name[MAX_NAME_LENGTH];
 		GetMenuItem(menu, param2, info, sizeof(info), _, name, sizeof(name));
 
 		int UserId = StringToInt(info);
 		int target = GetClientOfUserId(UserId);
 		if( target && IsClientInGame(target))
 		{
-			forcespectateid = GetClientUserId(target);
-			forcespectateplayername = name;	
-			DisplayVoteforcespectateMenu(param1);		
+			DisplayVoteforcespectateMenu(param1, target, name);		
 		}
 		else
 		{
@@ -907,7 +907,7 @@ public Menu_Votesforcespectate(Handle:menu, MenuAction:action, param1, param2)
 			delete menu;
 }
 
-public DisplayVoteforcespectateMenu(client)
+public DisplayVoteforcespectateMenu(client, int target, const char name[MAX_NAME_LENGTH])
 {
 	if (!TestVoteDelay(client))
 	{
@@ -916,6 +916,9 @@ public DisplayVoteforcespectateMenu(client)
 	
 	if(CanStartVotes(client))
 	{
+		forcespectateid = GetClientUserId(target);
+		forcespectateplayername = name;	
+			
 		decl String:SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: forcespectate player %s",  client, SteamId,forcespectateplayername);//紀錄在log文件

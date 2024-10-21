@@ -1,17 +1,5 @@
-#define PLUGIN_VERSION 		"1.2h-2024/8/3"
+#define PLUGIN_VERSION 		"1.3h-2024/10/9"
 #define DEBUG 		0
-
-/*======================================================================================
-	Plugin Info:
-
-*	Name	:	[L4D] Stagger Animation - Gravity Allowed
-*	Author	:	SilverShot, Harry
-*	Descrp	:	Allows gravity when players are staggering, otherwise they would float in the air until the animation completes. Also allows staggering over a ledge and falling.
-*	Link	:	https://forums.alliedmods.net/showthread.php?t=344297
-*	Plugins	:	https://sourcemod.net/plugins.php?exact=exact&sortby=title&search=1&author=Silvers
-
-======================================================================================*/
-
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -20,43 +8,13 @@
 #include <left4dhooks>
 #include <l4d_queued_stagger>
 
-#define CVAR_FLAGS			FCVAR_NOTIFY
-#define BLOCK_TIME			0.3		// How long to block shooting/shoving/moving when staggering
-#define L4D1_TANK_STAGGER_TIME 2.9 //tank 被推/震時間 (L4D1 對抗寫死)
-#define L4D1_BOOMER_STAGGER_TIME 2.7 //boomer 被推/震時間 (L4D1 對抗寫死)
-
-ConVar survivor_max_tongue_stagger_duration, z_max_stagger_duration;
-float g_fCvar_survivor_max_tongue_stagger_duration, g_fCvar_z_max_stagger_duration;
-
-ConVar g_hCvarAllow, g_hCvarMPGameMode, g_hCvarModes, g_hCvarModesOff, g_hCvarModesTog;
-bool g_bCvarAllow, g_bMapStarted, g_bRoundStarted;
-
-bool 
-	g_bStagger[MAXPLAYERS+1], 
-	g_bFrameStagger[MAXPLAYERS+1], 
-	g_bBlockXY[MAXPLAYERS+1],
-	g_bStaggerSelf[MAXPLAYERS+1],
-	g_bHurtByTank[MAXPLAYERS+1],
-	g_bStaggerNew[MAXPLAYERS+1];
-
-float 
-	g_vStart[MAXPLAYERS+1][3], 
-	g_fDist[MAXPLAYERS+1], 
-	g_fTtime[MAXPLAYERS+1], 
-	g_fTimeBlock[MAXPLAYERS+1];
-
-
-
-// ====================================================================================================
-//					PLUGIN INFO / START / END
-// ====================================================================================================
 public Plugin myinfo =
 {
 	name = "[L4D] Stagger Animation - Gravity Allowed",
 	author = "SilverShot, HarryPotter, Forgetest",
 	description = "Allows gravity when players are staggering, otherwise they would float in the air until the animation completes. Also allows staggering over a ledge and falling.",
 	version = PLUGIN_VERSION,
-	url = "https://forums.alliedmods.net/showthread.php?t=344297"
+	url = "https://github.com/fbef0102/Rotoblin-AZMod"
 }
 
 #define ZC_BOOMER 2
@@ -78,6 +36,31 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+#define CVAR_FLAGS			FCVAR_NOTIFY
+#define BLOCK_TIME			0.3		// How long to block shooting/shoving/moving when staggering
+#define L4D1_TANK_STAGGER_TIME 2.9 //tank 被推/震時間 (L4D1 對抗寫死)
+#define L4D1_BOOMER_STAGGER_TIME 2.7 //boomer 被推/震時間 (L4D1 對抗寫死)
+
+ConVar survivor_max_tongue_stagger_duration, z_max_stagger_duration;
+float g_fCvar_survivor_max_tongue_stagger_duration, g_fCvar_z_max_stagger_duration;
+
+ConVar g_hCvarAllow;
+bool g_bCvarAllow, g_bRoundStarted;
+
+bool 
+	g_bStagger[MAXPLAYERS+1], 
+	g_bFrameStagger[MAXPLAYERS+1], 
+	g_bBlockXY[MAXPLAYERS+1],
+	g_bStaggerSelf[MAXPLAYERS+1],
+	g_bHurtByTank[MAXPLAYERS+1],
+	g_bStaggerNew[MAXPLAYERS+1];
+
+float 
+	g_vStart[MAXPLAYERS+1][3], 
+	g_fDist[MAXPLAYERS+1], 
+	g_fTtime[MAXPLAYERS+1], 
+	g_fTimeBlock[MAXPLAYERS+1];
+
 public void OnPluginStart()
 {
 	survivor_max_tongue_stagger_duration = FindConVar("survivor_max_tongue_stagger_duration");
@@ -87,22 +70,14 @@ public void OnPluginStart()
 	survivor_max_tongue_stagger_duration.AddChangeHook(ConVarChanged_Cvars);
 	z_max_stagger_duration.AddChangeHook(ConVarChanged_Cvars);
 
-	g_hCvarAllow = CreateConVar(		"l4d_stagger_gravity_allow",		"1",			"0=Plugin off, 1=Plugin on.", CVAR_FLAGS );
-	g_hCvarModes = CreateConVar(		"l4d_stagger_gravity_modes",		"",				"Turn on the plugin in these game modes, separate by commas (no spaces). (Empty = all).", CVAR_FLAGS );
-	g_hCvarModesOff = CreateConVar(		"l4d_stagger_gravity_modes_off",	"",				"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
-	g_hCvarModesTog = CreateConVar(		"l4d_stagger_gravity_modes_tog",	"0",			"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS );
+	g_hCvarAllow = CreateConVar(		"l4d_stagger_gravity_enable",		"1",			"0=Plugin off, 1=Plugin on.", CVAR_FLAGS );
 	CreateConVar(						"l4d_stagger_gravity_version",		PLUGIN_VERSION,	"Stagger Animation - Gravity Allowed plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	AutoExecConfig(true,				"l4d_stagger_gravity");
 
-	g_hCvarMPGameMode = FindConVar("mp_gamemode");
-	g_hCvarMPGameMode.AddChangeHook(ConVarChanged_Allow);
-	g_hCvarModes.AddChangeHook(ConVarChanged_Allow);
-	g_hCvarModesOff.AddChangeHook(ConVarChanged_Allow);
-	g_hCvarModesTog.AddChangeHook(ConVarChanged_Allow);
 	g_hCvarAllow.AddChangeHook(ConVarChanged_Allow);
 
 	#if DEBUG
-	RegAdminCmd("sm_test", CmdTest, ADMFLAG_ROOT);
+		RegAdminCmd("sm_stest", CmdTest, ADMFLAG_ROOT);
 	#endif
 
 	LoadTranslations("common.phrases");
@@ -153,9 +128,8 @@ void IsAllowed()
 {
 	GetCvars();
 	bool bCvarAllow = g_hCvarAllow.BoolValue;
-	bool bAllowMode = IsAllowedGameMode();
 
-	if( g_bCvarAllow == false && bCvarAllow == true && bAllowMode == true )
+	if( g_bCvarAllow == false && bCvarAllow == true)
 	{
 		g_bCvarAllow = true;
 		HookEvent("round_start",	Event_RoundStart, EventHookMode_PostNoCopy);
@@ -163,83 +137,13 @@ void IsAllowed()
 		HookEvent("player_spawn",	Event_PlayerSpawn);
 	}
 
-	else if( g_bCvarAllow == true && (bCvarAllow == false || bAllowMode == false) )
+	else if( g_bCvarAllow == true && bCvarAllow == false )
 	{
 		g_bCvarAllow = false;
 		UnhookEvent("round_start",	Event_RoundStart, EventHookMode_PostNoCopy);
 		UnhookEvent("round_end",	Event_RoundEnd, EventHookMode_PostNoCopy);
 		UnhookEvent("player_spawn",	Event_PlayerSpawn);
 	}
-}
-
-int g_iCurrentMode;
-bool IsAllowedGameMode()
-{
-	if( g_hCvarMPGameMode == null )
-		return false;
-
-	int iCvarModesTog = g_hCvarModesTog.IntValue;
-	if( iCvarModesTog != 0 )
-	{
-		if( g_bMapStarted == false )
-			return false;
-
-		g_iCurrentMode = 0;
-
-		int entity = CreateEntityByName("info_gamemode");
-		if( IsValidEntity(entity) )
-		{
-			DispatchSpawn(entity);
-			HookSingleEntityOutput(entity, "OnCoop", OnGamemode, true);
-			HookSingleEntityOutput(entity, "OnSurvival", OnGamemode, true);
-			HookSingleEntityOutput(entity, "OnVersus", OnGamemode, true);
-			HookSingleEntityOutput(entity, "OnScavenge", OnGamemode, true);
-			ActivateEntity(entity);
-			AcceptEntityInput(entity, "PostSpawnActivate");
-			if( IsValidEntity(entity) ) // Because sometimes "PostSpawnActivate" seems to kill the ent.
-				RemoveEdict(entity); // Because multiple plugins creating at once, avoid too many duplicate ents in the same frame
-		}
-
-		if( g_iCurrentMode == 0 )
-			return false;
-
-		if( !(iCvarModesTog & g_iCurrentMode) )
-			return false;
-	}
-
-	char sGameModes[64], sGameMode[64];
-	g_hCvarMPGameMode.GetString(sGameMode, sizeof(sGameMode));
-	Format(sGameMode, sizeof(sGameMode), ",%s,", sGameMode);
-
-	g_hCvarModes.GetString(sGameModes, sizeof(sGameModes));
-	if( sGameModes[0] )
-	{
-		Format(sGameModes, sizeof(sGameModes), ",%s,", sGameModes);
-		if( StrContains(sGameModes, sGameMode, false) == -1 )
-			return false;
-	}
-
-	g_hCvarModesOff.GetString(sGameModes, sizeof(sGameModes));
-	if( sGameModes[0] )
-	{
-		Format(sGameModes, sizeof(sGameModes), ",%s,", sGameModes);
-		if( StrContains(sGameModes, sGameMode, false) != -1 )
-			return false;
-	}
-
-	return true;
-}
-
-void OnGamemode(const char[] output, int caller, int activator, float delay)
-{
-	if( strcmp(output, "OnCoop") == 0 )
-		g_iCurrentMode = 1;
-	else if( strcmp(output, "OnSurvival") == 0 )
-		g_iCurrentMode = 2;
-	else if( strcmp(output, "OnVersus") == 0 )
-		g_iCurrentMode = 4;
-	else if( strcmp(output, "OnScavenge") == 0 )
-		g_iCurrentMode = 8;
 }
 
 public void OnClientPutInServer(int client)
@@ -290,13 +194,11 @@ void SurvivorOnTakeDamagePost(int client, int attacker, int inflictor, float dam
 // ====================================================================================================
 public void OnMapStart()
 {
-	g_bMapStarted = true;
 	g_bRoundStarted = true;
 }
 
 public void OnMapEnd()
 {
-	g_bMapStarted = false;
 	ResetPlugin();
 }
 
@@ -713,11 +615,11 @@ public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 			SetEntPropFloat(client, Prop_Send, "m_staggerTimer", g_fTtime[client], 1);
 
 			//查看是否有被震，沒有則強制震
-
-			DataPack hPack;
+			//staggersolver 已修復
+			/*DataPack hPack;
 			CreateDataTimer(0.02, Timer_OnFrameStagger, hPack, TIMER_FLAG_NO_MAPCHANGE);
 			hPack.WriteCell(GetClientUserId(attacker));
-			hPack.WriteCell(GetClientUserId(client));
+			hPack.WriteCell(GetClientUserId(client));*/
 		}
 	}
 }
@@ -862,7 +764,7 @@ void SetAttack(int client)
 }
 */
 
-Action Timer_OnFrameStagger(Handle timer, DataPack hPack)
+/*Action Timer_OnFrameStagger(Handle timer, DataPack hPack)
 {
 	hPack.Reset();
 	int attacker = GetClientOfUserId(hPack.ReadCell());
@@ -879,7 +781,7 @@ Action Timer_OnFrameStagger(Handle timer, DataPack hPack)
 	}
 
 	return Plugin_Continue;
-}
+}*/
 
 void OnFrameStagger(int client)
 {

@@ -31,36 +31,32 @@
 * 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
 
 --------支援的三方圖--------
-* 下載連結: https://github.com/fbef0102/Rotoblin-AZMod/releases
-1. City 17 
-2. Suicide Blitz
-3. Dead Flag Blues
-4. I Hate Mountains
-5. Dead Before Dawn
-6. The Arena of the Dead
-7. Death Aboard
-8. One 4 Nine
-9. Dark Blood
-10. Blood Harvest APOCALYPSE
-11. Precinct 84
-12. City Of The Dead
-13. Dead Vacation
+1. City 17: gamemaps.com/details/27815
+2. Suicide Blitz: gamemaps.com/details/28744
+3. Dead Flag Blues: gamemaps.com/details/28743
+4. I Hate Mountains: gamemaps.com/details/28748
+5. Dead Before Dawn: gamemaps.com/details/27816
+6. The Arena of the Dead: gamemaps.com/details/28749
+7. Death Aboard: gamemaps.com/details/28747
+8. One 4 Nine: gamemaps.com/details/28745
+9. Dark Blood: gamemaps.com/details/28746
+10. Blood Harvest APOCALYPSE: gamemaps.com/details/27736
+11. Precinct 84: gamemaps.com/details/27737
+12. City Of The Dead: gamemaps.com/details/25778
+13. Dead Vacation: gamemaps.com/details/30523
+14. Undead Zone: gamemaps.com/details/31513
 
-* 支援二代地圖，想要地圖請聯繫哈利
-* 名稱: "left4deadDLC4-l4d2onl4d1" Mod
-* 作者:
-	1. 原始開發團隊: l4d2onl4d1-team
-	2. 改進優化: AshThe9thSurvivor
-	3. 對抗更新: HarryPotter
+--------支援二代地圖--------
+* L4D2 on L4D1 Maps: https://www.gamemaps.com/details/32168
 * 地圖列表:
-	1. C1 - Dead Center
-	2. C2 - Dark Carnival
-	3. C3 - Swamp Fever
-	4. C4 - Hard Rain
-	5. C5 - The Parish
-	6. C6 - The Passing
-	7. C13 - Cold Stream
-	8. C14 - The Last Stand (New)
+1. C1 - Dead Center
+2. C2 - Dark Carnival
+3. C3 - Swamp Fever
+4. C4 - Hard Rain
+5. C5 - The Parish
+6. C6 - The Passing
+7. C13 - Cold Stream
+8. C14 - The Last Stand (New)
 
 
 --------武器調整--------
@@ -168,8 +164,11 @@
 [23] l4d_passing_Tank_no_instant_respawn 
 //傳給AI Tank的玩家不會馬上回靈魂特感狀態(必須等spawn timer)
 
-[24] l4d_stumble_block_button 
-//當妳被震到, 所有按鈕與滑鼠鍵均不能使用(還是可以移動視角)
+[24] staggersolver 
+//當妳被震到, 所有按鈕與滑鼠鍵均不能使用
+//修復第一個官方bug: 修復人類被Hunter震到第二次時，不會有震退動畫 (會突然停止震退)
+//修復第二個官方bug: 修復爬梯子時被Hunter控然後解控，如果還黏在梯子上會導致第三人稱卡住，無法恢復第一人稱並無法移動 (任何按鍵均無效)
+//修復第三個官方bug: 被震退期間再被震退第二次會導致第二次的震退動畫強制取消並立刻行動
 
 [25] l4d_thirdpersonshoulderblock 
 //阻擋玩家使用第三人稱偷看視角
@@ -185,7 +184,8 @@
 //修正倖存者的玩家換隊之後, bot會自動踢除的問題
 
 [29] l4d_ledge_HealthExpolitFixes 
-//各種hang on a ledge bug fix　( 圖片示範 [forums.alliedmods.net])
+//各種hang on a ledge bug fix
+//forums.alliedmods.net/showthread.php?t=198915
 
 [30] l4d_pig_infected_notify 
 //各種豬隊友提示 (誰boomer炸Tank,Tank打死自己人,tank誤殺了witch)
@@ -215,7 +215,7 @@
 [38] l4d_versus_nerf_huntingrifle
 //削弱狙擊槍各種設定,改成二代AWP,Scout拉勾模式, 射一槍,拉一下
 
-[39] l4d_huntingrifle_damagemodify 　(乘風撰寫)
+[39] l4d_huntingrifle_damagemodify (乘風撰寫)
 //對Hunter有加成傷害, 胸部直接秒 *2.8、腹肌 *1.8, Tank dmg 135
 
 [40] l4d_versus_same_UnprohibitBosses
@@ -245,7 +245,7 @@
 [48] admin_hp
 //adm give Survivors HP (!hp)
 
-[49] votes3　
+[49] votes3
 //禁止使用官方介面投票
 //投票各種項目(!votes)
 
@@ -783,19 +783,20 @@
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
 
 --------反作弊.反腳本.反破壞, 反屁孩--------
-//SMAC 0.8.7.3組成, 禁止任何玩家使用腳本或是作弊來破壞遊戲平衡
-[01] smac　(主控制)
-[02] smac_aimbot 　(反自瞄)
-[03] smac_autotrigger 　(反BunnyHop,反自動開火)
+[01] smac (主控制)
+[02] smac_aimbot (反自瞄)
+[03] smac_autotrigger (反BunnyHop,反自動開火)
 [04] smac_client (反重複連線, 反踢出連線逾時15秒, 反name change spam,name too short/long)
-[05] smac_spinhack　(反准心與子彈不對)
-[06] smac_speedhack 　(反加速)
+[05] smac_spinhack (反准心與子彈不對)
+[06] smac_speedhack (反加速)
 [07] smac_commands (反客戶端指令spam)
 [08] smac_rcon. (反駭客遠端登入破壞伺服器並攥改密碼)
 [09] smac_cvars (偵測作弊指令)
+//github.com/fbef0102/SMAC/releases
+//SMAC 0.8.7.3組成, 禁止任何玩家使用腳本或是作弊來破壞遊戲平衡
 
 [10] lilac
-//github.com/J-Tanzanite/Little-Anti-Cheat/releases
+//github.com/fbef0102/Little-Anti-Cheat/releases
 //smac進階版
 
 --------分數計算--------
@@ -808,13 +809,12 @@ Map = 地圖難度修改
 
 --------指令備忘錄--------
 [管理員專用]
--!rcon quit //重啟伺服器
--!snow ,!rains, !fog, !maplight <a-z>, !faz ,!sun, !lightning, !background, !wind // (限黑暗模式)
+-!admin //管理員菜單
 -!addban //sm_addban <time> <steamid> [reason] //封鎖玩家
 -!ban //sm_ban <#userid|name> <minutes|0> [reason] //封鎖玩家
 -!banip //sm_banip <ip|#userid|name> <time> [reason] //封鎖玩家IP
+-!snow ,!rains, !fog, !maplight <a-z>, !faz ,!sun, !lightning, !background, !wind // (限黑暗模式)
 -!giveto <name> //給指定的倖存者藥丸
--!settankplayer <name> //指定一位特感玩家將成為Tank
 -!kickspec //踢出所有非adm的旁觀者
 -!slots <#> //強制改變伺服器滿位人數
 -!respawn <name> //復活指定的玩家在準心位置上
@@ -828,12 +828,12 @@ Map = 地圖難度修改
 -!forcestart //Ready期間強制開始遊戲
 -!forcepause //管理員強制暫停遊戲
 -!forceunpause //管理員強制解除暫停遊戲
+-!resetscores //清除雙方隊伍所有的分數 (限Ready期間)
+-!restartmap //重新該關卡
 -!swapto <name> <team(1,2, or 3)> //把指定的玩家強制換到指定的隊伍，1: 旁觀者, 2: 倖存陣營, 3: 特感陣營
 -!swapscores //雙方隊伍分數交換
 -!setscores <survs> <inf> //設定隊伍的分數，<survs>: 倖存陣營, inf: 特感陣營 (限Ready期間)
--!resetscores //清除雙方隊伍所有的分數 (限Ready期間)
--!restartmap //重新該關卡
--!admin //管理員菜單
+-!settankplayer <name> //指定一位特感玩家將成為Tank
 * "Respawn Player" //復活玩家在準心位置上
 * "Teleport Player" //傳送玩家在準心位置上
 
