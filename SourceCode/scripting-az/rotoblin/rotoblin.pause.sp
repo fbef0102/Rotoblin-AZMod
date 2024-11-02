@@ -864,7 +864,10 @@ public Action:DeferredPause_Timer(Handle:timer)
 	return Plugin_Continue;
 }
 
-stock bool:IsPlayerIncap(client) return bool:GetEntProp(client, Prop_Send, "m_isIncapacitated");
+bool IsPlayerIncap(client)
+{
+	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
+}
 
 bool:CanPause()
 {

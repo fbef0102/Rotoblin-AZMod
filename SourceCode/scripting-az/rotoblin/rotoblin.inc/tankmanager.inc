@@ -45,7 +45,6 @@ enum TANK_EVENT_TYPE
 	TANK_KILLED,
 	TANK_PASSED
 }
-#define ZOMBIECLASS_TANK 5					// Zombie class of the tank, used to find tank after he have been passed to another player
 
 // --------------------
 //       Private

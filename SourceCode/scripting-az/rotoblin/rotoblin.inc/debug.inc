@@ -255,13 +255,15 @@ static bool:SetupModule()
 }
 
 // logs to rotoblin file
-DebugLog(const String:sLog[], any:...)
+stock void DebugLog(const String:sLog[], any:...)
 {
-	if (!R2COMP_LOG || !SetupModule()) return;
+	#if R2COMP_LOG
+		if (!SetupModule()) return;
 
-	decl String:sBuffer[256];
-	VFormat(sBuffer, sizeof(sBuffer), sLog, 2);
-	LogToFile(g_sDebug, sBuffer);
+		decl String:sBuffer[256];
+		VFormat(sBuffer, sizeof(sBuffer), sLog, 2);
+		LogToFile(g_sDebug, sBuffer);
+	#endif
 }
 
 stock DebugLogEx(const String:sLog[], any:...)

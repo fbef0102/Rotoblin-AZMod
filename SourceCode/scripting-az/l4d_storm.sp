@@ -1310,11 +1310,15 @@ GetCvars()
 	g_iCvarStyle =	GetConVarInt(g_hCvarStyle);
 }
 
-public ConVarChanged_Cvars(Handle:convar, const String:oldValue[], const String:newValue[])
+void ConVarChanged_Cvars(Handle:convar, const String:oldValue[], const String:newValue[])
+{
 	GetCvars();
+}
 
-public ConVarChanged_Allow(Handle:convar, const String:oldValue[], const String:newValue[])
+void ConVarChanged_Allow(Handle:convar, const String:oldValue[], const String:newValue[])
+{
 	IsAllowed();
+}
 
 IsAllowed()
 {

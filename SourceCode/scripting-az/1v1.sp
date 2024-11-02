@@ -147,7 +147,10 @@ public Action KickWitch_Timer(Handle timer, int ref)
 	return Plugin_Continue;
 }
 
-stock GetZombieClass(client) return GetEntProp(client, Prop_Send, "m_zombieClass");
+stock int GetZombieClass(client)
+{
+	return GetEntProp(client, Prop_Send, "m_zombieClass");
+}
 
 stock bool:IsClientAndInGame(index)
 {

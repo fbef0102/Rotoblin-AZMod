@@ -1,8 +1,8 @@
 #pragma semicolon 1
-
+#pragma newdecls required //強制1.7以後的新語法
 #define MAX_FRAMECHECK 10
 
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.4-2024/10/28"
 
 #include <sourcemod>
 #include <sdktools>
@@ -11,12 +11,10 @@
 #define PIPEBOMB_SOUND "weapons/hegrenade/beep.wav" //"PipeBomb.TimerBeep"
 #define MOLOTOV_SOUND "weapons/molotov/fire_ignite_2.wav" //"Molotov.Throw"
 
-#define ENABLE_AUTOEXEC true
-
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "EnhancedThrowables",
-	author = "Timocop, Lux",
+	author = "Timocop, Lux & HarryPotter",
 	description = "Add Dynamic Lights to handheld throwables",
 	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?p=2413605"
@@ -31,42 +29,53 @@ enum EnumHandheld
 	EnumHandheld_MaxEnum
 }
 
-new bool:bIsL4D2 = false;
+bool bIsL4D2 = false;
 
-new Handle:hCvar_HandheldLightPipBomb = INVALID_HANDLE;
-new Handle:hCvar_HandheldLightMolotov = INVALID_HANDLE;
-new Handle:hCvar_HandheldThrowLightEnabled = INVALID_HANDLE;
-
-
-new Handle:hCvar_PipebombFuseColor = INVALID_HANDLE;
-new Handle:hCvar_PipebombFlashColor = INVALID_HANDLE;
-new Handle:hCvar_PipebombLightDistance = INVALID_HANDLE;
-new Handle:hCvar_MolotovColor = INVALID_HANDLE;
-new Handle:hCvar_MolotovLightDistance = INVALID_HANDLE;
-
-new bool:g_bHandheldLightPipeBomb = false;
-new bool:g_bHandheldLightMolotov = false;
-new bool:g_bHandheldThrowLightEnabled = false;
-
-new String:g_sPipebombFuseColor[12];
-new String:g_sPipebombFlashColor[12];
-new Float:g_fPipebombLightDistance;
-
-new String:g_sMoloFlashColour[12];
-new Float:g_fMolotovLightDistance;
+ConVar hCvar_HandheldLightPipBomb = null;
+ConVar hCvar_HandheldLightMolotov = null;
+ConVar hCvar_HandheldThrowLightEnabled = null;
 
 
-public OnPluginStart()
+ConVar hCvar_PipebombFuseColor = null;
+ConVar hCvar_PipebombFlashColor = null;
+ConVar hCvar_PipebombLightDistance = null;
+ConVar hCvar_MolotovColor = null;
+ConVar hCvar_MolotovLightDistance = null;
+
+bool g_bHandheldLightPipeBomb = false;
+bool g_bHandheldLightMolotov = false;
+bool g_bHandheldThrowLightEnabled = false;
+
+char g_sPipebombFuseColor[12];
+char g_sPipebombFlashColor[12];
+float g_fPipebombLightDistance;
+
+char g_sMoloFlashColour[12];
+float g_fMolotovLightDistance;
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) 
 {
-	decl String:sGameName[12];
-	GetGameFolderName(sGameName, sizeof(sGameName));
-	if(StrEqual(sGameName, "left4dead"))
-		bIsL4D2 = false;
-	else if(StrEqual(sGameName, "left4dead2"))
-		bIsL4D2 = true;
-	else
-		SetFailState("This plugin only runs on Left 4 Dead and Left 4 Dead 2!");
+	EngineVersion test = GetEngineVersion();
 	
+	if( test == Engine_Left4Dead )
+	{
+		bIsL4D2 = false;
+	}
+	else if( test == Engine_Left4Dead2 )
+	{
+		bIsL4D2 = true;
+	}
+	else
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1 & 2.");
+		return APLRes_SilentFailure;
+	}
+	
+	return APLRes_Success; 
+}
+
+public void OnPluginStart()
+{
 	CreateConVar("EnhanceThrowables_Version", PLUGIN_VERSION, "Enhance Handheld Throwables version", FCVAR_SPONLY|FCVAR_DONTRECORD|FCVAR_NOTIFY);
 	
 	hCvar_HandheldLightPipBomb = CreateConVar("l4d_handheld_light_pipe_bomb", "1", "Enables/Disables handheld pipebomb light.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -80,27 +89,25 @@ public OnPluginStart()
 	hCvar_MolotovColor = CreateConVar("l4d_handheld_light_molotov_colour", "255 50 0", "Molotovs light color (0-255 0-255 0-255)", FCVAR_NOTIFY);
 	hCvar_MolotovLightDistance = CreateConVar("l4d_handheld_light_molotov_light_distance", "200.0", "Molotovs light distance (0 = disabled)", FCVAR_NOTIFY, true, 0.1, true, 9999.0);
 	
-	HookConVarChange(hCvar_HandheldLightPipBomb, eConvarChanged);
-	HookConVarChange(hCvar_HandheldLightMolotov, eConvarChanged);
-	HookConVarChange(hCvar_HandheldThrowLightEnabled, eConvarChanged);
+	hCvar_HandheldLightPipBomb.AddChangeHook(eConvarChanged);
+	hCvar_HandheldLightMolotov.AddChangeHook(eConvarChanged);
+	hCvar_HandheldThrowLightEnabled.AddChangeHook(eConvarChanged);
 	
-	HookConVarChange(hCvar_PipebombFuseColor, eConvarChanged);
-	HookConVarChange(hCvar_PipebombFlashColor, eConvarChanged);
-	HookConVarChange(hCvar_PipebombLightDistance, eConvarChanged);
+	hCvar_PipebombFuseColor.AddChangeHook(eConvarChanged);
+	hCvar_PipebombFlashColor.AddChangeHook(eConvarChanged);
+	hCvar_PipebombLightDistance.AddChangeHook(eConvarChanged);
 	
-	HookConVarChange(hCvar_MolotovColor, eConvarChanged);
-	HookConVarChange(hCvar_MolotovLightDistance, eConvarChanged);
+	hCvar_MolotovColor.AddChangeHook(eConvarChanged);
+	hCvar_MolotovLightDistance.AddChangeHook(eConvarChanged);
 	
 	CvarsChanged();
 	
 	AddNormalSoundHook(HandheldSoundHook);
 	
-	#if ENABLE_AUTOEXEC
 	AutoExecConfig(true, "Enhance_Handheld_Throwables");
-	#endif
 }
 
-public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[PLATFORM_MAX_PATH], &iEntity, &iChannel, &Float:fVolume, &fLevel, &iPitch, &iFlags)
+public Action HandheldSoundHook(int iClients[64], int &iNumClients, char sSampleFile[PLATFORM_MAX_PATH], int &iEntity, int &iChannel, float &fVolume, int &fLevel, int &iPitch, int &iFlags)
 {
 	if(!g_bHandheldThrowLightEnabled)
 		return Plugin_Continue;
@@ -108,7 +115,7 @@ public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[P
 	if(iEntity < 0 || iEntity > 2048)
 		return Plugin_Continue;
 	
-	static iAlreadyThrownEntityRef[2048+1] = {INVALID_ENT_REFERENCE, ...};
+	static int iAlreadyThrownEntityRef[2048+1] = {INVALID_ENT_REFERENCE, ...};
 	if(IsValidEntRef(iAlreadyThrownEntityRef[iEntity]))
 		return Plugin_Continue;
 	
@@ -117,7 +124,7 @@ public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[P
 	if(!IsValidEntity(iEntity))
 		return Plugin_Continue;
 	
-	static String:sClassname[32];
+	char sClassname[32];
 	
 	GetEntityClassname(iEntity, sClassname, sizeof(sClassname));
 	if(!StrEqual(sClassname, "pipe_bomb_projectile") && !StrEqual(sClassname, "molotov_projectile"))
@@ -130,11 +137,11 @@ public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[P
 			if(!StrEqual(sSampleFile, PIPEBOMB_SOUND))
 				return Plugin_Continue;
 			
-			new iLight = CreateLight(iEntity, EnumHandheld_Pipebomb);
+			int iLight = CreateLight(iEntity, EnumHandheld_Pipebomb);
 			if(iLight == -1 || !IsValidEntity(iLight))
 				return Plugin_Continue;
 			
-			//decl Float:fPos[3];
+			//float fPos[3];
 			//EntityGetPosition(iEntity, fPos);
 			//TeleportEntity(iEntity, fPos, NULL_VECTOR, NULL_VECTOR);
 			EntitySetParent(iLight, iEntity);
@@ -144,11 +151,11 @@ public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[P
 			if(!StrEqual(sSampleFile, MOLOTOV_SOUND))
 				return Plugin_Continue;
 			
-			new iLight = CreateLight(iEntity, EnumHandheld_Molotov);
+			int iLight = CreateLight(iEntity, EnumHandheld_Molotov);
 			if(iLight == -1 || !IsValidEntity(iLight))
 				return Plugin_Continue;
 			
-			//decl Float:fPos[3];
+			//float fPos[3];
 			//EntityGetPosition(iEntity, fPos);
 			//TeleportEntity(iEntity, fPos, NULL_VECTOR, NULL_VECTOR);
 			EntitySetParent(iLight, iEntity);
@@ -158,12 +165,12 @@ public Action:HandheldSoundHook(iClients[64], &iNumClients, String:sSampleFile[P
 	return Plugin_Continue;
 }
 
-public OnGameFrame()
+public void OnGameFrame()
 {
-	static iClientLightRef[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE, ...};
-	static EnumHandheld:iClienthandheld[MAXPLAYERS+1] = {EnumHandheld_None, ...};
+	static int iClientLightRef[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE, ...};
+	static EnumHandheld iClienthandheld[MAXPLAYERS+1] = {EnumHandheld_None, ...};
 	
-	static iFrameskip = 0;
+	static int iFrameskip = 0;
 	iFrameskip = (iFrameskip + 1) % MAX_FRAMECHECK;
 	
 	if(iFrameskip != 0 || !IsServerProcessing())
@@ -171,8 +178,7 @@ public OnGameFrame()
 	
 	//Dont use OnPlayerRunCmd, it doenst run when the player isnt in-game!
 	//But you need to check if hes in-game or not, cuz remove light.
-	static i;
-	for(i = 1; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(!IsClientInGame(i)
 				|| GetClientTeam(i) != 2
@@ -190,7 +196,7 @@ public OnGameFrame()
 		}
 		else
 		{
-			static EnumHandheld:flCurrentHandheld;
+			EnumHandheld flCurrentHandheld;
 			flCurrentHandheld = GetHoldingHandheld(i);
 			
 			//Fix on picking up other handhelds while holding an handheld
@@ -207,8 +213,7 @@ public OnGameFrame()
 			
 			if(!IsValidEntRef(iClientLightRef[i]))
 			{
-				static iLight;
-				iLight = CreateLight(i, flCurrentHandheld);
+				int iLight = CreateLight(i, flCurrentHandheld);
 				if(iLight != -1 && IsValidEntity(iLight))
 				{
 					iClientLightRef[i] = EntIndexToEntRef(iLight);
@@ -218,7 +223,7 @@ public OnGameFrame()
 	}
 }
 
-static CreateLight(iEntity, EnumHandheld:iHandheld=EnumHandheld_None)
+int CreateLight(int iEntity, EnumHandheld iHandheld=EnumHandheld_None)
 {
 	if(iHandheld != EnumHandheld_Pipebomb
 			&& iHandheld != EnumHandheld_Molotov)
@@ -238,39 +243,39 @@ static CreateLight(iEntity, EnumHandheld:iHandheld=EnumHandheld_None)
 		}
 	}
 	
-	new iLight = CreateEntityByName("light_dynamic");
+	int iLight = CreateEntityByName("light_dynamic");
 	if(iLight == -1)
 		return -1;
 	
-	decl Float:fPos[3];
+	float fPos[3];
 	EntityGetPosition(iEntity, fPos);
 	
 	TeleportEntity(iLight, fPos, NULL_VECTOR, NULL_VECTOR);
 	
-	if(iEntity < MaxClients+1)// should block the error on olderversion on error parent attachment
+	if(iEntity <= MaxClients)// should block the error on olderversion on error parent attachment
 	{
-		decl String:sModel[31];
+		char sModel[31];
 		GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
 		
 		switch(sModel[29])
 		{
-			case 'b', 'd', 'c', 'h', 'w' ://nick, rochelle, coach, ellis, adawong
+			case 'b', 'd', 'h', 'w' ://nick, rochelle, ellis, adawong
 			{
 				EntitySetParentAttachment(iLight, iEntity, "weapon_bone");
 			}
-			case 'v', 'e', 'a'://bill, francis, louis
-			{//armR_T
+			case 'v', 'e', 'a', 'c'://bill, francis, louis, coach
+			{
 				EntitySetParentAttachment(iLight, iEntity, "armR_T");
-				TeleportEntity(iLight, Float:{ 8.0, 18.0, 0.0 }, Float:{ -20.0, 100.0, 0.0 }, NULL_VECTOR);
+				TeleportEntity(iLight, view_as<float>( {8.0, 18.0, 0.0 } ), view_as<float>( { -20.0, 100.0, 0.0 }), NULL_VECTOR);
 			}
 			case 'n'://zoey
 			{
 				EntitySetParentAttachment(iLight, iEntity, "armR_T");
-				TeleportEntity(iLight, Float:{ 0.0, 20.0, 0.0 }, Float:{ 0.0, 90.0, 0.0 }, NULL_VECTOR);
+				TeleportEntity(iLight, view_as<float>({ 0.0, 20.0, 0.0 }), view_as<float>({ 0.0, 90.0, 0.0 }), NULL_VECTOR);
 			}
 			default:
 			{
-				EntitySetParentAttachment(iLight, iEntity, "survivor_light");
+				//EntitySetParentAttachment(iLight, iEntity, "survivor_light");
 			}
 		}
 	}
@@ -279,7 +284,7 @@ static CreateLight(iEntity, EnumHandheld:iHandheld=EnumHandheld_None)
 	{
 		case EnumHandheld_Pipebomb:
 		{
-			decl String:sBuffer[64];
+			char sBuffer[64];
 			
 			DispatchKeyValue(iLight, "brightness", "1");
 			DispatchKeyValueFloat(iLight, "spotlight_radius", 32.0);
@@ -367,50 +372,48 @@ static CreateLight(iEntity, EnumHandheld:iHandheld=EnumHandheld_None)
 	return -1;
 }
 
-//Cvars Folding {
-public OnMapStart()
+public void OnMapStart()
 {
 	CvarsChanged();
 }
 
-public eConvarChanged(Handle:hCvar, const String:sOldVal[], const String:sNewVal[])
+public void eConvarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	CvarsChanged();
 }
 
-static CvarsChanged()
+void CvarsChanged()
 {
-	g_bHandheldLightPipeBomb = GetConVarInt(hCvar_HandheldLightPipBomb) > 0;
-	g_bHandheldLightMolotov = GetConVarInt(hCvar_HandheldLightMolotov) > 0;
-	g_bHandheldThrowLightEnabled = GetConVarInt(hCvar_HandheldThrowLightEnabled) > 0;
+	g_bHandheldLightPipeBomb = hCvar_HandheldLightPipBomb.BoolValue;
+	g_bHandheldLightMolotov = hCvar_HandheldLightMolotov.BoolValue;
+	g_bHandheldThrowLightEnabled = hCvar_HandheldThrowLightEnabled.BoolValue;
 	
-	g_fPipebombLightDistance = GetConVarFloat(hCvar_PipebombLightDistance);
-	GetConVarString(hCvar_PipebombFuseColor, g_sPipebombFuseColor, sizeof(g_sPipebombFuseColor));
-	GetConVarString(hCvar_PipebombFlashColor, g_sPipebombFlashColor, sizeof(g_sPipebombFlashColor));
+	g_fPipebombLightDistance = hCvar_PipebombLightDistance.FloatValue;
+	hCvar_PipebombFuseColor.GetString(g_sPipebombFuseColor, sizeof(g_sPipebombFuseColor));
+	hCvar_PipebombFlashColor.GetString(g_sPipebombFlashColor, sizeof(g_sPipebombFlashColor));
 	
-	g_fMolotovLightDistance = GetConVarFloat(hCvar_MolotovLightDistance);
-	GetConVarString(hCvar_MolotovColor, g_sMoloFlashColour, sizeof(g_sMoloFlashColour));
+	g_fMolotovLightDistance = hCvar_MolotovLightDistance.FloatValue;
+	hCvar_MolotovColor.GetString(g_sMoloFlashColour, sizeof(g_sMoloFlashColour));
 }
-//}
 
 //Tools Folding
-static bool:IsValidEntRef(iEntRef)
+bool IsValidEntRef(int iEntRef)
 {
-	return (iEntRef && EntRefToEntIndex(iEntRef) != INVALID_ENT_REFERENCE);
+	return (iEntRef != 0 && EntRefToEntIndex(iEntRef) != INVALID_ENT_REFERENCE);
 }
 
-static EntityGetPosition(iEntity, Float:fPos[3])
+void EntityGetPosition(int iEntity, float fPos[3])
 {
 	GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", fPos);
 }
 
-static EntitySetParent(iEntity, iTarget)
+void EntitySetParent(int iEntity, int iTarget)
 {
 	SetVariantString("!activator");
 	AcceptEntityInput(iEntity, "SetParent", iTarget);
 }
 
-static EntitySetParentAttachment(iEntity, iTarget, const String:sAttachName[])
+void EntitySetParentAttachment(int iEntity, int iTarget, const char[] sAttachName)
 {
 	EntitySetParent(iEntity, iTarget);
 	
@@ -418,9 +421,9 @@ static EntitySetParentAttachment(iEntity, iTarget, const String:sAttachName[])
 	AcceptEntityInput(iEntity, "SetParentAttachment");
 }
 
-static EnumHandheld:GetHoldingHandheld(iClient)
+EnumHandheld GetHoldingHandheld(int iClient)
 {
-	static String:sHandheld[32];
+	char sHandheld[32];
 	sHandheld[0] = 0;
 	GetClientWeapon(iClient, sHandheld, sizeof(sHandheld));
 	
@@ -435,12 +438,12 @@ static EnumHandheld:GetHoldingHandheld(iClient)
 	return EnumHandheld_None;
 }
 
-static bool:IsSurvivorIncapacitated(iClient)
+bool IsSurvivorIncapacitated(int iClient)
 {
 	return GetEntProp(iClient, Prop_Send, "m_isIncapacitated", 1) > 0;
 }
 
-static bool:IsSurvivorBusyWithInfected(iClient)
+bool IsSurvivorBusyWithInfected(int iClient)
 {
 	if(bIsL4D2)
 	{
@@ -466,7 +469,7 @@ static bool:IsSurvivorBusyWithInfected(iClient)
 	return false;
 }
 
-static bool:IsSurvivorUsingMountedWeapon(iClient)
+bool IsSurvivorUsingMountedWeapon(int iClient)
 {
 	return (GetEntProp(iClient, Prop_Send, "m_usingMountedWeapon") > 0);
 }

@@ -1,3 +1,5 @@
+//移除AutoExecConfig
+
 /**
 // ====================================================================================================
 Change Log:
@@ -60,17 +62,8 @@ public Plugin myinfo =
 // ====================================================================================================
 // Defines
 // ====================================================================================================
-#define CLASSNAME_TANK_ROCK           "tank_rock"
-
 #define MODEL_CONCRETE_CHUNK          "models/props_debris/concrete_chunk01a.mdl"
 #define MODEL_TREE_TRUNK              "models/props_foliage/tree_trunk.mdl"
-
-#define L4D_ZOMBIEABILITY_TANK        "ability_throw"
-
-#define TEAM_INFECTED                 3
-
-#define L4D2_ZOMBIECLASS_TANK         8
-#define L4D1_ZOMBIECLASS_TANK         5
 
 #define TYPE_CONCRETE_CHUNK           (1 << 0) // 1 | 001
 #define TYPE_TREE_TRUNK               (1 << 1) // 2 | 010
@@ -81,43 +74,47 @@ public Plugin myinfo =
 // ====================================================================================================
 // Plugin Cvars
 // ====================================================================================================
-static ConVar g_hCvar_Enabled;
-static ConVar g_hCvar_Always;
-static ConVar g_hCvar_IgnoreFireDamage;
-static ConVar g_hCvar_BurnOnAir;
-static ConVar g_hCvar_ModelType;
-static ConVar g_hCvar_DmgMultiplier;
-static ConVar g_hCvar_FireDuration;
-static ConVar g_hCvar_VictimFireDuration;
+ConVar g_hCvar_Enabled;
+ConVar g_hCvar_Always;
+ConVar g_hCvar_IgnoreFireDamage;
+ConVar g_hCvar_BurnOnAir;
+ConVar g_hCvar_ModelType;
+ConVar g_hCvar_DmgMultiplier;
+ConVar g_hCvar_FireDuration;
+ConVar g_hCvar_VictimFireDuration;
 
 // ====================================================================================================
 // bool - Plugin Cvar Variables
 // ====================================================================================================
-static bool   g_bConfigLoaded;
-static bool   g_bCvar_Enabled;
-static bool   g_bCvar_Always;
-static bool   g_bCvar_IgnoreFireDamage;
-static bool   g_bCvar_BurnOnAir;
-static bool   g_bCvar_DmgMultiplier;
-static bool   g_bCvar_FireDuration;
-static bool   g_bCvar_VictimFireDuration;
+bool g_bCvar_Enabled;
+bool g_bCvar_Always;
+bool g_bCvar_IgnoreFireDamage;
+bool g_bCvar_BurnOnAir;
+bool g_bCvar_DmgMultiplier;
+bool g_bCvar_FireDuration;
+bool g_bCvar_VictimFireDuration;
 
 // ====================================================================================================
 // int - Plugin Cvar Variables
 // ====================================================================================================
-static int    g_iCvar_ModelType;
+int g_iCvar_ModelType;
 
 // ====================================================================================================
 // float - Plugin Cvar Variables
 // ====================================================================================================
-static float  g_fCvar_DmgMultiplier;
-static float  g_fCvar_FireDuration;
-static float  g_fCvar_VictimFireDuration;
+float g_fCvar_DmgMultiplier;
+float g_fCvar_FireDuration;
+float g_fCvar_VictimFireDuration;
+
+// ====================================================================================================
+// client - Plugin Variables
+// ====================================================================================================
+bool gc_bTakeDamageHooked[MAXPLAYERS+1];
 
 // ====================================================================================================
 // entity - Plugin Variables
 // ====================================================================================================
-static bool   ge_bIsValidTankRock[MAXENTITIES+1];
+bool ge_bIsValidTankRock[MAXENTITIES+1];
 
 // ====================================================================================================
 // Plugin Start
@@ -168,32 +165,23 @@ public void OnPluginStart()
 
 /****************************************************************************************************/
 
-public void OnMapEnd()
-{
-    g_bConfigLoaded = false;
-}
-
-/****************************************************************************************************/
-
 public void OnConfigsExecuted()
 {
     GetCvars();
-
-    g_bConfigLoaded = true;
 
     LateLoad();
 }
 
 /****************************************************************************************************/
 
-public void Event_ConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+void Event_ConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     GetCvars();
 }
 
 /****************************************************************************************************/
 
-public void GetCvars()
+void GetCvars()
 {
     g_bCvar_Enabled = g_hCvar_Enabled.BoolValue;
     g_bCvar_Always = g_hCvar_Always.BoolValue;
@@ -210,7 +198,7 @@ public void GetCvars()
 
 /****************************************************************************************************/
 
-public void LateLoad()
+void LateLoad()
 {
     for (int client = 1; client <= MaxClients; client++)
     {
@@ -223,7 +211,7 @@ public void LateLoad()
     int entity;
 
     entity = INVALID_ENT_REFERENCE;
-    while ((entity = FindEntityByClassname(entity, CLASSNAME_TANK_ROCK)) != INVALID_ENT_REFERENCE)
+    while ((entity = FindEntityByClassname(entity, "tank_rock")) != INVALID_ENT_REFERENCE)
     {
         RequestFrame(OnTankRockNextFrame, EntIndexToEntRef(entity));
     }
@@ -233,17 +221,36 @@ public void LateLoad()
 
 public void OnClientPutInServer(int client)
 {
-    if (!g_bConfigLoaded)
+    if (gc_bTakeDamageHooked[client])
         return;
 
+    gc_bTakeDamageHooked[client] = true;
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamageFromRock);
+}
+
+/****************************************************************************************************/
+
+public void OnClientDisconnect(int client)
+{
+    gc_bTakeDamageHooked[client] = false;
+}
+
+/****************************************************************************************************/
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+    if (entity < 0)
+        return;
+
+    if (StrEqual(classname, "tank_rock"))
+        RequestFrame(OnTankRockNextFrame, EntIndexToEntRef(entity));
 }
 
 /****************************************************************************************************/
 
 public void OnEntityDestroyed(int entity)
 {
-    if (!IsValidEntityIndex(entity))
+    if (entity < 0)
         return;
 
     ge_bIsValidTankRock[entity] = false;
@@ -251,27 +258,7 @@ public void OnEntityDestroyed(int entity)
 
 /****************************************************************************************************/
 
-public void OnEntityCreated(int entity, const char[] classname)
-{
-    if (!g_bConfigLoaded)
-        return;
-
-    if (!IsValidEntityIndex(entity))
-        return;
-
-    switch (classname[0])
-    {
-        case 't':
-        {
-            if (StrEqual(classname, CLASSNAME_TANK_ROCK))
-                RequestFrame(OnTankRockNextFrame, EntIndexToEntRef(entity));
-        }
-    }
-}
-
-/****************************************************************************************************/
-
-public void OnTankRockNextFrame(int entityRef)
+void OnTankRockNextFrame(int entityRef)
 {
     if (!g_bCvar_Enabled)
         return;
@@ -300,7 +287,7 @@ public void OnTankRockNextFrame(int entityRef)
 
 /****************************************************************************************************/
 
-public void OnNextFrame(int entityRef)
+void OnNextFrame(int entityRef)
 {
     if (!g_bCvar_Enabled)
         return;
@@ -315,7 +302,7 @@ public void OnNextFrame(int entityRef)
 
     int client = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 
-    if (!IsValidClient(client))
+    if (!IsValidClientIndex(client))
         return;
 
     if (IsEntityOnFire(client))
@@ -329,7 +316,7 @@ public void OnNextFrame(int entityRef)
 
 /****************************************************************************************************/
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
     if (!g_bCvar_Enabled)
         return Plugin_Continue;
@@ -355,7 +342,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 
 /****************************************************************************************************/
 
-public void OnTakeDamageAlivePost(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, const float damageForce[3], const float damagePosition[3])
+void OnTakeDamageAlivePost(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, const float damageForce[3], const float damagePosition[3])
 {
     if (!g_bCvar_Enabled)
         return;
@@ -372,7 +359,7 @@ public void OnTakeDamageAlivePost(int victim, int attacker, int inflictor, float
 
 /****************************************************************************************************/
 
-public Action OnTakeDamageFromRock(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamageFromRock(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
     if (!g_bCvar_Enabled)
         return Plugin_Continue;
@@ -380,7 +367,7 @@ public Action OnTakeDamageFromRock(int victim, int &attacker, int &inflictor, fl
     if (!g_bCvar_DmgMultiplier)
         return Plugin_Continue;
 
-    if (!IsValidEntityIndex(inflictor))
+    if (IsValidClientIndex(inflictor))
         return Plugin_Continue;
 
     if (!ge_bIsValidTankRock[inflictor])
@@ -408,21 +395,23 @@ public Action OnTakeDamageFromRock(int victim, int &attacker, int &inflictor, fl
 
 int GetRockType(int entity)
 {
-    char modelName[128];
-    GetEntPropString(entity, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
-    StringToLowerCase(modelName);
+    char modelname[PLATFORM_MAX_PATH];
+    GetEntPropString(entity, Prop_Data, "m_ModelName", modelname, sizeof(modelname));
+    StringToLowerCase(modelname);
 
-    if (StrEqual(modelName, MODEL_CONCRETE_CHUNK))
+    if (StrEqual(modelname, MODEL_CONCRETE_CHUNK))
         return TYPE_CONCRETE_CHUNK;
-    if (StrEqual(modelName, MODEL_TREE_TRUNK))
+
+    if (StrEqual(modelname, MODEL_TREE_TRUNK))
         return TYPE_TREE_TRUNK;
+
     return TYPE_UNKNOWN;
 }
 
 // ====================================================================================================
 // Admin Commands
 // ====================================================================================================
-public Action CmdPrintCvars(int client, int args)
+Action CmdPrintCvars(int client, int args)
 {
     PrintToConsole(client, "");
     PrintToConsole(client, "======================================================================");
@@ -435,9 +424,9 @@ public Action CmdPrintCvars(int client, int args)
     PrintToConsole(client, "l4d_tank_rock_ignore_fire_damage : %b (%s)", g_bCvar_IgnoreFireDamage, g_bCvar_IgnoreFireDamage ? "true" : "false");
     PrintToConsole(client, "l4d_tank_rock_ignition_burn_on_air : %b", g_bCvar_BurnOnAir, g_bCvar_BurnOnAir ? "true" : "false");
     PrintToConsole(client, "l4d_tank_rock_ignition_model_type : %i", g_iCvar_ModelType);
-    PrintToConsole(client, "l4d_tank_rock_ignition_dmg_multiplier : %.2f%% (%s)", g_fCvar_DmgMultiplier, g_bCvar_DmgMultiplier ? "true" : "false");
-    PrintToConsole(client, "l4d_tank_rock_ignition_fire_duration : %.2f", g_fCvar_FireDuration);
-    PrintToConsole(client, "l4d_tank_rock_ignition_victim_fire_duration : %.2f", g_fCvar_VictimFireDuration);
+    PrintToConsole(client, "l4d_tank_rock_ignition_dmg_multiplier : %.1f%%", g_fCvar_DmgMultiplier);
+    PrintToConsole(client, "l4d_tank_rock_ignition_fire_duration : %.1f", g_fCvar_FireDuration);
+    PrintToConsole(client, "l4d_tank_rock_ignition_victim_fire_duration : %.1f", g_fCvar_VictimFireDuration);
     PrintToConsole(client, "");
     PrintToConsole(client, "======================================================================");
     PrintToConsole(client, "");
@@ -475,19 +464,6 @@ bool IsValidClient(int client)
 /****************************************************************************************************/
 
 /**
- * Validates if is a valid entity index (between MaxClients+1 and 2048).
- *
- * @param entity        Entity index.
- * @return              True if entity index is valid, false otherwise.
- */
-bool IsValidEntityIndex(int entity)
-{
-    return (MaxClients+1 <= entity <= GetMaxEntities());
-}
-
-/****************************************************************************************************/
-
-/**
  * Validates if the entity is on fire.
  *
  * @param entity        Entity index.
@@ -495,9 +471,7 @@ bool IsValidEntityIndex(int entity)
  */
 bool IsEntityOnFire(int entity)
 {
-    if (GetEntityFlags(entity) & FL_ONFIRE)
-        return true;
-    return false;
+    return (GetEntityFlags(entity) & FL_ONFIRE ? true : false);
 }
 
 /****************************************************************************************************/

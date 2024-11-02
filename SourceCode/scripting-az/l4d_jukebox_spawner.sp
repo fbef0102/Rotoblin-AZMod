@@ -174,11 +174,15 @@ public OnMapEnd()
 // ====================================================================================================
 //					CVARS
 // ====================================================================================================
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
+{
 	IsAllowed();
+}
 
-public ConVarChanged_Allow(Handle:convar, const String:oldValue[], const String:newValue[])
+void ConVarChanged_Allow(Handle:convar, const String:oldValue[], const String:newValue[])
+{
 	IsAllowed();
+}
 
 IsAllowed()
 {

@@ -9,7 +9,10 @@ public Plugin:myinfo =
 	url = "https://bitbucket.org/CanadaRox/random-sourcemod-stuff/"
 };
 
-public OnPluginStart() HookEvent("player_incapacitated_start", Incap_Event);
+public void OnPluginStart()
+{
+	HookEvent("player_incapacitated_start", Incap_Event);
+}
 
 public Incap_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {

@@ -3202,14 +3202,14 @@
 			}
 
 			/*
-			 * CTerrorGameRules::RecomputeTeamScores(void)
-			 */
+				* CTerrorGameRules::RecomputeTeamScores(void)
+				*/
 			"CTerrorGameRules::RecomputeTeamScores"
 			{
-				"library"	"server"
-				"linux"		"@_ZN16CTerrorGameRules19RecomputeTeamScoresEv"
-				"windows"	"\xA1\x88\x2A\x2A\x2A\x83\xEC\x34\x80\x78\x2A\x2A\x56\x8B\xF1\x0F\x84\x2A\x2A\x2A\x2A\x53\x33\xDB"
-				/* A1 88 ? ? ? 83 EC 34 80 78 ? ? 56 8B F1 0F 84 ? ? ? ? 53 33 DB */
+				"library"    "server"
+				"linux"        "@_ZN16CTerrorGameRules19RecomputeTeamScoresEv"
+				"windows"    "\xA1\x2A\x2A\x2A\x2A\x83\xEC\x34\x80\x78\x2A\x2A\x56\x8B\xF1\x0F\x84\x2A\x2A\x2A\x2A\x53\x33\xDB"
+				/* A1 ? ? ? ? 83 EC 34 80 78 ? ? 56 8B F1 0F 84 ? ? ? ? 53 33 DB */
 			}
 
 			/* CTerrorPlayer::RoundRespawn(CTerrorPlayer *this) */
