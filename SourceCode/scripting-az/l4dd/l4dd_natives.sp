@@ -80,6 +80,7 @@ Handle g_hSDK_CNavMesh_GetNearestNavArea;
 Handle g_hSDK_TerrorNavArea_FindRandomSpot;
 Handle g_hSDK_CTerrorPlayer_WarpToValidPositionIfStuck;
 Handle g_hSDK_IsVisibleToPlayer;
+Handle g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe;
 Handle g_hSDK_CDirector_HasAnySurvivorLeftSafeArea;
 Handle g_hSDK_CBaseTrigger_IsTouching;
 // Handle g_hSDK_CDirector_IsAnySurvivorInExitCheckpoint;
@@ -174,6 +175,7 @@ Handle g_hSDK_CDirectorScavengeMode_HideScoreboardNonVirtual;
 Handle g_hSDK_CDirector_HideScoreboard;
 Handle g_hSDK_CDirector_RegisterForbiddenTarget;
 Handle g_hSDK_CDirector_UnregisterForbiddenTarget;
+Handle g_hSDK_InfoChangeLevel_IsEntitySaveable;
 
 
 
@@ -1157,6 +1159,16 @@ int Native_CTerrorPlayer_WarpToValidPositionIfStuck(Handle plugin, int numParams
 	SDKCall(g_hSDK_CTerrorPlayer_WarpToValidPositionIfStuck, client);
 
 	return 0;
+}
+
+int Native_CTerrorPlayer_GetSpecialInfectedDominatingMe(Handle plugin, int numParams) // Native "L4D2_GetSpecialInfectedDominatingMe"
+{
+	ValidateNatives(g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe, "CTerrorPlayer::GetSpecialInfectedDominatingMe");
+
+	int client = GetNativeCell(1);
+
+	//PrintToServer("#### CALL g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe");
+	return SDKCall(g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe, client);
 }
 
 int Native_IsVisibleToPlayer(Handle plugin, int numParams) // Native "L4D2_IsVisibleToPlayer"
@@ -5640,6 +5652,49 @@ int Native_CDirector_UnregisterForbiddenTarget(Handle plugin, int numParams) // 
 	return 0;
 }
 
+/*
+- Should be something like this.
+bool InfoChangeLevel::IsEntitySaveable(CBaseEntity* pEntity)
+{
+	int objCap = pEntity->ObjectCaps();
+	if( objCap >= 0 )
+	{
+		if( pEntity && !pEntity->IsPlayer() )
+		{
+			CBaseEntity* pRootMoveParent = pEntity->GetRootMoveParent();
+			if( pRootMoveParent && !pRootMoveParent->IsPlayer()
+				&& ( ( (objCap & FCAP_ACROSS_TRANSITION ) != 0) || (pEntity->m_iClassname && !pEntity->IsDormant()) ) )
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+*/
+
+any Native_InfoChangelevel_IsEntitySaveable(Handle plugin, int numParams) // Native "L4D_IsEntitySaveable"
+{
+	ValidateNatives(g_hSDK_InfoChangeLevel_IsEntitySaveable, "InfoChangelevel::IsEntitySaveable");
+
+	int entity = GetNativeCell(1);
+	if( !entity || entity > GetMaxEntities() ) return 0;
+
+	static int info_changelevel = INVALID_ENT_REFERENCE;
+	if( EntRefToEntIndex(info_changelevel) == INVALID_ENT_REFERENCE )
+	{
+		info_changelevel = FindEntityByClassname(-1, "info_changelevel");
+		if( info_changelevel == INVALID_ENT_REFERENCE )
+		{
+			return 0;
+		}
+
+		info_changelevel = EntIndexToEntRef(info_changelevel);
+	}
+
+	//PrintToServer("#### CALL g_hSDK_InfoChangeLevel_IsEntitySaveable");
+	return view_as<bool>(SDKCall(g_hSDK_InfoChangeLevel_IsEntitySaveable, info_changelevel, entity));
+}
 
 
 
@@ -6219,7 +6274,7 @@ any Native_AmmoDef_GetAmmoOfIndex(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if ( nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
+	if( nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
 		return view_as<Ammo_t>(Address_Null);
 
 	return AmmoDef_m_AmmoType(nAmmoIndex);
@@ -6235,7 +6290,7 @@ any Native_AmmoDef_Index(Handle plugin, int numParams)
 	{
 		AmmoDef_m_AmmoType(i).GetName(name, sizeof(name));
 
-		if (strcmp(name, psz, false) == 0)
+		if( strcmp(name, psz, false) == 0)
 			return i;
 	}
 	return -1;
@@ -6245,12 +6300,12 @@ any Native_AmmoDef_PlrDamage(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if ( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
 		return 0;
 
-	if ( AmmoDef_m_AmmoType(nAmmoIndex).pPlrDmg == USE_CVAR )
+	if( AmmoDef_m_AmmoType(nAmmoIndex).pPlrDmg == USE_CVAR )
 	{
-		if ( AmmoDef_m_AmmoType(nAmmoIndex).pPlrDmgCVar )
+		if( AmmoDef_m_AmmoType(nAmmoIndex).pPlrDmgCVar )
 		{
 			return AmmoDef_m_AmmoType(nAmmoIndex).pPlrDmgCVar.GetInt();
 		}
@@ -6267,12 +6322,12 @@ any Native_AmmoDef_NPCDamage(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if ( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
 		return 0;
 
-	if ( AmmoDef_m_AmmoType(nAmmoIndex).pNPCDmg == USE_CVAR )
+	if( AmmoDef_m_AmmoType(nAmmoIndex).pNPCDmg == USE_CVAR )
 	{
-		if ( AmmoDef_m_AmmoType(nAmmoIndex).pNPCDmgCVar )
+		if( AmmoDef_m_AmmoType(nAmmoIndex).pNPCDmgCVar )
 		{
 			return AmmoDef_m_AmmoType(nAmmoIndex).pNPCDmgCVar.GetInt();
 		}
@@ -6289,12 +6344,12 @@ any Native_AmmoDef_MaxCarry(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if ( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
 		return 0;
 
-	if ( AmmoDef_m_AmmoType(nAmmoIndex).pMaxCarry == USE_CVAR )
+	if( AmmoDef_m_AmmoType(nAmmoIndex).pMaxCarry == USE_CVAR )
 	{
-		if ( AmmoDef_m_AmmoType(nAmmoIndex).pMaxCarryCVar )
+		if( AmmoDef_m_AmmoType(nAmmoIndex).pMaxCarryCVar )
 			return AmmoDef_m_AmmoType(nAmmoIndex).pMaxCarryCVar.GetInt();
 
 		return 0;
@@ -6309,7 +6364,7 @@ any Native_AmmoDef_DamageType(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if (nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
 		return 0;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).nDamageType;
@@ -6319,7 +6374,7 @@ any Native_AmmoDef_Flags(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if (nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
 		return 0;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).nFlags;
@@ -6329,7 +6384,7 @@ any Native_AmmoDef_MinSplashSize(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if (nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
 		return 4;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).nMinSplashSize;
@@ -6339,7 +6394,7 @@ any Native_AmmoDef_MaxSplashSize(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if (nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
 		return 8;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).nMaxSplashSize;
@@ -6349,7 +6404,7 @@ any Native_AmmoDef_TracerType(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if (nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex())
 		return 0;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).eTracerType;
@@ -6359,7 +6414,7 @@ any Native_AmmoDef_DamageForce(Handle plugin, int numParams)
 {
 	int nAmmoIndex = GetNativeCell(1);
 
-	if ( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
+	if( nAmmoIndex < 1 || nAmmoIndex >= AmmoDef_m_nAmmoIndex() )
 		return 0.0;
 
 	return AmmoDef_m_AmmoType(nAmmoIndex).physicsForceImpulse;

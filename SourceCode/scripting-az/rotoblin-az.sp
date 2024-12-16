@@ -41,7 +41,6 @@
 // **********************************************
 //                   Reference
 // **********************************************
-#define SERVER_INDEX				0 // The client index of the server
 #define FIRST_CLIENT				1 // First valid client index
 #define TEAM_SPECTATOR				1
 #define TEAM_SURVIVOR				2
@@ -54,7 +53,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.5.8"								// Version
+#define PLUGIN_VERSION			"8.5.9"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
@@ -100,7 +99,6 @@ bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
 #include "rotoblin/rotoblin.pause.sp"
 #include "rotoblin/rotoblin.reportstatus.sp"
 #include "rotoblin/rotoblin.pumpswap.sp"
-#include "rotoblin/rotoblin.unreservelobby.sp"
 #include "rotoblin/rotoblin.limitweapon.sp"
 #include "rotoblin/rotoblin.weaponcontrol.sp"
 #include "rotoblin/rotoblin.itemcontrol.sp"
@@ -194,7 +192,6 @@ public OnPluginStartEx()
 	_HordeControl_OnPluginStart();
 	_2vs2Mod_OnPluginStart();
 	_ReportStatus_OnPluginStart();
-	_UnreserveLobby_OnPluginStart();
 	_PumpSwap_OnPluginStart();
 	_LimitHuntingRifl_OnPluginStart();
 	_ItemControl_OnPluginStart();

@@ -67,7 +67,7 @@ public void OnPluginStart()
 	delete gd;
 	
 	CreateConVarHook("l4d_nextbot_collision_resolve_scale",
-					"0.05",
+					"0.05", //30tick = 0.65, 60tick = 0.15, 100tick = 0.05
 					"How much to scale the move vector as a result of resolving zombie collision.",
 					FCVAR_CHEAT,
 					true, 0.0, false, 0.0,

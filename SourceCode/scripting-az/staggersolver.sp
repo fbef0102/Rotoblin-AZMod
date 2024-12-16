@@ -29,6 +29,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 /**
  * 修復以下第一個官方bug
  * 爬梯子時被Hunter控然後解控，如果還黏在梯子上會導致第三人稱卡住，無法恢復第一人稱並無法移動 (任何按鍵均無效)
+ * (一代被boomer 瓦斯桶震退到不會有這bug)
+ * (二代不會發生)
  */
 methodmap GameDataWrapper < GameData {
 	public GameDataWrapper(const char[] file) {
@@ -146,8 +148,9 @@ public void L4D2_OnPounceOrLeapStumble_PostHandled(int client, int attacker)
 // @remarks This forward will not trigger if the relative pre-hook forward has been blocked with Plugin_Handled
 public void L4D2_OnPounceOrLeapStumble_Post(int client, int attacker)
 {
-	//修復第二個官方bug
-	//爬梯子時被Hunter控然後解控，如果還黏在梯子上會導致第三人稱卡住，無法恢復第一人稱並無法移動 (任何按鍵均無效)
+	// 修復第二個官方bug
+	// 在爬梯子時被Hunter震退，如果還黏在梯子上會導致無法移動上下左右 (空白鍵依然可以按)
+	// 二代也會發生
 	if (GetEntityMoveType(client) == MOVETYPE_LADDER)
 	{
 		SetEntPropVector(client, Prop_Send, "m_shoveForce", NULL_VECTOR);

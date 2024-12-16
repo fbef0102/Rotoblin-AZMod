@@ -313,6 +313,17 @@ void LoadGameData()
 
 	if( g_bLeft4Dead2 )
 	{
+		StartPrepSDKCall(SDKCall_Player);
+		if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTerrorPlayer::GetSpecialInfectedDominatingMe") == false )
+		{
+			LogError("Failed to find signature: \"CTerrorPlayer::GetSpecialInfectedDominatingMe\" (%s)", g_sSystem);
+		} else {
+			PrepSDKCall_SetReturnInfo(SDKType_CBasePlayer, SDKPass_Pointer);
+			g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe = EndPrepSDKCall();
+			if( g_hSDK_CTerrorPlayer_GetSpecialInfectedDominatingMe == null )
+				LogError("Failed to create SDKCall: \"CTerrorPlayer::GetSpecialInfectedDominatingMe\" (%s)", g_sSystem);
+		}
+
 		StartPrepSDKCall(SDKCall_Static);
 		if( !PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "IsVisibleToPlayer") )
 		{
@@ -1928,6 +1939,18 @@ void LoadGameData()
 		g_hSDK_CDirector_UnregisterForbiddenTarget = EndPrepSDKCall();
 		if( g_hSDK_CDirector_UnregisterForbiddenTarget == null )
 			LogError("Failed to create SDKCall: \"CDirector::UnregisterForbiddenTarget\" (%s)", g_sSystem);
+	}
+
+	StartPrepSDKCall(SDKCall_Entity);
+	if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "InfoChangelevel::IsEntitySaveable") == false )
+	{
+		LogError("Failed to find signature: \"InfoChangelevel::IsEntitySaveable\" (%s)", g_sSystem);
+	} else {
+		PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
+		PrepSDKCall_SetReturnInfo(SDKType_Bool, SDKPass_Plain);
+		g_hSDK_InfoChangeLevel_IsEntitySaveable = EndPrepSDKCall();
+		if( g_hSDK_InfoChangeLevel_IsEntitySaveable == null )
+			LogError("Failed to create SDKCall: \"InfoChangeLevel::IsEntitySaveable\" (%s)", g_sSystem);
 	}
 
 	StartPrepSDKCall(SDKCall_Raw);

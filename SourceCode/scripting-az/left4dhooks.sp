@@ -18,8 +18,8 @@
 
 
 
-#define PLUGIN_VERSION		"1.153"
-#define PLUGIN_VERLONG		1153
+#define PLUGIN_VERSION		"1.156"
+#define PLUGIN_VERLONG		1156
 
 #define DEBUG				0
 // #define DEBUG			1	// Prints addresses + detour info (only use for debugging, slows server down).
@@ -370,6 +370,7 @@ bool g_bLeft4Dead2;
 bool g_bFinalCheck;
 bool g_bMapStarted;
 bool g_bRoundEnded;
+bool g_bBreakable;
 bool g_bCheckpointFirst[MAXPLAYERS+1];
 bool g_bCheckpointLast[MAXPLAYERS+1];
 ConVar g_hCvar_VScriptBuffer;
@@ -1005,10 +1006,13 @@ public void OnMapEnd()
 	{
 		hPlug = ReadPlugin(hIter);
 
-		for( int i = 1; i <= MaxClients; i++ )
+		if( hPlug )
 		{
-			g_hAnimationCallbackPre[i].RemoveAllFunctions(hPlug);
-			g_hAnimationCallbackPost[i].RemoveAllFunctions(hPlug);
+			for( int i = 1; i <= MaxClients; i++ )
+			{
+				g_hAnimationCallbackPre[i].RemoveAllFunctions(hPlug);
+				g_hAnimationCallbackPost[i].RemoveAllFunctions(hPlug);
+			}
 		}
 	}
 
@@ -1352,7 +1356,7 @@ void AddonsDisabler_Unpatch()
 // ====================================================================================================
 //										ADDONS DISABLER DETOUR
 // ====================================================================================================
-MRESReturn DTR_AddonsDisabler(int pThis, Handle hReturn, DHookParam hParams) // Forward "L4D2_OnClientDisableAddons"
+MRESReturn DTR_AddonsDisabler(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_OnClientDisableAddons"
 {
 	// Details on finding offsets can be found here: https://github.com/ProdigySim/left4dhooks/pull/1
 	// Big thanks to "ProdigySim" for updating for The Last Stand update.

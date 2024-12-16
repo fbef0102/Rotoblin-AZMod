@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.8
+v8.5.9
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -41,7 +41,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
   * Install "Roto-AZMod Main files", this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
-  * ```-console -game left4dead -tickrate 100 +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0```
+  * ```-console -game left4dead +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0 -tickrate 100 -maxplayers 31```
 	
 - - - -	
 ### Server Install Optional ###
