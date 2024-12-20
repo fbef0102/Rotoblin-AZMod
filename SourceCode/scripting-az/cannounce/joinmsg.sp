@@ -11,15 +11,18 @@
 
 
 *****************************************************************/
-new Handle:g_CvarPlaySound = INVALID_HANDLE;
-new Handle:g_CvarPlaySoundFile = INVALID_HANDLE;
+ConVar g_CvarPlaySound = null;
+ConVar g_CvarPlaySoundFile = null;
+char g_sCvarPlaySoundFile[128];
 
-new Handle:g_CvarPlayDiscSound = INVALID_HANDLE;
-new Handle:g_CvarPlayDiscSoundFile = INVALID_HANDLE;
+ConVar g_CvarPlayDiscSound = null;
+ConVar g_CvarPlayDiscSoundFile = null;
+char g_sCvarPlayDiscSoundFile[128];
 
-new Handle:g_CvarMapStartNoSound = INVALID_HANDLE;
+ConVar g_CvarMapStartNoSound = null;
 
-new bool:noSoundPeriod = false;
+Handle g_hMapStartNoSoundTimer;
+bool g_bMapStarted;
 
 /*****************************************************************
 
@@ -31,71 +34,90 @@ new bool:noSoundPeriod = false;
 
 SetupJoinMsg()
 {
-	noSoundPeriod = false;
-	
 	//cvars
 	g_CvarPlaySound = CreateConVar("sm_ca_playsound", "0", "Plays a specified (sm_ca_playsoundfile) sound on player connect");
-	g_CvarPlaySoundFile = CreateConVar("sm_ca_playsoundfile", "ambient\\alarms\\klaxon1.wav", "Sound to play on player connect if sm_ca_playsound = 1");
+	g_CvarPlaySoundFile = CreateConVar("sm_ca_playsoundfile", "ambient/alarms/klaxon1.wav", "Sound to play on player connect if sm_ca_playsound = 1");
 
 	g_CvarPlayDiscSound = CreateConVar("sm_ca_playdiscsound", "0", "Plays a specified (sm_ca_playdiscsoundfile) sound on player discconnect");
-	g_CvarPlayDiscSoundFile = CreateConVar("sm_ca_playdiscsoundfile", "weapons\\cguard\\charging.wav", "Sound to play on player discconnect if sm_ca_playdiscsound = 1");
+	g_CvarPlayDiscSoundFile = CreateConVar("sm_ca_playdiscsoundfile", "ui/beep_error01.wav", "Sound to play on player discconnect if sm_ca_playdiscsound = 1");
 
-	g_CvarMapStartNoSound = CreateConVar("sm_ca_mapstartnosound", "30.0", "Time to ignore all player join sounds on a map load");
+	g_CvarMapStartNoSound = CreateConVar("sm_ca_mapstartnosound", "30.0", "Time to ignore all player join/disconnect sounds on a map load");
+
+	GetCvars();
+	g_CvarPlaySoundFile.AddChangeHook(ConVarChanged_Cvars);
+	g_CvarPlayDiscSoundFile.AddChangeHook(ConVarChanged_Cvars);
 }
 
-
-OnMapStart_JoinMsg()
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {
-	decl Float:waitPeriod;
-	
-	noSoundPeriod = false;
-	
-	waitPeriod = GetConVarFloat(g_CvarMapStartNoSound);
+	GetCvars();
+}
+
+void GetCvars()
+{
+	g_CvarPlaySoundFile.GetString(g_sCvarPlaySoundFile, sizeof(g_sCvarPlaySoundFile));
+	g_CvarPlayDiscSoundFile.GetString(g_sCvarPlayDiscSoundFile, sizeof(g_sCvarPlayDiscSoundFile));
+
+	if(g_bMapStarted)
+	{
+		if(strlen(g_sCvarPlaySoundFile) > 0)
+		{
+			PrecacheSound(g_sCvarPlaySoundFile);
+		}
+
+		if(strlen(g_sCvarPlayDiscSoundFile) > 0)
+		{
+			PrecacheSound(g_sCvarPlayDiscSoundFile);
+		}
+	}
+}
+
+void OnMapStart_JoinMsg()
+{
+	g_bMapStarted = true;
+
+	float waitPeriod = g_CvarMapStartNoSound.FloatValue;
 	
 	if( waitPeriod > 0 )
 	{
-		noSoundPeriod = true;
-		CreateTimer(waitPeriod, Timer_MapStartNoSound);	
+		delete g_hMapStartNoSoundTimer;
+		g_hMapStartNoSoundTimer = CreateTimer(waitPeriod, Timer_MapStartNoSound);	
 	}
 }
 
-OnPostAdminCheck_JoinMsg()
+void OnPostAdminCheck_Sound()
 {
-	decl String:soundfile[SOUNDFILE_PATH_LEN];
-	
+	if(g_hMapStartNoSoundTimer != null) return;
+
 	//if enabled and custom sound not already played, play all player sound
-	if( GetConVarInt(g_CvarPlaySound))
+	if( g_CvarPlaySound.BoolValue)
 	{
-		GetConVarString(g_CvarPlaySoundFile, soundfile, sizeof(soundfile));
-		
-		if( strlen(soundfile) > 0 && !noSoundPeriod)
+		if(strlen(g_sCvarPlaySoundFile) > 0)
 		{
-			EmitSoundToAll( soundfile );
+			EmitSoundToAll(g_sCvarPlaySoundFile);
 		}
 	}
 }
 
-OnClientDisconnect_JoinMsg()
+void OnClientDisconnect_Sound()
 {
-	decl String:soundfile[SOUNDFILE_PATH_LEN];
-	
-	if( GetConVarInt(g_CvarPlayDiscSound))
+	if(g_hMapStartNoSoundTimer != null) return;
+
+	if( g_CvarPlayDiscSound.BoolValue)
 	{
-		GetConVarString(g_CvarPlayDiscSoundFile, soundfile, sizeof(soundfile));
-		
-		if( strlen(soundfile) > 0)
+		if(strlen(g_sCvarPlayDiscSoundFile) > 0)
 		{
-			EmitSoundToAll( soundfile );
+			EmitSoundToAll(g_sCvarPlayDiscSoundFile);
 		}
 	}
 }
 
 
-public Action:Timer_MapStartNoSound(Handle:timer)
+Action Timer_MapStartNoSound(Handle timer)
 {	
-	noSoundPeriod = false;
+	g_hMapStartNoSoundTimer = null;
 	
-	return Plugin_Handled;
+	return Plugin_Continue;
 }
 
 

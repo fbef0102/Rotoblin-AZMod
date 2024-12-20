@@ -43,8 +43,6 @@
 //static g_iSColors[5]             = {1,               3,              4,         6,			5};
 //static String:g_sSColors[5][13]  = {"{DEFAULT}",     "{LIGHTGREEN}", "{GREEN}", "{YELLOW}",	"{OLIVE}"};
 
-new Handle:g_CvarConnectDisplayType = INVALID_HANDLE;
-
 new String:player[50];
 new String:player_ip[16];
 new String:player_country[45];
@@ -98,8 +96,6 @@ public OnPluginStart()
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	CreateConVar("sm_cannounce_version", VERSION, "Connect announce replacement", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	g_CvarConnectDisplayType = CreateConVar("sm_ca_connectdisplaytype", "1", "[1|0] if 1 then displays connect message after admin check and allows the {PLAYERTYPE} placeholder. If 0 displays connect message on client auth (earlier) and disables the {PLAYERTYPE} placeholder");
-	
 	//event hooks
 	HookEvent("player_disconnect", event_PlayerDisconnect, EventHookMode_Pre);
 	
@@ -129,33 +125,24 @@ public OnMapStart()
 	OnMapStart_JoinMsg();
 }
 
-public OnClientAuthorized(client, const String:auth[])
+public void OnClientPostAdminCheck(client)
 {
-	if( GetConVarInt(g_CvarConnectDisplayType) == 0 )
+	if( !IsFakeClient(client) )
 	{
-		if( !IsFakeClient(client) && GetClientCount(true) < MaxClients )
-		{
-			OnPostAdminCheck_CountryShow(client);
-		
-			OnPostAdminCheck_JoinMsg();
-		}
+		CreateTimer(5.0, Timer_OnClientPostAdminCheck, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
-public OnClientPostAdminCheck(client)
+Action Timer_OnClientPostAdminCheck(Handle timer, int client)
 {
-	decl String:auth[32];
-	
-	if( GetConVarInt(g_CvarConnectDisplayType) == 1 )
+	client = GetClientOfUserId(client);
+	if(client && IsClientInGame(client))
 	{
-		GetClientAuthId(client, AuthId_Steam2,auth, sizeof(auth));
-		if( !IsFakeClient(client) && GetClientCount(true) < MaxClients )
-		{
-			OnPostAdminCheck_CountryShow(client);
-		
-			OnPostAdminCheck_JoinMsg();
-		}
-	}	
+		OnPostAdminCheck_CountryShow(client);
+		OnPostAdminCheck_Sound();
+	}
+
+	return Plugin_Continue;
 }
 
 
@@ -166,19 +153,22 @@ public OnClientPostAdminCheck(client)
 
 
 ****************************************************************/
-public Action:event_PlayerDisconnect(Handle:event, const String:name[], bool:dontBroadcast)
+void event_PlayerDisconnect(Event event, char[] name, bool dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
 	if( client && !IsFakeClient(client) && !dontBroadcast )
 	{
-		event_PlayerDisc_CountryShow(event, name, dontBroadcast);
+		event_PlayerDisc_CountryShow(event, client);
 		
-		if(IsClientInGame(client)) OnClientDisconnect_JoinMsg();
+		if(IsClientInGame(client))
+		{
+			OnClientDisconnect_Sound();
+		}
 	}
 	
 	
-	return event_PlayerDisconnect_Suppress( event, name, dontBroadcast );
+	event_PlayerDisconnect_Suppress( event );
 }
 
 

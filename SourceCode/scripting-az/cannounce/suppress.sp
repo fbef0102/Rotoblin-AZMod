@@ -5,8 +5,8 @@
 
 
 *****************************************************************/
-new Handle:g_CvarShowConnectionMsg = INVALID_HANDLE;
-new Handle:g_CvarShowDisonnectionMsg = INVALID_HANDLE;
+ConVar g_CvarShowConnectionMsg = null;
+ConVar g_CvarShowDisonnectionMsg = null;
 
 
 /*****************************************************************
@@ -16,7 +16,7 @@ new Handle:g_CvarShowDisonnectionMsg = INVALID_HANDLE;
 
 
 *****************************************************************/
-SetupSuppress()
+void SetupSuppress()
 {
 	g_CvarShowConnectionMsg = CreateConVar("sm_ca_showstandard", "0", "shows standard player connected message");
 	g_CvarShowDisonnectionMsg = CreateConVar("sm_ca_showstandarddisc", "0", "shows standard player discconnected message");
@@ -38,73 +38,32 @@ SetupSuppress()
 
 ****************************************************************/
 //For the newer event player_connect_client
-public Action:event_PlayerConnectClient(Handle:event, const String:name[], bool:dontBroadcast)
+public Action event_PlayerConnectClient(Event event, char[] name, bool dontBroadcast)
 {
-    if (!dontBroadcast && !GetConVarInt(g_CvarShowConnectionMsg))
+    if (!g_CvarShowConnectionMsg.BoolValue)
     {
-        decl String:clientName[33], String:networkID[22];
-        GetEventString(event, "name", clientName, sizeof(clientName));
-        GetEventString(event, "networkid", networkID, sizeof(networkID));
-
-        new Handle:newEvent = CreateEvent("player_connect_client", true);
-        SetEventString(newEvent, "name", clientName);
-        SetEventInt(newEvent, "index", GetEventInt(event, "index"));
-        SetEventInt(newEvent, "userid", GetEventInt(event, "userid"));
-        SetEventString(newEvent, "networkid", networkID);
-
-        FireEvent(newEvent, true);
-
-        return Plugin_Handled;
+        event.BroadcastDisabled = true;
     }
 
     return Plugin_Continue;
 }
 
 //For the older event player_connect
-public Action:event_PlayerConnect(Handle:event, const String:name[], bool:dontBroadcast)
+public Action event_PlayerConnect(Event event, char[] name, bool dontBroadcast)
 {
-    if (!dontBroadcast && !GetConVarInt(g_CvarShowConnectionMsg))
+    if (!g_CvarShowConnectionMsg.BoolValue)
     {
-        decl String:clientName[33], String:networkID[22], String:address[32];
-        GetEventString(event, "name", clientName, sizeof(clientName));
-        GetEventString(event, "networkid", networkID, sizeof(networkID));
-        GetEventString(event, "address", address, sizeof(address));
-
-        new Handle:newEvent = CreateEvent("player_connect", true);
-        SetEventString(newEvent, "name", clientName);
-        SetEventInt(newEvent, "index", GetEventInt(event, "index"));
-        SetEventInt(newEvent, "userid", GetEventInt(event, "userid"));
-        SetEventString(newEvent, "networkid", networkID);
-        SetEventString(newEvent, "address", address);
-
-        FireEvent(newEvent, true);
-
-        return Plugin_Handled;
+        event.BroadcastDisabled = true;
     }
 
     return Plugin_Continue;
 }
 
 
-public Action:event_PlayerDisconnect_Suppress(Handle:event, const String:name[], bool:dontBroadcast)
+void event_PlayerDisconnect_Suppress(Event event)
 {
-    if (!dontBroadcast && !GetConVarInt(g_CvarShowDisonnectionMsg))
+    if (!g_CvarShowDisonnectionMsg.BoolValue)
     {
-        decl String:clientName[33], String:networkID[22], String:dcreason2[65];
-        GetEventString(event, "name", clientName, sizeof(clientName));
-        GetEventString(event, "networkid", networkID, sizeof(networkID));
-        GetEventString(event, "reason", dcreason2, sizeof(dcreason2));
-
-        new Handle:newEvent = CreateEvent("player_disconnect", true);
-        SetEventInt(newEvent, "userid", GetEventInt(event, "userid"));
-        SetEventString(newEvent, "reason", dcreason2);
-        SetEventString(newEvent, "name", clientName);        
-        SetEventString(newEvent, "networkid", networkID);
-
-        FireEvent(newEvent, true);
-
-        return Plugin_Handled;
+        event.BroadcastDisabled = true; // 聊天框: 玩家離開遊戲
     }
-
-    return Plugin_Continue;
 }

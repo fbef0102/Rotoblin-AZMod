@@ -50,10 +50,8 @@ OnPostAdminCheck_CountryShow(client)
 
 
 ****************************************************************/
-public Action:event_PlayerDisc_CountryShow(Handle:event, const String:name[], bool:dontBroadcast)
+void event_PlayerDisc_CountryShow(Event event, int client)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-
 	//if enabled, show message
 	if( GetConVarInt(g_CvarShowDisconnect) )
 	{
