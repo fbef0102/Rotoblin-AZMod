@@ -157,7 +157,7 @@ void event_PlayerDisconnect(Event event, char[] name, bool dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if( client && !IsFakeClient(client) && !dontBroadcast )
+	if( client && !IsFakeClient(client) )
 	{
 		event_PlayerDisc_CountryShow(event, client);
 		

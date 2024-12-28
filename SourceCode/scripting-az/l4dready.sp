@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <left4dhooks>
 #include <l4d_lib>
+#include <builtinvotes>
 /*
 * PROGRAMMING CREDITS:
 * Could not do this without Fyren at all, it was his original code chunk 
@@ -73,15 +74,14 @@ new bool:readyMode; //currently waiting for players to ready up?
 
 new goingLive; //0 = not going live, 1 or higher = seconds until match starts
 
-new bool:votesUnblocked;
 new insideCampaignRestart; //0=normal play, 1 or 2=programatically restarting round
 new bool:isCampaignBeingRestarted;
 
 new forcedStart;
-new readyStatus[MAXPLAYERS + 1];
+bool readyStatus[MAXPLAYERS + 1];
 
 //new bool:menuInterrupted[MAXPLAYERS + 1];
-new Handle:menuPanel = INVALID_HANDLE;
+Panel menuPanel = null;
 
 new Handle:liveTimer;
 new bool:unreadyTimerExists;
@@ -184,6 +184,11 @@ Handle PlayerLeftStartTimer = null, CountDownTimer = null;
 int g_iCountDownTime, g_iCvarGameTimeBlock;
 static KeyValues g_hMIData = null;
 
+#define MAX_FOOTERS 10
+#define MAX_FOOTER_LEN 65
+char readyFooter[MAX_FOOTERS][MAX_FOOTER_LEN];
+int footerCounter;
+
 public Plugin:myinfo =
 {
 	name = "L4D Ready Up",
@@ -203,11 +208,18 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 		return APLRes_SilentFailure;
 	}
 
+	CreateNative("AddStringToReadyFooter",	Native_AddStringToReadyFooter);
+	CreateNative("EditFooterStringAtIndex", Native_EditFooterStringAtIndex);
+	CreateNative("FindIndexOfFooterString", Native_FindIndexOfFooterString);
+	CreateNative("GetFooterStringAtIndex",	Native_GetFooterStringAtIndex);
 	CreateNative("IsInReady", Native_IsInReady);
-	CreateNative("Is_Ready_Plugin_On",Native_Is_Ready_Plugin_On);
 	CreateNative("ToggleReadyPanel",		Native_ToggleReadyPanel);
+	CreateNative("IsReady",					Native_IsReady);
+	CreateNative("Is_Ready_Plugin_On",Native_Is_Ready_Plugin_On);
 
 	fwdOnReadyRoundRestarted = CreateGlobalForward("OnRoundIsLive", ET_Ignore);
+
+	RegPluginLibrary("readyup");
 
 	return APLRes_Success;
 }
@@ -225,16 +237,14 @@ public OnPluginStart()
 	RegConsoleCmd("say", Command_Say);
 	RegConsoleCmd("say_team", Command_Say);
 
-	RegConsoleCmd("sm_hide",			Hide_Cmd, "Hides the ready-up panel so other menus can be seen");
-	RegConsoleCmd("sm_show",			Show_Cmd, "Shows a hidden ready-up panel");
+	RegConsoleCmd("sm_hide",			Hide_Cmd, "Hides the ready-up menuPanel so other menus can be seen");
+	RegConsoleCmd("sm_show",			Show_Cmd, "Shows a hidden ready-up menuPanel");
 	RegConsoleCmd("sm_return", Return_Cmd, "Return to a valid saferoom spawn if you get stuck during an unfrozen ready-up period");
 	
-	RegConsoleCmd("sm_F", readyUp);
 	RegConsoleCmd("sm_unready", readyDown);
 	RegConsoleCmd("sm_notready", readyDown); //alias for people who are bad at reading instructions
 	
 	RegConsoleCmd("sm_rates", ratesCommand);	//Prints net information about players
-	RegConsoleCmd("zack_netinfo", ratesCommand);	//Some people...
 	
 	RegConsoleCmd("sm_jg", Join_Survivor);
 	RegConsoleCmd("sm_join", Join_Survivor);
@@ -255,10 +265,6 @@ public OnPluginStart()
 	RegConsoleCmd("sm_joininfected", Join_Infected);
 	RegConsoleCmd("sm_jointeam3", Join_Infected);
 	RegConsoleCmd("sm_zombie", Join_Infected);
-
-	//block all voting if we're enforcing ready mode
-	//we only temporarily allow votes to fake restart the campaign
-	RegConsoleCmd("callvote", callVote);
 	
 	RegConsoleCmd("sm_spectate", Command_Spectate);
 	RegConsoleCmd("sm_s", Command_Spectate);
@@ -337,7 +343,7 @@ public OnPluginStart()
 	cvarReadyCompetition = CreateConVar("l4d_ready_competition", "0", "Disable all plugins but a few competition-allowed ones", FCVAR_SPONLY | FCVAR_NOTIFY);
 	cvarReadyHalves = CreateConVar("l4d_ready_both_halves", "0", "Make players ready up both during the first and second rounds of a map", FCVAR_SPONLY | FCVAR_NOTIFY);
 	cvarReadyServerCfg = CreateConVar("l4d_ready_server_cfg", "", "Config to execute when the map is changed (to exec after server.cfg).", FCVAR_SPONLY | FCVAR_NOTIFY);
-	cvarReadyLeagueNotice = CreateConVar("l4d_ready_league_notice", "", "League notice displayed on RUP panel", FCVAR_SPONLY | FCVAR_NOTIFY);
+	cvarReadyLeagueNotice = CreateConVar("l4d_ready_league_notice", "", "League notice displayed on RUP menuPanel", FCVAR_SPONLY | FCVAR_NOTIFY);
 	cvarReadyLiveCountdown = CreateConVar("l4d_ready_live_countdown", "0", "Countdown timer to begin the round", FCVAR_SPONLY | FCVAR_NOTIFY);
 	cvarReadySpectatorRUP = CreateConVar("l4d_ready_spectator_rup", "0", "Whether or not spectators have to ready up", FCVAR_SPONLY | FCVAR_NOTIFY);
 	cvarReadyRestartRound = CreateConVar("l4d_ready_restart_round", "1", "Whether or not to restart the campaign after readying up (dev)", FCVAR_SPONLY | FCVAR_NOTIFY);
@@ -394,8 +400,6 @@ public OnPluginStart()
 	RegConsoleCmd("sm_bonesaw", Secret_Cmd, "secret ready up");
 	RegConsoleCmd("sm_trophy", Secret_Cmd, "secret ready up");
 	RegConsoleCmd("sm_harrypotter", Secret_Cmd, "secret ready up");
-	RegConsoleCmd("sm_twnumber1", Secret_Cmd, "secret ready up");
-	RegConsoleCmd("sm_twno1", Secret_Cmd, "secret ready up");
 	
 	arrayclientswitchteam = CreateArray(ByteCountToCells(STEAMID_SIZE));
 }
@@ -995,7 +999,7 @@ public void OnClientPutInServer(int client)
 {
 	if(IsFakeClient(client)) return;
 
-	readyStatus[client] = 0;
+	readyStatus[client] = false;
 
 	g_iSpectatePenaltyCounter[client] = g_iSpectatePenalty;
 	CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
@@ -1212,6 +1216,12 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	hasleftsaferoom = false;
 	g_bGameTeamSwitchBlock = false;
 	inLiveCountdown = false;
+
+	for (int i = 0; i < MAX_FOOTERS; i++)
+	{
+		readyFooter[i][0] = '\0';
+	}
+	footerCounter = 0;
 	
 
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
@@ -1305,7 +1315,7 @@ public Action:timerUnreadyCallback(Handle:timer)
 		{
 			if(IsClientInGameHuman(i)) 
 			{
-				//use panel for ready up stuff?
+				//use menuPanel for ready up stuff?
 				if(!readyStatus[i])
 				{
 					PrintHintText(i, "%t","ReadyPlugin_15");
@@ -1462,7 +1472,7 @@ void eventPlayerTeamCallback(Event event, const char[] name, bool dontBroadcast)
 	if(!client || !IsClientInGame(client) || IsFakeClient(client)) return;
 	
 	SetEngineTime(client);
-	readyStatus[client] = 0;
+	readyStatus[client] = false;
 	//if(readyMode)
 	//{
 	//	DrawReadyPanelList();
@@ -1693,36 +1703,6 @@ RestartMapNow()
 	
 	ServerCommand("changelevel %s", currentMap);
 	
-}
-
-public Action:callVote(client, args)
-{
-	//only allow voting when are not enforcing ready modes
-	if(cvarEnforceReady.BoolValue == false) 
-	{
-		return Plugin_Continue;
-	}
-	
-	if(!votesUnblocked) 
-	{
-		#if READY_DEBUG
-		DebugPrintToAll("[DEBUG] Voting is blocked");
-		#endif
-		return Plugin_Handled;
-	}
-	
-	new String:votetype[32];
-	GetCmdArg(1,votetype,32);
-	
-	if(strcmp(votetype,"RestartGame",false) == 0)
-	{
-		#if READY_DEBUG
-		DebugPrintToAll("[DEBUG] Vote on RestartGame called");
-		#endif
-		votesUnblocked = false;
-	}
-	
-	return Plugin_Continue;
 }
 
 public Action:Command_Spectate(client, args)
@@ -2102,7 +2082,7 @@ public Action:readyUp(client, args)
 	if(!readyMode || readyStatus[client] || GetClientTeam(client) == L4D_TEAM_SPECTATE || g_bIsSpectating[client]) return Plugin_Handled;
 	
 	SetEngineTime(client);
-	readyStatus[client] = 1;
+	readyStatus[client] = true;
 	checkStatus();
 	
 	DrawReadyPanelList();
@@ -2116,7 +2096,7 @@ public Action:readyDown(client, args)
 	if(isCampaignBeingRestarted || insideCampaignRestart) return Plugin_Handled;
 	
 	SetEngineTime(client);
-	readyStatus[client] = 0;
+	readyStatus[client] = false;
 	checkStatus();
 	
 	DrawReadyPanelList();
@@ -2192,10 +2172,14 @@ RealplayerinSV()
 }
 
 
-//draws a menu panel of ready and unready players
+//draws a menu menuPanel of ready and unready players
 DrawReadyPanelList()
 {
+	if (menuPanel != null) delete menuPanel;
+
 	if(!readyMode) return;
+
+	menuPanel = new Panel();
 	
 	decl String:readyPlayers[1024];
 	decl String:name[MAX_NAME_LENGTH];
@@ -2206,12 +2190,11 @@ DrawReadyPanelList()
 	new numPlayers2 = 0;
 	new numPlayers3 = 0;
 	
-	new Handle:panel = CreatePanel();
 	decl String:versionInfo[128];
 	decl String:Notice[64];
 	GetConVarString(cvarReadyLeagueNotice, Notice, sizeof(Notice));
 	Format(versionInfo, 128, "● %t (%s)", "ROTO_AZ_PLUGIN_VERSION",Notice);
-	DrawPanelText(panel, versionInfo);
+	DrawPanelText(menuPanel, versionInfo);
 	
 #if LEAGUE_ADD_NOTICE
 	switch(change)
@@ -2257,7 +2240,7 @@ DrawReadyPanelList()
 			Format(Notice, 64, "● Cmd: !lerps - Check Players' lerps", HostName);
 		}
 	}
-	DrawPanelText(panel, Notice);
+	DrawPanelText(menuPanel, Notice);
 #endif
 	
 	decl String:spawn[80];
@@ -2279,13 +2262,12 @@ DrawReadyPanelList()
 		else
 			Format(spawn, 80, "►Tank: None, Witch: None");
 
-	DrawPanelText(panel, spawn);
+	DrawPanelText(menuPanel, spawn);
 	
-	DrawPanelText(panel, " ");
+	DrawPanelText(menuPanel, " ");
 	
 	new sur, inf ,specs;
-	new i;
-	for(i = 1; i <= MaxClients; i++) 
+	for(int i = 1; i <= MaxClients; i++) 
 	{
 		if(IsClientInGameHuman(i)&& GetClientTeam(i) == L4D_TEAM_SURVIVORS) 
 			sur++;
@@ -2298,8 +2280,8 @@ DrawReadyPanelList()
 	if(sur)
 	{
 		Format(spawn, 80, "Survivors. - %d",Score_GetTeamCampaignScore(L4D_TEAM_SURVIVORS));
-		DrawPanelText(panel, spawn);
-		for(i = 1; i <= MaxClients; i++) 
+		DrawPanelText(menuPanel, spawn);
+		for(int i = 1; i <= MaxClients; i++) 
 		{
 			if(IsClientInGameHuman(i)) 
 			{
@@ -2310,13 +2292,13 @@ DrawReadyPanelList()
 					{
 						numPlayers++;
 						Format(readyPlayers, 1024, "->%d. ★%s",numPlayers,name);
-						DrawPanelText(panel, readyPlayers);
+						DrawPanelText(menuPanel, readyPlayers);
 					}
 					else
 					{
 						numPlayers++;
 						Format(readyPlayers, 1024, "->%d. ☆%s%s",numPlayers,name,(IsPlayerAfk(i, fTime)) ? " [AFK]" : "");
-						DrawPanelText(panel, readyPlayers);
+						DrawPanelText(menuPanel, readyPlayers);
 					}
 				}
 			}
@@ -2325,8 +2307,8 @@ DrawReadyPanelList()
 	if(inf)
 	{
 		Format(spawn, 80, "Infected. - %d",Score_GetTeamCampaignScore(L4D_TEAM_INFECTED));
-		DrawPanelText(panel, spawn);
-		for(i = 1; i <= MaxClients; i++) 
+		DrawPanelText(menuPanel, spawn);
+		for(int i = 1; i <= MaxClients; i++) 
 		{
 			if(IsClientInGameHuman(i)) 
 			{
@@ -2337,13 +2319,13 @@ DrawReadyPanelList()
 					{
 						numPlayers2++;
 						Format(readyPlayers, 1024, "->%d. ★%s",numPlayers2,name);
-						DrawPanelText(panel, readyPlayers);
+						DrawPanelText(menuPanel, readyPlayers);
 					}
 					else
 					{
 						numPlayers2++;
 						Format(readyPlayers, 1024, "->%d. ☆%s%s",numPlayers2,name,(IsPlayerAfk(i, fTime)) ? " [AFK]" : "");
-						DrawPanelText(panel, readyPlayers);
+						DrawPanelText(menuPanel, readyPlayers);
 					}
 				}
 			}
@@ -2351,16 +2333,16 @@ DrawReadyPanelList()
 	}
 	if(specs)
 	{
-		DrawPanelText(panel, "SPECTATORS.");
+		DrawPanelText(menuPanel, "SPECTATORS.");
 		
 		if( specs >=3 )
 		{
 			Format(readyPlayers, 1024, "Many (%d)", specs);
-			DrawPanelText(panel, readyPlayers);
+			DrawPanelText(menuPanel, readyPlayers);
 		}
 		else
 		{
-			for(i = 1; i <= MaxClients; i++)
+			for(int i = 1; i <= MaxClients; i++)
 			{
 				if(IsClientInGameHumanSpec(i) && GetClientTeam(i) == L4D_TEAM_SPECTATE)
 				{
@@ -2368,42 +2350,62 @@ DrawReadyPanelList()
 					
 					numPlayers3++;
 					Format(readyPlayers, 1024, "->%d. %s", numPlayers3, name);
-					DrawPanelText(panel, readyPlayers);
+					DrawPanelText(menuPanel, readyPlayers);
 					#if READY_DEBUG
-					DrawPanelText(panel, readyPlayers);
+					DrawPanelText(menuPanel, readyPlayers);
 					#endif
 				}
 			}
 		}
 	}
 	
-	DrawPanelText(panel, " ");
+	DrawPanelText(menuPanel, " ");
 	FormatTime(Notice, 64, "%m/%d/%Y - %I:%M%p");
 	Format(Notice, 64, "%s (%s%d:%s%d)", Notice, (TimeCount/60 < 10) ? "0" : "",TimeCount/60, (TimeCount%60 < 10) ? "0" : "", TimeCount%60);
-	DrawPanelText(panel, Notice);
-	
-	for(i = 1; i <= MaxClients; i++) 
+	DrawPanelText(menuPanel, Notice);
+
+	if (strlen(readyFooter[0]) > 0)
 	{
-		if(IsClientInGameHumanSpec(i)) 
+		for (int i = 0; i < MAX_FOOTERS; i++)
 		{
-			if(GetClientMenu(i, INVALID_HANDLE) == MenuSource_None && !hiddenPanel[i]) //client is not watching menu
-			{
-				SendPanelToClient(panel, i, Menu_ReadyPanel, READY_LIST_PANEL_LIFETIME);
-				continue;
-			}
-			else if(IsClientVoteMenu(i) || IsClientInfoMenu(i) || hiddenPanel[i]){
-				continue;
-			}
-			else
-				SendPanelToClient(panel, i, Menu_ReadyPanel, READY_LIST_PANEL_LIFETIME);
+			if (strlen(readyFooter[i]) > 0) menuPanel.DrawText(readyFooter[i]);
 		}
 	}
 	
-	if(menuPanel != INVALID_HANDLE)
+	for(int i = 1; i <= MaxClients; i++) 
 	{
-		CloseHandle(menuPanel);
+		if(IsClientInGameHumanSpec(i) && !hiddenPanel[i]) 
+		{
+			if (BuiltinVote_IsVoteInProgress() && IsClientInBuiltinVotePool(i))
+			{
+				continue;
+			}
+			
+			if (Game_IsVoteInProgress())
+			{
+				int voteteam = Game_GetVoteTeam();
+				if (voteteam == -1 || voteteam == GetClientTeam(i))
+				{
+					continue;
+				}
+			}
+
+			if(IsClientVoteMenu(i) || IsClientInfoMenu(i))
+			{
+				continue;
+			}
+
+			switch (GetClientMenu(i, INVALID_HANDLE))
+			{
+				case MenuSource_External, MenuSource_Normal:
+				{ 
+					continue;
+				}
+			}
+
+			SendPanelToClient(menuPanel, i, Menu_ReadyPanel, 1);
+		}
 	}
-	menuPanel = panel;
 }
 
 
@@ -2576,7 +2578,7 @@ compOn()
 	forcedStart = 0;
 	
 	decl i;
-	for(i = 1; i <= MAXPLAYERS; i++) readyStatus[i] = 0;
+	for(i = 1; i <= MAXPLAYERS; i++) readyStatus[i] = false;
 }
 
 //begin the ready mode (everyone now needs to ready up before they can move)
@@ -3448,45 +3450,6 @@ SetTeamFrozen(bool:freezeStatus)
 	}
 }
 
-public Native_IsInReady(Handle:plugin, numParams)
-{
-	return readyMode;
-}
-
-public Native_Is_Ready_Plugin_On(Handle:plugin, numParams)
-{
-	return cvarEnforceReady.BoolValue;
-}
-
-public int Native_ToggleReadyPanel(Handle plugin, int numParams)
-{
-	if (readyMode)
-	{
-		// TODO: Inform the client(s) that panel is supressed?
-		bool hide = !GetNativeCell(1);
-		
-		int client = GetNativeCell(2);
-		if (client && IsClientInGame(client))
-		{
-			bool temp = !hiddenPanel[client];
-			hiddenPanel[client] = hide;
-			return temp;
-		}
-		else
-		{
-			for (int i = 1; i <= MaxClients; i++)
-			{
-				if (IsClientInGame(i))
-				{
-					hiddenPanel[i] = hide;
-				}
-			}
-			return true;
-		}
-	}
-	return false;
-}
-
 public ConVarChanged_GameMode(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	GetConVarString(g_hCvarGameMode, CurrentGameMode, sizeof(CurrentGameMode));
@@ -3503,7 +3466,7 @@ public Action:Secret_Cmd(client, args)
 	
 	DoSecrets(client);	//easter egg
 	
-	readyStatus[client] = 1;
+	readyStatus[client] = true;
 	checkStatus();
 	DrawReadyPanelList();
 	
@@ -3645,4 +3608,127 @@ void MI_KV_Close()
 		CloseHandle(g_hMIData);
 		g_hMIData = null;
 	}
+}
+
+// ========================
+//  Natives
+// ========================
+
+int Native_AddStringToReadyFooter(Handle plugin, int numParams)
+{
+	char footer[MAX_FOOTER_LEN];
+	GetNativeString(1, footer, sizeof(footer));
+	if (footerCounter < MAX_FOOTERS)
+	{
+		int len = strlen(footer);
+		if (0 < len && len < MAX_FOOTER_LEN)
+		{
+			strcopy(readyFooter[footerCounter], MAX_FOOTER_LEN, footer);
+			footerCounter++;
+			return footerCounter-1;
+		}
+	}
+	return -1;
+}
+
+int Native_EditFooterStringAtIndex(Handle plugin, int numParams)
+{
+	char newString[MAX_FOOTER_LEN];
+	GetNativeString(2, newString, sizeof(newString));
+	int index = GetNativeCell(1);
+	
+	if (footerCounter < MAX_FOOTERS)
+	{
+		if (strlen(newString) < MAX_FOOTER_LEN)
+		{
+			readyFooter[index] = newString;
+			return true;
+		}
+	}
+	return false;
+}
+
+int Native_FindIndexOfFooterString(Handle plugin, int numParams)
+{
+	char stringToSearchFor[MAX_FOOTER_LEN];
+	GetNativeString(1, stringToSearchFor, sizeof(stringToSearchFor));
+	
+	for (int i = 0; i < footerCounter; i++){
+		if (StrEqual(readyFooter[i], "\0", true)) continue;
+		
+		if (StrContains(readyFooter[i], stringToSearchFor, false) > -1){
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+int Native_GetFooterStringAtIndex(Handle plugin, int numParams)
+{
+	int index = GetNativeCell(1), maxlen = GetNativeCell(3);
+	char buffer[65];
+	
+	if (index < MAX_FOOTERS) {
+		strcopy(buffer, sizeof(buffer), readyFooter[index]);
+	}
+	
+	SetNativeString(2, buffer, maxlen, true);
+
+	return 0;
+}
+
+int Native_IsInReady(Handle:plugin, numParams)
+{
+	return readyMode;
+}
+
+int Native_Is_Ready_Plugin_On(Handle:plugin, numParams)
+{
+	return cvarEnforceReady.BoolValue;
+}
+
+int Native_ToggleReadyPanel(Handle plugin, int numParams)
+{
+	if (readyMode)
+	{
+		// TODO: Inform the client(s) that menuPanel is supressed?
+		bool hide = !GetNativeCell(1);
+		
+		int client = GetNativeCell(2);
+		if (client && IsClientInGame(client))
+		{
+			bool temp = !hiddenPanel[client];
+			hiddenPanel[client] = hide;
+			return temp;
+		}
+		else
+		{
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsClientInGame(i))
+				{
+					hiddenPanel[i] = hide;
+				}
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+int Native_IsReady(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	if (client < 1 || client > MaxClients)
+	{
+		return ThrowNativeError(SP_ERROR_NATIVE, "Invalid client index %d", client);
+	}
+	
+	if (!IsClientInGame(client))
+	{
+		return ThrowNativeError(SP_ERROR_NATIVE, "Client %d is not in game", client);
+	}
+	
+	return readyStatus[client];
 }

@@ -107,7 +107,7 @@ public Action OnClientCommand(int client, int args)
 	if(client < 0 || client > MaxClients)
 		return Plugin_Continue;
 
-	LogCommand(client, args);
+	LogCommand(client);
 	return Plugin_Continue;
 }
 
@@ -206,7 +206,7 @@ void event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
 		return;
 	}
 	
-	if( client && !IsFakeClient(client) && !dontBroadcast )
+	if( client && !IsFakeClient(client) )
 	{
 		GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID));
 		
@@ -272,7 +272,7 @@ void LogChat2(int client, const char[] sArgs, bool teamchat)
 	SaveMessage(msg);
 }
 
-stock void LogCommand(int client, int args)
+void LogCommand(int client)
 {
 	static char cmd[64];
 	static char text[1024];

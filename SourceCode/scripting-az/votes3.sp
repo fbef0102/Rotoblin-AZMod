@@ -430,7 +430,12 @@ public Votes_Menu(Handle:menu, MenuAction:action, client, itemNum)
 
 public Action:Callvote_Handler(client, args)
 {
-	if(client == 0 || !IsClientInGame(client)) return Plugin_Handled;
+	if(client == 0 || IsFakeClient(client)) return Plugin_Continue;
+
+	if(args <= 0)
+	{
+		return Plugin_Continue;
+	}
 
 	CPrintToChat(client, "[TS] Valve Vote is blocked. Use {green}!votes{default} instead");
 

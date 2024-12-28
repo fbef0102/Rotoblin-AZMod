@@ -2,6 +2,7 @@
 #include <sdktools>
 #include <multicolors>
 #include <l4d_lib>
+#include <readyup>
 
 
 #define PLUGIN_VERSION "1.2"
@@ -15,8 +16,6 @@ static GameCode;
 static GameCodeClient;
 static OriginalTeam[MAXPLAYERS+1];
 
-native Is_Ready_Plugin_On();
-native IsInReady();
 #define MIX_DELAY 5.0
 
 new result_int;
