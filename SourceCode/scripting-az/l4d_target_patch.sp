@@ -145,12 +145,12 @@ public void OnConfigsExecuted()
 	IsAllowed();
 }
 
-public void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Allow(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	IsAllowed();
 }
 
-public void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Cvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
 }
@@ -237,7 +237,7 @@ bool IsAllowedGameMode()
 	return true;
 }
 
-public void OnGamemode(const char[] output, int caller, int activator, float delay)
+void OnGamemode(const char[] output, int caller, int activator, float delay)
 {
 	if( strcmp(output, "OnCoop") == 0 )
 		g_iCurrentMode = 1;
@@ -257,7 +257,7 @@ public void OnClientPutInServer(int client)
 // ====================================================================================================
 //					EVENT
 // ====================================================================================================
-public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	for( int i = 0; i <= MaxClients; i++ )
 	{
@@ -265,7 +265,7 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	g_bBlind[client] = false;
@@ -296,14 +296,14 @@ void DetourAddress(bool patch)
 	}
 }
 
-public MRESReturn ChooseVictimPre(int client, Handle hReturn)
+MRESReturn ChooseVictimPre(int client, Handle hReturn)
 {
 	// Unused but hook required to prevent crashing.
 
 	return MRES_Ignored;
 }
 
-public MRESReturn ChooseVictimPost(int client, Handle hReturn)
+MRESReturn ChooseVictimPost(int client, Handle hReturn)
 {
 	// Ignore no target
 	int victim = DHookGetReturn(hReturn);
@@ -314,7 +314,7 @@ public MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	if( IsPlayerGhost(client) ) return MRES_Ignored;
 		
 	// If has target
-	if( L4D_GetSurvivorVictim(client) != -1) return MRES_Ignored;
+	if( my_GetSurvivorVictim(client) != -1) return MRES_Ignored;
 
 	// Ignore non-specified special infected
 	int class = GetEntProp(client, Prop_Send, "m_zombieClass");
@@ -389,7 +389,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return Plugin_Continue;
 }
 
-public bool IsPlayerPinned(int client)
+bool IsPlayerPinned(int client)
 {
 	int attacker = -1;
 	attacker = GetEntPropEnt(client, Prop_Send, "m_pounceAttacker");
@@ -405,17 +405,17 @@ public bool IsPlayerPinned(int client)
 	return false;
 }
 
-public bool IsHandingFromLedge(int client)
+ bool IsHandingFromLedge(int client)
 {
 	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isHangingFromLedge") || GetEntProp(client, Prop_Send, "m_isFallingFromLedge"));
 }
 
-public bool IsIncapacitated(int client)
+bool IsIncapacitated(int client)
 {
 	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
 }
 
-int L4D_GetSurvivorVictim(int client)
+int my_GetSurvivorVictim(int client)
 {
 	int victim;
 	

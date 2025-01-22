@@ -1,5 +1,12 @@
 "MapInfo"
 {
+	// apply to all maps by default
+	"default"
+	{
+		"no_start_area" 				"0"
+		"custom_start_area_distance"	"300.0"
+	}
+
 	"l4d_vs_hospital01_apartment"
 	{
 		"pill_limit" "1"
@@ -368,6 +375,7 @@
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 		"no_start_area" "1"
+		"custom_start_area_distance"	"300.0"
 	}
 	"l4d_vs_city17_02"
 	{
@@ -416,6 +424,7 @@
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 		"no_start_area" "1"
+		"custom_start_area_distance"	"160.0"
 		"tank_ban_flow"
 		{
 			"One Way Drop First time"
@@ -1116,6 +1125,7 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.0"
 		"no_start_area" "1"
+		"custom_start_area_distance"	"350.0"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1228,6 +1238,7 @@
 		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
 		"no_start_area" "1"
+		"custom_start_area_distance"	"450.0"
 	}
 	"uz_town"
 	{

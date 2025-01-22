@@ -7,8 +7,9 @@
 #define		SYMBOL_LEFT		'('
 #define		SYMBOL_RIGHT	')'
 
-static		Handle:g_hHostName, String:g_sDefaultN[68];
-//static Handle:g_hReadyUp;
+ConVar g_hHostName;
+bool g_bBlockHook;
+char sFileHostName[128];
 
 public Plugin:myinfo = 
 {
@@ -37,25 +38,30 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnPluginStart()
 {
 	g_hHostName	= FindConVar("hostname");
-	GetConVarString(g_hHostName, g_sDefaultN, sizeof(g_sDefaultN));
-	if (strlen(g_sDefaultN))//strlen():回傳字串的長度
-		ChangeServerName();
+
+	g_hHostName.AddChangeHook(ConVarChanged_HostNameCvars);
+	
+	ChangeServerName();
 }
 
-public OnConfigsExecuted()
+void ConVarChanged_HostNameCvars(ConVar convar, const char[] oldValue, const char[] newValue)
 {
+	if(g_bBlockHook) return;
+
 	ChangeServerName();
 }
 
 ChangeServerName()
 {
+	g_bBlockHook = true;
+
 	decl String:sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
 	
 	new Handle:file = OpenFile(sPath, "r");//讀取檔案
 	if(file == INVALID_HANDLE)
 	{
-		LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
+		LogError("file configs/hostname/server_hostname.txt doesn't exist!");
 		CloseHandle(file);
 		return;
 	}
@@ -68,10 +74,12 @@ ChangeServerName()
 		Format(sNewName, sizeof(sNewName), "[TS] %s", readData);
 		SetConVarString(g_hHostName,sNewName);
 		
-		Format(g_sDefaultN,sizeof(g_sDefaultN),"%s",sNewName);
+		Format(sFileHostName,sizeof(sFileHostName),"%s", readData);
 	}
 
 	CloseHandle(file);
+
+	g_bBlockHook = false;
 }
 
 
@@ -82,26 +90,7 @@ int Native_GetHostName(Handle plugin, int numParams)
 	size = GetNativeCell(2);
 	if (size <= 0) return false;
 
-	char[] str = new char[size];
+	SetNativeString(1, sFileHostName, size, false);
 
-	char sPath[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sPath, sizeof(sPath),"configs/hostname/server_hostname.txt");//檔案路徑設定
-	
-	new Handle:file = OpenFile(sPath, "r");//讀取檔案
-	if(file == INVALID_HANDLE)
-	{
-		LogMessage("file configs/hostname/server_hostname.txt doesn't exist!");
-		CloseHandle(file);
-		return false;
-	}
-
-	if(!IsEndOfFile(file) && ReadFileLine(file, str, size))//讀一行
-	{
-		SetNativeString(1, str, size, false);
-		CloseHandle(file);
-		return true;
-	}
-	CloseHandle(file);
-
-	return false;
+	return true;
 }

@@ -4,6 +4,7 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <left4dhooks>
+#include <l4d_start_safe_area>
 #define DEBUG 0
 
 #define L4D_TEAM_INFECTED  3
@@ -172,11 +173,10 @@ void GetCvars()
 
 void SetDefault()
 {
-	ent_safedoor = -1;
+	ent_safedoor = 0;
 	iDoorLockTime = g_iAntiOpenTime;
 	iDoorForceOpenTime = g_iForceStarTime;
 	iSafeAreaLeftTime = g_iSafeAreaLeftTime;
-	ent_safedoor = -1;
 	bSafeRoomDoorLock = false;
 	bLeftSafeAreaLock = false;
 	for( int i = 0; i <= MaxClients; i++ )
@@ -187,7 +187,7 @@ void SetDefault()
 
 void ClearDefault()
 {
-	if(ent_safedoor > 0 && IsValidEntity(ent_safedoor)) DispatchKeyValue(ent_safedoor, "spawnflags", "8192");
+	if(IsValidEntRef(ent_safedoor)) DispatchKeyValue(ent_safedoor, "spawnflags", "8192");
 	g_iRoundStart = 0;
 	g_iPlayerSpawn = 0;
 }
@@ -227,11 +227,12 @@ public Action PluginStart(Handle timer)
 
 public void Event_DoorOpen(Event event, const char[] name, bool dontBroadcast) 
 {
-	if (!bSafeRoomDoorLock && ent_safedoor > 0)
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(IsClientAndInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR)
 	{
-		if (GetEventBool(event, "checkpoint"))
+		if (GetEventBool(event, "checkpoint") && IsValidEntRef(ent_safedoor))
 		{
-			ReplaceFakeSafeDoor();
+			HookSingleEntityOutput(ent_safedoor, "OnFullyOpen", OnFullyOpen);
 		}
 		
 	}
@@ -250,12 +251,25 @@ public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
 	return Plugin_Continue;
 }
 
+public Action L4DSSArea_OnFirstSurvivorLeftCustomSafeArea_Pre(int client)
+{
+	if (bLeftSafeAreaLock)
+	{
+		ReturnToSaferoom(client);
+		PrintHintText(client,"%T","antisaferoomdooropen2",client,iSafeAreaLeftTime);
+		PlaySound(client);
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
 	if( g_bEnable && bSafeRoomDoorLock && IsClientAndInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR && buttons & IN_USE && GetGameTime() > g_fLastUse[client])
 	{
 		int entity = GetClientAimTarget(client, false);
-		if( entity == ent_safedoor )
+		if( entity == EntRefToEntIndex(ent_safedoor) )
 		{
 			g_fLastUse[client] = GetGameTime() + 1.0; // Avoid spamming resources
 			PrintHintText(client,"%T","antisaferoomdooropen1",client,iDoorLockTime);
@@ -267,13 +281,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 void InitDoorAndArea()
 {
-	ent_safedoor = GetSafeRoomDoor();
+	ent_safedoor = L4D_GetCheckpointFirst();
 	if(ent_safedoor > 0)
 	{
 		#if DEBUG
 			LogMessage("%d door lock",ent_safedoor);
 		#endif
 		bSafeRoomDoorLock = true;
+
+		DispatchKeyValue(ent_safedoor, "spawnflags", "40960");
+
+		ent_safedoor = EntIndexToEntRef(ent_safedoor);
 	}
 
 	bLeftSafeAreaLock = true;
@@ -281,7 +299,7 @@ void InitDoorAndArea()
 
 public Action DoorLockCountDown(Handle timer)
 {
-	if(!g_bEnable || (iDoorLockTime<=0 && iDoorForceOpenTime<=0) || ent_safedoor == -1 || !IsValidEntity(ent_safedoor))
+	if(!g_bEnable || (iDoorLockTime<=0 && iDoorForceOpenTime<=0) || !IsValidEntRef(ent_safedoor))
 		return Plugin_Stop;
 		
 	iDoorLockTime--;
@@ -294,7 +312,15 @@ public Action DoorLockCountDown(Handle timer)
 	if(iDoorForceOpenTime<=0)
 	{
 		bSafeRoomDoorLock = false;
-		ReplaceFakeSafeDoor();
+
+		DispatchKeyValue(ent_safedoor, "spawnflags", "8192");
+		SetEntProp(ent_safedoor, Prop_Data, "m_hasUnlockSequence", 0);
+		AcceptEntityInput(ent_safedoor, "Unlock");
+		AcceptEntityInput(ent_safedoor, "ForceClosed");
+		AcceptEntityInput(ent_safedoor, "Open");
+		HookSingleEntityOutput(ent_safedoor, "OnFullyOpen", OnFullyOpen);
+
+		return Plugin_Stop;
 	}
 		
 	return Plugin_Continue;
@@ -306,18 +332,11 @@ public Action LeftAreaUnLock(Handle timer)
 	if(iSafeAreaLeftTime<=0)
 	{
 		bLeftSafeAreaLock = false;
+
+		return Plugin_Stop;
 	}
 		
 	return Plugin_Continue;
-}
-
-int GetSafeRoomDoor()
-{
-	int ent_safedoor_check = L4D_GetCheckpointFirst();
-	if (ent_safedoor_check == -1) return -1;
-
-	DispatchKeyValue(ent_safedoor_check, "spawnflags", "40960");
-	return ent_safedoor_check;
 }
 
 stock bool IsClientAndInGame(int client)
@@ -376,7 +395,7 @@ void ReplaceFakeSafeDoor()
 	AcceptEntityInput(ent_brokendoor, "FireUser1");
 
 	AcceptEntityInput(ent_safedoor, "Kill");
-	ent_safedoor = -1;
+	ent_safedoor = 0;
 
 	EmitSoundToAll(GetRandomInt(0, 1) ? SOUND_BREAK1 : SOUND_BREAK2, ent_brokendoor);
 	
@@ -408,26 +427,20 @@ void ReturnToSaferoom(int client)
 {
 	int warp_flags = GetCommandFlags("warp_to_start_area");
 	SetCommandFlags("warp_to_start_area", warp_flags & ~FCVAR_CHEAT);
-	int give_flags = GetCommandFlags("give");
-	SetCommandFlags("give", give_flags & ~FCVAR_CHEAT);
 	if (IsClientInGame(client) && GetClientTeam(client) == 2 && IsPlayerAlive(client))
 	{
 		ReturnPlayerToSaferoom(client);
 	}
 	SetCommandFlags("warp_to_start_area", warp_flags);
-	SetCommandFlags("give", give_flags);
 }
 
 void ReturnPlayerToSaferoom(int client,bool flagsSet = true)
 {
 	int warp_flags;
-	int give_flags;
 	if (!flagsSet)
 	{
 		warp_flags = GetCommandFlags("warp_to_start_area");
 		SetCommandFlags("warp_to_start_area", warp_flags & ~FCVAR_CHEAT);
-		give_flags = GetCommandFlags("give");
-		SetCommandFlags("give", give_flags & ~FCVAR_CHEAT);
 	}
 	
 	FakeClientCommand(client, "warp_to_start_area");
@@ -435,6 +448,19 @@ void ReturnPlayerToSaferoom(int client,bool flagsSet = true)
 	if (!flagsSet)
 	{
 		SetCommandFlags("warp_to_start_area", warp_flags);
-		SetCommandFlags("give", give_flags);
 	}
+}
+
+bool IsValidEntRef(int entity)
+{
+	if( entity && EntRefToEntIndex(entity) != INVALID_ENT_REFERENCE )
+		return true;
+	return false;
+}
+
+void OnFullyOpen(const char[] output, int caller, int activator, float delay)
+{
+	if(!g_bEnable) return;
+
+	ReplaceFakeSafeDoor();
 }

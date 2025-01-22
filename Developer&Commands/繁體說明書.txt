@@ -561,7 +561,7 @@
 //人類碰到警報車直接觸發警報
 
 [149] l4d_weapon_prop_give_fix
-//使用”give”指令生成的汽油桶或瓦斯桶不會爆炸
+//使用"give"指令生成的汽油桶或瓦斯桶不會爆炸
 
 [xx] l4d_unswap_empty_primary
 //撿到空彈夾的主武器不會自動切換到手槍
@@ -574,7 +574,7 @@
 //即使玩家丟出土製炸彈，Bot依然能開槍行動
 
 [153] l4d_lasertag
-//子彈彈道雷射光
+//準備期間子彈彈道有雷射光
 
 [154] noteam_nudging
 //倖存者玩家的身體不會再互推對方（Bot還是會）
@@ -778,6 +778,12 @@
 [218] l4d_witch_spawn_no_door
 //Witch復活時, 周圍的門全部破壞 (避免Witch被門弄到失去目標)
 
+[219] l4d_start_safe_area
+//遊戲開局時，強制將出生點周圍區域判定為安全區，以確保玩家安全
+
+[220] l4d_air_jump_force
+//準備期間可以跳高跳遠
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
@@ -912,3 +918,6 @@ Map = 地圖難度修改
 * db (Dark Blood)
 * bha (Blood Harvest APOCALYPSE)
 * p84 (Precinct 84)
+* cotd (City Of The Dead)
+* dv (Dead Vacation)
+* uz (Undead Zone)

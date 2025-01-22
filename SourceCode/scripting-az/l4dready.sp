@@ -6,6 +6,7 @@
 #include <left4dhooks>
 #include <l4d_lib>
 #include <builtinvotes>
+#include <l4d_start_safe_area>
 /*
 * PROGRAMMING CREDITS:
 * Could not do this without Fyren at all, it was his original code chunk 
@@ -155,7 +156,7 @@ native ChoseTankPrintWhoBecome();
 native OpenSpectatorsListenMode();
 native GiveSurAllPills();
 native ShowRotoInfo();
-native R2comp_UnscrambleKeep(); //From l4d_team_unscramble.smx
+//native R2comp_UnscrambleKeep(); //From l4d_team_unscramble.smx
 native bool:IsClientVoteMenu(client);//From Votes2
 native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native AnnounceSIClasses();//From si_class_announce
@@ -182,7 +183,6 @@ int g_iRoundStart,g_iPlayerSpawn ;
 //timer
 Handle PlayerLeftStartTimer = null, CountDownTimer = null;
 int g_iCountDownTime, g_iCvarGameTimeBlock;
-static KeyValues g_hMIData = null;
 
 #define MAX_FOOTERS 10
 #define MAX_FOOTER_LEN 65
@@ -299,8 +299,6 @@ public OnPluginStart()
 	RegConsoleCmd("sm_dumpentities", Command_DumpEntities);
 	RegConsoleCmd("sm_dumpgamerules", Command_DumpGameRules);
 	RegConsoleCmd("sm_scanproperties", Command_ScanProperties);
-	
-	RegAdminCmd("sm_begin", compReady, ADMFLAG_BAN, "sm_begin");
 	#endif
 	
 	RegAdminCmd("sm_restartmap", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
@@ -888,27 +886,12 @@ public OnMapEnd()
 	ResetTimer();
 }
 
-bool g_bNoSafeStartAreaMap;
 public OnMapStart()
 {	
 	hasdirectorStart = false;
-	g_bNoSafeStartAreaMap = false;
 
 	char sCurMap[64];
 	GetCurrentMap(sCurMap, 64);
-
-	MI_KV_Close();
-	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, sCurMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
-	{
-		if (g_hMIData.GetNum("no_start_area", 0) == 1)
-		{
-			g_bNoSafeStartAreaMap = true;
-		}
-	}
-	MI_KV_Close();
 
 	PrefetchSound(SECRET_EGG_SOUND);
 	PrecacheSound(SECRET_EGG_SOUND,true);
@@ -1231,7 +1214,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	return Plugin_Continue;
 }
 
-public Action PluginStart(Handle timer)
+Action PluginStart(Handle timer)
 {
 	ResetVariable();
 
@@ -1262,7 +1245,7 @@ public Action PluginStart(Handle timer)
 	if(cvarEnforceReady.BoolValue && 
 		(!isSecondRound || GetConVarInt(cvarReadyHalves) || pauseBetweenHalves || GetConVarInt(cvarReadyUpStyle))) 
 	{
-		compReady(0, 0);
+		InitiateReadyUp();
 		pauseBetweenHalves = 0;
 		SetConVarInt(g_hDirectorNoDeathCheck, 1);
 		HookOrUnhookPreThinkPost(true);
@@ -1288,7 +1271,7 @@ public Action:timerLiveMessageCallback(Handle:timer)
 {
 	ShowRotoInfo();
 	OpenSpectatorsListenMode();
-	R2comp_UnscrambleKeep();
+	//R2comp_UnscrambleKeep();
 	AnnounceSIClasses();
 	
 	return Plugin_Stop;
@@ -2498,18 +2481,15 @@ readyOn()
 		HookEvent("player_hurt", eventPlayerHurt);
 		hookedPlayerHurt = 1;
 	}
-		
-	if(g_bNoSafeStartAreaMap)
-	{
-		inLiveCountdown = true;
-		if(sv_cheats.BoolValue == false) sb_stop.IntValue = 1;
-	}
 	
 	if(!unreadyTimerExists)
 	{
 		unreadyTimerExists = true;
 		CreateTimer(READY_UNREADY_HINT_PERIOD, timerUnreadyCallback, _, TIMER_REPEAT);
 	}
+
+	ToggleCommandListeners(true);
+
 	CreateTimer(1.0, TimerCountAdd, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
@@ -2581,18 +2561,15 @@ compOn()
 	for(i = 1; i <= MAXPLAYERS; i++) readyStatus[i] = false;
 }
 
-//begin the ready mode (everyone now needs to ready up before they can move)
-public Action:compReady(client, args)
+void InitiateReadyUp()
 {
 	if(goingLive)
 	{
-		return Plugin_Handled;
+		return;
 	}
 	
 	compOn();
 	readyOn();
-	
-	return Plugin_Handled;
 }
 
 //force start a match using admin
@@ -3075,6 +3052,8 @@ RoundIsLive()
 
 	MaterialHack_CheckClients();
 
+	ToggleCommandListeners(false);
+
 	Call_StartForward(fwdOnReadyRoundRestarted);
 	Call_Finish();
 }
@@ -3315,12 +3294,31 @@ public Action:Return_Cmd(client, args)
 
 public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
 {
-	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false) {
-		if(!g_bNoSafeStartAreaMap) ReturnToSaferoom(client);
+	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false) 
+	{
+		ReturnToSaferoom(client);
 		return Plugin_Handled;
 	}
 
-	if (readyMode && g_bNoSafeStartAreaMap == false) {
+	if (readyMode) 
+	{
+		ReturnToSaferoom(client);
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
+public Action L4DSSArea_OnFirstSurvivorLeftCustomSafeArea_Pre(int client)
+{
+	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false) 
+	{
+		ReturnToSaferoom(client);
+		return Plugin_Handled;
+	}
+
+	if (readyMode) 
+	{
 		ReturnToSaferoom(client);
 		return Plugin_Handled;
 	}
@@ -3590,24 +3588,44 @@ bool HasIdlePlayer(int bot)
 	return false;
 }
 
-void MI_KV_Load()
+void ToggleCommandListeners(bool hook)
 {
-	char sNameBuff[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
-
-	g_hMIData = CreateKeyValues("MapInfo");
-	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
-		LogError("[MI] Couldn't load MapInfo data!");
-		MI_KV_Close();
+	static bool hooked = false;
+	if (hooked && !hook)
+	{
+		RemoveCommandListener(Vote_Callback, "Vote");
+		hooked = false;
+	}
+	else if (!hooked && hook)
+	{
+		AddCommandListener(Vote_Callback, "Vote");
+		hooked = true;
 	}
 }
 
-void MI_KV_Close()
+Action Vote_Callback(int client, const char[] command, int argc)
 {
-	if (g_hMIData != null) {
-		CloseHandle(g_hMIData);
-		g_hMIData = null;
+	// Fast ready / unready through default keybinds for voting
+	if (!client) return Plugin_Continue;
+	if (BuiltinVote_IsVoteInProgress() && IsClientInBuiltinVotePool(client)) return Plugin_Continue;
+	
+	if (Game_IsVoteInProgress())
+	{
+		int voteteam = Game_GetVoteTeam();
+		if (voteteam == -1 || voteteam == GetClientTeam(client))
+		{
+			return Plugin_Continue;
+		}
 	}
+	
+	char sArg[8];
+	GetCmdArg(1, sArg, sizeof(sArg));
+	if (strcmp(sArg, "Yes", false) == 0)
+		readyUp(client, 0);
+	else if (strcmp(sArg, "No", false) == 0)
+		readyDown(client, 0);
+
+	return Plugin_Continue;
 }
 
 // ========================

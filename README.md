@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.5.9
+v8.6.0
 <br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -32,23 +32,25 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 - - - -
 ### Server Install ###
 * Clean Servers:
-  * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/L4D1-Server4Dead/blob/master/README.md#how-to-download-l4d1-dedicated-server-files)
+  * A clean [L4D1 Dedicated Server](https://github.com/fbef0102/Sourcemod-Server/tree/main/L4D1#how-to-download-l4d1-dedicated-server-files)
   * Make sure your server is stopped.
   * Delete left4dead/addons folder on your server (to make sure you have a clean slate).
   * Go [Releases Page](https://github.com/fbef0102/Rotoblin-AZMod/releases) and download **l4d1_Roto-AZMod.zip**
 * Requirements:
-  * Install "Windows Server files" or "Linux Server files" (depending on the operating system of your server), this contains Sourcemod v1.11 or above, Metamod v1.11 or above, Stripper, Tickrate, and other extensions
+  * Install "Windows Server files" or "Linux Server files" (depending on the operating system of your server), this contains Sourcemod, Metamod, Stripper, Tickrate, and other extensions
   * Install "Roto-AZMod Main files", this contains the configs, plugins, gamedate, and other server settings.
   * At this step, you already setup Server's base for configs, so you can finally start the server.
 * Launch parameters:
-  * ```-console -game left4dead +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0 -tickrate 100 -maxplayers 31```
+  ```
+  -console -game left4dead +log on +map l4d_vs_airport01_greenhouse +exec server +sv_lan 0 -tickrate 100 -maxplayers 31
+  ```
 	
 - - - -	
 ### Server Install Optional ###
 * [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
-* [Top 5 Skeet](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/skeet_database) records players' skeets, and save to server-side Database.
-* [Top 5 Pounce](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/pounce_database) records players' pounces, and save to server-side Database. 
+* [Top 5 Skeet](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_skeet_database_remake) records players' skeets, and save to server-side Database.
+* [Top 5 Pounce](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_pounce_database_remake) records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
 * [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors) Changes the colors of players chat based on config file.
 * [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly) Attaches an extra flashlight to spectators and dead survivors.
@@ -686,6 +688,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Others ###
 * <b>[Our Group](https://steamcommunity.com/groups/ibserver)</b>
-* <b>[L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)</b>: L4D1/2 general purpose and freaky-fun plugins.
+* <b>[L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)</b>: L4D1/2 enhancement, bug/glitch fixes, freaky-fun, and useful plugins.
 * <b>[Game-Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin)</b>: Private Plugin List.
 

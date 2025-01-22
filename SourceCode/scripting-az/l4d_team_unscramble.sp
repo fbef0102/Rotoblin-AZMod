@@ -47,7 +47,9 @@ static String:g_sLogPatch[128];
 #endif
 
 static	Handle:g_hTrine, Handle:g_fwdOnUnscrambleEnd, bool:g_bCvarEnabled, bool:g_bCvarNotify, bool:g_bCvarNoVotes, Float:g_fCvarTime, g_iCvarAttempts, bool:g_bCheked[MAXPLAYERS+1], bool:g_bJoinTeamUsed[MAXPLAYERS+1],
-		g_iFailureCount[MAXPLAYERS+1], bool:g_bMapTranslition, bool:g_bTeamLock, g_isOldTeamFlipped, g_isNewTeamFlipped, g_iTrineSize, UserMsg:g_iVotePassMessageId;
+		g_iFailureCount[MAXPLAYERS+1], bool:g_bKeepTeams, bool:g_bTeamLock, g_isOldTeamFlipped, g_isNewTeamFlipped, g_iTrineSize;
+		
+//UserMsg:g_iVotePassMessageId;
 
 public Plugin myinfo =
 {
@@ -77,7 +79,7 @@ public OnPluginStart()
 
 	g_hTrine = CreateTrie();
 	g_fwdOnUnscrambleEnd = CreateGlobalForward("R2comp_OnUnscrambleEnd", ET_Ignore);
-	g_iVotePassMessageId = GetUserMessageId("VotePass");
+	//g_iVotePassMessageId = GetUserMessageId("VotePass");
 
 	CreateConVar("rotoblin_unscramble_version", PLUGIN_VERSION, "R2CompMod Unscramble Standalone plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
@@ -122,16 +124,20 @@ UM_OnPluginEnabled()
 		AddCommandListener(US_cmdh_Vote, "callvote");
 		AddCommandListener(US_cmdh_Vote, "vote");
 
-		if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
-			HookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
+		//if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
+		//	HookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
 	}
 	#if UNSCRABBLE_LOG
 		LogToFile(g_sLogPatch, "unscramble is enabled");
 		PrintToServer("%s unscramble is enabled", MAIN_TAG);
 	#endif
 
-	HookEvent("round_end", US_ev_RoundEnd, EventHookMode_PostNoCopy);
-	HookEvent("vote_passed", US_ev_VotePassed);
+	HookEvent("round_end",				Event_RoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus/survival/scavenge mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
+	HookEvent("map_transition", 		Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
+	HookEvent("mission_lost", 			Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors wipe out in coop mode (also triggers round_end)
+	HookEvent("finale_vehicle_leaving", Event_RoundEnd,		EventHookMode_PostNoCopy); //final map final rescue vehicle leaving  (does not trigger round_end)
+
+	//HookEvent("vote_passed", US_ev_VotePassed);
 }
 
 UM_OnPluginDisabled()
@@ -148,14 +154,17 @@ UM_OnPluginDisabled()
 		RemoveCommandListener(US_cmdh_Vote, "callvote");
 		RemoveCommandListener(US_cmdh_Vote, "vote");
 
-		if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
-			UnhookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
+		//if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
+		//	UnhookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
 	}
 
-	UnhookEvent("round_end", US_ev_RoundEnd, EventHookMode_PostNoCopy);
-	UnhookEvent("vote_passed", US_ev_VotePassed);
+	UnhookEvent("round_end",				Event_RoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus/survival/scavenge mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
+	UnhookEvent("map_transition", 			Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
+	UnhookEvent("mission_lost", 			Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors wipe out in coop mode (also triggers round_end)
+	UnhookEvent("finale_vehicle_leaving", 	Event_RoundEnd,		EventHookMode_PostNoCopy); //final map final rescue vehicle leaving  (does not trigger round_end)
+	//UnhookEvent("vote_passed", US_ev_VotePassed);
 
-	RegServerCmd("changelevel", ServerCmd_changelevel);
+	AddCommandListener(ServerCmd_changelevel, "changelevel");
 }
 
 public Action:Command_KeepTeams(client, args)
@@ -188,9 +197,9 @@ public Action:US_cmdh_Vote(client, const String:command[], argc)
 	return Plugin_Continue;
 }
 
-Action ServerCmd_changelevel(int args)
+Action ServerCmd_changelevel(int client, const char[] command, int argc)
 {
-	if(args > 0)
+	if(client == 0)
 	{
 		US_KeepTeams();
 	}
@@ -198,6 +207,7 @@ Action ServerCmd_changelevel(int args)
 	return Plugin_Continue;
 }
 
+/*
 public US_ev_VotePassed(Handle:event, const String:sName[], bool:DontBroadCast)
 {
 	decl String:sDetals[128];
@@ -222,7 +232,11 @@ public Action US_msg_OnVotePass(UserMsg msg_id, BfRead message, const int[] play
 
 	return Plugin_Continue;
 }
-
+*/
+/**
+ * 人為手動更換地圖
+ */
+/*
 public Action OnLogAction(Handle source, Identity ident,int client, int target, const char[] message)
 {
 	if (g_bCvarEnabled && StrContains(message, "changed map to") != -1)
@@ -230,7 +244,7 @@ public Action OnLogAction(Handle source, Identity ident,int client, int target, 
 
 	return Plugin_Continue;
 }
-
+*/
 /*
  * ---------------------------
  *		Forwards
@@ -249,9 +263,11 @@ public OnMapStart()
 		LogToFile(g_sLogPatch, "Precache %s", L4D2_LIB_SURVIVOR_MDL[i]);
 	#endif
 	}
-	g_bMapTranslition = false;
-	CreateTimer(0.5, US_t_TeamsFlipped);
+
+	CreateTimer(1.5, US_t_TeamsFlipped, _, TIMER_FLAG_NO_MAPCHANGE);
 	US_Start();
+	
+	g_bKeepTeams = false;
 }
 
 public Action:US_t_TeamsFlipped(Handle:timer)
@@ -267,6 +283,9 @@ US_UpdateTeamFlipped()
 bool:US_Start()
 {
 	if (!g_iTrineSize)
+		return false;
+
+	if (!g_bKeepTeams)
 		return false;
 
 	g_bTeamLock = true;
@@ -288,21 +307,21 @@ US_StartProcess()
 	}
 }
 
-public US_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
 {
-	if (GameRules_GetProp("m_bInSecondHalfOfRound") && !g_bMapTranslition)
+	if (GameRules_GetProp("m_bInSecondHalfOfRound"))
 		US_KeepTeams();
 }
 
 US_KeepTeams()
 {
-	if (!g_bCvarEnabled) return;
+	if (!g_bCvarEnabled || g_bKeepTeams) return;
 	#if UNSCRABBLE_LOG
 		LogToFile(g_sLogPatch, "KeepTeams");
 	#endif
 
 	g_bTeamLock = false;
-	g_bMapTranslition = true;
+	g_bKeepTeams = true;
 	g_isOldTeamFlipped = GameRules_GetProp("m_bAreTeamsFlipped");
 	ClearTrie(g_hTrine);
 
