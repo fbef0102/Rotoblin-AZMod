@@ -254,18 +254,6 @@ static bool:SetupModule()
 	return true;
 }
 
-// logs to rotoblin file
-stock void DebugLog(const String:sLog[], any:...)
-{
-	#if R2COMP_LOG
-		if (!SetupModule()) return;
-
-		decl String:sBuffer[256];
-		VFormat(sBuffer, sizeof(sBuffer), sLog, 2);
-		LogToFile(g_sDebug, sBuffer);
-	#endif
-}
-
 stock DebugLogEx(const String:sLog[], any:...)
 {
 	if (!SetupModule()) return;

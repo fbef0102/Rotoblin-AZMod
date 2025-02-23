@@ -78,6 +78,7 @@ public Native_OpenSpectatorsListenMode(Handle:plugin, numParams) {
 	
 	//Spectators see Team_Chat and Team MIC
 	RegConsoleCmd("say_team", Command_SayTeam);
+	HookEvent("player_disconnect", 		Event_PlayerDisconnect);
 	
 	if(specListener_enable)
 		for (new i = 1; i <= MaxClients; i++) 
@@ -318,4 +319,13 @@ public bool HasAccess(int client, char[] g_sAcclvl)
 	}
 
 	return false;
+}
+
+void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(client && !IsFakeClient(client))
+	{
+		bListionActive[client] = specListener_enable;
+	}
 }

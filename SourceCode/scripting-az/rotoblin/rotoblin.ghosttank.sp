@@ -9,7 +9,7 @@
  *	Credits:		DrThunder on AlliedModders.com, for punch fix
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2024  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2025  Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  This program is free software: you can redistribute it and/or modify

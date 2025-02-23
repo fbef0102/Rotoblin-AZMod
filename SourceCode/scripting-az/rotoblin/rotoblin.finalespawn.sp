@@ -10,7 +10,7 @@
  *	Credits:		Confogl Team, <confogl.googlecode.com>
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2024  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2025  Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  Rotoblin is free software: you can redistribute it and/or modify
@@ -263,13 +263,6 @@ static bool:IsGhostTooCloseToSurvivors(client)
 static SetPlayerGhostSpawnState(client, spawnState)
 {
 	SetEntProp(client, Prop_Send, "m_ghostSpawnState", spawnState);
-}
-
-stock _FS_CvarDebug()
-{
-	decl bool:iVal;
-	if ((iVal = GetConVarBool(g_hFnalSpawn)) != g_bCvarFinalSpawn)
-		DebugLog("%d		|	%d		|	rotoblin_finalspawn_range", iVal, g_bCvarFinalSpawn);
 }
 
 public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)

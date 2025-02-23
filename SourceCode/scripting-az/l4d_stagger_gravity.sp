@@ -11,7 +11,7 @@
 public Plugin myinfo =
 {
 	name = "[L4D] Stagger Animation - Gravity Allowed",
-	author = "SilverShot, HarryPotter, Forgetest",
+	author = "HarryPotter, Forgetest",
 	description = "Allows gravity when players are staggering, otherwise they would float in the air until the animation completes. Also allows staggering over a ledge and falling.",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/fbef0102/Rotoblin-AZMod"

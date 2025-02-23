@@ -8,6 +8,7 @@ None
 ## New
 * l4d_start_safe_area.smx: Add Custom safe area for any map on start
 * l4d_air_jump_force.smx: Allows jump force on air during readyup
+* l4d_cpu_level: Spectate player if OPTIONS->Video->EFFECT DETAIL is low
   
 ## Update
 * l4d_unreservelobby
