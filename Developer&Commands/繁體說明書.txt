@@ -784,6 +784,9 @@
 [220] l4d_air_jump_force
 //準備期間可以跳高跳遠
 
+[221] l4d_cpu_level
+//選項->視訊->效果細節->設置為"低"的玩家將會被旁觀不能遊玩
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

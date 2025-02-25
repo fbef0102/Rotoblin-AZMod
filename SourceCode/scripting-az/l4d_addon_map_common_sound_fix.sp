@@ -39,7 +39,7 @@ stock const char sFix_Bullets_Sound[][] =
     "npc/infected/gore/bullets/bullet_gib_17.wav"
 };
 
-stock char sFix_BeenShot_Sound[][] =
+/*stock char sFix_BeenShot_Sound[][] =
 {   
     "npc/infected/action/been_shot/been_shot_01.wav",
     "npc/infected/action/been_shot/been_shot_02.wav",
@@ -65,12 +65,12 @@ stock char sFix_BeenShot_Sound[][] =
     "npc/infected/action/been_shot/been_shot_22.wav",
     "npc/infected/action/been_shot/been_shot_23.wav",
     "npc/infected/action/been_shot/been_shot_24.wav"
-};
+};*/
 
-stock char sFix_Burning_Sound[][] =
+/*stock char sFix_Burning_Sound[][] =
 {   
     "npc/headcrab/headcrab_burning_loop2.wav"
-};
+};*/
 
 float g_fCommonShotTime[MAXENTITY + 1];
 

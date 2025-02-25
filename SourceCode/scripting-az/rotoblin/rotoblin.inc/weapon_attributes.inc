@@ -199,14 +199,14 @@ public Action:WA_t_ReadCvars(Handle:timer)
 	//for (new WEAPON_INDEX; WEAPON_INDEX < WEAPID_LIMIT; WEAPON_INDEX++)
 	//	DebugLog("%d. %s %s", WEAPON_INDEX, g_sWeapSpawns[WEAPON_INDEX][sClass], g_sWeapSpawns[WEAPON_INDEX][sModel]);
 
-	DebugLog("%s Index	|	Clip/Ammo	| Name", WA_TAG);
-	DebugLog("%s ------------------------------------", WA_TAG);
+	//LogError("%s Index	|	Clip/Ammo	| Name", WA_TAG);
+	//LogError("%s ------------------------------------", WA_TAG);
 
 	// Rebuild ammo attributes
 	for (new WEAPON_INDEX = 0; WEAPON_INDEX < WEAPONS_LIMIT; WEAPON_INDEX++){
 
 		g_iWeapAttributes[WEAPON_INDEX][MAX_AMMO] = GetConVarInt(g_hWeaponCvar[WEAPON_INDEX]);
-		DebugLog("%s %d.		|	%d/%d		| %s", WA_TAG, WEAPON_INDEX, g_iWeapAttributes[WEAPON_INDEX][CLIP_SIZE], g_iWeapAttributes[WEAPON_INDEX][MAX_AMMO], g_sWeapon_Names[WEAPON_INDEX][CLASS]);
+		//LogError("%s %d.		|	%d/%d		| %s", WA_TAG, WEAPON_INDEX, g_iWeapAttributes[WEAPON_INDEX][CLIP_SIZE], g_iWeapAttributes[WEAPON_INDEX][MAX_AMMO], g_sWeapon_Names[WEAPON_INDEX][CLASS]);
 	}
 }
 

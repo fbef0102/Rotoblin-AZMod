@@ -43,6 +43,7 @@ public OnPluginStart()
 	HookEvent("tank_spawn", PD_ev_TankSpawn, EventHookMode_PostNoCopy);
 	HookEvent("tank_frustrated", OnTankFrustrated, EventHookMode_Post);
 	HookEvent("entity_killed",		PD_ev_EntityKilled);
+	HookEvent("player_disconnect", 		Event_PlayerDisconnect);
 	
 	z_tank_health = FindConVar("z_tank_health");
 	z_tank_burning_lifetime = FindConVar("z_tank_burning_lifetime");
@@ -98,12 +99,6 @@ public Action:event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	g_bIsTankAlive = false;
 	passCount = 1;
 }
-
-public OnClientDisconnect(client)
-{
-	bTankHudActive[client] = true;
-}
-
 
 public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -177,6 +172,15 @@ public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBro
 	if (g_bIsTankAlive && IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
 	{
 		CreateTimer(1.5, FindAnyTank, client, TIMER_FLAG_NO_MAPCHANGE);
+	}
+}
+
+void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(client && !IsFakeClient(client))
+	{
+		bTankHudActive[client] = true;
 	}
 }
 

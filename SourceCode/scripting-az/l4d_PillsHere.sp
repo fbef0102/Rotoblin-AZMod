@@ -73,31 +73,55 @@ public Action:Command_GiveWhoPills(client, args)
 		ReplyToCommand(client, "[TS] Usage: sm_giveto <player> - %T","l4d_PillsHere1",client);		
 		return Plugin_Handled;
 	}
-	decl String:target[64];
-	GetCmdArgString(target, sizeof(target));
-	
-	new tclient = FindTarget(client, target, false /*include bots*/, false /*immunity*/);
-	if (tclient == -1 || !IsClientInGame(tclient)) return Plugin_Handled;
-	
-	decl String:tclientName[128];
-	GetClientName(tclient,tclientName,128);
-	if(GetClientTeam(tclient)!=2)
+
+
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS], target_count;
+	bool tn_is_ml;
+	char arg[65];
+	GetCmdArg(1, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
 	{
-		ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere2",client,tclientName);	
+		ReplyToTargetError(client, target_count);
 		return Plugin_Handled;
 	}
+
+
+	char tclientName[128];
+	int tclient;
+	for (int i = 0; i < target_count; i++)
+	{
+		tclient = target_list[i];
+		GetClientName(tclient, tclientName,128);
 	
-	new currentWeapon = GetPlayerWeaponSlot(tclient, 4);
-	if (currentWeapon == -1)
-	{
-		GiveWhoPillsAll(tclient);
-		ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere3",client,tclientName);	
+	
+		if(GetClientTeam(tclient)!=2)
+		{
+			ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere2",client,tclientName);	
+			continue;
+		}
+		
+		new currentWeapon = GetPlayerWeaponSlot(tclient, 4);
+		if (currentWeapon == -1)
+		{
+			GiveWhoPillsAll(tclient);
+			ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere3",client,tclientName);	
+		}
+		else
+		{
+			ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere4",client,tclientName);	
+			continue;
+		}	
 	}
-	else
-	{
-		ReplyToCommand(client, "[TS] Usage: %T","l4d_PillsHere4",client,tclientName);	
-		return Plugin_Handled;
-	}	
+
 	return Plugin_Continue;
 }
 

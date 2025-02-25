@@ -95,6 +95,7 @@ public OnPluginStart()
 	HookEvent("ghost_spawn_time", Event_GhostSpawnTime);
 	HookEvent("player_team", Event_PlayerTeam);
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_disconnect", 		Event_PlayerDisconnect);
 
 	for (new i = 1; i <= MaxClients; i++) 
 	{
@@ -720,6 +721,15 @@ public Action:Event_PlayerSpawn(Handle:hEvent, const String:name[], bool:dontBro
 		return;
 
 	g_hSpawnGhostTimer[Client] = -1;
+}
+
+void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(client && !IsFakeClient(client))
+	{
+		bSpecHudActive[client] = false;
+	}
 }
 
 public Action:Timer_SpawnGhostClass(Handle:hTimer, any:Client)

@@ -106,14 +106,27 @@ public Action:Command_SetTank(client, args)
 		ReplyToCommand(client, "[TS] %T","l4d_tank_control1",client);
 		return Plugin_Handled;
 	}
-	new player_id;
-	new String:player[64];
-	GetCmdArg(1, player, sizeof(player));
-	
-	player_id = FindTarget(client, player, true /*nobots*/, false /*immunity*/);
-	
-	if(player_id == -1)
-		return Plugin_Handled;	
+
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS], target_count;
+	bool tn_is_ml;
+	char arg[65];
+	GetCmdArg(1, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	int player_id = target_list[0];
 	
 	decl String:player_idName[128];
 	GetClientName(player_id,player_idName,128);

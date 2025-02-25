@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
 v8.6.0
-<br/>Developer @ 2017-2024 [Harry](http://steamcommunity.com/profiles/76561198026784913)
+<br/>Developer @ 2017-2025 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
     - [Server Install | 如何安裝](#server-install)
@@ -318,6 +318,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
 * Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
   * e.g. You won't slide on ice surfaces.
+* Spectate player if OPTIONS->Video->EFFECT DETAIL is low
+  * Because some map objects, tank rocks, items.... can be invisible in player's monitor if EFFECT DETAIL is low
 
 - - - -
 ### Gameplay / Balance Changes ###

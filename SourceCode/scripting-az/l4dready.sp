@@ -444,16 +444,44 @@ public Action:Switch_Client(client, args)
 		ReplyToCommand(client, "[TS] Usage: sm_switch <player1> <player2> - %T","ReplyToCommand1",client);		
 		return Plugin_Handled;
 	}
-	decl String:player1[64];
-	decl String:player2[64];
-	GetCmdArg(1, player1, sizeof(player1));
-	GetCmdArg(2, player2, sizeof(player2));
-	
-	new target1 = FindTarget(client, player1, true /*nobots*/, false /*immunity*/);
-	new target2 = FindTarget(client, player2, true /*nobots*/, false /*immunity*/);
-	
-	if((target1 == -1) || (target2 == -1)) return Plugin_Handled;
-	
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS], target_count;
+	bool tn_is_ml;
+	char arg[65];
+	GetCmdArg(1, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	int target1 = target_list[0];
+
+	GetCmdArg(2, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	int target2 = target_list[0];
+
 	new targetTeamA = GetClientTeam(target1);
 	new targetTeamB = GetClientTeam(target2);
 	
@@ -848,21 +876,6 @@ public Action:ratesCooldownTimer(Handle:timer, any:client)	//ZACK
 ConVar sv_maxplayers;
 public OnAllPluginsLoaded()
 {	
-	if(FindConVar("l4d_team_manager_ver") != INVALID_HANDLE)
-	{
-		// l4d scores manager plugin is loaded
-		
-		// allow reready because it will fix scores when rounds are restarted?
-	}
-	else
-	{
-		// l4d scores plugin is NOT loaded
-		// supply these commands which would otherwise be done by the team manager
-		
-		RegAdminCmd("sm_swapplayer", Command_PlayerSwapPlayer, ADMFLAG_BAN, "sm_swap <player1> <player2> - swap player1's and player2's teams");
-		RegAdminCmd("sm_swapteams", Command_SwapTeams, ADMFLAG_BAN, "sm_swapteams - swap all the players to the opposite teams");
-	}
-
 	sv_maxplayers = FindConVar("sv_maxplayers");
 	if(sv_maxplayers == null)
 		SetFailState("Could not find ConVar \"sv_maxplayers\".");
@@ -1754,49 +1767,68 @@ public Action:Respec_Client(client, args)
 		return Plugin_Handled;
 	}
 	
-	decl String:target[64];
-	GetCmdArgString(target, sizeof(target));
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS], target_count;
+	bool tn_is_ml;
+	char arg[65];
+	GetCmdArg(1, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
 	
-	new tclient = FindTarget(client, target, true /*nobots*/, false /*immunity*/);
-	if (tclient == -1) return Plugin_Handled;
+	int tclient;
+	for (int i = 0; i < target_count; i++)
+	{
+		tclient = target_list[i];
 	
-	decl String:respecClient[64];
-	GetClientName(client, respecClient, sizeof(respecClient));
-	
-	decl String:respecTarget[64];
-	GetClientName(tclient, respecTarget, sizeof(respecTarget));
+		decl String:respecClient[64];
+		GetClientName(client, respecClient, sizeof(respecClient));
 		
-	if (GetClientTeam(tclient) != L4D_TEAM_SPECTATE)
-	{
-		ReplyToCommand(client, "[TS] %T","ReplyToCommand4",client, respecTarget);
-		return Plugin_Handled;
+		decl String:respecTarget[64];
+		GetClientName(tclient, respecTarget, sizeof(respecTarget));
+			
+		if (GetClientTeam(tclient) != L4D_TEAM_SPECTATE)
+		{
+			ReplyToCommand(client, "[TS] %T","ReplyToCommand4",client, respecTarget);
+			continue;
+		}
+		else if (g_bIsSpectating[tclient])
+		{
+			//ReplyToCommand(client, "[TS] %T","ReplyToCommand5",client, respecTarget);
+			continue;
+		}
+		
+		new curtime = GetTime();
+		
+		new tdiff = (g_iLastRespecced[tclient] + g_iRespecCooldownTime) - curtime;
+		
+		if (tdiff > 0)
+		{
+			ReplyToCommand(client, "[TS] %T","ReplyToCommand6",client, respecTarget, tdiff);
+			continue;
+		}
+		
+		g_iLastRespecced[tclient] = curtime;
+		
+		g_bIsSpectating[tclient] = true;
+		
+		ChangePlayerTeam(tclient, 3);
+		CreateTimer(0.1, Timer_Respec_A, tclient, TIMER_FLAG_NO_MAPCHANGE); //spec
+		CreateTimer(0.6, Timer_Respec_B, tclient, TIMER_FLAG_NO_MAPCHANGE); //inf
+		CreateTimer(0.7, Timer_Respec_C, tclient, TIMER_FLAG_NO_MAPCHANGE); //spec + reset spectating[tclient] = false;
+		CPrintToChat(tclient, "{default}[{olive}TS{default}] %T","ReadyPlugin_23", tclient,respecClient);
+		CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_24",client, respecTarget);
 	}
-	else if (g_bIsSpectating[tclient])
-    {
-		ReplyToCommand(client, "[TS] %T","ReplyToCommand5",client, respecTarget);
-		return Plugin_Handled;
-    }
-	
-	new curtime = GetTime();
-	
-	new tdiff = (g_iLastRespecced[tclient] + g_iRespecCooldownTime) - curtime;
-	
-	if (tdiff > 0)
-	{
-		ReplyToCommand(client, "[TS] %T","ReplyToCommand6",client, respecTarget, tdiff);
-		return Plugin_Handled;
-	}
-	
-	g_iLastRespecced[tclient] = curtime;
-	
-	g_bIsSpectating[tclient] = true;
-	
-	ChangePlayerTeam(tclient, 3);
-	CreateTimer(0.1, Timer_Respec_A, tclient, TIMER_FLAG_NO_MAPCHANGE); //spec
-	CreateTimer(0.6, Timer_Respec_B, tclient, TIMER_FLAG_NO_MAPCHANGE); //inf
-	CreateTimer(0.7, Timer_Respec_C, tclient, TIMER_FLAG_NO_MAPCHANGE); //spec + reset spectating[tclient] = false;
-	CPrintToChat(tclient, "{default}[{olive}TS{default}] %T","ReadyPlugin_23", tclient,respecClient);
-	CPrintToChat(client, "{default}[{olive}TS{default}] %T","ReadyPlugin_24",client, respecTarget);
 	
 	return Plugin_Handled;
 }
@@ -2872,116 +2904,6 @@ public Action:Command_ScanProperties(client, args)
 	
 }
 
-public Action:Command_PlayerSwapPlayer(client, args)
-{
-	if(args < 2)
-	{
-		ReplyToCommand(client, "[TS] Usage: sm_swapplayer <player1> <player2> - %T","ReplyToCommand7",client);
-		return Plugin_Handled;
-	}
-	
-	new player1_id, player2_id;
-
-	new String:player1[64];
-	GetCmdArg(1, player1, sizeof(player1));
-
-	new String:player2[64];
-	GetCmdArg(2, player2, sizeof(player2));
-	
-	player1_id = FindTarget(client, player1, true /*nobots*/, false /*immunity*/);
-	player2_id = FindTarget(client, player2, true /*nobots*/, false /*immunity*/);
-	
-	if(player1_id == -1 || player2_id == -1)
-		return Plugin_Handled;
-	
-	SwapPlayers(player1_id, player2_id);
-	
-	decl String:playername1[128],String:playername2[128];
-	GetClientName(player1_id,playername1,128);
-	GetClientName(player2_id,playername2,128);
-	CPrintToChatAll("{default}[{olive}TS{default}] %t","ReadyPlugin_32", playername1, playername2);
-
-	return Plugin_Handled;
-}
-
-public Action:Command_SwapTeams(client, args)
-{
-	new infected[4];
-	new survivors[4];
-	
-	new inf = 0, sur = 0;
-	new i;
-	
-	for(i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGameHuman(i)) 
-		{
-			new team = GetClientTeam(i);
-			if(team == L4D_TEAM_SURVIVORS)
-			{
-				survivors[sur] = i;
-				sur++;
-			}
-			else if(team == L4D_TEAM_INFECTED)
-			{
-				infected[inf] = i;
-				inf++;
-			}
-		}
-	}
-	
-	new min = inf > sur ? sur : inf;
-	
-	//first swap everyone that we can (equal # on both sides)
-	for(i = 0; i < min; i++)
-	{
-		SwapPlayers(infected[i], survivors[i]);
-	}
-	
-	//then move the remainder of the team to the other team
-	if(inf > sur)
-	{
-		for(i = min; i < inf; i++)
-		{
-			ChangePlayerTeam(infected[i], L4D_TEAM_SURVIVORS);
-		}
-	}
-	else 
-	{
-		for(i = min; i < sur; i++)
-		{
-			ChangePlayerTeam(survivors[i], L4D_TEAM_INFECTED);
-		}
-	}
-	
-	CPrintToChatAll("{default}[{olive}TS{default}] %t","ReadyPlugin_33");
-	
-	return Plugin_Handled;
-}
-
-//swap the two given players' teams
-SwapPlayers(i, j)
-{
-	if(GetClientTeam(i) == GetClientTeam(j))
-		return;
-	
-	new inf, surv;
-	if(GetClientTeam(i) == L4D_TEAM_INFECTED)
-	{
-		inf = i;
-		surv = j;
-	}
-	else
-	{
-		inf = j;
-		surv = i;
-	}
-
-	ChangePlayerTeam(inf,  L4D_TEAM_SPECTATE); 
-	ChangePlayerTeam(surv, L4D_TEAM_INFECTED); 
-	ChangePlayerTeam(inf,  L4D_TEAM_SURVIVORS); 
-}
-
 ChangePlayerTeam(client, team)
 {
 	if( !IsClientInGame(client) || GetClientTeam(client) == team) return;
@@ -3034,6 +2956,7 @@ RoundIsLive()
 
 		SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
 		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
+		TeleportEntity(i, NULL_VECTOR, NULL_VECTOR, NULL_VELOCITY);
 	}
 
 	if(sv_cheats.BoolValue == false) sb_stop.IntValue = SB_STOP_CONVAR;

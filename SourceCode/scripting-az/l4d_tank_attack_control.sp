@@ -6,7 +6,7 @@
 #include <left4dhooks>
 #include <l4d_lib>
 #include <multicolors>
-#define IN_ATTACK3		(1 << 25)
+
 public Plugin:myinfo =
 {
 	name = "[L4D] Tank Attack Control",

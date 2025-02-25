@@ -175,8 +175,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_bonus", Command_Health, "sm_bonus - Health bonus this round");
 	RegConsoleCmd("sm_health", Command_Health, "sm_bonus - Health bonus this round");
 	
-	RegAdminCmd("sm_swap", Command_Swap, ADMFLAG_BAN, "sm_swap <player1> [player2] ... [playerN] - swap all listed players to opposite teams");
-	RegAdminCmd("sm_swapto", Command_SwapTo, ADMFLAG_BAN, "sm_swapto <player1> [player2] ... [playerN] <teamnum> - swap all listed players to <teamnum> (1,2, or 3)");
+	RegAdminCmd("sm_swapto", Command_SwapTo, ADMFLAG_BAN, "sm_swapto <player1> <teamnum> - swap player to <teamnum> (1,2, or 3)");
 	RegAdminCmd("sm_swapteams", Command_SwapTeams, ADMFLAG_BAN, "sm_swapteams2 - swap the players between both teams");
 	RegAdminCmd("sm_swapscores", Command_SwapScores, ADMFLAG_BAN, "sm_swapscores - swap the score between the first and second team");
 	RegAdminCmd("sm_resetscores", Command_ResetScores, ADMFLAG_BAN, "sm_resetscores - reset the currently tracked campaign/map scores");
@@ -465,43 +464,11 @@ public Action:Command_SwapTeams(client, args)
 	return Plugin_Handled;
 }
 
-
-public Action:Command_Swap(client, args)
+Action Command_SwapTo(int client, int args)
 {
-	if (args < 1)
+	if (args != 2)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_swap <player1> [player2] ... [playerN] - %T","l4dscores1",client);
-		return Plugin_Handled;
-	}
-	
-	new player_id;
-
-	new String:player[64];
-	
-	for(new i = 0; i < args; i++)
-	{
-		GetCmdArg(i+1, player, sizeof(player));
-		player_id = FindTarget(client, player, true /*nobots*/, false /*immunity*/);
-		
-		if(player_id == -1)
-			continue;
-		
-		new team = GetOppositeClientTeam(player_id);
-		teamPlacementArray[player_id] = team;
-		CPrintToChatAll("[SM] %N %t", player_id,"l4dscores2", L4D_TEAM_NAME(team));
-	}
-	
-	TryTeamPlacement();
-	
-	return Plugin_Handled;
-}
-
-
-public Action:Command_SwapTo(client, args)
-{
-	if (args < 2)
-	{
-		ReplyToCommand(client, "[SM] Usage: sm_swapto <player1> [player2] ... [playerN] <teamnum> - %T","l4dscores3",client);
+		ReplyToCommand(client, "[SM] Usage: sm_swapto <player1> <teamnum> - %T","l4dscores3",client);
 		return Plugin_Handled;
 	}
 	
@@ -515,21 +482,29 @@ public Action:Command_SwapTo(client, args)
 		return Plugin_Handled;
 	}
 	
-	new player_id;
-
-	new String:player[64];
-	
-	for(new i = 0; i < args - 1; i++)
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS], target_count;
+	bool tn_is_ml;
+	char arg[65];
+	GetCmdArg(1, arg, sizeof(arg));
+	if ((target_count = ProcessTargetString(
+			arg,
+			client,
+			target_list,
+			MAXPLAYERS,
+			COMMAND_FILTER_NO_BOTS,
+			target_name,
+			sizeof(target_name),
+			tn_is_ml)) <= 0)
 	{
-		GetCmdArg(i+1, player, sizeof(player));
-		player_id = FindTarget(client, player, true /*nobots*/, false /*immunity*/);
-		
-		if(player_id == -1)
-			continue;
-		
-		teamPlacementArray[player_id] = team;
-		CPrintToChatAll("[SM] %N %t", player_id,"l4dscores2", L4D_TEAM_NAME(team));
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
 	}
+	
+	int player_id = target_list[0];
+		
+	teamPlacementArray[player_id] = team;
+	CPrintToChatAll("[SM] %N %t", player_id,"l4dscores2", L4D_TEAM_NAME(team));
 	
 	TryTeamPlacement();
 	

@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "args": ["${relativeFile}"], 
+    "windows": 
+    { 
+        "command": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\compile.exe" 
+    },
+    "problemMatchers": [],
+    "tasks": [],
+    "group": {
+        "kind": "build",
+        "isDefault": true
+    }
+} 

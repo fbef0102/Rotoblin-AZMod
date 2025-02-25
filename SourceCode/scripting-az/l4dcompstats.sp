@@ -733,7 +733,8 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			new assister_count, i;
 			new damage = g_iDamageDealt[victim][attacker];
 			new shots = g_iShotsDealt[victim][attacker];
-			new String:plural[1] = "s";
+			char plural[2];
+			plural = "s";
 			if (shots == 1) plural[0] = 0;
 			for (i = 1; i <= MaxClients; i++)
 			{
