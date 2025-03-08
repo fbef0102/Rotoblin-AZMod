@@ -2,9 +2,9 @@
 {
 	"Message"
 	{
-		"en"	"You can't play game! Please change OPTIONS->Video->ADVANCED SETTINGS->EFFECT DETAIL\n\"Medium or \"High"
-		"zho"	"你不能遊玩遊戲, 必須到 選項->視訊->進階設定->效果細節\n改成\"中\"或\"高\""
-		"chi"	"你不能游玩游戏, 必须到 选项->视讯->高级设置->效果细节\n改成\"中\"或\"高\""
+		"en"	"You can't play game!\nPlease change OPTIONS->Video->ADVANCED SETTINGS->EFFECT DETAIL\n\"Medium or \"High"
+		"zho"	"你不能遊玩遊戲\n必須到 選項->視訊->進階設定->效果細節\n改成\"中\"或\"高\""
+		"chi"	"你不能游玩游戏\n必须到 选项->视讯->高级设置->效果细节\n改成\"中\"或\"高\""
 	}
 	
 	"Reason"
