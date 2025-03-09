@@ -25,15 +25,16 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    EngineVersion test = GetEngineVersion();
+	EngineVersion test = GetEngineVersion();
 
-    if( test != Engine_Left4Dead )
-    {
-        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
-        return APLRes_SilentFailure;
-    }
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
 
-    return APLRes_Success;
+	CreateNative("cpu_level_CheckClients", Native_CheckClients);
+	return APLRes_Success;
 }
 
 #define TRANSLATION_FILE		PLUGIN_NAME ... ".phrases"
@@ -45,8 +46,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 #define TEAM_SURVIVOR		2
 #define TEAM_INFECTED		3
 
-ConVar g_hCvarEnable, g_hCvarEffectDetail;
-bool g_bCvarEnable, g_bCvarEffectDetail;
+ConVar g_hCvarEnable;
+bool g_bCvarEnable;
 
 Handle ClientSettingsCheckTimer;
 
@@ -55,12 +56,10 @@ public void OnPluginStart()
 	LoadTranslations(TRANSLATION_FILE);
 
 	g_hCvarEnable 				= CreateConVar( PLUGIN_NAME ... "_enable",        			"1",   "0=Plugin off, 1=Plugin on.", CVAR_FLAGS, true, 0.0, true, 1.0);
-	g_hCvarEffectDetail			= CreateConVar( PLUGIN_NAME ... "_effect_detail", 			"1",   "If 1, Spectate players if effect detail is low", CVAR_FLAGS, true, 0.0, true, 1.0);
 	CreateConVar(                       		PLUGIN_NAME ... "_version",      			PLUGIN_VERSION, PLUGIN_NAME ... " Plugin Version", CVAR_FLAGS_PLUGIN_VERSION);
 
 	GetCvars();
 	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
-	g_hCvarEffectDetail.AddChangeHook(ConVarChanged_Cvars);
 }
 
 // Cvars-------------------------------
@@ -73,7 +72,6 @@ void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVa
 void GetCvars()
 {
 	g_bCvarEnable = g_hCvarEnable.BoolValue;
-	g_bCvarEffectDetail = g_hCvarEffectDetail.BoolValue;
 }
 
 // Sourcemod API Forward-------------------------------
@@ -94,7 +92,7 @@ Action Timer_CheckClients(Handle timer)
 	{
 		if (IsClientInGame(client) && !IsFakeClient(client))
 		{
-			if(g_bCvarEffectDetail) QueryClientConVar(client, "cpu_level", Query_cpu_level, 0);
+			QueryClientConVar(client, "cpu_level", Query_cpu_level, 0);
 		}
 	}	
 
@@ -128,4 +126,12 @@ void Query_cpu_level(QueryCookie cookie, int client, ConVarQueryResult result, \
 			ChangeClientTeam(client, TEAM_SPECTATOR);
 		}
 	}
+}
+
+// native void cpu_level_CheckClients()
+int Native_CheckClients(Handle plugin, int numParams)
+{
+	CreateTimer(0.1, Timer_CheckClients);
+
+	return 0;
 }

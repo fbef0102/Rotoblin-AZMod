@@ -54,7 +54,7 @@
     }
 	"9"
     {
-        "chat"			"{lightgreen}!mix: captaions select、!shuffle: teamshuffles"
+        "chat"			"{lightgreen}!mix: captains select、!shuffle: teamshuffles"
     }
 	"10"
     {
