@@ -332,7 +332,7 @@ void SaveMessage(const char[] message)
 	fileHandle = OpenFile(chatFile, "a");  /* Append */
 	if(fileHandle == null)
 	{
-		CreateDirectory("/addons/sourcemod/logs/chat", 777);
+		CreateDirectory("/addons/sourcemod/logs/chat", 0o777);
 		fileHandle = OpenFile(chatFile, "a"); //open again
 		if(fileHandle == null)
 		{
