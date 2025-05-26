@@ -60,7 +60,9 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 ### Server Anti Cheat ###
 * [Sourcemod_Anti-Cheat-SMAC](https://github.com/fbef0102/SMAC): Server-side sourceMod Anti-Cheat plugin, I modfidy some codes to make them compatible with Roto-AZMod.
 * [Little-Anti-Cheat](https://github.com/fbef0102/Little-Anti-Cheat): Free and open source anti-cheat for source games. Helpful in dealing with cheaters such as aimbot, bunnyhop, aimlock.
-  > **Developer Comment:** I highly recommend to install both, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
+* [EFFECT DETAIL anti-cheat](https://github.com/fbef0102/Little-Anti-Cheat): Spectate player if OPTIONS->Video->EFFECT DETAIL is low
+  * Because some map objects, tank rocks, items.... can be invisible in player's monitor if EFFECT DETAIL is low
+> **Developer Comment:** I highly recommend to install all, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
 
 - - - -
 ### Server Admins! ###
@@ -318,8 +320,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
 * Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
   * e.g. You won't slide on ice surfaces.
-* Spectate player if OPTIONS->Video->EFFECT DETAIL is low
-  * Because some map objects, tank rocks, items.... can be invisible in player's monitor if EFFECT DETAIL is low
 
 - - - -
 ### Gameplay / Balance Changes ###

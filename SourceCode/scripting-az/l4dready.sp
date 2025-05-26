@@ -165,7 +165,6 @@ native Score_GetTeamCampaignScore(team);//From l4dscores
 native Keep_SI_Starting(); //From l4d_QuadCaps
 native bool TS_GetHostName(char[] str, int size); //From l4d_DynamicHostname, just prevent idiots from changing hostname "[ZS]"
 native void MaterialHack_CheckClients(); //From l4d_texture_manager_block, check if any client uses ConVar cheat
-native void cpu_level_CheckClients(); //From l4d_cpu_level, check if any client's effect detail is low
 
 new String:HostName[256];
 new change;
@@ -2975,7 +2974,6 @@ RoundIsLive()
 	directorStart();
 
 	MaterialHack_CheckClients();
-	cpu_level_CheckClients();
 
 	ToggleCommandListeners(false);
 

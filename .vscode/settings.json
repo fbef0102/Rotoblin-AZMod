@@ -4,6 +4,12 @@
     "sourcepawn.outputDirectoryPath": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\compiled\\",
     "files.autoGuessEncoding": false,
     "editor.wordWrap": "off",
+
+    // for sourcepawn v4.2.4 or below
+    "sourcepawn.SourcemodHome": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\include",
+    "sourcepawn.SpcompPath": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\spcomp.exe",
+
+    // for sourcepawn v8.0 or above
     "SourcePawnLanguageServer.includeDirectories": [
         "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\include"
     ],
