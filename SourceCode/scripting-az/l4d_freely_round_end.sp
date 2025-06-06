@@ -2,13 +2,14 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <sdkhooks>
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.1-2025/6/6"
 
 public Plugin myinfo = 
 {
 	name = "[L4D & 2] Freely Round End",
-	author = "Forgetest",
+	author = "Forgetest, Harry",
 	description = "Free movement after round ends.",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/Target5150/MoYu_Server_Stupid_Plugins"
@@ -16,7 +17,19 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	HookEvent("round_start",            Event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+}
+
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast) 
+{
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(!IsClientInGame(i))
+			continue;
+			
+		SDKUnhook(i, SDKHook_OnTakeDamage, SurvivorOnTakeDamage);
+	}
 }
 
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
@@ -31,6 +44,14 @@ void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	{
 		case 5: // versus round end
 		{
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsClientInGame(i))
+				{
+					SDKHook(i, SDKHook_OnTakeDamage, SurvivorOnTakeDamage);
+				}
+			}
+
 			RequestFrame(OnFrame_RoundEnd);
 		}
 	}
@@ -45,4 +66,11 @@ void OnFrame_RoundEnd()
 			SetEntityFlags(i, GetEntityFlags(i) & ~(FL_FROZEN|FL_GODMODE));
 		}
 	}
+}
+
+Action SurvivorOnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+{
+    if (!IsClientInGame(victim) || GetClientTeam(victim) != 2) return Plugin_Continue;
+
+    return Plugin_Handled;
 }
