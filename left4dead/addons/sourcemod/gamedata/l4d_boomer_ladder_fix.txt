@@ -10,7 +10,7 @@
 				
 				"linux"
 				{
-					"offset"	"8Fh"
+					"offset"	"8Eh"
 					"verify"	"\x75"
 					"patch"		"\xEB"
 				}
