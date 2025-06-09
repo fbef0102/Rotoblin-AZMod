@@ -3,8 +3,9 @@
 
 #include <sourcemod>
 #include <sdkhooks>
+#include <left4dhooks>
 
-#define PLUGIN_VERSION "1.1-2025/6/6"
+#define PLUGIN_VERSION "1.1-2025/6/10"
 
 public Plugin myinfo = 
 {
@@ -32,6 +33,23 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
+// @param countSurvivors		False = Survivors didn't make it to saferoom. True = Survivors made to the saferoom
+public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
+{
+	if(countSurvivors)
+	{
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i))
+			{
+				SDKHook(i, SDKHook_OnTakeDamage, SurvivorOnTakeDamage);
+			}
+		}
+	}
+
+	return Plugin_Continue;
+}
+
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	/**
@@ -44,14 +62,6 @@ void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	{
 		case 5: // versus round end
 		{
-			for (int i = 1; i <= MaxClients; i++)
-			{
-				if (IsClientInGame(i))
-				{
-					SDKHook(i, SDKHook_OnTakeDamage, SurvivorOnTakeDamage);
-				}
-			}
-
 			RequestFrame(OnFrame_RoundEnd);
 		}
 	}

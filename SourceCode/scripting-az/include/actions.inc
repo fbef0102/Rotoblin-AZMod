@@ -61,6 +61,12 @@ enum ActionComponent
 	INVALID_COMPONENT
 };
 
+enum ActionId
+{
+	INVALID_ACTION_ID, 
+	NULL_ACTION_ID = INVALID_ACTION_ID
+}
+
 methodmap ActionResult
 {
 	/**
@@ -179,10 +185,11 @@ typeset ActionComponentFn
  * @param action			Created action address
  * @param actor				Actor of the action
  * @param name				Name of the action
+ * @param id				Id of the action
  *
  * @noreturn
  */
-forward void OnActionCreated( BehaviorAction action, int actor, const char[] name );
+forward void OnActionCreated( BehaviorAction action, int actor, const char[] name, ActionId id );
 
 /**
  * @brief Called whenever action is destroyed
@@ -191,10 +198,11 @@ forward void OnActionCreated( BehaviorAction action, int actor, const char[] nam
  * @param action			Destroyed action address
  * @param actor				Actor of the action
  * @param name				Name of the action
+ * @param id				Id of the action
  *
  * @noreturn
  */
-forward void OnActionDestroyed( BehaviorAction action, int actor, const char[] name );
+forward void OnActionDestroyed( BehaviorAction action, int actor, const char[] name, ActionId id );
 
 methodmap ActionsManager
 {
@@ -239,8 +247,48 @@ methodmap ActionsManager
 	public static native int Iterator( int entity, ActionsIteratorCallback callback = INVALID_FUNCTION );
 	
 	/**
+ 	* @brief Registers unique action id for the given name
+	* @remarks Doesn't register a new id if it already has been registered before
+ 	*
+ 	* @param name			Name of the action
+ 	*
+ 	* @return				ActionId
+ 	*/
+	public static native ActionId RegisterActionId( const char[] name );
+	
+	/**
+ 	* @brief Finds unique action id for the given name
+ 	*
+ 	* @param name			Name of the action
+ 	*
+ 	* @return				ActionId or NULL_ACTION_ID if doesn't exist
+ 	*/
+	public static native ActionId FindActionId( const char[] name );
+
+	/**
+ 	* @brief Returns entity action with given ID
+ 	*
+ 	* @param entity			Entity index
+ 	* @param id				Id of the action 
+ 	*
+ 	* @return				Action address, INVALID_ACTION if not found
+ 	*/
+	public static native BehaviorAction LookupEntityActionById( int entity, ActionId id );
+	
+	/**
  	* @brief Returns entity action with given name
  	*
+ 	* @param entity			Entity index
+ 	* @param name			Action name to find 
+ 	*
+ 	* @return				Action address, INVALID_ACTION if not found
+ 	*/
+	public static native BehaviorAction LookupEntityActionByName( int entity, const char[] name );
+
+	/**
+ 	* @brief Returns entity action with given name
+ 	* @remark Too expensive! Use Lookups to retrive desired action
+	*
  	* @param entity			Entity index
  	* @param name			Action name to find 
  	*
@@ -801,7 +849,26 @@ methodmap BehaviorAction < BehaviorActionListeners
 	{
 		ActionsManager.SetActionUserDataIdentityString(this, key, string);
 	}
-
+	
+ 	/**
+ 	* @brief Returns entity index from entity handle at specified offset
+ 	*
+ 	* @param offset			Offset to ehandle 
+ 	*Add commentMore actions
+ 	* @return				entity index
+ 	*/
+	public native int GetHandleEntity( int offset );
+	
+ 	/**
+ 	* @brief Set entity handle by entity index at specified offset
+ 	*
+ 	* @param offset			Offset to ehandle 
+ 	* @param entity			entity index
+ 	*
+ 	* @return				entity index
+ 	*/
+	public native void SetHandleEntity( int offset, int entity );
+	
 	/**
  	* @brief Simple wrapper to get action data 
  	*
@@ -1022,6 +1089,11 @@ public void __ext_actions_SetNTVOptional()
 	MarkNativeAsOptional("ActionsManager.Iterator");
 	MarkNativeAsOptional("ActionsManager.GetAction");
 
+	MarkNativeAsOptional("ActionsManager.RegisterActionId");
+	MarkNativeAsOptional("ActionsManager.FindActionId");
+	MarkNativeAsOptional("ActionsManager.LookupEntityActionByName");
+	MarkNativeAsOptional("ActionsManager.LookupEntityActionById");
+
 	MarkNativeAsOptional("ActionsManager.GetActionUserData");
 	MarkNativeAsOptional("ActionsManager.SetActionUserData");
 	MarkNativeAsOptional("ActionsManager.GetActionUserDataIdentity");
@@ -1031,6 +1103,9 @@ public void __ext_actions_SetNTVOptional()
 	MarkNativeAsOptional("BehaviorAction.ChangeTo");
 	MarkNativeAsOptional("BehaviorAction.SuspendFor");
 	MarkNativeAsOptional("BehaviorAction.Done");
+
+	MarkNativeAsOptional("BehaviorAction.GetHandleEntity");
+	MarkNativeAsOptional("BehaviorAction.SetHandleEntity");
 
 	MarkNativeAsOptional("BehaviorAction.TryContinue");
 	MarkNativeAsOptional("BehaviorAction.TryChangeTo");
