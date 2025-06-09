@@ -89,6 +89,10 @@
 		"Undead Zone"
 		{
 			"cmd" "sm_rcon changelevel uz_crash"
+		}		
+		"Day Break"
+		{
+			"cmd" "sm_rcon changelevel l4d_daybreak01_hotel"
 		}
 		"L4D2C1"
 		{

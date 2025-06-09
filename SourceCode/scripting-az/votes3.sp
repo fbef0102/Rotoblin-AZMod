@@ -124,7 +124,7 @@ public OnPluginStart()
 	VotensED = CreateConVar("l4d_vote_enable", "1", "0=Off, 1=On this plugin", FCVAR_NOTIFY);
 	VotensKickED = CreateConVar("l4d_vote_KickED", "1", "If 1, Enable Kick Player Vote.", FCVAR_NOTIFY);
 	VotensForceSpectateED = CreateConVar("l4d_vote_ForceSpectateED", "1", "If 1, Enable ForceSpectate Player Vote.", FCVAR_NOTIFY);
-	g_hCvarPlayerLimit = CreateConVar("sm_vote_player_limit", "2", "Minimum # of players in game to start the vote", FCVAR_NOTIFY);
+	g_hCvarPlayerLimit = CreateConVar("sm_vote_player_limit", "1", "Minimum # of players in game to start the vote", FCVAR_NOTIFY);
 	g_hKickImmueAccess = CreateConVar("l4d_vote_Kick_immue_access_flag", "z", "Players with these flags have kick immune. (Empty = Everyone, -1: Nobody)", FCVAR_NOTIFY);
 
 	GetCvars();

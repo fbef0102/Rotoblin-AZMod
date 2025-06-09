@@ -370,6 +370,8 @@
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 	}
+
+	// L4D1 custom maps
 	"l4d_vs_city17_01"
 	{
 		"pill_limit" "1"
@@ -1096,7 +1098,15 @@
 		{
 			"the end of the map"
 			{
-				"min"		"87"
+				"min"		"90"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"the end of the map"
+			{
+				"min"		"90"
 				"max"		"100"
 			}
 		}
@@ -1265,7 +1275,42 @@
 		"no_final_first_tank" "0"
 	}
 
+	"l4d_daybreak01_hotel"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.0"
+	}
+	"l4d_daybreak02_coastline"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.1"
+		"tank_ban_flow"
+		{
+			"end of map"
+			{
+				"min"		"90"
+				"max"		"100"
+			}
+		}
+	}
+	"l4d_daybreak03_bridge"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.2"
+	}
+	"l4d_daybreak04_cruise"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.3"
+	}
+	"l4d_daybreak05_rescue"
+	{
+		"pill_limit" "1"
+		"VersusModifier"		"2.0"
+	}
 
+
+	// L4D2 maps
 	"c1m1_hotel"
 	{
 		"pill_limit" "1"

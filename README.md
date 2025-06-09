@@ -216,6 +216,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [City Of The Dead](https://www.gamemaps.com/details/25778)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 * [Undead Zone](https://www.gamemaps.com/details/31513)
+* [Day Break](https://www.gamemaps.com/details/32743)
 
 - - - -
 ### Weapon Adjustments ###
