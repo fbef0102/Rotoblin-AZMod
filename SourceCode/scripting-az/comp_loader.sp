@@ -268,8 +268,6 @@ public OnPluginStart()
 	g_smMapName_ShortToFull.SetString("deadvacation", "Dead Vacation")
 	g_smMapName_ShortToFull.SetString("uz", "Undead Zone")
 	g_smMapName_ShortToFull.SetString("undeadzone", "Undead Zone")
-	g_smMapName_ShortToFull.SetString("day", "Day Break")
-	g_smMapName_ShortToFull.SetString("daybreak", "Day Break")
 
 
 	g_smMapName_FullToCode = new StringMap();
@@ -293,7 +291,6 @@ public OnPluginStart()
 	g_smMapName_FullToCode.SetString("City Of The Dead", "cotd01_apartments_redux")
 	g_smMapName_FullToCode.SetString("Dead Vacation", "hotel01_market_two")
 	g_smMapName_FullToCode.SetString("Undead Zone", "uz_crash")
-	g_smMapName_FullToCode.SetString("Day Break", "l4d_daybreak01_hotel")
 
 	g_smMapName_FullToRequest = new StringMap();
 	g_smMapName_FullToRequest.SetString("No Mercy", "NM")
@@ -316,7 +313,6 @@ public OnPluginStart()
 	g_smMapName_FullToRequest.SetString("City Of The Dead", "COTD")
 	g_smMapName_FullToRequest.SetString("Dead Vacation", "DV")
 	g_smMapName_FullToRequest.SetString("Undead Zone", "UZ")
-	g_smMapName_FullToRequest.SetString("Day Break", "DAY")
 }
 
 public void ChangeVars(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -2163,11 +2159,6 @@ public Action:Map_Changer(client, args)
 		Format(mapInfo, MAPINFPMAXLEN, "%s|----------------------|-----------------------------------|\n",mapInfo);
 		Format(mapInfo, MAPINFPMAXLEN, "%s| !cm uz               | Undead Zone                       |\n",mapInfo);
 		Format(mapInfo, MAPINFPMAXLEN, "%s| !cm undeadzone       |                                   |",mapInfo);
-		PrintToConsole(client, mapInfo);
-
-		FormatEx(mapInfo, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");
-		Format(mapInfo, MAPINFPMAXLEN, "%s| !cm day              | Change Map to Day Break           |\n",mapInfo);
-		Format(mapInfo, MAPINFPMAXLEN, "%s| !cm daybreak         |                                   |",mapInfo);
 		PrintToConsole(client, mapInfo);
 
 		FormatEx(mapInfo, MAPINFPMAXLEN,   "|----------------------|-----------------------------------|\n");

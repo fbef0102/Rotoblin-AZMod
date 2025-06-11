@@ -216,7 +216,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [City Of The Dead](https://www.gamemaps.com/details/25778)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 * [Undead Zone](https://www.gamemaps.com/details/31513)
-* [Day Break](https://www.gamemaps.com/details/32743)
 
 - - - -
 ### Weapon Adjustments ###
@@ -226,7 +225,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Ammo: 480->800
   * Damage Drop-off: 0.84->0.78
   * Reload Speed: 2.23->1.8
-  * Damage: 20->22
+  * Damage: 20->24
   * Limit: 3
   * FF Protect Range: 37
       
@@ -341,7 +340,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **General:**
     * Spawntimers:
       - *(5v5)*: **15s**
-      - *(4v4)*: **11s**
+      - *(4v4)*: **10s**
       - *(3v3)*: **9s**
       - *(2v2)*: **7s**
       - *(1v1)*: **1s**
