@@ -1,15 +1,22 @@
+/**
+ * l4d_fix_deathfall_cam "1.6.1" 變體插件
+ * -支援readup開始之後清除倖存者身上的死亡鏡頭
+ */
+
 #pragma semicolon 1
 #pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools_engine>
 #include <left4dhooks>
+#include <dhooks>
+#include <readyup>
 
-#define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_VERSION "1.6.2-2025/6/13"
 
 public Plugin myinfo = 
 {
-	name = "[L4D2] Fix DeathFall Camera",
+	name = "[L4D1] Fix DeathFall Camera",
 	author = "Forgetest",
 	description = "Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.",
 	version = PLUGIN_VERSION,
@@ -18,6 +25,13 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	EngineVersion test = GetEngineVersion();
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
 	CreateNative("L4D_ReleaseFromViewControl", Ntv_ReleaseFromViewControl);
 	return APLRes_Success;
 }
@@ -28,6 +42,7 @@ public any Ntv_ReleaseFromViewControl(Handle plugin, int numParams)
 }
 
 ArrayList g_aDeathFallClients;
+int g_iOffset;
 
 public void OnPluginStart()
 {
@@ -39,6 +54,31 @@ public void OnPluginStart()
 	HookEvent("gameinstructor_nodraw", Event_NoDraw, EventHookMode_PostNoCopy);
 	HookEvent("player_team", Event_PlayerTeam);
 	HookEvent("player_death", Event_PlayerDeath);
+
+	GameData hGamedata = new GameData("l4d_fix_deathfall_cam");
+
+	if(hGamedata == null)
+		SetFailState( "Can't load gamedata \"%s.txt\" or not found", "l4d_fix_deathfall_cam");
+
+	g_iOffset = hGamedata.GetOffset("OS");
+	if (g_iOffset == -1) {
+		SetFailState("Failed to get offset \"OS\"");
+	}
+
+	// linux
+	if(g_iOffset == 1)
+	{
+		DynamicDetour hDetour = DynamicDetour.FromConf(hGamedata, "CDeathFallCamera::InputEnable");
+		if(!hDetour)
+			SetFailState("Failed to find 'CDeathFallCamera::InputEnable' signature");
+		
+		if(!hDetour.Enable(Hook_Pre, CDeathFallCamerarInputEnable_Pre))
+			SetFailState("Failed to detour 'CDeathFallCamera::InputEnable'");
+
+		delete hDetour;
+
+		delete hGamedata;
+	}
 }
 
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
@@ -86,11 +126,26 @@ Action Timer_ReleaseView(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
+public void OnRoundIsLivePre()
+{
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(!IsClientInGame(i)) continue;
+		if(GetClientTeam(i) != 2) continue;
+
+		CreateTimer(0.1, Timer_ReleaseView, GetClientUserId(i), TIMER_FLAG_NO_MAPCHANGE);
+	}
+}
+
+// 一代linux無效，沒有觸發涵式
 public Action L4D_OnFatalFalling(int client, int camera)
 {
 	if (!client)
 		return Plugin_Continue;
-	
+
+	if(g_iOffset == 1) // just in case
+		return Plugin_Continue;
+
 	if (!AllowDamage())
 		return Plugin_Handled;
 	
@@ -105,6 +160,42 @@ public Action L4D_OnFatalFalling(int client, int camera)
 	}
 	
 	return Plugin_Handled;
+}
+
+// 限定一代linux觸發
+MRESReturn CDeathFallCamerarInputEnable_Pre(int pThis, DHookParam hParams)
+{
+	//"inputdata_t &"
+	//{
+	//	"type"	"objectptr"
+	//}
+
+	/*struct inputdata_t
+	{
+		CBaseEntity *pActivator;		// The entity that initially caused this chain of output events.
+		CBaseEntity *pCaller;			// The entity that fired this particular output.
+		class value;					// The data parameter for this output.
+		int nOutputID;					// The unique ID of the output that was fired.
+	};*/
+	int client = hParams.GetObjectVar(1, 0, ObjectValueType_CBaseEntityPtr);
+
+	if (client <= 0) // 空指针会返回-1
+		return MRES_Ignored;
+
+	if (!AllowDamage())
+		return MRES_Ignored;
+
+	if (GetClientTeam(client) == 2 && !IsFakeClient(client) && IsPlayerAlive(client))
+	{
+		// keep deathcam for a period until the player dies
+		int userid = GetClientUserId(client);
+		if (g_aDeathFallClients.FindValue(userid) == -1)
+			g_aDeathFallClients.Push(userid);
+
+		return MRES_Ignored;
+	}
+	
+	return MRES_Supercede;
 }
 
 void SetViewEntity(int client, int view)

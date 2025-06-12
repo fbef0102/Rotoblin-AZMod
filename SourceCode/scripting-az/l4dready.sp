@@ -22,7 +22,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.5.9"
+#define READY_VERSION "8.6.0"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -106,7 +106,9 @@ new Handle:cvarReadyCommonLimit	= INVALID_HANDLE;
 new Handle:cvarReadyMegaMobSize	= INVALID_HANDLE;
 new Handle:cvarReadyAllBotTeam	= INVALID_HANDLE;
 
-new Handle:fwdOnReadyRoundRestarted = INVALID_HANDLE;
+GlobalForward
+	g_hLiveForward,
+	g_hPreLiveForward;
 
 new hookedPlayerHurt; //if we hooked player_hurt event?
 
@@ -217,7 +219,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("IsReady",					Native_IsReady);
 	CreateNative("Is_Ready_Plugin_On",Native_Is_Ready_Plugin_On);
 
-	fwdOnReadyRoundRestarted = CreateGlobalForward("OnRoundIsLive", ET_Ignore);
+	g_hLiveForward 		= new GlobalForward("OnRoundIsLive", ET_Ignore);
+	g_hPreLiveForward 	= new GlobalForward("OnRoundIsLivePre", ET_Ignore);
 
 	RegPluginLibrary("readyup");
 
@@ -2977,7 +2980,7 @@ RoundIsLive()
 
 	ToggleCommandListeners(false);
 
-	Call_StartForward(fwdOnReadyRoundRestarted);
+	Call_StartForward(g_hLiveForward);
 	Call_Finish();
 }
 
@@ -3329,6 +3332,9 @@ InitiateLiveCountdown()
 	if(!readyMode) return;
 	if (readyCountdownTimer == INVALID_HANDLE)
 	{
+		Call_StartForward(g_hPreLiveForward);
+		Call_Finish();
+
 		ReturnTeamToSaferoom();
 		SetTeamFrozen(true);
 		PrintHintTextToAll("%t","ReadyPlugin_34");

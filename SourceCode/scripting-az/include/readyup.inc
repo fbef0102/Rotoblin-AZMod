@@ -24,10 +24,14 @@
 #define _readyup_included_
 
 /**
+ * Called before the live countdown ends and the round goes live
+ */
+forward void OnRoundIsLivePre();
+
+/**
  * Called when the live countdown ends and the round goes live
  */
 forward void OnRoundIsLive();
-
 
 /**
  * Returns the index of a item in the footer array.
