@@ -674,6 +674,14 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"End of the map"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_deathaboard04_ship"
 	{
@@ -797,7 +805,7 @@
 			}
 			"The End of the Map"
 			{
-				"min"		"84"
+				"min"		"80"
 				"max"		"100"
 			}
 		}
@@ -1249,6 +1257,22 @@
 		"WaterSlowDown_map" 	"1"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"450.0"
+		"tank_ban_flow"
+		{
+			"Cave"
+			{
+				"min"		"71"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Cave"
+			{
+				"min"		"71"
+				"max"		"100"
+			}
+		}
 	}
 	"uz_town"
 	{
@@ -1266,6 +1290,14 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.6"
 		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"Ladder"
+			{
+				"min"		"38"
+				"max"		"46"
+			}
+		}
 	}
 	"uz_escape"
 	{
