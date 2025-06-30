@@ -82,7 +82,9 @@ ConVar hOverHitDebug;
 ConVar
 	g_hCvarEnable = null,
 	g_hCvarBlockZeroDmg = null,
-	g_hCvarPermDamageFraction = null;
+	g_hCvarPermDamageFraction = null,
+	g_hCvarSMGFFProtectInterval,
+	g_hCvarPistolFFProtectInterval;
 
 int
 	g_iEnabledFlags = 0,
@@ -95,15 +97,22 @@ int
 	g_iLastTemp[MAXPLAYERS + 1] = {0, ... };
 
 float
-	g_fPermFrac = 0.0;
+	g_fPermFrac = 0.0,
+	g_fCvarSMGFFProtectInterval,
+	g_fCvarPistolFFProtectInterval;
 
-bool g_bStupidGuiltyBots[MAXPLAYERS + 1] = {false, ...};
+bool 
+	g_bStupidGuiltyBots[MAXPLAYERS + 1] = {false};
+
+float 
+	g_fSMGProtectInterval[MAXPLAYERS + 1][MAXPLAYERS + 1],
+	g_fPistolProtectInterval[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 public Plugin:myinfo =
 {
 	name = "L4D2 Godframes Control combined with FF Plugins + L4D2 Hittable Control",
 	author = "Stabby, CircleSquared, Tabun, Visor, dcx, Sir, Spoon, A1m`, Derpduck, Harry",
-	version = "1.6",
+	version = "1.7-2025/7/1",
 	description = "控制人類無敵狀態的時間並顯示顏色. Allows for customisation of hittable damage values."
 };
 
@@ -239,20 +248,30 @@ public OnPluginStart()
 	HookEvent("round_start", event_RoundStart, EventHookMode_PostNoCopy);//每回合開始就發生的event
 
 	// ff protect
-	g_hCvarEnable = 			CreateConVar("l4d2_undoff_enable", 		"3", 
-									"Bit flag: Enables plugin features (add together): 1=too close, 2=guilty bots, 3=all, 0=off", 
-									FCVAR_NOTIFY, true, 0.0, true, 3.0 );	
-	g_hCvarBlockZeroDmg = 		CreateConVar("l4d2_undoff_blockzerodmg","7", 
-									"Bit flag: Block 0 damage friendly fire effects like recoil and vocalizations/stats (add together): 4=bot hits human block recoil, 2=block vocals/stats on ALL difficulties, 1=block vocals/stats on everything EXCEPT Easy (flag 2 has precedence), 0=off", 
-									FCVAR_NOTIFY, true, 0.0, true, 7.0 );					
-	g_hCvarPermDamageFraction = CreateConVar("l4d2_undoff_permdmgfrac", "1.0", 
-									"Minimum fraction of damage applied to permanent health", 
-									FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarEnable 					= CreateConVar("l4d2_undoff_enable", 		"3", 
+										"Bit flag: Enables plugin features (add together): 1=too close, 2=guilty bots, 3=all, 0=off", 
+										FCVAR_NOTIFY, true, 0.0, true, 3.0 );	
+	g_hCvarBlockZeroDmg 			= CreateConVar("l4d2_undoff_blockzerodmg","7", 
+										"Bit flag: Block 0 damage friendly fire effects like recoil and vocalizations/stats (add together): 4=bot hits human block recoil, 2=block vocals/stats on ALL difficulties, 1=block vocals/stats on everything EXCEPT Easy (flag 2 has precedence), 0=off", 
+										FCVAR_NOTIFY, true, 0.0, true, 7.0 );					
+	g_hCvarPermDamageFraction 		= CreateConVar("l4d2_undoff_permdmgfrac", "1.0", 
+										"Minimum fraction of damage applied to permanent health", 
+										FCVAR_NOTIFY, true, 0.0, true, 1.0);
+
+	g_hCvarSMGFFProtectInterval 	= CreateConVar("l4d2_ff_smg_protect_interval", "0.3", 
+										"SMG/Rifle FF damage protect time interval (0=off)", 
+										FCVAR_NOTIFY, true, 0.0);		
+
+	g_hCvarPistolFFProtectInterval = CreateConVar("l4d2_ff_pistol_protect_interval", "0.3", 
+										"Pistol FF damage protect time interval (0=off)", 
+										FCVAR_NOTIFY, true, 0.0);						
 
 	GetCvars();
 	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarBlockZeroDmg.AddChangeHook(ConVarChanged_Cvars);
 	g_hCvarPermDamageFraction.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarSMGFFProtectInterval.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarPistolFFProtectInterval.AddChangeHook(ConVarChanged_Cvars);
 
 
 	// ff protect
@@ -299,6 +318,8 @@ void GetCvars()
 	g_iEnabledFlags = g_hCvarEnable.IntValue;
 	g_iBlockZeroDmg = g_hCvarBlockZeroDmg.IntValue;
 	g_fPermFrac = g_hCvarPermDamageFraction.FloatValue;
+	g_fCvarSMGFFProtectInterval = g_hCvarSMGFFProtectInterval.FloatValue;
+	g_fCvarPistolFFProtectInterval = g_hCvarPistolFFProtectInterval.FloatValue;
 }
 
 public Action:event_player_death(Handle:event, const String:name[], bool:dontBroadcast)
@@ -540,7 +561,7 @@ public OnClientPutInServer(client)
 	}
 }
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
 	if (!IsValidEdict(inflictor) || god.IntValue == 1 ) { return Plugin_Continue; }
 	
@@ -662,11 +683,41 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				return Plugin_Handled;
 			}
 		}
-			
 
 		if(iLastSI[victim] & hFFFlags.IntValue)
 		{
 			fTimeLeft += hFF.FloatValue;
+		}
+
+		// SMG 友傷間隔
+		if(g_fCvarSMGFFProtectInterval > 0.0)
+		{
+			if(attacker == inflictor && HasEntProp(attacker, Prop_Send, "m_hActiveWeapon"))
+			{
+				int real_weapon = GetEntPropEnt(attacker, Prop_Send, "m_hActiveWeapon");
+				if(real_weapon > MaxClients && IsValidEntity(real_weapon))
+				{
+					GetEdictClassname(real_weapon, sClassname, sizeof(sClassname));
+					if(strcmp(sClassname, "weapon_smg") == 0 || strcmp(sClassname, "weapon_rifle") == 0)
+					{
+						if(g_fSMGProtectInterval[attacker][victim] > GetEngineTime())
+						{
+							return Plugin_Handled;
+						}
+
+						g_fSMGProtectInterval[attacker][victim] = GetEngineTime() + g_fCvarSMGFFProtectInterval;
+					}
+					else if(strcmp(sClassname, "weapon_pistol") == 0)
+					{
+						if(g_fPistolProtectInterval[attacker][victim] > GetEngineTime())
+						{
+							return Plugin_Handled;
+						}
+
+						g_fPistolProtectInterval[attacker][victim] = GetEngineTime() + g_fCvarPistolFFProtectInterval;
+					}
+				}
+			}
 		}
 	}
 	
@@ -1088,7 +1139,7 @@ float GetWeaponFFDist(char[] sWeaponName)
 	} else if (strcmp(sWeaponName, "weapon_smg") == 0
 		|| strcmp(sWeaponName, "weapon_rifle") == 0
 	) {
-		return 37.0; // zonemode: 30
+		return 30.0;
 	} else if (strcmp(sWeaponName, "weapon_pumpshotgun") == 0
 		|| strcmp(sWeaponName, "weapon_autoshotgun") == 0
 		|| strcmp(sWeaponName, "weapon_hunting_rifle") == 0

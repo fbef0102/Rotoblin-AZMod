@@ -227,16 +227,19 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Reload Speed: 2.23->1.8
   * Damage: 20->24
   * Limit: 3
-  * FF Protect Range: 37
-      
+  * FF Protect Range: 30
+  * FF Protect Interval: 0.3 second
+
 * **Pumpshotgun**
   * Air Spread: 2.5->1.5
   * Ammo: 128->96
   * Limit: None
   * FF Protect Range: 37
+  * FF DMG: 1~10
 
 * **Pistol**
   * FF Protect Range: 25
+  * FF Protect Interval: 0.3 second
 
 * **Hunting Rifle**
   * Empty Reload Time: 1->1.25
