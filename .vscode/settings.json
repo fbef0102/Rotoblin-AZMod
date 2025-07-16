@@ -14,4 +14,8 @@
         "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\include"
     ],
     "SourcePawnLanguageServer.compiler.path": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\spcomp.exe",
+
+    "files.associations": {
+        "*.cfg": "valve-kv"
+    }
 }

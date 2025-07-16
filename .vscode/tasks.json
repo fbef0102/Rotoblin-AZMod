@@ -1,14 +1,22 @@
 {
     "version": "2.0.0",
-    "args": ["${relativeFile}"], 
-    "windows": 
-    { 
-        "command": "D:\\Github\\Rotoblin-AZMod\\SourceCode\\scripting-az\\compile.exe" 
-    },
-    "problemMatchers": [],
-    "tasks": [],
-    "group": {
-        "kind": "build",
-        "isDefault": true
-    }
+    "tasks": 
+    [
+        {
+            "label": "1.11 compiler",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "${workspaceFolder}\\SourceCode\\scripting-az\\spcomp.exe",
+                "${relativeFile}",
+                "-o",
+                "${workspaceFolder}\\SourceCode\\scripting-az\\compiled\\${fileBasenameNoExtension}.smx"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
 } 
