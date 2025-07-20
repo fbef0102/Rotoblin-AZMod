@@ -62,6 +62,7 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 * [Little-Anti-Cheat](https://github.com/fbef0102/Little-Anti-Cheat): Free and open source anti-cheat for source games. Helpful in dealing with cheaters such as aimbot, bunnyhop, aimlock.
 * [EFFECT DETAIL anti-cheat](https://github.com/fbef0102/Little-Anti-Cheat): Spectate player if OPTIONS->Video->EFFECT DETAIL is low
   * Because some map objects, tank rocks, items.... can be invisible in player's monitor if EFFECT DETAIL is low
+* [l4d_hackers_block](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d_hackers_block): Block hackers using some exploit to crash server
 > **Developer Comment:** I highly recommend to install all, you would be surprised that they are still many cheaters in l4d1 even after 15 years.
 
 - - - -
