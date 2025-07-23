@@ -443,14 +443,16 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space: 500 (vanilla: 100)
-    * Enlarge witch flashlight range: 750 (vanilla: 400)
-    * Witch is restored at the same spot if she gets killed by a Tank before someone startles her
+    * Enlarge witch flashlight range: 800 (vanilla: 400)
+    * Rate at which Witches become agitated: 0.35 (vanilla: 0.2)
+    * ~~Witch is restored at the same spot if she gets killed by a Tank before someone startles her~~
     * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?t=316965)
 	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
     * Instantly incapacitate Survivors
     * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
     * Prevents the witch from randomly loosing target.
     * Survivor will startle witch if shoot boomer nearby.
+    * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)

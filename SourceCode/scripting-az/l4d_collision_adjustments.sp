@@ -11,50 +11,50 @@
 
 #define ZC_HUNTER		3
 
-ConVar hRockFix, hPullThrough, hRockThroughIncap ,hCommonThroughWitch, hHunterThroughInacp;
-bool bRockFix,bPullThrough,bRockThroughIncap,bCommonThroughWitch, bHunterThroughInacp;
+ConVar g_hCvarRockFix, g_hCvarPullThrough, g_hCvarRockThroughIncap ,g_hCvarCommonThroughWitch, g_hCvarHunterThroughInacp, g_hCvarSIThroughWitch;
+bool g_bCvarRockFix,g_bCvarPullThrough,g_bCvarRockThroughIncap,g_bCvarCommonThroughWitch, g_bCvarHunterThroughInacp, g_bCvarSIThroughWitch;
 bool g_bPulled[MAXPLAYERS + 1] = {false};
-char sEntityCName[20];
+char sEntityCNameOne[20];
 char sEntityCNameTwo[20];
 float g_fPouncingStartTime[MAXPLAYERS+1];
 
 public Plugin myinfo = 
 {
-	name = "L4D Collision Adjustments",
-	author = "Sir, l4d1 port by Harry Potter",
+	name = "[L4D1] Collision Adjustments",
+	author = "Sir, Harry Potter",
 	description = "mother fucker no collisions to fix a handful of silly collision bugs in l4d1",
-	version = "1.2",
+	version = "1.0h-2025/7/23",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	EngineVersion test = GetEngineVersion();
+    EngineVersion test = GetEngineVersion();
 
-	if( test != Engine_Left4Dead )
-	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
-		return APLRes_SilentFailure;
-	}
+    if( test != Engine_Left4Dead )
+    {
+        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+        return APLRes_SilentFailure;
+    }
 
-	return APLRes_Success;
+    return APLRes_Success;
 }
 
 public void OnPluginStart()
 {
-	hRockFix 			= CreateConVar("collision_tankrock_common", "1", "Will Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them?",FCVAR_NOTIFY);
-	hPullThrough 		= CreateConVar("collision_smoker_common", 	"1", "Will Pulled Survivors go through Common Infected?",FCVAR_NOTIFY);
-	hRockThroughIncap 	= CreateConVar("collision_tankrock_incap", 	"1", "Will Rocks go through Incapacitated Survivors? (Won't go through new incaps caused by the Rock)",FCVAR_NOTIFY);
-	hCommonThroughWitch = CreateConVar("collision_common_witch", 	"1", "Will Commons go through Witch? (Prevent commons from pushing witch in l4d1)",FCVAR_NOTIFY);
-	hHunterThroughInacp = CreateConVar("collision_common_witch", 	"1", "Hunter go through incapacitated survivor? (Prevent hunter stuck inside incapacitated survivor, still can pounce them)",FCVAR_NOTIFY);
-	
+	g_hCvarRockFix 					= CreateConVar("l4d_collision_adjustments_tankrock_common", "1", "If 1, Rocks can go through Common Infected (and also kill them) instead of possibly getting stuck on them", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarPullThrough 				= CreateConVar("l4d_collision_adjustments_smoker_common", 	"1", "If 1, Pulled Survivors can go through Common Infected", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarRockThroughIncap 		= CreateConVar("l4d_collision_adjustments_tankrock_incap", 	"1", "If 1, Rocks can go through Incapacitated Survivors? (Won't go through new incaps caused by the Rock)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarCommonThroughWitch 		= CreateConVar("l4d_collision_adjustments_common_witch", 	"1", "(L4D1) If 1, Commons can go through Witch (Prevent commons from pushing witch in l4d1)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarHunterThroughInacp 		= CreateConVar("l4d_collision_adjustments_hunter_incap", 	"1", "If 1, Hunter can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarSIThroughWitch 			= CreateConVar("l4d_collision_adjustments_si_witch", 		"1", "If 1, Special infected and Tank can go through witch (Prevent stuck and stagger)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+
 	GetCvars();
-	
-	hRockFix.AddChangeHook(ConVarChanged);
-	hPullThrough.AddChangeHook(ConVarChanged);
-	hRockThroughIncap.AddChangeHook(ConVarChanged);
-	hCommonThroughWitch.AddChangeHook(ConVarChanged);
-	hHunterThroughInacp.AddChangeHook(ConVarChanged);
+	g_hCvarRockFix.AddChangeHook(ConVarChanged);
+	g_hCvarPullThrough.AddChangeHook(ConVarChanged);
+	g_hCvarRockThroughIncap.AddChangeHook(ConVarChanged);
+	g_hCvarHunterThroughInacp.AddChangeHook(ConVarChanged);
+	g_hCvarSIThroughWitch.AddChangeHook(ConVarChanged);
 	
 	HookEvent("tongue_grab", Event_SurvivorPulled);
 	HookEvent("tongue_release", Event_PullEnd);
@@ -62,6 +62,7 @@ public void OnPluginStart()
 	HookEvent("player_bot_replace", OnBotSwap);
 	HookEvent("bot_player_replace", OnBotSwap);
 	HookEvent("ability_use", Event_AbilityUse);
+	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
 public Action CH_PassFilter(int ent1, int ent2, bool &result)
@@ -69,7 +70,7 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 	if (ent1 > 0 && ent1 < MaxClients && IsClientInGame(ent1) && IsPlayerAlive(ent1) 
 		&& ent2 > 0 && ent2 < MaxClients && IsClientInGame(ent2) && IsPlayerAlive(ent2) )
 	{
-		if(bHunterThroughInacp && GetClientTeam(ent1) == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent1))
+		if(g_bCvarHunterThroughInacp && GetClientTeam(ent1) == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent1))
 		{
 			if(GetClientTeam(ent2) == L4D_TEAM_INF && GetZombieClass(ent2) == ZC_HUNTER && IsStartToPounce(ent2))
 			{
@@ -77,7 +78,7 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 				return Plugin_Handled;
 			}
 		}
-		else if(bHunterThroughInacp && GetClientTeam(ent2) == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent2))
+		else if(g_bCvarHunterThroughInacp && GetClientTeam(ent2) == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent2))
 		{
 			if(GetClientTeam(ent1) == L4D_TEAM_INF && GetZombieClass(ent1) == ZC_HUNTER && IsStartToPounce(ent1))
 			{
@@ -87,25 +88,25 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		}
 	}
 
-	if (IsValidEdict(ent1) && IsValidEdict(ent2))
+	if (IsValidEntity(ent1) && IsValidEntity(ent2))
 	{
-		GetEdictClassname(ent1, sEntityCName, 20);
-		GetEdictClassname(ent2, sEntityCNameTwo, 20);
+		GetEntityClassname(ent1, sEntityCNameOne, 20);
+		GetEntityClassname(ent2, sEntityCNameTwo, 20);
 
-		if (StrEqual(sEntityCName, "infected"))
+		if (StrEqual(sEntityCNameOne, "infected"))
 		{
-			if (bRockFix && StrEqual(sEntityCNameTwo, "tank_rock"))
+			if (g_bCvarRockFix && StrEqual(sEntityCNameTwo, "tank_rock"))
 			{
 				result = false;
 				return Plugin_Handled;
 			}
 
-			if (bPullThrough && IsSurvivor(ent2) && g_bPulled[ent2])
+			if (g_bCvarPullThrough && IsSurvivor(ent2) && g_bPulled[ent2])
 			{
 				result = false;
 				return Plugin_Handled;			
 			}
-			if (bCommonThroughWitch && StrEqual(sEntityCNameTwo, "witch"))
+			if (g_bCvarCommonThroughWitch && StrEqual(sEntityCNameTwo, "witch"))
 			{
 				result = false;
 				return Plugin_Handled;			
@@ -113,26 +114,26 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		}
 		else if (StrEqual(sEntityCNameTwo, "infected"))
 		{
-			if (bRockFix && StrEqual(sEntityCName, "tank_rock"))
+			if (g_bCvarRockFix && StrEqual(sEntityCNameOne, "tank_rock"))
 			{
 				result = false;
 				return Plugin_Handled;
 			}
 
-			if (bPullThrough && IsSurvivor(ent1) && g_bPulled[ent1])
+			if (g_bCvarPullThrough && IsSurvivor(ent1) && g_bPulled[ent1])
 			{
 				result = false;
 				return Plugin_Handled;			
 			}
-			if (bCommonThroughWitch && StrEqual(sEntityCName, "witch"))
+			if (g_bCvarCommonThroughWitch && StrEqual(sEntityCNameOne, "witch"))
 			{
 				result = false;
 				return Plugin_Handled;			
 			}
 		}
-		else if (StrEqual(sEntityCName, "tank_rock"))
+		else if (StrEqual(sEntityCNameOne, "tank_rock"))
 		{
-			if (bRockThroughIncap && IsSurvivor(ent2) && IsIncapacitatedOrHangingFromLedge(ent2))
+			if (g_bCvarRockThroughIncap && IsSurvivor(ent2) && IsIncapacitatedOrHangingFromLedge(ent2))
 			{
 				result = false;
 				return Plugin_Handled;
@@ -140,7 +141,23 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		}
 		else if (StrEqual(sEntityCNameTwo, "tank_rock"))
 		{
-			if (bRockThroughIncap && IsSurvivor(ent1) &&  IsIncapacitatedOrHangingFromLedge(ent1))
+			if (g_bCvarRockThroughIncap && IsSurvivor(ent1) && IsIncapacitatedOrHangingFromLedge(ent1))
+			{
+				result = false;
+				return Plugin_Handled;
+			}		
+		}
+		else if (StrEqual(sEntityCNameOne, "witch"))
+		{
+			if (g_bCvarSIThroughWitch && IsInfected(ent2))
+			{
+				result = false;
+				return Plugin_Handled;
+			}		
+		}
+		else if (StrEqual(sEntityCNameTwo, "witch"))
+		{
+			if (g_bCvarSIThroughWitch && IsInfected(ent1))
 			{
 				result = false;
 				return Plugin_Handled;
@@ -212,6 +229,12 @@ void OnBotSwap(Handle event, const char[] name, bool dontBroadcast)
 	}
 }
 
+void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{ 
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	g_bPulled[client] = false;
+}
+
 void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
@@ -219,11 +242,12 @@ void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 
 void GetCvars()
 {
-	bRockFix = hRockFix.BoolValue;
-	bPullThrough = hPullThrough.BoolValue;
-	bRockThroughIncap = hRockThroughIncap.BoolValue;
-	bCommonThroughWitch = hCommonThroughWitch.BoolValue;
-	bHunterThroughInacp = hHunterThroughInacp.BoolValue;
+	g_bCvarRockFix = g_hCvarRockFix.BoolValue;
+	g_bCvarPullThrough = g_hCvarPullThrough.BoolValue;
+	g_bCvarRockThroughIncap = g_hCvarRockThroughIncap.BoolValue;
+	g_bCvarCommonThroughWitch = g_hCvarCommonThroughWitch.BoolValue;
+	g_bCvarHunterThroughInacp = g_hCvarHunterThroughInacp.BoolValue;
+	g_bCvarSIThroughWitch = g_hCvarSIThroughWitch.BoolValue;
 }
 
 // ----------------------------
@@ -241,9 +265,15 @@ bool IsSurvivor(int client) {
 	return IsValidClient(client) && GetClientTeam(client) == L4D_TEAM_SUR;
 }
 
-bool IsIncapacitatedOrHangingFromLedge(int client) {
+bool IsInfected(int client) {
+	return IsValidClient(client) && GetClientTeam(client) == L4D_TEAM_INF;
+}
+
+bool IsIncapacitatedOrHangingFromLedge(int client) 
+{
 	if (GetEntProp(client, Prop_Send, "m_isHangingFromLedge"))
 		return true;
+
 	if (GetEntProp(client, Prop_Send, "m_isIncapacitated") > 0)
 		return true;
 		

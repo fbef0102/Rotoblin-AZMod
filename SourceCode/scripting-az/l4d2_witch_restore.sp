@@ -24,21 +24,40 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	return APLRes_Success;
 }
 
+ConVar g_hCvarEnable;
+bool g_bCvarEnable;
+
 public OnPluginStart()
 {
+	g_hCvarEnable 		= CreateConVar( "l4d2_witch_restore_enable",        "0",   "0=Plugin off, 1=Plugin on.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	GetCvars();
+	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
+
 	HookEvent("witch_killed", OnWitchKilled, EventHookMode_Pre);
 	HookEvent("witch_harasser_set", OnWitchWokeup);
 	HookEvent("round_start", Event_RoundStart);
 }
 
-public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+    g_bCvarEnable = g_hCvarEnable.BoolValue;
+}
+
+void Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {	
 	WitchRestore = false;
 	WitchScared = false;
 }
 
-public Action:OnWitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
+void OnWitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	if(!g_bCvarEnable) return;
+
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	new witch = GetEventInt(event, "witchid");
 	if (IsValidTank(client)&&!WitchScared)
@@ -46,13 +65,12 @@ public Action:OnWitchKilled(Handle:event, const String:name[], bool:dontBroadcas
 		GetEntPropVector(witch, Prop_Send, "m_vecOrigin", originWitch);
 		GetEntPropVector(witch, Prop_Send, "m_angRotation", anglesWitch);
 		//PrintToChatAll("originWitch %f,anglesWitch %f",originWitch,anglesWitch);
-		WitchRestore = true;
 		CreateTimer(3.0, RestoreWitch, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
 
-public Action:OnWitchWokeup(Handle:event, const String:name[], bool:dontBroadcast)
+void OnWitchWokeup(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	//new witch = GetEventInt(event, "witchid");
@@ -64,14 +82,11 @@ public Action:OnWitchWokeup(Handle:event, const String:name[], bool:dontBroadcas
 	
 }
 
-public Action:RestoreWitch(Handle:timer)
+Action RestoreWitch(Handle timer)
 {
 	L4D2_SpawnWitch(originWitch, anglesWitch);
-}
 
-public Action:ColdDown(Handle:timer)
-{
-	WitchRestore = false;
+	return Plugin_Continue;
 }
 
 bool:IsValidTank(client)
