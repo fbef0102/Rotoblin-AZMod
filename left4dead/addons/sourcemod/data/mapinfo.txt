@@ -624,26 +624,26 @@
 		{
 			"Store House"
 			{
-				"min"		"44"
-				"max"		"63"
+				"min"		"38"
+				"max"		"59"
 			}
 			"Crank Event"
 			{
-				"min"		"69"
-				"max"		"73"
+				"min"		"63"
+				"max"		"66"
 			}
 		}
 		"witch_ban_flow"
 		{
 			"Store House"
 			{
-				"min"		"44"
-				"max"		"63"
+				"min"		"38"
+				"max"		"57"
 			}
 			"Crank Event"
 			{
-				"min"		"69"
-				"max"		"73"
+				"min"		"63"
+				"max"		"65"
 			}
 		}
 	}
