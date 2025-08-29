@@ -214,9 +214,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Dark Blood](https://www.gamemaps.com/details/28746)
 * [Blood Harvest APOCALYPSE](https://www.gamemaps.com/details/27736)
 * [Precinct 84](https://www.gamemaps.com/details/27737)
-* [City Of The Dead](https://www.gamemaps.com/details/25778)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 * [Undead Zone](https://www.gamemaps.com/details/31513)
+* [City Of The Dead](https://github.com/fbef0102/Rotoblin-AZMod/releases/tag/Map)
 
 - - - -
 ### Weapon Adjustments ###
