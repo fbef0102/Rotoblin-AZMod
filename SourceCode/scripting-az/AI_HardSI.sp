@@ -3,57 +3,93 @@
 #include <sourcemod>
 #include <sdktools>
 #include <left4dhooks>
+#include <actions>
 
-#include "includes/hardcoop_util.sp"
-#include "modules/AI_Smoker.sp"
-#include "modules/AI_Boomer.sp"
-#include "modules/AI_Hunter.sp"
-#include "modules/AI_Witch.sp"
-#include "modules/AI_Tank.sp"
-
-
-public Plugin myinfo = 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	name = "AI: Hard SI",
-	author = "Breezy,l4d1 modify by Harry",
-	description = "Improves the AI behaviour of special infected",
-	version = "1.3",
-	url = "github.com/breezyplease"
-};
+    EngineVersion test = GetEngineVersion();
+
+    if( test != Engine_Left4Dead )
+    {
+        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+        return APLRes_SilentFailure;
+    }
+
+    return APLRes_Success;
+}
+
+bool 
+	g_bPluginEnd;
 
 #define CVAR_FLAGS                    FCVAR_NOTIFY
 #define CVAR_FLAGS_PLUGIN_VERSION     FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY
 
-ConVar g_hCvarEnable;
+#define L4D2Team_Spectator 1
+#define L4D2Team_Survivor 2
+#define L4D2Team_Infected 3
+
+#define L4D2Infected_Smoker 1
+#define L4D2Infected_Boomer 2
+#define L4D2Infected_Hunter 3
+#define L4D1Infected_Tank 5
+
+#define PLAYER_HEIGHT	72.0
+
+#include "AI_HardSI/AI_Smoker.sp"
+#include "AI_HardSI/AI_Boomer.sp"
+#include "AI_HardSI/AI_Hunter.sp"
+#include "AI_HardSI/AI_Tank.sp"
+
+public Plugin myinfo = 
+{
+	name = "[L4D1/L4D2] AI: Hard SI",
+	author = "Breezy & HarryPotter",
+	description = "Improves the AI behaviour of special infected",
+	version = "2.5-2025/8/31",
+	url = "github.com/breezyplease"
+};
+
+ConVar g_hCvarEnable, g_hCvarExecAggressiveCfg;
 bool g_bCvarEnable;
+char g_sCvarExecAggressiveCfg[64];
 
-bool bHasBeenShoved[MAXPLAYERS]; // shoving resets SI movement 
+int 
+	g_iCurTarget[MAXPLAYERS + 1];
 
-public void OnPluginStart() { 
+float 
+	g_fRunTopSpeed[MAXPLAYERS + 1];
+
+public void OnPluginStart() 
+{ 
 	// Cvars
 	g_hCvarEnable 				 	= CreateConVar( "AI_HardSI_enable",        		"1",   	"0=Plugin off, 1=Plugin on.", CVAR_FLAGS, true, 0.0, true, 1.0);
+	g_hCvarExecAggressiveCfg 		= CreateConVar( "AI_HardSI_aggressive_cfg", 	"aggressive_ai.cfg", 	"File to execute for AI aggressive cvars (in cfg/AI_HardSI folder)\nExecute file every map changed", CVAR_FLAGS );
 
 	GetCvars();
 	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarExecAggressiveCfg.AddChangeHook(ConVarChanged_Cvars);
 
 	// Event hooks
-	HookEvent("player_spawn", InitialiseSpecialInfected);
-	HookEvent("ability_use", OnAbilityUse, EventHookMode_Pre); 
-	HookEvent("player_jump", OnPlayerJump);
+	HookEvent("player_spawn", player_spawn);
+	HookEvent("ability_use", ability_use); 
+
 	// Load modules
 	Smoker_OnModuleStart();
-	Hunter_OnModuleStart();
 	Boomer_OnModuleStart();
-	Witch_OnModuleStart();
+	Hunter_OnModuleStart();
 	Tank_OnModuleStart();
+
+	//Autoconfig for plugin
+	//AutoExecConfig(true, "AI_HardSI");
 }
 
-public void OnPluginEnd() {
+public void OnPluginEnd() 
+{
+	g_bPluginEnd = true;
 	// Unload modules
 	Smoker_OnModuleEnd();
-	Hunter_OnModuleEnd();
 	Boomer_OnModuleEnd();
-	Witch_OnModuleEnd();
+	Hunter_OnModuleEnd();
 	Tank_OnModuleEnd();
 }
 
@@ -65,6 +101,19 @@ void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVa
 void GetCvars()
 {
 	g_bCvarEnable = g_hCvarEnable.BoolValue;
+	g_hCvarExecAggressiveCfg.GetString(g_sCvarExecAggressiveCfg, sizeof(g_sCvarExecAggressiveCfg));
+}
+
+//Sourcemod API Forward-------------------------------
+
+public void OnConfigsExecuted()
+{
+	GetCvars();
+
+	if(g_bCvarEnable)
+	{
+		ServerCommand("exec AI_HardSI/%s", g_sCvarExecAggressiveCfg);
+	}
 }
 
 /***********************************************************************************************************************************************************************************
@@ -77,16 +126,23 @@ void GetCvars()
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon) {
 	if(!g_bCvarEnable) return Plugin_Continue;
 	
-	if( IsBotInfected(client) && IsPlayerAlive(client) ) { // bots continue to trigger this callback for a few seconds after death
-		int botInfected = client;
-		switch( GetInfectedClass(botInfected) ) {
+	if( IsBotInfected(client) && IsPlayerAlive(client) && !L4D_IsPlayerGhost(client) ) 
+	{ 
+		if (L4D_IsPlayerStaggering(client))
+			return Plugin_Continue;
+
+		switch( GetInfectedClass(client) ) {
+
+			case (L4D2Infected_Boomer): {
+				return Boomer_OnPlayerRunCmd( client, buttons);
+			}
 		
-			case (L4DInfected_Hunter): {
-				if( !bHasBeenShoved[botInfected] ) return Hunter_OnPlayerRunCmd( botInfected, buttons, impulse, vel, angles, weapon );
+			case (L4D2Infected_Hunter): {
+				return Hunter_OnPlayerRunCmd( client, buttons);
 			}		
 				
-			case (L4DInfected_Tank): {
-				return Tank_OnPlayerRunCmd( botInfected, buttons, impulse, vel, angles, weapon );
+			case (L4D1Infected_Tank): {
+				return Tank_OnPlayerRunCmd( client, buttons, vel);
 			}
 				
 			default: {
@@ -104,62 +160,227 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 ***********************************************************************************************************************************************************************************/
 
 // Initialise relevant module flags for SI when they spawn
-void InitialiseSpecialInfected(Event event, char[] name, bool dontBroadcast) 
-{
+void player_spawn(Event event, char[] name, bool dontBroadcast) {
 	if(!g_bCvarEnable) return;
 
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if( IsBotInfected(client) ) {
 		int botInfected = client;
-		bHasBeenShoved[client] = false;
 		// Process for SI class
+
 		switch( GetInfectedClass(botInfected) ) {
-		
-			case (L4DInfected_Hunter):{
-				Hunter_OnSpawn(botInfected);
-			}
 			
-			default: {
-				return;	
+			case (L4D2Infected_Hunter): {
+				Hunter_OnSpawn(botInfected);
 			}				
 		}
 	}
 }
 
 // Modify hunter lunges and block smokers/spitters from fleeing after using their ability
-Action OnAbilityUse(Event event, char[] name, bool dontBroadcast) {
-	if(!g_bCvarEnable) return Plugin_Continue;
+void ability_use(Event event, char[] name, bool dontBroadcast) {
+	if(!g_bCvarEnable) return;
 
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if( IsBotInfected(client) ) {
 		int bot = client;
-		bHasBeenShoved[bot] = false; // Reset shove status		
 		// Process for different SI
 		char abilityName[32];
-		GetEventString(event, "ability", abilityName, sizeof(abilityName));
-		if( StrEqual(abilityName, "ability_lunge") ) {
-			return Hunter_OnPounce(bot);
+		event.GetString("ability", abilityName, sizeof(abilityName));
+		if( strcmp(abilityName, "ability_lunge") == 0) {
+			ability_use_OnPounce(bot);
+		} else if( strcmp(abilityName, "ability_vomit") == 0) {
+			ability_use_OnVomit(bot);
 		}
 	}
+}
+
+// Left 4 Dhooks API----------
+
+public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget) 
+{
+	g_iCurTarget[specialInfected] = curTarget;
 
 	return Plugin_Continue;
 }
 
-// Re-enable forced hopping when a shoved jockey leaps again naturally
-void OnPlayerJump(Event event, char[] name, bool dontBroadcast) {
+public Action L4D_OnGetRunTopSpeed(int target, float &retVal)
+{
+	g_fRunTopSpeed[target] = retVal;
+	return Plugin_Continue;
+}
+
+public Action L4D_TankRock_OnRelease(int tank, int rock, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	if(!g_bCvarEnable) return Plugin_Continue;
+
+	return Tank_TankRock_OnRelease(tank, rock, vecAng, vecVel);
+}
+
+public void L4D_TankRock_OnRelease_Post(int tank, int rock, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
+{
 	if(!g_bCvarEnable) return;
-	
-	int jumpingPlayer = GetClientOfUserId(event.GetInt("userid"));
-	if( IsBotInfected(jumpingPlayer) )  {
-		bHasBeenShoved[jumpingPlayer] = false;
+
+	Tank_TankRock_OnRelease_Post(tank);
+}
+
+// Other----------
+
+void GetSurDistance(int client, float &curTargetDist, float &nearestSurDist) {
+	static float vPos[3];
+	static float vTar[3];
+
+	GetClientAbsOrigin(client, vPos);
+	if (!IsAliveSur(g_iCurTarget[client]))
+		curTargetDist = -1.0;
+	else {
+		GetClientAbsOrigin(g_iCurTarget[client], vTar);
+		curTargetDist = GetVectorDistance(vPos, vTar);
 	}
-} 
+
+	static int i;
+	static float dist;
+
+	nearestSurDist = -1.0;
+	GetClientAbsOrigin(client, vPos);
+	for (i = 1; i <= MaxClients; i++) {
+		if (i != client && IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i)) {
+			GetClientAbsOrigin(i, vTar);
+			dist = GetVectorDistance(vPos, vTar);
+			if (nearestSurDist == -1.0 || dist < nearestSurDist)
+				nearestSurDist = dist;
+		}
+	}
+}
+
+float GetTargetRunTopSpeed(int client)
+{
+	return g_fRunTopSpeed[client];
+}
+
+/**
+ * Returns true if the player is currently on the survivor team. 
+ *
+ * @param client: client ID
+ * @return bool
+ */
+bool IsSurvivor(int client) {
+	if( IsValidClient(client) && GetClientTeam(client) == L4D2Team_Survivor ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Finds the closest survivor excluding a given survivor 
+ * @param referenceClient: compares survivor distances to this client
+ * @param excludeSurvivor: ignores this survivor
+ * @return: the entity index of the closest survivor
+**/
+int GetClosestSurvivor( float referencePos[3], int excludeSurvivor = -1 ) {
+	float survivorPos[3];
+	int closestSurvivor = GetRandomSurvivor(1, -1);	
+	if (closestSurvivor <= 0) return -1;
+	GetClientAbsOrigin( closestSurvivor, survivorPos );
+	int iClosestAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );
+	for (int client = 1; client <= MaxClients; client++) {
+		if( IsSurvivor(client) && IsPlayerAlive(client) && client != excludeSurvivor ) {
+			GetClientAbsOrigin( client, survivorPos );
+			int iAbsDisplacement = RoundToNearest( GetVectorDistance(referencePos, survivorPos) );			
+			if( iClosestAbsDisplacement < 0 ) { // Start with the absolute displacement to the first survivor found:
+				iClosestAbsDisplacement = iAbsDisplacement;
+				closestSurvivor = client;
+			} else if( iAbsDisplacement < iClosestAbsDisplacement ) { // closest survivor so far
+				iClosestAbsDisplacement = iAbsDisplacement;
+				closestSurvivor = client;
+			}			
+		}
+	}
+	return closestSurvivor;
+}
+
+/**
+ * Returns the distance of the closest survivor or a specified survivor
+ * @param referenceClient: the client from which to measure distance to survivor
+ * @param specificSurvivor: the index of the survivor to be measured, -1 to search for distance to closest survivor
+ * @return: the distance
+ */
+int GetSurvivorProximity( const float rp[3], int specificSurvivor = -1 ) {
+	
+	int targetSurvivor;
+	float targetSurvivorPos[3];
+	float referencePos[3]; // non constant var
+	referencePos[0] = rp[0];
+	referencePos[1] = rp[1];
+	referencePos[2] = rp[2];
+	
+
+	if( specificSurvivor > 0 && IsSurvivor(specificSurvivor) ) { // specified survivor
+		targetSurvivor = specificSurvivor;		
+	} else { // closest survivor		
+		targetSurvivor = GetClosestSurvivor( referencePos );
+	}
+	
+	if (targetSurvivor <= 0) return -1;
+
+	GetEntPropVector( targetSurvivor, Prop_Send, "m_vecOrigin", targetSurvivorPos );
+	return RoundToNearest( GetVectorDistance(referencePos, targetSurvivorPos) );
+}
 
 /***********************************************************************************************************************************************************************************
 
-																	TRACKING SURVIVORS' AIM
-
+                                                                   	SPECIAL INFECTED 
+                                                                    
 ***********************************************************************************************************************************************************************************/
+
+/**
+ * @return: the special infected class of the client
+ */
+int GetInfectedClass(int client) {
+    return GetEntProp(client, Prop_Send, "m_zombieClass");
+}
+
+bool IsInfected(int client) {
+    if (!IsClientInGame(client) || GetClientTeam(client) != L4D2Team_Infected) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @return: true if client is a special infected bot
+ */
+bool IsBotInfected(int client) {
+    // Check the input is valid
+    if (!IsValidClient(client))return false;
+    
+    // Check if player is a bot on the infected team
+    if (IsInfected(client) && IsFakeClient(client)) {
+        return true;
+    }
+    return false; // otherwise
+}
+
+/***********************************************************************************************************************************************************************************
+
+                                                                   			MISC
+                                                                    
+***********************************************************************************************************************************************************************************/
+
+/**
+ * Returns true if the client ID is valid
+ *
+ * @param client: client ID
+ * @return bool
+ */
+bool IsValidClient(int client) {
+    if( client > 0 && client <= MaxClients && IsClientInGame(client) ) {
+    	return true;
+    } else {
+    	return false;
+    }    
+}
 
 /**
 	Determines whether an attacking SI is being watched by the survivor
@@ -167,13 +388,12 @@ void OnPlayerJump(Event event, char[] name, bool dontBroadcast) {
 	@param attacker: the client number of the attacking SI
 	@param offsetThreshold: the radius(degrees) of the cone of detection around the straight line from the attacked survivor to the SI
 **/
-bool IsTargetWatchingAttacker( int attacker, int offsetThreshold ) {
+bool IsTargetWatchingAttacker( int attacker, float offsetThreshold ) {
 	bool isWatching = true;
 	if( GetClientTeam(attacker) == 3 && IsPlayerAlive(attacker) ) { // SI continue to hold on to their targets for a few seconds after death
 		int target = GetClientAimTarget(attacker);
 		if( IsSurvivor(target) ) { 
-			int aimOffset = RoundToNearest(GetPlayerAimOffset(target, attacker));
-			if( aimOffset <= offsetThreshold ) {
+			if( GetPlayerAimOffset(target, attacker) <= offsetThreshold ) {
 				isWatching = true;
 			} else {
 				isWatching = false;
@@ -216,4 +436,215 @@ float GetPlayerAimOffset( int attacker, int target ) {
 	// Calculate the angle between the two unit vectors
 	resultAngle = RadToDeg(ArcCosine(GetVectorDotProduct(aimVector, directVector)));
 	return resultAngle;
+}
+
+bool IsGrounded(int client) {
+	return GetEntPropEnt(client, Prop_Send, "m_hGroundEntity") != -1;
+}
+
+bool TargetSur(int client) {
+	return IsAliveSur(GetClientAimTarget(client, true));
+}
+
+bool CheckPlayerMove(int client, float vel) {
+	return vel > 0.9 * GetEntPropFloat(client, Prop_Send, "m_flMaxspeed") > 0.0;
+}
+
+bool CheckHopVel(int client, const float vAng[3], const float vVel[3]) {
+	float vMins[3];
+	float vMaxs[3];
+	GetClientMins(client, vMins);
+	GetClientMaxs(client, vMaxs);
+
+	float vPos[3];
+	float vEnd[3];
+	GetClientAbsOrigin(client, vPos);
+	float vel = GetVectorLength(vVel);
+	NormalizeVector(vVel, vEnd);
+	ScaleVector(vEnd, vel + FloatAbs(vMaxs[0] - vMins[0]) + 3.0);
+	AddVectors(vPos, vEnd, vEnd);
+
+	bool hit;
+	Handle hndl;
+	float vVec[3];
+	float vNor[3];
+	float vPlane[3];
+
+	hit = false;
+	vPos[2] += 10.0;
+	vEnd[2] += 10.0;
+	hndl = TR_TraceHullFilterEx(vPos, vEnd, vMins, vMaxs, MASK_PLAYERSOLID, TraceEntityFilter);
+	if (TR_DidHit(hndl)) {
+		hit = true;
+		TR_GetEndPosition(vVec, hndl);
+
+		NormalizeVector(vVel, vNor);
+		TR_GetPlaneNormal(hndl, vPlane);
+		if (RadToDeg(ArcCosine(GetVectorDotProduct(vNor, vPlane))) > 165.0) {
+			delete hndl;
+			return false;
+		}
+
+		vNor[1] = vAng[1];
+		vNor[0] = vNor[2] = 0.0;
+		GetAngleVectors(vNor, vNor, NULL_VECTOR, NULL_VECTOR);
+		NormalizeVector(vNor, vNor);
+		if (RadToDeg(ArcCosine(GetVectorDotProduct(vNor, vPlane))) > 165.0) {
+			delete hndl;
+			return false;
+		}
+	}
+	else {
+		vNor[1] = vAng[1];
+		vNor[0] = vNor[2] = 0.0;
+		GetAngleVectors(vNor, vNor, NULL_VECTOR, NULL_VECTOR);
+		NormalizeVector(vNor, vNor);
+		vPlane = vNor;
+		ScaleVector(vPlane, 128.0);
+		AddVectors(vPos, vPlane, vPlane);
+		delete hndl;
+		hndl = TR_TraceHullFilterEx(vPos, vPlane, view_as<float>({-16.0, -16.0, 0.0}), view_as<float>({16.0, 16.0, 33.0}), MASK_PLAYERSOLID, TraceWallFilter, client);
+		if (TR_DidHit(hndl)) {
+			TR_GetPlaneNormal(hndl, vPlane);
+			if (RadToDeg(ArcCosine(GetVectorDotProduct(vNor, vPlane))) > 165.0) {
+				delete hndl;
+				return false;
+			}
+		}
+
+		delete hndl;
+	}
+
+	delete hndl;
+	if (!hit)
+	{
+		vVec[0] = vEnd[0];
+		vVec[1] = vEnd[1];
+		vVec[2] = vEnd[2];
+	}
+
+	static float vDown[3];
+	vDown[0] = vVec[0];
+	vDown[1] = vVec[1];
+	vDown[2] = vVec[2] - 100000.0;
+
+	hndl = TR_TraceHullFilterEx(vVec, vDown, vMins, vMaxs, MASK_PLAYERSOLID, TraceSelfFilter, client);
+	if (!TR_DidHit(hndl)) {
+		delete hndl;
+		return false;
+	}
+
+	TR_GetEndPosition(vEnd, hndl);
+	delete hndl;
+	return vVec[2] - vEnd[2] < 104.0;
+}
+
+bool TraceSelfFilter(int entity, int contentsMask, any data) {
+	return entity != data;
+}
+
+bool TraceWallFilter(int entity, int contentsMask, any data) {
+	if (entity != data) {
+		static char cls[5];
+		GetEdictClassname(entity, cls, sizeof cls);
+		return cls[3] != 'e' && cls[3] != 'c';
+	}
+
+	return false;
+}
+
+bool TraceEntityFilter(int entity, int contentsMask) {
+	if (!entity || entity > MaxClients) {
+		static char cls[5];
+		GetEdictClassname(entity, cls, sizeof cls);
+		return cls[3] != 'e' && cls[3] != 'c';
+	}
+
+	return false;
+}
+
+
+bool IsAliveSur(int client) {
+	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 2 && IsPlayerAlive(client);
+}
+
+bool WithinViewAngle(int client, float offsetThreshold, int target = 0) {
+	
+	if(target == 0)
+	{
+		target = GetClientAimTarget(client);
+		if (!IsAliveSur(target))
+			return true;
+	}
+	
+	static float vSrc[3];
+	static float vTar[3];
+	static float vAng[3];
+	GetClientEyePosition(target, vSrc);
+	GetClientEyePosition(client, vTar);
+	if (IsVisibleTo(vSrc, vTar)) {
+		GetClientEyeAngles(target, vAng);
+		return PointWithinViewAngle(vSrc, vTar, vAng, GetFOVDotProduct(offsetThreshold));
+	}
+
+	return false;
+}
+int Math_GetRandomInt(int min, int max)
+{
+	int random = GetURandomInt();
+
+	if (random == 0) {
+		random++;
+	}
+
+	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
+}
+
+// credits = "AtomicStryker"
+bool IsVisibleTo(const float vPos[3], const float vTarget[3]) {
+	static float vLookAt[3];
+	MakeVectorFromPoints(vPos, vTarget, vLookAt);
+	GetVectorAngles(vLookAt, vLookAt);
+
+	static Handle hndl;
+	hndl = TR_TraceRayFilterEx(vPos, vLookAt, MASK_VISIBLE, RayType_Infinite, TraceEntityFilter);
+
+	static bool isVisible;
+	isVisible = false;
+	if (TR_DidHit(hndl)) {
+		static float vStart[3];
+		TR_GetEndPosition(vStart, hndl);
+
+		if ((GetVectorDistance(vPos, vStart, false) + 25.0) >= GetVectorDistance(vPos, vTarget))
+			isVisible = true;
+	}
+
+	delete hndl;
+	return isVisible;
+}
+
+bool PointWithinViewAngle(const float vecSrcPosition[3], const float vecTargetPosition[3], const float vecLookDirection[3], float flCosHalfFOV) {
+	static float vecDelta[3];
+	SubtractVectors(vecTargetPosition, vecSrcPosition, vecDelta);
+	static float cosDiff;
+	cosDiff = GetVectorDotProduct(vecLookDirection, vecDelta);
+	if (cosDiff < 0.0)
+		return false;
+
+	// a/sqrt(b) > c  == a^2 > b * c ^2
+	return cosDiff * cosDiff >= GetVectorLength(vecDelta, true) * flCosHalfFOV * flCosHalfFOV;
+}
+
+float GetFOVDotProduct(float angle) {
+	return Cosine(DegToRad(angle) / 2.0);
+}
+
+bool IsPinned(int client) 
+{
+	if (GetEntPropEnt(client, Prop_Send, "m_tongueOwner") > 0)
+		return true;
+	if (GetEntPropEnt(client, Prop_Send, "m_pounceAttacker") > 0)
+		return true;
+
+	return false;
 }

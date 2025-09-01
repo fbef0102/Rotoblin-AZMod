@@ -1096,10 +1096,24 @@
 			}
 		}
 	}
-	"cotd03_sewers_redux"
+	"cotd02_streets_redux"
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.2"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"one way drop"
+			{
+				"min"		"80"
+				"max"		"83"
+			}
+		}
+	}
+	"cotd03_sewers_redux"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
