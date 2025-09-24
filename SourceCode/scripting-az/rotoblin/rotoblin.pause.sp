@@ -126,8 +126,8 @@ public _P_OnPluginEnabled()
 	AddCommandListener(_P_RotoblinPause_Command, PAUSE_COMMAND);
 	AddCommandListener(_P_Setpause_Command, SETPAUSE_COMMAND);
 	AddCommandListener(_P_RotoblinUnpause_Command, UNPAUSE_COMMAND);
-	AddCommandListener(_P_Say_Command, "say");
-	AddCommandListener(_P_SayTeam_Command, "say_team");
+	//AddCommandListener(_P_Say_Command, "say");
+	//AddCommandListener(_P_SayTeam_Command, "say_team");
 	
 	RegConsoleCmd("sm_pause", Pause_Cmd, "Pauses the game");
 	RegConsoleCmd("sm_unpause", Unpause_Cmd, "Marks your team as ready for an unpause");
@@ -143,6 +143,9 @@ public _P_OnPluginEnabled()
 
 	HookEvent("round_end", _PC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	HookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
+
+	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
+	HookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
 }
 
 /**
@@ -157,9 +160,9 @@ public _P_OnPluginDisabled()
 	RemoveCommandListener(_P_RotoblinPause_Command, PAUSE_COMMAND);
 	RemoveCommandListener(_P_Setpause_Command, SETPAUSE_COMMAND);
 	RemoveCommandListener(_P_RotoblinUnpause_Command, UNPAUSE_COMMAND);
-	RemoveCommandListener(_P_Say_Command, "say");
-	RemoveCommandListener(_P_SayTeam_Command, "say_team");
-
+	//RemoveCommandListener(_P_Say_Command, "say");
+	//RemoveCommandListener(_P_SayTeam_Command, "say_team");
+	
 	g_bIsPaused = false;
 	g_bIsUnpausing = false;
 	g_bWasForced = false;
@@ -175,6 +178,21 @@ public _P_OnPluginDisabled()
 	
 	UnhookEvent("round_end", _PC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
+
+	UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
+	UnhookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
+}
+
+public void _P_OnClientPutInServer(int client)
+{
+	if (g_bIsPaused)
+	{
+		if (!IsFakeClient(client))
+		{
+			CPrintToChatAll("%t", "Pause_1", client);
+			SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
+		}
+	}
 }
 
 public _P_OnClientDisconnect(client)
@@ -232,7 +250,7 @@ public _P_PauseEnable_CvarChange(Handle:convar, const String:oldValue[], const S
  * @return				Plugin_Handled to stop command from being performed, 
  *						Plugin_Continue to allow the command to pass.
  */
-public Action:_P_Say_Command(client, const String:command[], args)
+/*public Action _P_Say_Command(int client, char[] command, int args)
 {
 	if(client == SERVER_INDEX) 
 	{
@@ -290,7 +308,7 @@ public Action:_P_Say_Command(client, const String:command[], args)
 		CPrintToChatAll("(Inf) {lightgreen}%N{default} : %s", client, buffer);
 		
 	return Plugin_Handled;
-}
+}*/
 
 /**
  * On client use say team command
@@ -301,7 +319,7 @@ public Action:_P_Say_Command(client, const String:command[], args)
  * @return				Plugin_Handled to stop command from being performed, 
  *						Plugin_Continue to allow the command to pass.
  */
-public Action:_P_SayTeam_Command(client, const String:command[], args)
+/*public Action _P_SayTeam_Command(int client, char[] command, int args)
 {
 	if(client == SERVER_INDEX) 
 	{
@@ -369,6 +387,24 @@ public Action:_P_SayTeam_Command(client, const String:command[], args)
 		
 	return Plugin_Handled;
 
+}*/
+
+void Event_PlayerSay(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+    int iUserId = hEvent.GetInt("userid");
+    RequestFrame(FrameDelay_PlayerSay, iUserId);
+}
+
+void FrameDelay_PlayerSay(int iUserId)
+{
+	int iClient = GetClientOfUserId(iUserId);
+	if (iClient < 1 || !g_bIsPaused) {
+		return;
+	}
+
+	// During a pause the time (gpGlobals->curtime) does not change.
+	// Let's reset this property for the chat to work.
+	SetEntPropFloat(iClient, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
 }
 
 public Action:Pause_Cmd(client, args)
@@ -657,7 +693,7 @@ public Action:_P_Unpause_Timer(Handle:timer, any:client)
  *							a random client will be used.
  * @noreturn
  */
-static Pause()
+static void Pause()
 {
 	g_bIsPaused = true;
 	g_bIsUnpausing = false;
@@ -683,7 +719,9 @@ static Pause()
 	//Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if (!IsClientInGame(client)) continue;
+		if (!IsClientInGame(client) || IsFakeClient(client)) continue;
+
+		SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
 
 		hiddenPanel[client] = false;
 		
@@ -715,7 +753,7 @@ public Action:MenuRefresh_Timer(Handle:timer)
  *							a random client will be used.
  * @noreturn
  */
-static Unpause()
+static void Unpause()
 {
 	g_bIsUnpausable = true; // Allow the next unpause command to go through
 	for (new client = 1; client <= MaxClients; client++)
@@ -731,8 +769,10 @@ static Unpause()
 
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client))
+		if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client))
 		{
+			SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
+			
 			ToggleFreezePlayer(client, false);
 		}
 	}

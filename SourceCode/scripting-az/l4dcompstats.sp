@@ -41,7 +41,7 @@ public Plugin:myinfo =
 	name = "L4D Competitive Stats",
 	author = "Griffin & Philogl, Harry Potter",
 	description = "Basic competitive stat tracking on a per map basis, 特感殺手, 清屍狂人, Skeet, 黑槍之王, 推推小王子, 抖M受",
-	version = "1.5"
+	version = "1.0h-2025/9/22"
 };
 
 #pragma semicolon 1
@@ -218,9 +218,13 @@ public OnPluginStart()
 	RegConsoleCmd("mvp", Command_Mvp);
 }
 
-public Action:Command_Mvp(client, args)
+Action Command_Mvp(int client, int args)
 {
+	if(client == 0) return Plugin_Handled;
+
 	PrintMVPAndTeamStats(client);
+
+	return Plugin_Handled;
 }
 public OnClientPutInServer(client)
 {
@@ -352,13 +356,24 @@ public PrintMVPAndTeamStats(iclient)
 	for (i = 0; i < survivor_count; i++)
 	{
 		client = survivor_clients[i];
-		if(g_iMapStats[client][FullSkeets] + g_iMapStats[client][TeamSkeets] >  MVP_skeetkills)
+		if(g_iMapStats[client][FullSkeets] > MVP_skeetkills)
 		{
 			MVP_fullskeetkills = g_iMapStats[client][FullSkeets];
 			MVP_teamskeetkills = g_iMapStats[client][TeamSkeets];
 			MVP_skeetkills = g_iMapStats[client][FullSkeets] + g_iMapStats[client][TeamSkeets];
 			MVP_client = client;
 		}
+		else if(g_iMapStats[client][FullSkeets] == MVP_fullskeetkills)
+		{
+			if(g_iMapStats[client][TeamSkeets] > MVP_teamskeetkills)
+			{
+				MVP_fullskeetkills = g_iMapStats[client][FullSkeets];
+				MVP_teamskeetkills = g_iMapStats[client][TeamSkeets];
+				MVP_skeetkills = g_iMapStats[client][FullSkeets] + g_iMapStats[client][TeamSkeets];
+				MVP_client = client;
+			}
+		}
+
 		fullskeetkills_total += g_iMapStats[client][FullSkeets];
 		teamskeetkills_total += g_iMapStats[client][TeamSkeets];
 	}

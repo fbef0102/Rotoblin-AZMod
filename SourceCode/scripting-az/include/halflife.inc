@@ -193,29 +193,20 @@ native bool IsDedicatedServer();
 
 /**
  * Returns a high-precision time value for profiling the engine.
- * 取得從開服至今為止的時間
- * 換圖不會歸0
- * 伺服器暫停時依然繼續跑
- * 
+ *
  * @return              A floating point time value.
  */
 native float GetEngineTime();
 
 /**
  * Returns the game time based on the game tick.
- * 取得從地圖開始至今為止的時間
- * 換圖會歸0
- * 伺服器暫停時會暫停
- * 
+ *
  * @return              Game tick time.
  */
 native float GetGameTime();
 
 /**
  * Returns the game's internal tick count.
- * 取得從地圖開始至今為止的時間
- * 換圖會歸0
- * 伺服器暫停時會暫停
  *
  * @return              Game tick count.
  */
@@ -223,12 +214,10 @@ native int GetGameTickCount();
 
 /**
  * Returns the time the Game took processing the last frame.
- * 每一偵的間隔
- * 
+ *
  * @return              Game frame time.
  */
 native float GetGameFrameTime();
-
 
 /**
  * Returns the game description from the mod.

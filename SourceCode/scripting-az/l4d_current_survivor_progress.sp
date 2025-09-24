@@ -75,15 +75,20 @@ stock Float:GetBossProximity()
 	return proximity;
 }
 
-stock Float:GetMaxSurvivorCompletion()
+
+float GetMaxSurvivorCompletion()
 {
-	new Float:flow = 0.0;
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == 2)
-		{
-			flow = MAX(flow, L4D2Direct_GetFlowDistance(i));
+	float flow = 0.0, tmp_flow = 0.0;
+	Address pNavArea;
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i)) {
+			pNavArea = L4D_GetLastKnownArea(i);
+			if (pNavArea != Address_Null) {
+				tmp_flow = L4D2Direct_GetTerrorNavAreaFlow(pNavArea);
+				flow = (flow > tmp_flow) ? flow : tmp_flow;
+			}
 		}
 	}
+
 	return (flow / L4D2Direct_GetMapMaxFlowDistance());
 }

@@ -59,6 +59,9 @@ ConVar hMilitiaRockStandingDamage;
 ConVar hSofaChairStandingDamage;
 ConVar hAtlasBallDamage;
 ConVar hIBeamDamage;
+ConVar hBrickPalletsPiecesDamage;
+ConVar hBoatSmashPiecesDamage;
+ConVar hConcretePillerPiecesDamage;
 ConVar hDiescraperBallDamage;
 ConVar hVanDamage;
 ConVar hStandardIncapDamage;
@@ -112,7 +115,7 @@ public Plugin:myinfo =
 {
 	name = "L4D2 Godframes Control combined with FF Plugins + L4D2 Hittable Control",
 	author = "Stabby, CircleSquared, Tabun, Visor, dcx, Sir, Spoon, A1m`, Derpduck, Harry",
-	version = "1.7-2025/7/1",
+	version = "0.8h-2025/9/11",
 	description = "控制人類無敵狀態的時間並顯示顏色. Allows for customisation of hittable damage values."
 };
 
@@ -178,6 +181,15 @@ public OnPluginStart()
 	hIBeamDamage			= CreateConVar( "hc_ibeam_standing_damage",	"48.0",
 											"Damage of ibeams to non-incapped survivors.",
 											FCVAR_NONE, true, 0.0, true, 300.0 );
+	hBrickPalletsPiecesDamage 	= CreateConVar( "hc_brick_pallets_standing_damage",	"13.0",
+											"Damage of hittable brick pallets pieces to non-incapped survivors.",
+											FCVAR_NONE, true, 0.0, true, 300.0 );
+	hBoatSmashPiecesDamage		= CreateConVar( "hc_boat_smash_standing_damage",	"23.0",
+											"Damage of hittable boat smash pieces to non-incapped survivors.",
+											FCVAR_NONE, true, 0.0, true, 300.0 );
+	hConcretePillerPiecesDamage	= CreateConVar( "hc_concrete_piller_standing_damage",	"8.0",
+											"Damage of hittable concrete piller pieces to non-incapped survivors.",
+											FCVAR_NONE, true, 0.0, true, 300.0 );								
 	hDiescraperBallDamage	= CreateConVar( "hc_diescraper_ball_standing_damage",	"100.0",
 											"Damage of hittable ball statue on Diescraper finale to non-incapped survivors.",
 											FCVAR_NONE, true, 0.0, true, 300.0 );
@@ -188,7 +200,7 @@ public OnPluginStart()
 											"Damage of all hittables to incapped players. -1 will have incap damage default to valve's standard incoherent damages. -2 will have incap damage default to each hittable's corresponding standing damage.",
 											FCVAR_NONE, true, -2.0, true, 300.0 );
 	hTankSelfDamage			= CreateConVar( "hc_disable_self_damage",		"1",
-											"If set, tank will not damage itself with hittables. (0.6.1 simply prevents all damage from Prop_Physics & Alarm Cars to cover for the event a Tank punches a hittable into another and gets hit)",
+											"If set, tank will not damage itself with hittables. (1: simply prevents all damage from Prop_Physics & Alarm Cars to cover for the event a Tank punches a hittable into another and gets hit)",
 											FCVAR_NONE, true, 0.0, true, 1.0 );
 	hOverHitInterval		= CreateConVar( "hc_overhit_time",				"1.4",
 											"The amount of time to wait before allowing consecutive hits from the same hittable to register. Recommended values: 0.0-0.5: instant kill; 0.5-0.7: sizeable overhit; 0.7-1.0: standard overhit; 1.0-1.2: reduced overhit; 1.2+: no overhit unless the car rolls back on top. Set to tank's punch interval (default 1.5) to fully remove all possibility of overhit.",
@@ -741,21 +753,21 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 		{
 			if (fSpecialOverkill[victim][0] - GetGameTime() > 0) return Plugin_Handled;
 			fSpecialOverkill[victim][0] = GetGameTime() + interval;
-			damage = 13.0;
+			damage = hBrickPalletsPiecesDamage.FloatValue;
 			attacker = FindTank();
 		}
 		else if (StrContains(sModelName, "boat_smash_break", false) != -1) // [1]
 		{
 			if (fSpecialOverkill[victim][1] - GetGameTime() > 0) return Plugin_Handled;
 			fSpecialOverkill[victim][1] = GetGameTime() + interval;
-			damage = 23.0;
+			damage = hBoatSmashPiecesDamage.FloatValue;
 			attacker = FindTank();
 		}
 		else if (StrContains(sModelName, "concretepiller01_dm01", false) != -1) // [2]
 		{
 			if (fSpecialOverkill[victim][2] - GetGameTime() > 0) return Plugin_Handled;
 			fSpecialOverkill[victim][2] = GetGameTime() + interval;
-			damage = 8.0;
+			damage = hConcretePillerPiecesDamage.FloatValue;
 			attacker = FindTank();
 		}
 		

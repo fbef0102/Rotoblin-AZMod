@@ -138,8 +138,7 @@ public event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 }
 public Action:KillPinfected_dis(Handle:timer)
 {
-	displaykillinfected(2);
-	displaykillinfected(1);
+	displaykillinfected(0);
 }
 
 public event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
@@ -148,13 +147,16 @@ public event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 	kill_infected();
 }
 
-public Action:Command_kill(client, args)
+Action Command_kill(int client, int args)
 {
-	new iTeam = GetClientTeam(client);
-	displaykillinfected(iTeam);
+	if(client == 0) return Plugin_Handled;
+
+	displaykillinfected(0, client);
+
+	return Plugin_Handled;
 }
 
-displaykillinfected(team)
+void displaykillinfected(int team, int target = 0)
 {	
 	HasRoundEnded = true;
 	new client;
@@ -186,8 +188,10 @@ displaykillinfected(team)
 		damageffss = damageff[client];
 		GetClientName(client,clientName,128);
 		
-		if(team == 0){
-			CPrintToChatAll("%t","kills1", killss, killssssss, killsss, killssss, damageffss,clientName);
+		if(team == 0)
+		{
+			if(target > 0) CPrintToChat(target, "%T","kills1", target, killss, killssssss, killsss, killssss, damageffss,clientName);
+			else CPrintToChatAll("%t","kills1", killss, killssssss, killsss, killssss, damageffss,clientName);
 			//CPrintToChatAll("%t","kills2",PouncesEaten[client]+Smoked[client]+Boomed[client],PouncesEaten[client],Smoked[client],Boomed[client],clientName);
 		}
 		else
@@ -196,8 +200,8 @@ displaykillinfected(team)
 			{
 				if (IsClientConnected(j) && IsClientInGame(j)&& !IsFakeClient(j) && GetClientTeam(j) == team)
 				{
-				CPrintToChat(j,"%T","kills1",j, killss, killssssss, killsss, killssss, damageffss,clientName);
-				//CPrintToChat(j,"%T","kills2",j,PouncesEaten[client]+Smoked[client]+Boomed[client],PouncesEaten[client],Smoked[client],Boomed[client],clientName);
+					CPrintToChat(j,"%T","kills1",j, killss, killssssss, killsss, killssss, damageffss,clientName);
+					//CPrintToChat(j,"%T","kills2",j,PouncesEaten[client]+Smoked[client]+Boomed[client],PouncesEaten[client],Smoked[client],Boomed[client],clientName);
 		
 				}
 			}

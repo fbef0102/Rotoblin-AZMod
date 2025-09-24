@@ -1,3 +1,8 @@
+/**
+ * Smoker伸出舌頭拉人時不會被震或被推
+ * 此插件就是修復這種情況
+ */
+
 #pragma semicolon 1
 #pragma newdecls required
 

@@ -4,91 +4,92 @@
 	Pawn and SMALL are Copyright (C) 1997-2015 ITB CompuPhase.
 	Source is Copyright (C) Valve Corporation.
 	All trademarks are property of their respective owners.
+
 	This program is free software: you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
 	Free Software Foundation, either version 3 of the License, or (at your
 	option) any later version.
+
 	This program is distributed in the hope that it will be useful, but
 	WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 	General Public License for more details.
+
 	You should have received a copy of the GNU General Public License along
 	with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma semicolon 1
+#pragma newdecls required
+
+#include <multicolors>
 #include <sourcemod>
 
-public Plugin:myinfo =
+#define L4D_TEAM_SPECTATOR 1
+
+public Plugin myinfo =
 {
-	name = "Block Trolls",
-	description = "Prevents calling votes while others are loading,L4D1 port by Harry",
-	author = "ProdigySim, CanadaRox, darkid",
-	version = "2.0.1.0",
-	url = "https://github.com/jacob404/Pro-Mod-4.0/releases/latest"
+	name        = "Block Trolls",
+	description = "Prevents calling votes while others are loading",
+	author      = "ProdigySim, CanadaRox, darkid",
+	version     = "2.0.1.2",
+	url         = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
-new bool:g_bBlockCallvote;
-new loadedPlayers = 0;
 
-enum L4DTeam
-{
-	L4DTeam_None = 0,
-	L4DTeam_Spectator,
-	L4DTeam_Survivor,
-	L4DTeam_Infected
-}
+bool g_bBlockCallvote = false;
+int  loadedPlayers 	  = 0;
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	AddCommandListener(Vote_Listener, "callvote");
 	AddCommandListener(Vote_Listener, "vote");
-	AddCommandListener(Vote_Listener, "votes");
-	HookEvent("player_team", OnPlayerJoin);
+	HookEvent("player_team", Event_OnPlayerJoin);
 }
 
-public OnMapStart()
+public void OnMapStart()
 {
 	g_bBlockCallvote = true;
-	loadedPlayers = 0;
-	CreateTimer(40.0, EnableCallvoteTimer);
+	loadedPlayers    = 0;
+	CreateTimer(60.0, EnableCallvoteTimer);
 }
 
-public OnPlayerJoin(Handle:event, String:name[], bool:dontBroadcast)
+void Event_OnPlayerJoin(Event event, char[] name, bool dontBroadcast)
 {
-	if (GetEventInt(event, "oldteam") == 0) {
+	if (event.GetInt("oldteam") == 0)
+	{
 		loadedPlayers++;
-		if (loadedPlayers == 6) g_bBlockCallvote = false;
+
+		if (loadedPlayers == 6)
+			g_bBlockCallvote = false;
 	}
 }
 
-public Action:Vote_Listener(client, const String:command[], argc)
+Action Vote_Listener(int client, const char[] command, int argc)
 {
-	if (g_bBlockCallvote)
+	if (!client)
 	{
-		ReplyToCommand(client,
-				"[SM] Voting is not enabled until 60s into the round");
+		ReplyToCommand(client, "Can not be used by server", LANG_SERVER);
 		return Plugin_Handled;
 	}
-	new L4DTeam:team;
-	if (client && IsClientInGame(client))
-	{	
-		team = L4DTeam:GetClientTeam(client);
-		if(team == L4DTeam_Survivor || team == L4DTeam_Infected)
-			return Plugin_Continue;
-	}
-	ReplyToCommand(client,
-			"[SM] You must be ingame and not a spectator to vote");
-	return Plugin_Handled;
-}
 
-public Action:CallvoteCallback(client, args)
-{
+	if (!IsClientInGame(client))
+		return Plugin_Handled;
+
 	if (g_bBlockCallvote)
 	{
+		CPrintToChat(client, "[SM] Voting is not enabled until 40s into the round");
 		return Plugin_Handled;
 	}
+
+	if (GetClientTeam(client) == L4D_TEAM_SPECTATOR)
+	{
+		CPrintToChat(client, "[SM] You must be ingame and not a spectator to vote");
+		return Plugin_Handled;
+	}
+
 	return Plugin_Continue;
 }
 
-public Action:EnableCallvoteTimer(Handle:timer)
+Action EnableCallvoteTimer(Handle timer)
 {
 	g_bBlockCallvote = false;
 	return Plugin_Stop;

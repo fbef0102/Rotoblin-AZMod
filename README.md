@@ -1,5 +1,5 @@
 # Rotoblin-AZMod
-v8.6.0
+v8.6.1
 <br/>Developer @ 2017-2025 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
@@ -226,7 +226,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Ammo: 480->800
   * Damage Drop-off: 0.84->0.78
   * Reload Speed: 2.23->1.8
-  * Damage: 20->24
+  * Damage: 20->23
   * Limit: 3
   * FF Protect Range: 30
   * FF Protect Interval: 0.3 second
@@ -324,6 +324,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
 * Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
   * e.g. You won't slide on ice surfaces.
+* Change rules of props' move away, moved above props. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules)
 
 - - - -
 ### Gameplay / Balance Changes ###
