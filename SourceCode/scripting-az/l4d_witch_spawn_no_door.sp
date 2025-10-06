@@ -4,8 +4,9 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <left4dhooks>
 
-#define PLUGIN_VERSION			"1.0"
+#define PLUGIN_VERSION			"1.1-2025/10/6"
 #define PLUGIN_NAME			    "l4d_witch_spawn_no_door"
 #define DEBUG 0
 
@@ -83,9 +84,13 @@ Action WitchSpawn_Timer(Handle timer, int witch)
     GetEntPropVector(witch, Prop_Send, "m_vecOrigin", vWitchPos);
     while( (door = FindEntityByClassname(door, "prop_door_rotating")) != -1 )
     {
+        char sTargetName[64];
+        Entity_GetTargetName(door, sTargetName, sizeof sTargetName);
+        if(strlen(sTargetName) > 0) continue;
+
         GetEntPropVector(door, Prop_Send, "m_vecOrigin", vDoorPos);
         MakeVectorFromPoints(vWitchPos, vDoorPos, fVector);
-        if (GetVectorLength(fVector, true) <= 300 * 300)
+        if (GetVectorLength(fVector, true) <= 150 * 150)
         {
             AcceptEntityInput(door, "Break");
         }
@@ -94,3 +99,9 @@ Action WitchSpawn_Timer(Handle timer, int witch)
     return Plugin_Continue;
 }
 
+// function
+
+int Entity_GetTargetName(int entity, char[] buffer, int size)
+{
+	return GetEntPropString(entity, Prop_Data, "m_iName", buffer, size);
+}
