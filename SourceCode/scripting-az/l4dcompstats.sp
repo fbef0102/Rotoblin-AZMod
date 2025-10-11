@@ -356,7 +356,7 @@ public PrintMVPAndTeamStats(iclient)
 	for (i = 0; i < survivor_count; i++)
 	{
 		client = survivor_clients[i];
-		if(g_iMapStats[client][FullSkeets] > MVP_skeetkills)
+		if(g_iMapStats[client][FullSkeets] > MVP_fullskeetkills)
 		{
 			MVP_fullskeetkills = g_iMapStats[client][FullSkeets];
 			MVP_teamskeetkills = g_iMapStats[client][TeamSkeets];
