@@ -2,112 +2,117 @@
 {
 	"1"
 	{
-		"mapinfo"		"l4d_vs_city17_01"
-		"mapname"		"第17號城市 City17"
-	}
-	"2"
-	{
-		"mapinfo"		"l4d_vs_stadium1_apartment"
-		"mapname"		"亡命速決 Suicide Blitz"
-	}
-	"3"
-	{
-		"mapinfo"		"l4d_ihm01_forest"
-		"mapname"		"我恨山 I hate mountain"
-	}
-	"4"
-	{
-		"mapinfo"		"l4d_vs_deadflagblues01_city"
-		"mapname"		"死亡記憶 Dead Flag Blues"
-	}
-	"5"
-	{
-		"mapinfo"		"l4d_dbd_citylights"
-		"mapname"		"活死人黎明 Dead Before Dawn"
-	}
-	"6"
-	{
-		"mapinfo"		"l4d_jsarena01_town"
-		"mapname"		"死亡舞台 The Arena of the Dead"
-	}
-	"7"
-	{
-		"mapinfo"		"l4d_deathaboard01_prison"
-		"mapname"		"幽靈輪船 Death Aboard"
-	}
-	"8"
-	{
-		"mapinfo"		"l4d_149_1"
-		"mapname"		"古墓亡影 One 4 Nine"
-	}
-	"9"
-	{
-		"mapinfo"		"l4d_darkblood01_tanker"
-		"mapname"		"黑血 Dark Blood"
-	}
-	"10"
-	{
-		"mapinfo"		"rombu01"
-		"mapname"		"嗜血豐收啟示錄 Blood Harvest APOCALYPSE"
-	}
-	"11"
-	{
-		"mapinfo"		"l4d_noprecinct01_crash"
-		"mapname"		"84警區 Precinct 84"
-	}
-	"12"
-	{
-		"mapinfo"		"cotd01_apartments_redux"
-		"mapname"		"死亡之城 City of the Dead"
-	}
-	"13"
-	{
-		"mapinfo"		"hotel01_market_two"
-		"mapname"		"死亡渡假飯店 Dead Vacation"
-	}
-	"14"
-	{
-		"mapinfo"		"uz_crash"
-		"mapname"		"亡靈區 Undead Zone"
-	}
-	"15"
-	{
 		"mapinfo"		"c1m1_hotel"
 		"mapname"		"死亡都心 L4D2C1"
 	}
-	"16"
+	"2"
 	{
 		"mapinfo"		"c2m1_highway"
 		"mapname"		"黑色嘉年華 L4D2C2"
 	}
-	"17"
+	"3"
 	{
 		"mapinfo"		"c3m1_plankcountry"
 		"mapname"		"沼澤瘧疾 L4D2C3"
 	}
-	"18"
+	"4"
 	{
 		"mapinfo"		"c4m1_milltown_a"
 		"mapname"		"大雨 L4D2C4"
 	}
-	"19"
+	"5"
 	{
 		"mapinfo"		"c5m1_waterfront"
 		"mapname"		"教區 L4D2C5"
 	}
-	"20"
+	"6"
 	{
 		"mapinfo"		"c6m1_riverbank"
 		"mapname"		"短暫之時 L4D2C6"
 	}
-	"21"
+	"7"
 	{
 		"mapinfo"		"c13m1_alpinecreek"
 		"mapname"		"冷澗溪流 L4D2C13"
 	}
-	"22"
+	"8"
 	{
 		"mapinfo"		"c14m1_junkyard"
 		"mapname"		"最後一刻 L4D2C14"
 	}
+	"9"
+	{
+		"mapinfo"		"l4d_vs_city17_01"
+		"mapname"		"第17號城市 City17"
+	}
+	"10"
+	{
+		"mapinfo"		"l4d_vs_stadium1_apartment"
+		"mapname"		"亡命速決 Suicide Blitz"
+	}
+	"11"
+	{
+		"mapinfo"		"l4d_ihm01_forest"
+		"mapname"		"我恨山 I hate mountain"
+	}
+	"12"
+	{
+		"mapinfo"		"l4d_vs_deadflagblues01_city"
+		"mapname"		"死亡記憶 Dead Flag Blues"
+	}
+	"13"
+	{
+		"mapinfo"		"l4d_dbd_citylights"
+		"mapname"		"活死人黎明 Dead Before Dawn"
+	}
+	"14"
+	{
+		"mapinfo"		"l4d_jsarena01_town"
+		"mapname"		"死亡舞台 The Arena of the Dead"
+	}
+	"14"
+	{
+		"mapinfo"		"l4d_deathaboard01_prison"
+		"mapname"		"幽靈輪船 Death Aboard"
+	}
+	"16"
+	{
+		"mapinfo"		"l4d_149_1"
+		"mapname"		"古墓亡影 One 4 Nine"
+	}
+	"17"
+	{
+		"mapinfo"		"l4d_darkblood01_tanker"
+		"mapname"		"黑血 Dark Blood"
+	}
+	"18"
+	{
+		"mapinfo"		"rombu01"
+		"mapname"		"嗜血豐收啟示錄 Blood Harvest APOCALYPSE"
+	}
+	"19"
+	{
+		"mapinfo"		"l4d_noprecinct01_crash"
+		"mapname"		"84警區 Precinct 84"
+	}
+	"20"
+	{
+		"mapinfo"		"cotd01_apartments_redux"
+		"mapname"		"死亡之城 City of the Dead"
+	}
+	"21"
+	{
+		"mapinfo"		"hotel01_market_two"
+		"mapname"		"死亡渡假飯店 Dead Vacation"
+	}
+	"22"
+	{
+		"mapinfo"		"uz_crash"
+		"mapname"		"亡靈區 Undead Zone"
+	}
+	"23"
+	{
+		"mapinfo"		"re3short_m1"
+		"mapname"		"惡靈古堡3 Resident Evil 3"
+	}	
 }

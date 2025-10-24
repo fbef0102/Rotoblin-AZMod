@@ -89,6 +89,10 @@
 		"Undead Zone"
 		{
 			"cmd" "sm_rcon changelevel uz_crash"
+		}		
+		"Resident Evil 3 Short Versus"
+		{
+			"cmd" "sm_rcon changelevel re3short_m1"
 		}
 		"L4D2C1"
 		{

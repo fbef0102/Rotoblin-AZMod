@@ -1,0 +1,57 @@
+// 伺服器的控制台輸入可以查看所有TempEnts
+sm_print_telist
+
+// 其他遊戲:
+https://wiki.alliedmods.net/Temp_Entity_Lists_(Source)#See_Also
+
+// TempEnts 介紹
+https://wiki.alliedmods.net/TempEnts_(SourceMod_SDKTools)
+
+
+Listing temp entities:
+[00] Bullets (CTEBullets)
+[01] TutorLesson (CTutorLesson)
+[02] PlayerAnimEvent (CTEPlayerAnimEvent)
+[03] World Decal (CTEWorldDecal)
+[04] Sprite Spray (CTESpriteSpray)
+[05] Sprite (CTESprite)
+[06] Sparks (CTESparks)
+[07] Smoke (CTESmoke)
+[08] Show Line (CTEShowLine)
+[09] Projected Decal (CTEProjectedDecal)
+[10] Player Decal (CTEPlayerDecal)
+[11] physicsprop (CTEPhysicsProp)
+[12] MuzzleFlash (CTEMuzzleFlash)
+[13] Large Funnel (CTELargeFunnel)
+[14] KillPlayerAttachments (CTEKillPlayerAttachments)
+[15] Impact (CTEImpact)
+[16] GlowSprite (CTEGlowSprite)
+[17] Surface Shatter (CTEShatterSurface)
+[18] GaussExplosion (CTEGaussExplosion)
+[19] Footprint Decal (CTEFootprintDecal)
+[20] Fizz (CTEFizz)
+[21] Explosion (CTEExplosion)
+[22] Energy Splash (CTEEnergySplash)
+[23] EffectDispatch (CTEEffectDispatch)
+[24] Dynamic Light (CTEDynamicLight)
+[25] Entity Decal (CTEDecal)
+[26] Client Projectile (CTEClientProjectile)
+[27] Bubble Trail (CTEBubbleTrail)
+[28] Bubbles (CTEBubbles)
+[29] BSP Decal (CTEBSPDecal)
+[30] breakmodel (CTEBreakModel)
+[31] Blood Stream (CTEBloodStream)
+[32] Blood Sprite (CTEBloodSprite)
+[33] BeamSpline (CTEBeamSpline)
+[34] BeamRingPoint (CTEBeamRingPoint)
+[35] BeamRing (CTEBeamRing)
+[36] BeamPoints (CTEBeamPoints)
+[37] BeamLaser (CTEBeamLaser)
+[38] BeamFollow (CTEBeamFollow)
+[39] BeamEnts (CTEBeamEnts)
+[40] BeamEntPoint (CTEBeamEntPoint)
+[41] Armor Ricochet (CTEArmorRicochet)
+[42] Metal Sparks (CTEMetalSparks)
+[43] Dust (CTEDust)
+[44] FoundryHelpers (CTEFoundryHelpers)
+45 tempents were found.

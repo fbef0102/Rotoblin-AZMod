@@ -217,6 +217,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 * [Undead Zone](https://www.gamemaps.com/details/31513)
 * [City Of The Dead](https://github.com/fbef0102/Rotoblin-AZMod/releases/tag/Map)
+* [Resident Evil 3 - Short](https://www.gamemaps.com/details/34693)
 
 - - - -
 ### Weapon Adjustments ###

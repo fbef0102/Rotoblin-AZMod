@@ -268,6 +268,7 @@ public OnPluginStart()
 	g_smMapName_ShortToFull.SetString("deadvacation", "Dead Vacation")
 	g_smMapName_ShortToFull.SetString("uz", "Undead Zone")
 	g_smMapName_ShortToFull.SetString("undeadzone", "Undead Zone")
+	g_smMapName_ShortToFull.SetString("re3", "Resident Evil 3")
 
 
 	g_smMapName_FullToCode = new StringMap();
@@ -291,6 +292,7 @@ public OnPluginStart()
 	g_smMapName_FullToCode.SetString("City Of The Dead", "cotd01_apartments_redux")
 	g_smMapName_FullToCode.SetString("Dead Vacation", "hotel01_market_two")
 	g_smMapName_FullToCode.SetString("Undead Zone", "uz_crash")
+	g_smMapName_FullToCode.SetString("Resident Evil 3", "re3short_m1")
 
 	g_smMapName_FullToRequest = new StringMap();
 	g_smMapName_FullToRequest.SetString("No Mercy", "NM")
@@ -313,6 +315,7 @@ public OnPluginStart()
 	g_smMapName_FullToRequest.SetString("City Of The Dead", "COTD")
 	g_smMapName_FullToRequest.SetString("Dead Vacation", "DV")
 	g_smMapName_FullToRequest.SetString("Undead Zone", "UZ")
+	g_smMapName_FullToRequest.SetString("Resident Evil 3", "RE3")
 }
 
 public void ChangeVars(ConVar convar, const char[] oldValue, const char[] newValue)
