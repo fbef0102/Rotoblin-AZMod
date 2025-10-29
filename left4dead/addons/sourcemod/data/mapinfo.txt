@@ -1840,12 +1840,22 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"one way drop"
+			{
+				"min"		"69"
+				"max"		"74"
+			}
+		}
 	}	
 	
 	"re3short_m3"
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
 	}	
 	
 	"re3short_m4"
