@@ -3111,5 +3111,10 @@
 	{
 		"en"		"Myself"
 		"zho"		"自己"
+	}		
+	"Pause_1"
+	{
+		"en"		"[{green}Pause{default}] {olive}%N {default}has fully loaded"
+		"zho"		"[{green}Pause{default}] {olive}%N {default}已加載入伺服器"
 	}	
 }

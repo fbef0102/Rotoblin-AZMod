@@ -64,6 +64,7 @@ ConVar hBoatSmashPiecesDamage;
 ConVar hConcretePillerPiecesDamage;
 ConVar hDiescraperBallDamage;
 ConVar hVanDamage;
+ConVar hPalletBarrelsDamage;
 ConVar hStandardIncapDamage;
 ConVar hTankSelfDamage;
 ConVar hOverHitInterval;
@@ -195,6 +196,9 @@ public OnPluginStart()
 											FCVAR_NONE, true, 0.0, true, 300.0 );
 	hVanDamage				= CreateConVar( "hc_van_standing_damage",	"100.0",
 											"Damage of hittable van on Detour Ahead map 2 to non-incapped survivors.",
+											FCVAR_NONE, true, 0.0, true, 300.0 );
+	hPalletBarrelsDamage	= CreateConVar( "hc_pallet_barrels_standing_damage",	"100.0",
+											"Damage of hittable pallet barrels on Resident Evil map 4 to non-incapped survivors.",
 											FCVAR_NONE, true, 0.0, true, 300.0 );
 	hStandardIncapDamage	= CreateConVar( "hc_incap_standard_damage",		"-2",
 											"Damage of all hittables to incapped players. -1 will have incap damage default to valve's standard incoherent damages. -2 will have incap damage default to each hittable's corresponding standing damage.",
@@ -874,7 +878,11 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 			{
 				damage = hBaggageStandingDamage.FloatValue;
 			}
-			
+			else if (StrEqual(sModelName, "models/props/de_train/pallet_barrels.mdl", false))
+			{
+				damage = hPalletBarrelsDamage.FloatValue;
+			}
+
 			// Use standard damage on gauntlet finales
 			if (g_bGauntletFinaleMap)
 			{

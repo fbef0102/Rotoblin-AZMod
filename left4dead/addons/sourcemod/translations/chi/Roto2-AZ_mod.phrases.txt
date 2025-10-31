@@ -2323,4 +2323,8 @@
 	{
 		"chi"		"自己"
 	}	
+	"Pause_1"
+	{
+		"chi"		"[{green}Pause{default}] {olive}%N {default}已加载入服务器"
+	}	
 }
