@@ -892,11 +892,6 @@ Map = 地圖難度修改
 -!speaklist		//提示目前有哪些玩家使用麥克風語音 (提示位於螢幕正中央小小的字幕)
 -!voteboss <tank> <witch>		 //改變Tank與Witch的路程 (限第一回合Ready期間)
 -!setscores <survs> <inf> //設定隊伍的分數，<survs>: 倖存陣營, inf: 特感陣營 (限Ready期間)
--!top5 			//前五名空爆Skeet高手
--!skeets 		//顯示你的Skeet排名
--!rank 			//顯示你的Skeet數量統計與高撲數量統計
--!pounce5 		//前五名Hunter高撲大佬
--!pounces		//顯示你的高撲排名
 -!lang			//顯示你在這伺服器中會看到的語言
 -!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //隱藏的Ready頭上獎盃 (限Ready期間)
 -!load(!mode,!match)	//投票載入模式
@@ -933,3 +928,4 @@ Map = 地圖難度修改
 * cotd (City Of The Dead)
 * dv (Dead Vacation)
 * uz (Undead Zone)
+* re3 (Resident Evil 3)

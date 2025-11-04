@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "1.6"
+#define PLUGIN_VERSION "1.7-2025/11/4"
 
 #pragma semicolon 1
 
@@ -11,7 +11,7 @@ public Plugin:myinfo =
 {
 	name = "[L4D] Tank Attack Control",
 	author = "vintik, raziEiL [disawar1], Harry Potter",
-	description = "",
+	description = "change tank punch or throw rock animation",
 	version = PLUGIN_VERSION,
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
@@ -32,6 +32,9 @@ static		g_iCvarPunchControl, Float:g_fCvarPunchDelay, Float:g_fCvarThrowDelay, b
 			bool:g_bPunchBlock[MAXPLAYERS+1], bool:g_bThrowBlock[MAXPLAYERS+1];
 static		bool:g_bCvar1v1Mode;
 
+bool 
+	g_bBrokenPlayer[MAXPLAYERS+1];
+
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
@@ -39,7 +42,7 @@ public OnPluginStart()
 	new Handle:hCvarPunchDelay = FindConVar("z_tank_attack_interval");
 	new Handle:hCvarThrowDelay = FindConVar("z_tank_throw_interval");
 
-	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "2", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
+	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "0", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
 
 	g_iCvarPunchControl = GetConVarInt(hCvarPunchControl);
 	g_fCvarPunchDelay = GetConVarFloat(hCvarPunchDelay);
@@ -69,6 +72,22 @@ public TAC_OnPunchDelayCvarChange(Handle:convar_hndl, const String:oldValue[], c
 public TAC_OnThrowDealyCvarChange(Handle:convar_hndl, const String:oldValue[], const String:newValue[])
 {
 	g_fCvarThrowDelay = GetConVarFloat(convar_hndl);
+}
+
+public void OnClientPostAdminCheck(int client)
+{
+	g_bBrokenPlayer[client] = false;
+	
+	static char cmpSteamId[32];
+	GetClientAuthId(client, AuthId_SteamID64, cmpSteamId, sizeof(cmpSteamId));
+	if (StrEqual(cmpSteamId, "76561198020896967") //for JJ,小文 who has problem with keyboard
+		|| StrEqual(cmpSteamId, "76561198308064273")) 
+		g_bBrokenPlayer[client] = true;
+}
+
+public void OnClientDisconnect(int client)
+{
+	g_bBrokenPlayer[client] = false;
 }
 
 public Action:TAC_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
@@ -135,32 +154,32 @@ public Action:OnPlayerRunCmd(client, &buttons)
 {
 	if (!g_bTankInGame || !buttons || GetClientTeam(client) != 3 || IsFakeClient(client) || !IsPlayerTank(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
-		
 
 	if(buttons & IN_ATTACK2)
 	{
-		if(unlock_play_list(client)) return Plugin_Continue;
+		if(g_bBrokenPlayer[client]) return Plugin_Continue;
 
 		g_seqQueuedThrow[client] = OneOverhand;
 	}
 	else if (buttons & IN_USE)
 	{
-		if(unlock_play_list(client)) return Plugin_Continue;
-
+		if(g_bBrokenPlayer[client]) return Plugin_Continue;
+		
 		g_seqQueuedThrow[client] = Underhand;
 		buttons |= IN_ATTACK2;
 	}
 	else if (buttons & IN_RELOAD)
 	{
-		if(unlock_play_list(client)) return Plugin_Continue;
-		
+		if(g_bBrokenPlayer[client]) return Plugin_Continue;
+
 		g_seqQueuedThrow[client] = TwoOverhand;
 		buttons |= IN_ATTACK2;
 	}
-	else if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK)){
-
-		if (g_iCvarPunchControl == 1){
-
+	
+	if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK))
+	{
+		if (g_iCvarPunchControl == 1)
+		{
 			if (buttons & IN_USE)
 				g_seqQueuedThrow[client] = LeftHook;
 			else if (buttons & IN_RELOAD)
@@ -168,8 +187,10 @@ public Action:OnPlayerRunCmd(client, &buttons)
 			else
 				g_seqQueuedThrow[client] = RightHook;
 		}
-		else
+		else if (g_iCvarPunchControl == 2)
+		{
 			g_seqQueuedThrow[client] = RightHook;
+		}
 	}
 	
 	return Plugin_Continue;
@@ -177,15 +198,16 @@ public Action:OnPlayerRunCmd(client, &buttons)
 
 public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 {
-	if (g_seqQueuedThrow[client] != Null){
-
-		if (sequence > _:Throw){ // throw
+	if (g_seqQueuedThrow[client] != Null)
+	{
+		if (sequence > _:Throw) // throw
+		{ 
 			if(unlock_play_list(client)) return Plugin_Continue;
 
-			if (g_seqQueuedThrow[client] > Throw){
-
-				if (!g_bThrowBlock[client]){
-
+			if (g_seqQueuedThrow[client] > Throw)
+			{
+				if (!g_bThrowBlock[client])
+				{
 					g_bThrowBlock[client] = true;
 					CreateTimer(g_fCvarThrowDelay, TAC_t_UnlockThrowControl, client);
 				}
@@ -194,10 +216,10 @@ public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 				return Plugin_Handled;
 			}
 		}
-		else if (g_iCvarPunchControl && g_seqQueuedThrow[client] < Throw){ // punch
-
-			if (!g_bPunchBlock[client]){
-
+		else if (g_iCvarPunchControl && g_seqQueuedThrow[client] < Throw) // punch
+		{ 
+			if (!g_bPunchBlock[client])
+			{
 				g_bPunchBlock[client] = true;
 				CreateTimer(g_fCvarPunchDelay, TAC_t_UnlockPunchControl, client);
 			}

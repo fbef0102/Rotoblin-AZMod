@@ -216,7 +216,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Precinct 84](https://www.gamemaps.com/details/27737)
 * [Dead Vacation](https://www.gamemaps.com/details/30523)
 * [Undead Zone](https://www.gamemaps.com/details/31513)
-* [City Of The Dead](https://github.com/fbef0102/Rotoblin-AZMod/releases/tag/Map)
+* [City Of The Dead](https://www.gamemaps.com/details/34809)
 * [Resident Evil 3 - Short](https://www.gamemaps.com/details/34693)
 
 - - - -
@@ -406,7 +406,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Show tank hud for Infected team
     * Players cannot shove tanks.
     * Passing control to AI tank will no longer be rewarded with an instant respawn
-    * Remove random punches animation, now always right hook.
+    * <s>Remove random punches animation, now always right hook.</s>
     * Tanks can use Secondary Attack, Use, and Reload Buttons to throw rocks.
 	  - *(MOUSE2)*: **One handed overhand**
 	  - *(E)*: **Underhand**
