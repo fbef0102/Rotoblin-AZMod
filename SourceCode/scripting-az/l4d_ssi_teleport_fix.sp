@@ -20,12 +20,10 @@ ConVar g_hTeleLimit;
 ConVar g_hBoomer2Tank;
 ConVar g_hGodTime;
 ConVar g_hTeleCoolDownTime;
-ConVar g_hTeleVisibleThreats;
 
-bool GodTime[MAXPLAYERS + 1] = {false};
+bool GodTime[MAXPLAYERS + 1], ge_bInvalidTrace[2048+1];
 bool g_bRoundAlive;
 bool g_bBoomer2Tank;
-bool g_bTeleVisibleThreats;
 float g_fGodTime;
 float g_fCheckinterval;
 float g_fTeleCoolDownTime;
@@ -70,7 +68,6 @@ public void OnPluginStart()
 	g_hBoomer2Tank 		= CreateConVar("ssitp_boomer2tank", 		"0", 	"Teleport boomer to tank?", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hGodTime			= CreateConVar("ssitp_tp1_god_time",		"0.6",	"Prevent SI from taking damage for this seconds after being teleported. (0=Disable)", FCVAR_NOTIFY, true, 0.0);
 	g_hTeleCoolDownTime	= CreateConVar("ssitp_tp1_cooltime",		"5.0",	"Cold Down Time in seconds an infected can not be teleported again.", FCVAR_NOTIFY, true, 0.0);
-	g_hTeleVisibleThreats= CreateConVar("ssitp_tp2_visiblethreats",	"0",	"If 1, infected players can be teleported to the player thats about to be seen by the survivors.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
 	HookEvent("round_end", 		Event_RoundEnd, 	EventHookMode_PostNoCopy);
@@ -86,10 +83,9 @@ public void OnPluginStart()
 	g_hTeleRangeMax.AddChangeHook(ConVarChanged_Cvars);
 	g_hDiscardRange.AddChangeHook(ConVarChanged_Cvars);
 	g_hTeleCoolDownTime.AddChangeHook(ConVarChanged_Cvars);
-	g_hTeleVisibleThreats.AddChangeHook(ConVarChanged_Cvars);
 }
 
-public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
 }
@@ -104,10 +100,48 @@ void GetCvars()
 	g_maxRange 			= g_hTeleRangeMax.FloatValue;
 	g_DiscardRange		= g_hDiscardRange.FloatValue;
 	g_fTeleCoolDownTime = g_hTeleCoolDownTime.FloatValue;
-	g_bTeleVisibleThreats = g_hTeleVisibleThreats.BoolValue;
 }
 
-public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (!IsValidEntityIndex(entity))
+		return;
+		
+	switch (classname[0])
+	{
+		case 't':
+		{
+			if (StrEqual(classname, "tank_rock"))
+				ge_bInvalidTrace[entity] = true;
+		}
+		case 'i':
+		{
+			if (StrEqual(classname, "infected"))
+				ge_bInvalidTrace[entity] = true;
+		}
+		case 'w':
+		{
+			if (StrEqual(classname, "witch"))
+				ge_bInvalidTrace[entity] = true;
+		}
+		case 'e':
+		{
+			if (StrEqual(classname, "env_physics_blocker") 
+				|| StrEqual(classname, "env_player_blocker"))
+				ge_bInvalidTrace[entity] = true;
+		}
+	}
+}
+
+public void OnEntityDestroyed(int entity)
+{
+	if (!IsValidEntityIndex(entity))
+		return;
+
+	ge_bInvalidTrace[entity] = false;
+}
+
+void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
@@ -115,7 +149,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	g_fClientTeleTime[client] = 0.0;
 }
 
-public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundAlive = false;
 
@@ -125,18 +159,18 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundAlive = false;
 }
 
-public void LeftStartAreaEvent(Event event, const char[] name, bool dontBroadcast)
+void LeftStartAreaEvent(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bRoundAlive 		= true;
 	CreateTimer(g_fCheckinterval,Timer_CheckNoobSi, _, TIMER_REPEAT);
 }	
 
-public Action Timer_CheckNoobSi(Handle timer)
+Action Timer_CheckNoobSi(Handle timer)
 {
 	int index = FindSI2Tele();
 	int teammate = FindSItele2();
@@ -166,7 +200,7 @@ public Action Timer_CheckNoobSi(Handle timer)
 	return Plugin_Continue;
 }
 
-public Action Timer_RemoveGod(Handle timer, any client)
+Action Timer_RemoveGod(Handle timer, any client)
 {
 	GodTime[client] = false;
 	ResetGlow(client);
@@ -183,7 +217,7 @@ public void OnClientDisconnect(int client)
     SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
 	if(IsClientInGame(victim) && IsFakeClient(victim) && GodTime[victim])
 	{
@@ -192,10 +226,6 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	}
 	return Plugin_Continue;
 }
-
-/**********************************************************
-stocks
-**********************************************************/
 
 void SetInGodTime(int client)
 {
@@ -224,6 +254,8 @@ bool CanBeTP(int client) //要被傳送的玩家
 	if (GetClientTeam(client) != 3 || !IsPlayerAlive(client))return false;
 	if (GetInfectedClass(client) == L4DInfected_Tank )return false;
 	if (L4D_GetSurvivorVictim(client) != -1) return false; //正在控人類
+	if (!(GetEntProp(client, Prop_Send, "m_fFlags") & FL_ONGROUND)) return false; //不在地面上
+	if (L4D_IsPlayerStaggering(client)) return false; //硬質中
 	if (CanBeSeenBySurvivors(client)) return false;
 	return true;
 }
@@ -233,8 +265,9 @@ bool CanTP2(int client) //傳送目的地的玩家
 	if(!IsClientInGame(client)) return false;
 	if(GetClientTeam(client) != 3 || !IsPlayerAlive(client)) return false;
 	if(IsPlayerGhost(client)) return false;
-	//if(L4D_GetSurvivorVictim(client) != -1) return false; //正在控人類
-	if(!g_bTeleVisibleThreats && CanBeSeenBySurvivors(client)) return false; //在人類視野範圍內
+	if(L4D_GetSurvivorVictim(client) != -1) return false; //正在控人類
+	if(!(GetEntProp(client, Prop_Send, "m_fFlags") & FL_ONGROUND)) return false; //不在地面上
+	if(CanBeSeenBySurvivors(client)) return false; //在人類視野範圍內
 	
 	return true;
 }
@@ -374,72 +407,20 @@ stock int L4D_GetSurvivorVictim(int client)
 	return -1;
 }
 
-static bool IsVisibleTo(int player1, int player2)
-{
-	// check FOV first
-	// if his origin is not within a 60 degree cone in front of us, no need to raytracing.
-	float pos1_eye[3], pos2_eye[3], eye_angle[3], vec_diff[3], vec_forward[3];
-	GetClientEyePosition(player1, pos1_eye);
-	GetClientEyeAngles(player1, eye_angle);
-	GetClientEyePosition(player2, pos2_eye);
-	MakeVectorFromPoints(pos1_eye, pos2_eye, vec_diff);
-	NormalizeVector(vec_diff, vec_diff);
-	GetAngleVectors(eye_angle, vec_forward, NULL_VECTOR, NULL_VECTOR);
-	if (GetVectorDotProduct(vec_forward, vec_diff) < 0.5) // cos 60
-	{
-		return false;
-	}
-
-	// in FOV
-	Handle hTrace;
-	bool ret = false;
-	float pos2_feet[3], pos2_chest[3];
-	GetClientAbsOrigin(player2, pos2_feet);
-	pos2_chest[0] = pos2_feet[0];
-	pos2_chest[1] = pos2_feet[1];
-	pos2_chest[2] = pos2_feet[2] + 45.0;
-
-	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_eye, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
-	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
-	{
-		CloseHandle(hTrace);
-		return true;
-	}
-	CloseHandle(hTrace);
-
-	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_feet, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
-	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
-	{
-		CloseHandle(hTrace);
-		return true;
-	}
-	CloseHandle(hTrace);
-
-	hTrace = TR_TraceRayFilterEx(pos1_eye, pos2_chest, MASK_VISIBLE, RayType_EndPoint, TraceFilter, player1);
-	if (!TR_DidHit(hTrace) || TR_GetEntityIndex(hTrace) == player2)
-	{
-		CloseHandle(hTrace);
-		return true;
-	}
-	CloseHandle(hTrace);
-
-	return ret;
-}
-
-static bool TraceFilter(int entity, int mask, int self)
-{
-	return entity != self;
-}
-
 bool CanBeSeenBySurvivors(int infected)
 {
+	if(GetEntProp(infected, Prop_Send, "m_hasVisibleThreats")) return true;
+
+	float vClientEyePos[3];
+	GetClientEyePosition(infected, vClientEyePos);
 	for (int client = 1; client <= MaxClients; ++client)
 	{
-		if (IsAliveSurvivor(client) && IsVisibleTo(client, infected))
+		if (IsAliveSurvivor(client) && IsVisibleToPlayer(vClientEyePos, client))
 		{
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -448,4 +429,65 @@ bool IsAliveSurvivor(int client)
     return IsClientInGame(client)
         && GetClientTeam(client) == 2
         && IsPlayerAlive(client);
+}
+
+float  g_fVPlayerMins[3] = {-16.0, -16.0,  0.0};
+float  g_fVPlayerMaxs[3] = { 16.0,  16.0, 71.0};
+bool IsVisibleToPlayer(float vClientEyePos[3], int target)
+{
+    float vTargetPos[3];
+    float vLookAt[3];
+    float vAng[3];
+
+    GetClientEyePosition(target, vTargetPos);
+    MakeVectorFromPoints(vClientEyePos, vTargetPos, vLookAt);
+    GetVectorAngles(vLookAt, vAng);
+
+    Handle trace = TR_TraceRayFilterEx(vClientEyePos, vAng, MASK_VISIBLE, RayType_Infinite, TraceFilter_VisibleToPlayer, target);
+
+    bool isVisible;
+
+    if (TR_DidHit(trace))
+    {
+        isVisible = (TR_GetEntityIndex(trace) == target);
+
+        if (!isVisible)
+        {
+            vTargetPos[2] -= 62.0; // results the same as GetClientAbsOrigin
+
+            delete trace;
+            trace = TR_TraceHullFilterEx(vClientEyePos, vTargetPos, g_fVPlayerMins, g_fVPlayerMaxs, MASK_VISIBLE, TraceFilter_VisibleToPlayer, target);
+
+            if (TR_DidHit(trace))
+                isVisible = (TR_GetEntityIndex(trace) == target);
+        }
+    }
+
+    delete trace;
+
+    return isVisible;
+}
+
+bool TraceFilter_VisibleToPlayer(int entity, int contentsMask, int player)
+{
+    if (entity == player)
+        return true;
+
+    if (IsValidClientIndex(entity))
+        return false;
+
+    if (!IsValidEntityIndex(entity) )
+        return false;
+
+    return ge_bInvalidTrace[entity] ? false : true;
+}
+
+bool IsValidClientIndex(int client)
+{
+    return (1 <= client <= MaxClients);
+}
+
+bool IsValidEntityIndex(int entity)
+{
+	return (MaxClients + 1 <= entity <= GetMaxEntities());
 }

@@ -49,9 +49,13 @@ void FinaleEnd_Event(Event event, const char[] name, bool dontBroadcast)
 
 Action SurvivorOnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-    if (!IsClientInGame(victim) || GetClientTeam(victim) != 2) return Plugin_Continue;
+	if (!IsClientInGame(victim) || GetClientTeam(victim) != 2)
+	{
+		SDKUnhook(victim, SDKHook_OnTakeDamage, SurvivorOnTakeDamage);
+		return Plugin_Continue;
+	}
 
-    return Plugin_Handled;
+	return Plugin_Handled;
 }
 
 bool IsPlayerIncap(int client)

@@ -1536,6 +1536,8 @@ public Action:eventPlayerHurt(Handle:event, const String:name[], bool:dontBroadc
 	new player = GetClientOfUserId(GetEventInt(event, "userid"));
 	new health = GetEventInt(event, "health");
 	new dmg_health = GetEventInt(event, "dmg_health");
+
+	if(!player || !IsClientInGame(player) || GetClientTeam(player) != L4D_TEAM_SURVIVOR) return;
 	
 	#if READY_DEBUG
 	new String:curname[128];
@@ -2955,7 +2957,7 @@ RoundIsLive()
 	{
 		if(!IsClientInGame(i)) continue;
 
-		if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
+		//if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
 
 		SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
 		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);

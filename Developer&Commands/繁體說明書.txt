@@ -781,8 +781,8 @@
 [217] l4d2_tank_spawn_antirock_protect
 //剛拿到Tank的玩家短時間內不能丟石頭 (避免按錯右鍵)
 
-[218] l4d_witch_spawn_no_door
-//Witch復活時, 周圍的門全部破壞 (避免Witch被門弄到失去目標)
+[218] l4d_witch_fix_startle_by_door
+//避免Witch被門弄到失去目標
 
 [219] l4d_start_safe_area
 //遊戲開局時，強制將出生點周圍區域判定為安全區，以確保玩家安全
