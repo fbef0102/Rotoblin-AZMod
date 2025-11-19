@@ -221,13 +221,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Weapon Adjustments ###
-* **Uzi** (based on Acemod/Zonemod)
+* **Uzi** (Based on Acemod/Zonemod)
   * Still Spread: 0.32->0.22
   * Moveing Spread: 3.0->2.0
   * Ammo: 480->800
   * Damage Drop-off: 0.84->0.78
-  * Reload Speed: 2.23->1.8
-  * Damage: 20->23
+  * Reload Speed: 2.23s->1.9s
+  * Magazine Quick Reload: 1.43s
+  * Damage: 20->24
   * Limit: 3
   * FF Protect Range: 30
   * FF Protect Interval: 0.3 second
@@ -240,12 +241,21 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * FF DMG: 1~10
 
 * **Pistol**
+  * Reload Speed: Unchanged
+  * Magazine Quick Reload: 1.5s
+  * FF Protect Range: 25
+  * FF Protect Interval: 0.3 second
+
+* **Dual Pistol**
+  * Reload Speed: Unchanged
+  * Magazine Quick Reload: 2.1s
   * FF Protect Range: 25
   * FF Protect Interval: 0.3 second
 
 * **Hunting Rifle**
   * Empty Reload Time: 1->1.25
   * Normal Reload Time: 1 (unchanged)
+  * Magazine Quick Reload: 2.6s
   * Pickup Time: 1 (unchanged)
   * Swtich Time: 1 -> 1.8
   * Rate of fire: 1->0.2

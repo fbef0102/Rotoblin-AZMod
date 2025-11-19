@@ -238,7 +238,7 @@ public OnPluginStart()
 									"Additional godframe time before common damage is allowed.",
 									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//官方預設2秒
-	hHunter = CreateConVar( 	"gfc_hunter_duration", "1.8",
+	hHunter = CreateConVar( 	"gfc_hunter_duration", "1.5",
 									"How long should godframes after a pounce last?",
 									FCVAR_NOTIFY, true, 0.0, true, 3.0 );
 	//官方預設2秒
