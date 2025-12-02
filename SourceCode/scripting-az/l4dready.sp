@@ -22,7 +22,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.6.1"
+#define READY_VERSION "8.6.2"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -2957,7 +2957,7 @@ RoundIsLive()
 	{
 		if(!IsClientInGame(i)) continue;
 
-		//if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
+		if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
 
 		SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
 		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
