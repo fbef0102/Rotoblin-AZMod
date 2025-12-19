@@ -218,6 +218,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Undead Zone](https://www.gamemaps.com/details/31513)
 * [City Of The Dead](https://www.gamemaps.com/details/34809)
 * [Resident Evil 3 - Short](https://www.gamemaps.com/details/34693)
+* [Dark Wood](https://www.gamemaps.com/details/32164)
 
 - - - -
 ### Weapon Adjustments ###
@@ -416,7 +417,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Show tank hud for Infected team
     * Players cannot shove tanks.
     * Passing control to AI tank will no longer be rewarded with an instant respawn
-    * <s>Remove random punches animation, now always right hook.</s>
+    * Remove random punches animation, now force right hook only. (AI Tank + Real Tank player)
     * Tanks can use Secondary Attack, Use, and Reload Buttons to throw rocks.
 	  - *(MOUSE2)*: **One handed overhand**
 	  - *(E)*: **Underhand**

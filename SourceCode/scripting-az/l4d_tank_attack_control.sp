@@ -42,7 +42,7 @@ public OnPluginStart()
 	new Handle:hCvarPunchDelay = FindConVar("z_tank_attack_interval");
 	new Handle:hCvarThrowDelay = FindConVar("z_tank_throw_interval");
 
-	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "0", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
+	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "1", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
 
 	g_iCvarPunchControl = GetConVarInt(hCvarPunchControl);
 	g_fCvarPunchDelay = GetConVarFloat(hCvarPunchDelay);
@@ -152,7 +152,7 @@ public Action:TAC_t_Instruction(Handle:timer)
 
 public Action:OnPlayerRunCmd(client, &buttons)
 {
-	if (!g_bTankInGame || !buttons || GetClientTeam(client) != 3 || IsFakeClient(client) || !IsPlayerTank(client) || !IsPlayerAlive(client))
+	if (!g_bTankInGame || !buttons || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 
 	if(buttons & IN_ATTACK2)
@@ -202,8 +202,6 @@ public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 	{
 		if (sequence > _:Throw) // throw
 		{ 
-			if(unlock_play_list(client)) return Plugin_Continue;
-
 			if (g_seqQueuedThrow[client] > Throw)
 			{
 				if (!g_bThrowBlock[client])
@@ -240,14 +238,4 @@ public Action:TAC_t_UnlockThrowControl(Handle:timer, any:client)
 public Action:TAC_t_UnlockPunchControl(Handle:timer, any:client)
 {
 	g_bPunchBlock[client] = false;
-}
-
-stock unlock_play_list(client)
-{
-	static char cmpSteamId[32];
-	GetClientAuthId(client, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId));
-	if (StrEqual("STEAM_1:1:30315619", cmpSteamId)||StrEqual("STEAM_1:1:173899272", cmpSteamId)) //for JJ,小文 who has problem with keyboard
-		return true;
-		
-	return false;
 }

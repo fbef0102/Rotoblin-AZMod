@@ -1198,6 +1198,14 @@
 		"VersusModifier"		"1.6"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
+		"tank_ban_flow"
+		{
+			"End of the map"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_deathaboard05_light"
 	{
@@ -1856,6 +1864,14 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"bridge"
+			{
+				"min"		"88"
+				"max"		"100"
+			}
+		}
 	}	
 	
 	"re3short_m4"
@@ -1870,6 +1886,92 @@
 			{
 				"min"		"50"
 				"max"		"100"
+			}
+		}
+	}
+
+	"dw1_woods"
+	{
+		"pill_limit" "3"
+		"VersusModifier"		"1.0"
+		"WaterSlowDown_map" 	"1"
+	}
+
+	"dw2_underground"
+	{
+		"pill_limit" "3"
+		"VersusModifier"		"1.3"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"1st On Way Drop"
+			{
+				"min"		"16"
+				"max"		"20"
+			}
+			"2nd On Way Drop + Alarm Door"
+			{
+				"min"		"30"
+				"max"		"50"
+			}
+			"3rd On Way Drop"
+			{
+				"min"		"81"
+				"max"		"83"
+			}
+		}
+	}
+
+	"dw3_complex"
+	{
+		"pill_limit" "3"
+		"VersusModifier"		"1.4"
+		"tank_ban_flow"
+		{
+			"Map NAV sucks"
+			{
+				"min"		"30"
+				"max"		"61"
+			}
+			"The End"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
+		}
+	}
+
+	"dw4_otherworld"
+	{
+		"pill_limit" "3"
+		"VersusModifier"		"1.5"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"Evelator"
+			{
+				"min"		"0"
+				"max"		"35"
+			}
+			"Map Nav Sucks"
+			{
+				"min"		"76"
+				"max"		"100"
+			}
+		}
+	}
+
+	"dw5_final"
+	{
+		"pill_limit" "2"
+		"VersusModifier"		"2.0"
+		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"One way drop"
+			{
+				"min"		"0"
+				"max"		"40"
 			}
 		}
 	}

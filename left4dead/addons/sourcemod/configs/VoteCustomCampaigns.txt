@@ -114,5 +114,10 @@
 	{
 		"mapinfo"		"re3short_m1"
 		"mapname"		"惡靈古堡3 Resident Evil 3"
+	}		
+	"24"
+	{
+		"mapinfo"		"dw1_woods"
+		"mapname"		"陰暗森林 Dark Wood"
 	}	
 }
