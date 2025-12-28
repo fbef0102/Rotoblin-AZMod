@@ -932,7 +932,7 @@
 	}
 	"l4d_vs_deadflagblues01_city"
 	{
-		"pill_limit" "1"
+		"pill_limit" "2"
 		"VersusModifier"		"1.0"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"160.0"
@@ -973,7 +973,7 @@
 	}
 	"l4d_vs_deadflagblues03_arena"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
@@ -1053,7 +1053,7 @@
 	}
 	"l4d_vs_stadium4_city2"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.6"
 		"tank_ban_flow"
 		{
@@ -1158,7 +1158,7 @@
 	}
 	"l4d_dbd_clean_up"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.6"
 	}
 	"l4d_dbd_new_dawn"
@@ -1390,7 +1390,7 @@
 	}
 	"l4d_149_4"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.7"
 		"tank_ban_flow"
 		{
@@ -1439,7 +1439,7 @@
 	}
 	"l4d_darkblood02_engine"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
@@ -1548,7 +1548,7 @@
 	}
 	"l4d_noprecinct01_crash"
 	{
-		"pill_limit" "1"
+		"pill_limit" "2"
 		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
@@ -1567,7 +1567,7 @@
 	}
 	"l4d_noprecinct03_clubd"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
@@ -1652,7 +1652,7 @@
 	}
 	"cotd04_mall_redux"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
@@ -1726,7 +1726,7 @@
 	}
 	"hotel04_scaling_two"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
@@ -1818,7 +1818,7 @@
 	}
 	"uz_bunker"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.6"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
