@@ -6,7 +6,6 @@
 #include <multicolors>
 
 int lastHumanTankId;
-native void SetClientDeathCam(int client); // from nodeathcamskip.smx
 
 public Plugin myinfo =
 {
@@ -58,7 +57,6 @@ public Action L4D_OnEnterGhostStatePre(int client)
 	{
 		lastHumanTankId = 0;
 		L4D_State_Transition(client, STATE_DEATH_ANIM);
-		SetClientDeathCam(client); //Block player skipping death cam
 
 		static char lastHumanTank_Name[128];
 		GetClientName(client, lastHumanTank_Name, 128);
