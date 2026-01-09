@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "1.7-2025/11/4"
+#define PLUGIN_VERSION "1.8-2026/1/7"
 
 #pragma semicolon 1
 
@@ -7,16 +7,29 @@
 #include <l4d_lib>
 #include <multicolors>
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "[L4D] Tank Attack Control",
-	author = "vintik, raziEiL [disawar1], Harry Potter",
+	author = "vintik, raziEiL [disawar1],CanadaRox, Jacob, Visor, Forgetest, Harry Potter",
 	description = "change tank punch or throw rock animation",
 	version = PLUGIN_VERSION,
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
-enum Seq
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	return APLRes_Success;
+}
+
+enum
 {
 	Null = 0,
 	UpperHook = 38,
@@ -28,50 +41,46 @@ enum Seq
 	TwoOverhand //49 - 2handed overhand (R)
 }
 
-static		g_iCvarPunchControl, Float:g_fCvarPunchDelay, Float:g_fCvarThrowDelay, bool:g_bTankInGame, Seq:g_seqQueuedThrow[MAXPLAYERS+1],
-			bool:g_bPunchBlock[MAXPLAYERS+1], bool:g_bThrowBlock[MAXPLAYERS+1];
-static		bool:g_bCvar1v1Mode;
+ConVar hCvarPunchControl;
+int g_iCvarPunchControl;
+
+int 
+	g_iQueuedThrow[MAXPLAYERS + 1],
+	g_iQueuedPunch[MAXPLAYERS + 1];
 
 bool 
-	g_bBrokenPlayer[MAXPLAYERS+1];
+	g_bBrokenPlayer[MAXPLAYERS+1],
+	g_bQueuedCommandThrow[MAXPLAYERS+1];
 
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	new Handle:hCvarSurvLimit			= FindConVar("survivor_limit");
-	new Handle:hCvarPunchDelay = FindConVar("z_tank_attack_interval");
-	new Handle:hCvarThrowDelay = FindConVar("z_tank_throw_interval");
 
-	new Handle:hCvarPunchControl = CreateConVar("tank_attack_punch_control", "1", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
+	hCvarPunchControl = CreateConVar("tank_attack_punch_control", "1", "0: Valve random punch animation, 1: Force right hook punch animation and bind them to MOUSE1+E/R buttons, 2: Force right hook punch animation but dont bind buttons.", _, true, 0.0, true, 2.0);
 
-	g_iCvarPunchControl = GetConVarInt(hCvarPunchControl);
-	g_fCvarPunchDelay = GetConVarFloat(hCvarPunchDelay);
-	g_fCvarThrowDelay = GetConVarFloat(hCvarThrowDelay);
-	g_bCvar1v1Mode	= GetConVarInt(hCvarSurvLimit) == 1 ? true : false;	
+	GetCvars();
+	hCvarPunchControl.AddChangeHook(ConVarChanged_Cvars);
 	
-	HookConVarChange(hCvarPunchControl, TAC_OnPunchCvarChange);
-	HookConVarChange(hCvarPunchDelay, TAC_OnPunchDelayCvarChange);
-	HookConVarChange(hCvarThrowDelay, TAC_OnThrowDealyCvarChange);
+	HookEvent("tank_spawn", TankSpawn_Event, EventHookMode_Post);
 
-	HookEvent("tank_spawn", TAC_ev_TankSpawn, EventHookMode_PostNoCopy);
-	HookEvent("round_start", TAC_ev_RoundStart, EventHookMode_PostNoCopy);
-	HookEvent("entity_killed", TAC_ev_EntityKilled);
-	HookEvent("tank_frustrated",		PD_ev_TankFrustrated);
+	RegConsoleCmd("sm_underhand", Cmd_sm_underhand);
+	RegConsoleCmd("sm_overhand", Cmd_sm_overhand);
+	RegConsoleCmd("sm_overonehand", Cmd_sm_overonehand);
 }
 
-public TAC_OnPunchCvarChange(Handle:convar_hndl, const String:oldValue[], const String:newValue[])
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {
-	g_iCvarPunchControl = GetConVarInt(convar_hndl);
+	GetCvars();
 }
 
-public TAC_OnPunchDelayCvarChange(Handle:convar_hndl, const String:oldValue[], const String:newValue[])
+void GetCvars()
 {
-	g_fCvarPunchDelay = GetConVarFloat(convar_hndl);
+    g_iCvarPunchControl = hCvarPunchControl.IntValue;
 }
 
-public TAC_OnThrowDealyCvarChange(Handle:convar_hndl, const String:oldValue[], const String:newValue[])
+public void OnClientConnected(int client)
 {
-	g_fCvarThrowDelay = GetConVarFloat(convar_hndl);
+	g_bQueuedCommandThrow[client] = false;
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -90,106 +99,97 @@ public void OnClientDisconnect(int client)
 	g_bBrokenPlayer[client] = false;
 }
 
-public Action:TAC_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+Action Cmd_sm_underhand(int client, int args)
 {
-	if (!g_bTankInGame)
-		CreateTimer(10.0, TAC_t_Instruction);
-
-	g_bTankInGame = true;
-}
-
-public Action:TAC_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	g_bTankInGame = false;
-}
-
-public Action:TAC_ev_EntityKilled(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	if (g_bTankInGame && IsPlayerTank(GetEventInt(event, "entindex_killed")))
-		CreateTimer(4.0, TAC_t_FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
-}
-
-public Action:TAC_t_FindAnyTank(Handle:timer)
-{
-	for (new i = 1; i <= MaxClients; i++)
-		if (IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i) && IsPlayerTank(i) && !IsIncapacitated(i))
-			return;
-
-	g_bTankInGame = false;
-}
-
-public Action:PD_ev_TankFrustrated(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	if (g_bCvar1v1Mode){		
-		CreateTimer(1.0,COLD_DOWN);
-	}
-}
-
-public Action:COLD_DOWN(Handle:timer)
-{
-	g_bTankInGame = false;
-}
-
-FindTank() 
-{
-	for (new i = 1; i <= MaxClients; i++) 
-	{
-		if (IsClientInGame(i)&&IsInfected(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == 5 && IsPlayerAlive(i))
-			return i;
-	}
-
-	return -1;
-}
-
-public Action:TAC_t_Instruction(Handle:timer)
-{
-	new i = FindTank();
-	if(i == -1)
-		return;
-
-	CPrintToChat(i,"%T","l4d_tank_attack_control_Rock",i);
-}
-
-public Action:OnPlayerRunCmd(client, &buttons)
-{
-	if (!g_bTankInGame || !buttons || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
+	if (!client || !IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 
-	if(buttons & IN_ATTACK2)
-	{
-		if(g_bBrokenPlayer[client]) return Plugin_Continue;
+	g_bQueuedCommandThrow[client] = true;
+	g_iQueuedThrow[client] = Underhand; //underhand
+	return Plugin_Handled;
+}
 
-		g_seqQueuedThrow[client] = OneOverhand;
-	}
-	else if (buttons & IN_USE)
-	{
-		if(g_bBrokenPlayer[client]) return Plugin_Continue;
-		
-		g_seqQueuedThrow[client] = Underhand;
-		buttons |= IN_ATTACK2;
-	}
-	else if (buttons & IN_RELOAD)
-	{
-		if(g_bBrokenPlayer[client]) return Plugin_Continue;
-
-		g_seqQueuedThrow[client] = TwoOverhand;
-		buttons |= IN_ATTACK2;
-	}
+Action Cmd_sm_overhand(int client, int args)
+{
+	if (!client || !IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
+		return Plugin_Continue;
 	
+	g_bQueuedCommandThrow[client] = true;
+	g_iQueuedThrow[client] = TwoOverhand; //two hand overhand
+	return Plugin_Handled;
+}
+
+Action Cmd_sm_overonehand(int client, int args)
+{
+	if (!client || !IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
+		return Plugin_Continue;
+	
+	g_bQueuedCommandThrow[client] = true;
+	g_iQueuedThrow[client] = OneOverhand; //one hand overhand
+	return Plugin_Handled;
+}
+
+void TankSpawn_Event(Event event, const char[] name, bool dontBroadcast)
+{
+	int tank = GetClientOfUserId(event.GetInt("userid"));
+	if (!tank || !IsClientInGame(tank) || IsFakeClient(tank)) return;
+
+	CPrintToChat(tank, "%T","l4d_tank_attack_control_Rock", tank);
+}
+
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+{
+	if (!IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
+		return Plugin_Continue;
+
+	if(!IsFakeClient(client))
+	{
+		bool bCommandThrow = g_bQueuedCommandThrow[client];
+		g_bQueuedCommandThrow[client] = false;
+
+		if (bCommandThrow)
+		{
+			buttons |= IN_ATTACK2;
+		}
+		else
+		{
+			if(buttons & IN_ATTACK2)
+			{
+				if(g_bBrokenPlayer[client]) return Plugin_Continue;
+
+				g_iQueuedThrow[client] = OneOverhand;
+			}
+			else if (buttons & IN_USE)
+			{
+				if(g_bBrokenPlayer[client]) return Plugin_Continue;
+
+				g_iQueuedThrow[client] = Underhand;
+				buttons |= IN_ATTACK2;
+			}
+			else if (buttons & IN_RELOAD)
+			{
+				if(g_bBrokenPlayer[client]) return Plugin_Continue;
+				
+				g_iQueuedThrow[client] = TwoOverhand;
+				buttons |= IN_ATTACK2;
+			}
+		}
+	}
+
 	if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK))
 	{
 		if (g_iCvarPunchControl == 1)
 		{
 			if (buttons & IN_USE)
-				g_seqQueuedThrow[client] = LeftHook;
+				g_iQueuedPunch[client] = LeftHook;
 			else if (buttons & IN_RELOAD)
-				g_seqQueuedThrow[client] = UpperHook;
+				g_iQueuedPunch[client] = UpperHook;
 			else
-				g_seqQueuedThrow[client] = RightHook;
+				g_iQueuedPunch[client] = RightHook;
 		}
 		else if (g_iCvarPunchControl == 2)
 		{
-			g_seqQueuedThrow[client] = RightHook;
+			g_iQueuedPunch[client] = RightHook;
 		}
 	}
 	
@@ -198,44 +198,19 @@ public Action:OnPlayerRunCmd(client, &buttons)
 
 public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 {
-	if (g_seqQueuedThrow[client] != Null)
+	if (sequence > Throw && g_iQueuedThrow[client] > Null) // throw
 	{
-		if (sequence > _:Throw) // throw
-		{ 
-			if (g_seqQueuedThrow[client] > Throw)
-			{
-				if (!g_bThrowBlock[client])
-				{
-					g_bThrowBlock[client] = true;
-					CreateTimer(g_fCvarThrowDelay, TAC_t_UnlockThrowControl, client);
-				}
-
-				sequence = _:g_seqQueuedThrow[client];
-				return Plugin_Handled;
-			}
-		}
-		else if (g_iCvarPunchControl && g_seqQueuedThrow[client] < Throw) // punch
-		{ 
-			if (!g_bPunchBlock[client])
-			{
-				g_bPunchBlock[client] = true;
-				CreateTimer(g_fCvarPunchDelay, TAC_t_UnlockPunchControl, client);
-			}
-
-			sequence = _:g_seqQueuedThrow[client];
-			return Plugin_Handled;
-		}
+		//rock throw
+		sequence = g_iQueuedThrow[client];
+		return Plugin_Handled;
+	}
+	
+	
+	if (g_iCvarPunchControl > 0 && sequence < Throw && Null < g_iQueuedPunch[client] < Throw) // punch
+	{ 
+		sequence = g_iQueuedPunch[client];
+		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
-}
-
-public Action:TAC_t_UnlockThrowControl(Handle:timer, any:client)
-{
-	g_bThrowBlock[client] = false;
-}
-
-public Action:TAC_t_UnlockPunchControl(Handle:timer, any:client)
-{
-	g_bPunchBlock[client] = false;
 }

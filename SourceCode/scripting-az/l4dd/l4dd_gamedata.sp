@@ -1,6 +1,6 @@
 /*
 *	Left 4 DHooks Direct
-*	Copyright (C) 2025 Silvers
+*	Copyright (C) 2026 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -91,9 +91,6 @@ void LoadGameData()
 	PrintToServer("");
 	#endif
 	#endif
-
-	g_bLinuxOS = hGameData.GetOffset("OS") == 1;
-	FormatEx(g_sSystem, sizeof(g_sSystem), "%s/%d/%s", g_bLinuxOS ? "NIX" : "WIN", g_bLeft4Dead2 ? 2 : 1, PLUGIN_VERSION);
 
 
 
@@ -1196,6 +1193,19 @@ void LoadGameData()
 			LogError("Failed to create SDKCall: \"KeyValues::GetString\" (%s)", g_sSystem);
 	}
 
+	StartPrepSDKCall(SDKCall_Raw);
+	if( PrepSDKCall_SetFromConf(hGameData, SDKConf_Virtual, "CAmmoDef::MaxCarry") == false )
+	{
+		LogError("Failed to find signature: \"CAmmoDef::MaxCarry\" (%s)", g_sSystem);
+	} else {
+		PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
+		PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer, VDECODE_FLAG_ALLOWNULL);
+		PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
+		g_hSDK_AmmoDef_MaxCarry = EndPrepSDKCall();
+		if( g_hSDK_AmmoDef_MaxCarry == null )
+			LogError("Failed to create SDKCall: \"CAmmoDef::MaxCarry\" (%s)", g_sSystem);
+	}
+
 	if( g_bLeft4Dead2 )
 	{
 		StartPrepSDKCall(SDKCall_GameRules);
@@ -2233,6 +2243,9 @@ void LoadGameData()
 	// ====================================================================================================
 	//									ADDRESSES
 	// ====================================================================================================
+	// g_iOff_EHandle = hGameData.GetOffset("EHandleOffset");
+	// ValidateOffset(g_iOff_EHandle, "EHandleOffset");
+
 	g_iOff_LobbyReservation = hGameData.GetOffset("LobbyReservationOffset");
 	ValidateOffset(g_iOff_LobbyReservation, "LobbyReservationOffset");
 
@@ -2458,8 +2471,26 @@ void LoadGameData()
 	}
 	else if( byte != 0x90 )
 	{
-		LogError("CTerrorPlayer::CanBecomeGhost patch: byte mismatch. %X", LoadFromAddress(g_pCTerrorPlayer_CanBecomeGhost + view_as<Address>(g_iCanBecomeGhostOffset), NumberType_Int8));
+		LogError("CTerrorPlayer::CanBecomeGhost patch: byte mismatch. %X (%s)", LoadFromAddress(g_pCTerrorPlayer_CanBecomeGhost + view_as<Address>(g_iCanBecomeGhostOffset), NumberType_Int8), g_sSystem);
 	}
+	// ====================
+
+
+
+	// ====================
+	// Patch to allow "L4D_RespawnPlayer" to not reset stats
+	// ====================
+	// Address to function
+	g_pCTerrorPlayer_RoundRespawn = hGameData.GetAddress("CTerrorPlayer::RoundRespawn::Address");
+	ValidateAddress(g_pCTerrorPlayer_RoundRespawn, "CTerrorPlayer::RoundRespawn::Address", true);
+
+	// Offset to patch
+	g_iOff_RespawnPlayer = hGameData.GetOffset("CTerrorPlayer::RoundRespawn::Offset");
+	ValidateOffset(g_iOff_RespawnPlayer, "CTerrorPlayer::RoundRespawn::Offset");
+
+	// Patch count and byte match
+	g_iByte_RespawnPlayer = hGameData.GetOffset("CTerrorPlayer::RoundRespawn::Bytes");
+	g_iSize_RespawnPlayer = hGameData.GetOffset("CTerrorPlayer::RoundRespawn::Count");
 	// ====================
 
 
