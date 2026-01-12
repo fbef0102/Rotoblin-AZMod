@@ -5,24 +5,10 @@
 #include <sdktools>
 #include <dhooks>
 
-#define TANK_ZOMBIE_CLASS   5
-
-ConVar g_hCvar_tankProps, g_hCvar_tankPropsGlow, g_hCvar_tankPropsGlowSpec, g_hCvarColor;
-ConVar sv_tankpropfade;
-bool g_bCvar_tankProps, g_bCvar_tankPropsGlow, g_bCvar_tankPropsGlowSpec;
-
-Handle hTankProps       = INVALID_HANDLE;
-Handle hTankPropsHit    = INVALID_HANDLE;
-int i_Ent[2048+1] = {-1};
-int i_EntSpec[2048+1]= {-1};
-int g_iCvarColor[3];
-bool tankSpawned;
-int iTankClient = -1;
-
-public Plugin:myinfo = {
+public Plugin myinfo = {
 	name        = "L4D2 Tank Props,l4d1 modify by Harry",
 	author      = "Jahze & Harry Potter",
-	version     = "2.7",
+	version     = "2.8-2026/1/13",
 	description = "Stop tank props from fading whilst the tank is alive + add Hittable Glow",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
@@ -40,20 +26,47 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+#define ZC_TANK   5
+
+ConVar g_hCvarEnable, g_hCvar_tankPropsGlow, g_hCvar_tankPropsGlowSpec, g_hCvarColor;
+ConVar sv_tankpropfade;
+bool g_bCvarEnable, g_bCvar_tankPropsGlow, g_bCvar_tankPropsGlowSpec;
+
+ArrayList g_hTankPropsList;
+ArrayList g_hTankPropsHitList;
+StringMap g_smTankPropToRenderColor;
+int g_iInfGlowRef[2048+1] = {-1};
+int g_iSpecGlowRef[2048+1]= {-1};
+int g_iCvarColor[3];
+bool g_bTankSpawned, g_bKillTankProp, g_bRoundEnd;
+int iTankClient = -1;
+
 public void OnPluginStart() {
 	sv_tankpropfade = FindConVar("sv_tankpropfade");
 	
-	g_hCvar_tankProps = CreateConVar("l4d_tank_props", "1", "Prevent tank props from fading whilst the tank is alive", FCVAR_NOTIFY);
-	g_hCvar_tankPropsGlow = CreateConVar("l4d_tank_props_glow", "1", "Show Hittable Glow for inf team whilst the tank is alive", FCVAR_NOTIFY);
-	g_hCvar_tankPropsGlowSpec = CreateConVar( "l4d_tank_prop_glow_spectators", "1", "Spectators can see the glow too", FCVAR_NOTIFY);
-	g_hCvarColor =	CreateConVar("l4d_tank_prop_render_color", "200 0 0", "Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue. (-1 -1 -1: disable)", FCVAR_NOTIFY);
+	g_hCvarEnable 				= CreateConVar("l4d_tank_prop_enable", 				"1", 		"0=Plugin off, 1=Plugin on.", FCVAR_NOTIFY);
+	g_hCvar_tankPropsGlow 		= CreateConVar("l4d_tank_prop_glow_inf", 			"1", 		"Show Hittable Glow for inf team while tank is alive", FCVAR_NOTIFY);
+	g_hCvar_tankPropsGlowSpec	= CreateConVar("l4d_tank_prop_glow_spectators", 	"1", 		"Spectators can see the glow too", FCVAR_NOTIFY);
+	g_hCvarColor 				= CreateConVar("l4d_tank_prop_render_color", 		"200 0 0", 	"Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue. (-1 -1 -1: disable)", FCVAR_NOTIFY);
 	
 	GetCvars();
-	g_hCvar_tankProps.AddChangeHook(TankPropsChange);
+	g_hCvarEnable.AddChangeHook(TankPropsChange);
 	g_hCvar_tankPropsGlow.AddChangeHook(TankPropsGlowChange);
 	g_hCvar_tankPropsGlowSpec.AddChangeHook(TankPropsGlowSpecChange);
 	g_hCvarColor.AddChangeHook(ConVarChanged_Glow);
 	
+	HookEvent("round_start", TankPropRoundStart, EventHookMode_PostNoCopy);
+	HookEvent("round_end", TankPropRoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("player_spawn", TankPropTankSpawn);
+	HookEvent("player_death", TankPropTankKilled);
+
+	//有插件會在此事件時把Tank變成靈魂克，這之後不會觸發後續的player_spawn事件，譬如使用confoglcompmod
+	// ai tank生成時觸發
+	// ai tank靈魂狀態時觸發
+	// 玩家接管靈魂狀態的ai tank時觸發
+	// 玩家失去控制權變成ai tank時觸發
+	HookEvent("tank_spawn", TankPropTankSpawn);
+
 	PluginEnable();
 }
 
@@ -66,79 +79,96 @@ public void OnMapEnd()
 {
 	DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
 
-	ClearArray(hTankProps);
-	ClearArray(hTankPropsHit);
+	delete g_hTankPropsList;
+	delete g_hTankPropsHitList;
+	delete g_smTankPropToRenderColor;
+
+	g_hTankPropsList = new ArrayList();
+	g_hTankPropsHitList = new ArrayList();
+	g_smTankPropToRenderColor = new StringMap();
 }
 
 public void OnClientDisconnect(int client)
 {
 	if(IsTank(client))
 	{
-		CreateTimer(0.5, TankDeadCheck, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(1.0, TankDeadCheck, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
-void PluginEnable() {
+void PluginEnable() 
+{
 	sv_tankpropfade.SetBool(false);
 	
-	hTankProps = CreateArray();
-	hTankPropsHit = CreateArray();
+	delete g_hTankPropsList;
+	delete g_hTankPropsHitList;
+	delete g_smTankPropToRenderColor;
+
+	g_hTankPropsList = new ArrayList();
+	g_hTankPropsHitList = new ArrayList();
+	g_smTankPropToRenderColor = new StringMap();
 	
-	HookEvent("round_start", TankPropRoundReset);
-	HookEvent("tank_spawn", TankPropTankSpawn);
-	HookEvent("entity_killed", PD_ev_EntityKilled);
-	
-	if ( GetTankClient()) {
+	if ( GetTankClient() > 0 ) 
+	{
 		UnhookTankProps();
-		ClearArray(hTankPropsHit);
 		
 		HookTankProps();
 		
-		tankSpawned = true;
+		g_bTankSpawned = true;
 	}
 }
 
-void PluginDisable() {
+void PluginDisable() 
+{
 	sv_tankpropfade.SetBool(true);
 	
-	UnhookEvent("round_start", TankPropRoundReset);
-	UnhookEvent("tank_spawn", TankPropTankSpawn);
-	UnhookEvent("entity_killed",		PD_ev_EntityKilled);
-	
-	int entity;
-	
-	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-		if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-			entity = i_Ent[GetArrayCell(hTankPropsHit, i)];
-			if(IsValidEntRef(entity))
-				RemoveEdict(entity);
-			entity = i_EntSpec[GetArrayCell(hTankPropsHit, i)];
-			if(IsValidEntRef(entity))
-				RemoveEdict(entity);
-		}
-	}
 	UnhookTankProps();
-	ClearArray(hTankPropsHit);
 	
-	delete hTankProps;
-	delete hTankPropsHit;
-	tankSpawned = false;
+	g_bTankSpawned = false;
 }
 
-public void ConVarChanged_Glow( Handle cvar, const char[] oldValue, const char[] newValue )  {
+public void OnEntityDestroyed(int entity)
+{
+	if (g_bKillTankProp) 
+		return;
+		
+	if (!IsValidEntityIndex(entity))
+		return;
+
+	int iRef = EntIndexToEntRef(entity);
+	int index = g_hTankPropsList.FindValue(iRef);
+	if (index != -1) {
+		g_hTankPropsList.Erase(index);
+	}
+
+	index = g_hTankPropsHitList.FindValue(iRef);
+	if (index != -1) {
+		g_hTankPropsHitList.Erase(index);
+	}
+
+	static char sNumber[4];
+	IntToString(entity, sNumber, sizeof(sNumber));
+	g_smTankPropToRenderColor.Remove(sNumber);
+}
+
+void ConVarChanged_Glow( Handle cvar, const char[] oldValue, const char[] newValue )  {
 	
 	GetCvars();
 
-	int entity;
-
-	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-		if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-			entity = i_Ent[GetArrayCell(hTankPropsHit, i)];
+	int iIndex, entity;
+	
+	for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+	{
+		iIndex = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+		if ( iIndex != INVALID_ENT_REFERENCE ) 
+		{
+			entity = g_iInfGlowRef[iIndex];
 			if( IsValidEntRef(entity) )
 			{
 				SetEntityRenderColor (entity, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2],200 );
 			}
-			entity = i_EntSpec[GetArrayCell(hTankPropsHit, i)];
+
+			entity = g_iSpecGlowRef[iIndex];
 			if( IsValidEntRef(entity) )
 			{
 				SetEntityRenderColor (entity, g_iCvarColor[0],g_iCvarColor[1],g_iCvarColor[2],200 );
@@ -147,10 +177,10 @@ public void ConVarChanged_Glow( Handle cvar, const char[] oldValue, const char[]
 	}
 }
 
-public void TankPropsChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
+void TankPropsChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
 	GetCvars();
 
-	if ( g_bCvar_tankProps == false ) {
+	if ( g_bCvarEnable == false ) {
 		PluginDisable();
 	}
 	else {
@@ -158,47 +188,63 @@ public void TankPropsChange( Handle cvar, const char[] oldValue, const char[] ne
 	}
 }
 
-public void TankPropsGlowChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
+void TankPropsGlowChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
 	GetCvars();
 
-	if ( !g_bCvar_tankPropsGlow ) {
-		int entity;
-		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-				entity = i_Ent[GetArrayCell(hTankPropsHit, i)];
-				if(IsValidEntRef(entity))
-					RemoveEdict(entity);
+	int glow, entity;
+	if ( !g_bCvar_tankPropsGlow ) 
+	{
+		for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+		{
+			entity = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+			if ( entity != INVALID_ENT_REFERENCE ) 
+			{
+				glow = g_iInfGlowRef[entity];
+				g_iInfGlowRef[entity] = 0;
+				if(IsValidEntRef(glow))
+					RemoveEntity(glow);
 			}
 		}
 	}
 	else
 	{
-		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-				CreateTankPropGlow(GetArrayCell(hTankPropsHit, i));
+		for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+		{
+			entity = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+			if ( entity != INVALID_ENT_REFERENCE ) 
+			{
+				CreateTankPropGlow(entity);
 			}
 		}
 	}
 }
 
-public void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
+void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const char[] newValue ) {
 	GetCvars();
 	
-	if ( g_bCvar_tankPropsGlowSpec == false) {
-		int entity;
-		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-				entity = i_EntSpec[GetArrayCell(hTankPropsHit, i)];
-				if(IsValidEntRef(entity))
-					RemoveEdict(entity);
+	int glow, entity;
+	if ( g_bCvar_tankPropsGlowSpec == false) 
+	{
+		for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+		{
+			entity = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+			if ( entity != INVALID_ENT_REFERENCE ) 
+			{
+				glow = g_iSpecGlowRef[entity];
+				g_iSpecGlowRef[entity] = 0;
+				if(IsValidEntRef(glow))
+					RemoveEntity(glow);
 			}
 		}
     }
 	else
 	{
-		for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-			if ( IsValidEdict(GetArrayCell(hTankPropsHit, i)) ) {
-				CreateTankPropGlowSpectator(GetArrayCell(hTankPropsHit, i));
+		for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+		{
+			entity = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+			if ( entity != INVALID_ENT_REFERENCE ) 
+			{
+				CreateTankPropGlowSpectator(entity);
 			}
 		}
 	}
@@ -206,7 +252,7 @@ public void TankPropsGlowSpecChange( Handle cvar, const char[] oldValue, const c
 
 void GetCvars()
 {
-	g_bCvar_tankProps = g_hCvar_tankProps.BoolValue;
+	g_bCvarEnable = g_hCvarEnable.BoolValue;
 	g_bCvar_tankPropsGlow = g_hCvar_tankPropsGlow.BoolValue;
 	g_bCvar_tankPropsGlowSpec = g_hCvar_tankPropsGlowSpec.BoolValue;
 
@@ -215,58 +261,98 @@ void GetCvars()
 	GetColor(sColor, g_iCvarColor);
 }
 
-public void TankPropRoundReset( Handle event, const char[] name, bool dontBroadcast ) {
-    tankSpawned = false;
-    
-    UnhookTankProps();
-    ClearArray(hTankPropsHit);
+void TankPropRoundStart(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+	if(!g_bCvarEnable) return;
+
+	g_bTankSpawned = false;
+	g_bRoundEnd = false;
+
+	UnhookTankProps();
+	DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
 }
 
-public void TankPropTankSpawn( Handle event, const char[] name, bool dontBroadcast ) {
-	if ( !tankSpawned ) {
-		UnhookTankProps();
-		ClearArray(hTankPropsHit);
+void TankPropRoundEnd(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+	if(!g_bCvarEnable) return;
+	if(g_bRoundEnd) return;
+
+	g_bTankSpawned = false;
+	g_bRoundEnd = true;
+
+	CreateTimer(10.0, Timer_RoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+Action Timer_RoundEnd(Handle timer)
+{
+	UnhookTankProps();
+	DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
+
+	return Plugin_Continue;
+}
+
+void TankPropTankSpawn(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+	if (!g_bCvarEnable || g_bTankSpawned) {
+		return;
+	}
+
+	int client = GetClientOfUserId(hEvent.GetInt("userid"));
+	if(client && IsAliveTank(client))
+	{
+		UnhookTankProps(false, false);
 		
 		HookTankProps();
 
+		DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
 		DHookAddEntityListener(ListenType_Created, PossibleTankPropCreated);
 		
-		tankSpawned = true;
-    }    
+		g_bTankSpawned = true;
+	} 
 }
 
-public void PD_ev_EntityKilled( Handle event, const char[] name, bool dontBroadcast )
+void TankPropTankKilled(Event hEvent, const char[] sEventName, bool bDontBroadcast)
 {
-	if (tankSpawned && GetEntProp((GetEventInt(event, "entindex_killed")), Prop_Send, "m_zombieClass") == 5)
+	if (!g_bCvarEnable || !g_bTankSpawned) {
+		return;
+	}
+
+	int victim = GetClientOfUserId(hEvent.GetInt("userid"));
+	if(victim && IsClientInGame(victim) && GetClientTeam(victim) == 3 && GetEntProp(victim, Prop_Send, "m_zombieClass") == ZC_TANK)
 	{
-		CreateTimer(1.5, TankDeadCheck,_,TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(1.5, TankDeadCheck, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
-public Action TankDeadCheck( Handle timer ) {
 
-	if ( GetTankClient() == -1 ) {
-		UnhookTankProps();
+Action TankDeadCheck( Handle timer ) 
+{
+	if ( GetTankClient() <= 0 ) 
+	{
+		CreateTimer(3.5, TankPropsBeGone,_ ,TIMER_FLAG_NO_MAPCHANGE);
 
-		DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
-
-		CreateTimer(3.5, FadeTankProps,_ ,TIMER_FLAG_NO_MAPCHANGE);
-
-		tankSpawned = false;
+		g_bTankSpawned = false;
 	}
 
 	return Plugin_Continue;
 }
 
-public void PropDamaged(int victim, int attacker, int inflictor, float damage, int damageType) {
-	if ( attacker == GetTankClient() || FindValueInArray(hTankPropsHit, inflictor) != -1 ) {
-		if ( FindValueInArray(hTankPropsHit, victim) == -1 ) {
-			PushArrayCell(hTankPropsHit, victim);
+void PropDamagedPost(int iEntity, int iAttacker, int iInflictor, float fDamage, int iDamageType)
+{
+	if (!IsValidAliveTank(iAttacker)) return;
+	if (iEntity <= MaxClients || !IsValidEntity(iEntity) || !IsValidEntity(iInflictor)) return;
+	if (!GetEntProp(iEntity, Prop_Send, "m_hasTankGlow")) return;
 
-			if(g_bCvar_tankPropsGlow)
-				CreateTankPropGlow(victim);
-			if(g_bCvar_tankPropsGlowSpec)
-				CreateTankPropGlowSpectator(victim);
-		}
+	//PrintToChatAll("tank hit %d", iEntity);
+
+	int entRef = EntIndexToEntRef(iEntity);
+	if (g_hTankPropsHitList.FindValue(entRef) == -1) 
+	{
+		g_hTankPropsHitList.Push(entRef);
+
+		if(g_bCvar_tankPropsGlow)
+			CreateTankPropGlow(iEntity);
+		if(g_bCvar_tankPropsGlowSpec)
+			CreateTankPropGlowSpectator(iEntity);
 	}
 }
 
@@ -311,13 +397,13 @@ void CreateTankPropGlow(int car)
 	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
 	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
 
-	i_Ent[car] = EntIndexToEntRef(entity);
+	g_iInfGlowRef[car] = EntIndexToEntRef(entity);
 
 	//暴力法
 	SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 
 	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
-	SetEntityRenderColor (car, 255,255,255, 50);
+	SetEntityRenderColor(car, 255, 0, 0, 50);
 
 	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
 	SetEntityRenderMode(entity, RENDER_TRANSCOLOR);
@@ -339,20 +425,19 @@ void CreateTankPropGlow(int car)
 
 void TankThink(int car)
 {
-	if (IsValidEntRef(i_Ent[car]))
+	if (IsValidEntRef(g_iInfGlowRef[car]))
 	{
 		static float vPos[3];
 		static float vAng[3];
 		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
 		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(i_Ent[car], vPos, vAng, NULL_VECTOR);
+		TeleportEntity(g_iInfGlowRef[car], vPos, vAng, NULL_VECTOR);
 	}
 	else
 	{
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
 }
-
 
 void CreateTankPropGlowSpectator(int car)
 {
@@ -390,7 +475,7 @@ void CreateTankPropGlowSpectator(int car)
 	SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
 	SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
 
-	i_EntSpec[car] = EntIndexToEntRef(entity);
+	g_iSpecGlowRef[car] = EntIndexToEntRef(entity);
 
 	//暴力法
 	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
@@ -406,13 +491,13 @@ void CreateTankPropGlowSpectator(int car)
 
 void SpecTankThink(int car)
 {
-	if (IsValidEntRef(i_EntSpec[car]))
+	if (IsValidEntRef(g_iSpecGlowRef[car]))
 	{
 		static float vPos[3];
 		static float vAng[3];
 		GetEntPropVector(car, Prop_Data, "m_vecOrigin", vPos);
 		GetEntPropVector(car, Prop_Send, "m_angRotation", vAng);
-		TeleportEntity(i_EntSpec[car], vPos, vAng, NULL_VECTOR);
+		TeleportEntity(g_iSpecGlowRef[car], vPos, vAng, NULL_VECTOR);
 	}
 	else
 	{
@@ -420,31 +505,18 @@ void SpecTankThink(int car)
 	}
 }
 
-public Action FadeTankProps( Handle timer ) {
-	int entity;
-	for ( int i = 0; i < GetArraySize(hTankPropsHit); i++ ) {
-		entity = GetArrayCell(hTankPropsHit, i);
-		if(IsValidEdict(entity))
-		{
-			RemoveEdict(entity);
-			if (IsValidEntRef(i_Ent[entity]))
-				RemoveEdict(i_Ent[entity]);
-				
-			if (IsValidEntRef(i_EntSpec[entity]))
-				RemoveEdict(i_EntSpec[entity]);
-		}
-	}
+Action TankPropsBeGone( Handle timer ) 
+{
+	if(g_bTankSpawned) return Plugin_Continue;
 
-	ClearArray(hTankPropsHit);
+	UnhookTankProps();
+	DHookRemoveEntityListener(ListenType_Created, PossibleTankPropCreated);
 
 	return Plugin_Continue;
 }
 
-bool IsTankProp( int iEntity ) {
-	if (!IsValidEdict(iEntity)) {
-		return false;
-	}
-	
+bool IsTankProp( int iEntity ) 
+{
 	// CPhysicsProp only
 	if (!HasEntProp(iEntity, Prop_Send, "m_hasTankGlow")) {
 		return false;
@@ -464,27 +536,103 @@ bool IsTankProp( int iEntity ) {
 	return true;
 }
 
-void HookTankProps() {
-    int iEntCount = GetMaxEntities();
-    
-    for ( int i = 1; i <= iEntCount; i++ ) {
-        if ( IsTankProp(i) ) {
-			SDKHook(i, SDKHook_OnTakeDamagePost, PropDamaged);
-			PushArrayCell(hTankProps, i);
-		}
-    }
+void HookTankProps() 
+{
+	int iEntity = MaxClients+1;
+	int renderColor[4];
+	static char sNumber[4];
+	
+	while ((iEntity = FindEntityByClassname(iEntity, "prop_physics*")) != -1) 
+	{
+		if (!IsValidEntity(iEntity)) continue;
+		
+		if (!IsTankProp(iEntity)) continue;
+		
+		SDKHook(iEntity, SDKHook_OnTakeDamagePost, PropDamagedPost);
+		g_hTankPropsList.Push(EntIndexToEntRef(iEntity));
+
+		GetEntityRenderColor(iEntity, renderColor[0], renderColor[1], renderColor[2], renderColor[3]);
+		IntToString(iEntity, sNumber, sizeof(sNumber));
+		g_smTankPropToRenderColor.SetArray(sNumber, renderColor, 4);
+
+		SetEntityRenderMode(iEntity, RENDER_TRANSCOLOR);
+		SetEntityRenderColor(iEntity, 255, 0, 0);
+	}
+	
+	iEntity = MaxClients+1;
+
+	while ((iEntity = FindEntityByClassname(iEntity, "prop_car_alarm*")) != -1) 
+	{
+		if (!IsValidEntity(iEntity)) continue;
+		
+		if (!IsTankProp(iEntity)) continue;
+
+		SDKHook(iEntity, SDKHook_OnTakeDamagePost, PropDamagedPost);
+		g_hTankPropsList.Push(EntIndexToEntRef(iEntity));
+		
+		GetEntityRenderColor(iEntity, renderColor[0], renderColor[1], renderColor[2], renderColor[3]);
+		IntToString(iEntity, sNumber, sizeof(sNumber));
+		g_smTankPropToRenderColor.SetArray(sNumber, renderColor, 4);
+
+		SetEntityRenderMode(iEntity, RENDER_TRANSCOLOR);
+		SetEntityRenderColor(iEntity, 255, 0, 0);
+	}
 }
 
-void UnhookTankProps() {
-    for ( int i = 0; i < GetArraySize(hTankProps); i++ ) {
-        SDKUnhook(GetArrayCell(hTankProps, i), SDKHook_OnTakeDamagePost, PropDamaged);
-    }
-    
-    ClearArray(hTankProps);
+void UnhookTankProps(bool bKillGlow = true, bool bRenderColor = true) 
+{
+	int entity, glow;
+	int renderColor[4];
+	static char sNumber[4];
+	for ( int i = 0; i < GetArraySize(g_hTankPropsList); i++ ) 
+	{
+		entity = EntRefToEntIndex(g_hTankPropsList.Get(i));
+		if(entity != INVALID_ENT_REFERENCE)
+		{
+			SDKUnhook(entity, SDKHook_OnTakeDamagePost, PropDamagedPost);
+			IntToString(entity, sNumber, sizeof(sNumber));
+			if(bRenderColor && g_smTankPropToRenderColor.GetArray(sNumber, renderColor, 4))
+			{
+				SetEntityRenderMode(entity, RENDER_TRANSCOLOR);
+				SetEntityRenderColor(entity, renderColor[0], renderColor[1], renderColor[2], renderColor[3]);
+			}
+		}
+	}
+
+	if(bKillGlow)
+	{
+		g_bKillTankProp = true;
+		for ( int i = 0; i < GetArraySize(g_hTankPropsHitList); i++ ) 
+		{
+			entity = EntRefToEntIndex(g_hTankPropsHitList.Get(i));
+			if ( entity != INVALID_ENT_REFERENCE ) 
+			{
+				RemoveEntity(entity);
+				glow = g_iInfGlowRef[entity];
+				g_iInfGlowRef[entity] = 0;
+				if(IsValidEntRef(glow))
+					RemoveEntity(glow);
+
+				glow = g_iSpecGlowRef[entity];
+				g_iSpecGlowRef[entity] = 0;
+				if(IsValidEntRef(glow))
+					RemoveEntity(glow);
+			}
+		}
+		g_bKillTankProp = false;
+	}
+
+	delete g_hTankPropsList;
+	delete g_hTankPropsHitList;
+	delete g_smTankPropToRenderColor;
+
+	g_hTankPropsList = new ArrayList();
+	g_hTankPropsHitList = new ArrayList();
+	g_smTankPropToRenderColor = new StringMap();
 }
 
 //analogue public void OnEntityCreated(int iEntity, const char[] sClassName)
-public void PossibleTankPropCreated(int iEntity, const char[] sClassName)
+void PossibleTankPropCreated(int iEntity, const char[] sClassName)
 {
 	if (sClassName[0] != 'p') {
 		return;
@@ -499,26 +647,38 @@ public void PossibleTankPropCreated(int iEntity, const char[] sClassName)
 	SDKHook(iEntity, SDKHook_SpawnPost, Hook_PropSpawned);
 }
 
-public void Hook_PropSpawned(int iEntity)
+void Hook_PropSpawned(int iEntity)
 {
 	if (iEntity <= MaxClients || !IsValidEntity(iEntity)) {
 		return;
 	}
 
-	if (FindValueInArray(hTankProps, iEntity) == -1) {
+	int iRef = EntIndexToEntRef(iEntity);
+	int renderColor[4];
+	if (g_hTankPropsList.FindValue(iRef) == -1) 
+	{
 		char sModelName[PLATFORM_MAX_PATH];
 		GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 
 		if (StrContains(sModelName, "atlas_break_ball") != -1 || StrContains(sModelName, "forklift_brokenlift.mdl") != -1) {
-			PushArrayCell(hTankProps, iEntity);
-			PushArrayCell(hTankPropsHit, iEntity);
+			PushArrayCell(g_hTankPropsList, iRef);
+			PushArrayCell(g_hTankPropsHitList, iRef);
+
+			GetEntityRenderColor(iEntity, renderColor[0], renderColor[1], renderColor[2], renderColor[3]);
+			static char sNumber[4];
+			IntToString(iEntity, sNumber, sizeof(sNumber));
+			g_smTankPropToRenderColor.SetArray(sNumber, renderColor, 4);
+
+			SetEntityRenderMode(iEntity, RENDER_TRANSCOLOR);
+			SetEntityRenderColor(iEntity, 255, 0, 0);
 
 			if(g_bCvar_tankPropsGlow)
 				CreateTankPropGlow(iEntity);
 			if(g_bCvar_tankPropsGlowSpec)
 				CreateTankPropGlowSpectator(iEntity);
-
-		} else if (StrContains(sModelName, "forklift_brokenfork.mdl") != -1) {
+		} 
+		else if (StrContains(sModelName, "forklift_brokenfork.mdl") != -1) 
+		{
 			AcceptEntityInput(iEntity, "Kill");
 		}
 	}
@@ -550,9 +710,7 @@ bool IsTank( int client ) {
         return false;
     }
     
-    int playerClass = GetEntProp(client, Prop_Send, "m_zombieClass");
-    
-    if ( playerClass == TANK_ZOMBIE_CLASS ) {
+    if ( GetEntProp(client, Prop_Send, "m_zombieClass") == ZC_TANK ) {
         return true;
     }
     
@@ -588,4 +746,19 @@ void GetColor(char[] sTemp, int[] iColor)
 	iColor[0] = StringToInt(sColors[0]);
 	iColor[1] = StringToInt(sColors[1]);
 	iColor[2] = StringToInt(sColors[2]);
+}
+
+bool IsAliveTank(int iClient)
+{
+	return (IsClientInGame(iClient) && GetClientTeam(iClient) == 3 && IsPlayerAlive(iClient) && GetEntProp(iClient, Prop_Send, "m_zombieClass") == ZC_TANK);
+}
+
+bool IsValidAliveTank(int iClient)
+{
+	return (iClient > 0 && iClient <= MaxClients && IsAliveTank(iClient));
+}
+
+bool IsValidEntityIndex(int entity)
+{
+    return (MaxClients+1 <= entity <= GetMaxEntities());
 }

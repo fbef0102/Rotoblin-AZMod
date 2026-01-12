@@ -31,7 +31,7 @@ public Plugin myinfo =
 	name        = "Block Trolls",
 	description = "Prevents calling votes while others are loading",
 	author      = "ProdigySim, CanadaRox, darkid",
-	version     = "2.0.1.2",
+	version     = "1.0h-2026/1/13",
 	url         = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
@@ -41,7 +41,6 @@ int  loadedPlayers 	  = 0;
 public void OnPluginStart()
 {
 	AddCommandListener(Vote_Listener, "callvote");
-	AddCommandListener(Vote_Listener, "vote");
 	HookEvent("player_team", Event_OnPlayerJoin);
 }
 
