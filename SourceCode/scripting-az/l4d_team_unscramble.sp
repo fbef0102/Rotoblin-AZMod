@@ -122,7 +122,7 @@ UM_OnPluginEnabled()
 	if (g_bCvarNoVotes){
 
 		AddCommandListener(US_cmdh_Vote, "callvote");
-		AddCommandListener(US_cmdh_Vote, "vote");
+		//AddCommandListener(US_cmdh_Vote, "vote");
 
 		//if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
 		//	HookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);
@@ -152,7 +152,7 @@ UM_OnPluginDisabled()
 	if (g_bCvarNoVotes){
 
 		RemoveCommandListener(US_cmdh_Vote, "callvote");
-		RemoveCommandListener(US_cmdh_Vote, "vote");
+		//RemoveCommandListener(US_cmdh_Vote, "vote");
 
 		//if (g_iVotePassMessageId != INVALID_MESSAGE_ID)
 		//	UnhookUserMessage(g_iVotePassMessageId, US_msg_OnVotePass);

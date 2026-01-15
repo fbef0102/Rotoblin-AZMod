@@ -417,11 +417,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Show tank hud for Infected team
     * Players cannot shove tanks.
     * Passing control to AI tank will no longer be rewarded with an instant respawn
-    * Remove random punches animation, now force right hook only. (AI Tank + Real Tank player)
+    * Tank punches animation
+      * Real Tank player: force right hook only
+      * AI Tank: Random
     * Tanks can use Secondary Attack, Use, and Reload Buttons to throw rocks.
-	  - *(MOUSE2)*: **One handed overhand**
-	  - *(E)*: **Underhand**
-	  - *(R)*: **Two handed overhand**
+      - *(MOUSE2)*: **One handed overhand**
+      - *(E)*: **Underhand**
+      - *(R)*: **Two handed overhand**
     * Tank can't use curve rock, this is not l4d2, this is one of l4d1 original feature
     * Refill Tank's frustration whenever a hittable hits a Survivor
     * Show how long is tank alive, and tank punch/rock/car statistics once tank dead

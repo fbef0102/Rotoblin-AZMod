@@ -139,40 +139,38 @@ void TankSpawn_Event(Event event, const char[] name, bool dontBroadcast)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
-	if (!IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client))
+	if (!IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client)
+		|| IsFakeClient(client))
 		return Plugin_Continue;
 
-	if(!IsFakeClient(client))
-	{
-		bool bCommandThrow = g_bQueuedCommandThrow[client];
-		g_bQueuedCommandThrow[client] = false;
+	bool bCommandThrow = g_bQueuedCommandThrow[client];
+	g_bQueuedCommandThrow[client] = false;
 
-		if (bCommandThrow)
+	if (bCommandThrow)
+	{
+		buttons |= IN_ATTACK2;
+	}
+	else
+	{
+		if(buttons & IN_ATTACK2)
 		{
+			if(g_bBrokenPlayer[client]) return Plugin_Continue;
+
+			g_iQueuedThrow[client] = OneOverhand;
+		}
+		else if (buttons & IN_USE)
+		{
+			if(g_bBrokenPlayer[client]) return Plugin_Continue;
+
+			g_iQueuedThrow[client] = Underhand;
 			buttons |= IN_ATTACK2;
 		}
-		else
+		else if (buttons & IN_RELOAD)
 		{
-			if(buttons & IN_ATTACK2)
-			{
-				if(g_bBrokenPlayer[client]) return Plugin_Continue;
-
-				g_iQueuedThrow[client] = OneOverhand;
-			}
-			else if (buttons & IN_USE)
-			{
-				if(g_bBrokenPlayer[client]) return Plugin_Continue;
-
-				g_iQueuedThrow[client] = Underhand;
-				buttons |= IN_ATTACK2;
-			}
-			else if (buttons & IN_RELOAD)
-			{
-				if(g_bBrokenPlayer[client]) return Plugin_Continue;
-				
-				g_iQueuedThrow[client] = TwoOverhand;
-				buttons |= IN_ATTACK2;
-			}
+			if(g_bBrokenPlayer[client]) return Plugin_Continue;
+			
+			g_iQueuedThrow[client] = TwoOverhand;
+			buttons |= IN_ATTACK2;
 		}
 	}
 
@@ -198,6 +196,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 {
+	if(IsFakeClient(client)) return Plugin_Continue;
+
 	if (sequence > Throw && g_iQueuedThrow[client] > Null) // throw
 	{
 		//rock throw
