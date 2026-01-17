@@ -22,7 +22,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.6.2"
+#define READY_VERSION "8.6.2-2025/1/17"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -159,8 +159,6 @@ native OpenSpectatorsListenMode();
 native GiveSurAllPills();
 native ShowRotoInfo();
 //native R2comp_UnscrambleKeep(); //From l4d_team_unscramble.smx
-native bool:IsClientVoteMenu(client);//From Votes2
-native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native AnnounceSIClasses();//From si_class_announce
 native antibaiter_clear();//From l4d_antibaiter
 native Score_GetTeamCampaignScore(team);//From l4dscores
@@ -1001,7 +999,7 @@ public void OnClientPutInServer(int client)
 	readyStatus[client] = false;
 
 	g_iSpectatePenaltyCounter[client] = g_iSpectatePenalty;
-	CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+	//CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
 	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 		SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
@@ -1890,7 +1888,7 @@ public Action:Timer_InfectedSpectate(Handle:timer, any:client)
 	return Plugin_Continue;
 }
 
-public Action:Timer_Respectate(Handle timer, int userid)
+Action Timer_Respectate(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 	if(client && IsClientInGame(client) && !IsFakeClient(client))
@@ -1898,9 +1896,11 @@ public Action:Timer_Respectate(Handle timer, int userid)
 		ChangePlayerTeam(client, L4D_TEAM_SPECTATE);
 		g_bIsSpectating[client] = false;
 	}
+
+	return Plugin_Continue;
 }
 
-public Action Timer_PreventSpecBlockInfectedTeamIcon(Handle timer, int userid)
+Action Timer_PreventSpecBlockInfectedTeamIcon(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 	if(client && IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == L4D_TEAM_SPECTATE)
@@ -2410,12 +2410,7 @@ DrawReadyPanelList()
 				}
 			}
 
-			if(IsClientVoteMenu(i) || IsClientInfoMenu(i))
-			{
-				continue;
-			}
-
-			switch (GetClientMenu(i, INVALID_HANDLE))
+			switch (GetClientMenu(i))
 			{
 				case MenuSource_External, MenuSource_Normal:
 				{ 
@@ -2957,11 +2952,18 @@ RoundIsLive()
 	{
 		if(!IsClientInGame(i)) continue;
 
-		if(GetClientTeam(i) != L4D_TEAM_SURVIVOR) continue;
+		if(GetClientTeam(i) == L4D_TEAM_SURVIVOR)
+		{
+			SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
+			SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
+			TeleportEntity(i, NULL_VECTOR, NULL_VECTOR, NULL_VELOCITY);
+		}
 
-		SetEntProp(i, Prop_Data, "m_idrowndmg", 0.0);
-		SetEntProp(i, Prop_Data, "m_idrownrestored", 0.0);
-		TeleportEntity(i, NULL_VECTOR, NULL_VECTOR, NULL_VELOCITY);
+		if(IsFakeClient(i)) continue;
+		if(GetClientTeam(i) <= L4D_TEAM_SPECTATE)
+		{
+			CreateTimer(2.5 + (i*0.1), Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(i), TIMER_FLAG_NO_MAPCHANGE);
+		}
 	}
 
 	if(sv_cheats.BoolValue == false) sb_stop.IntValue = SB_STOP_CONVAR;
@@ -3235,6 +3237,23 @@ public Action L4D_OnFirstSurvivorLeftSafeArea(int client)
 	}
 
 	return Plugin_Continue;
+}
+
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
+{
+	if(cvarEnforceReady.BoolValue == false) 
+	{
+		for(int i = 1; i <= MaxClients; i++)
+		{
+			if(!IsClientInGame(i)) continue;
+			if(IsFakeClient(i)) continue;
+
+			if(GetClientTeam(i) <= L4D_TEAM_SPECTATE)
+			{
+				CreateTimer(2.5 + (i*0.1), Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(i), TIMER_FLAG_NO_MAPCHANGE);
+			}
+		}
+	}
 }
 
 public Action L4DSSArea_OnFirstSurvivorLeftCustomSafeArea_Pre(int client)

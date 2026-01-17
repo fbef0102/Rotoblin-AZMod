@@ -5,7 +5,7 @@
 #include <left4dhooks>
 #include <multicolors>
 
-#define HUD_5V5_DRAW_INTERVAL   0.5
+#define HUD_5V5_DRAW_INTERVAL   1.0
 #define CLAMP(%0,%1,%2) (((%0) > (%2)) ? (%2) : (((%0) < (%1)) ? (%1) : (%0)))
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 #define MIN(%0,%1) (((%0) < (%1)) ? (%0) : (%1))
@@ -207,8 +207,13 @@ public Action:HudDrawTimer(Handle:hTimer)
 		if (!b5v5HudActive[i] || !IsInfected(i) || IsFakeClient(i) || !g_bLeftStartRoom)
 			continue;
 
-		if (GetClientMenu(i) != MenuSource_None)
-			continue;
+		switch (GetClientMenu(i))
+		{
+			case MenuSource_External, MenuSource_Normal:
+			{ 
+				continue;
+			}
+		}
 			
 		SendPanelToClient(h5v5Hud, i, Dummy5v5HudHandler, 1);
 	}

@@ -4,7 +4,7 @@
 #include <l4d_lib>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.5"
+#define PLUGIN_VERSION "1.0h-2026/1/17"
 #define TANKHUD_DRAW_INTERVAL   0.3
 #define CLAMP(%0,%1,%2) (((%0) > (%2)) ? (%2) : (((%0) < (%1)) ? (%1) : (%0)))
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
@@ -15,14 +15,15 @@ static passCount = 1;
 static tankclient ;
 static bool:bTankHudActive[MAXPLAYERS + 1];
 
-native bool:IsClientSpecHud(client);//From l4d_versus_spechud
-native bool:IsClientVoteMenu(client);//From Votes3
-native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
-native bool:IsInPause();//From roto
+native bool IsClientSpecHud(int client);//From l4d_versus_spechud
+native bool IsInPause();//From roto
 
 ConVar z_tank_health;
 ConVar z_tank_burning_lifetime;
 ConVar versus_tank_bonus_health;
+
+Handle
+	g_hTankHudTimer[MAXPLAYERS + 1];
 
 public Plugin:myinfo = 
 {
@@ -31,6 +32,26 @@ public Plugin:myinfo =
 	description = "Show tank hud for spectators and show tank frustration for inf team",
 	version = PLUGIN_VERSION,
 	url = "https://steamcommunity.com/profiles/76561198026784913/"
+}
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	CreateNative("IsClientTankHud", Native_IsClientTankHud);
+	return APLRes_Success;
+}
+
+public Native_IsClientTankHud(Handle:plugin, numParams)
+{
+   new num1 = GetNativeCell(1);
+   return (g_hTankHudTimer[num1] != null);
 }
 
 public OnPluginStart()
@@ -112,6 +133,7 @@ public Action:HudDrawTimer(Handle:hTimer)
 {
 	if(!g_bIsTankAlive)
 		return Plugin_Handled;
+
 	new bool:bSpecsInfsOnServer = false;
 	for (new i = 1; i <= MaxClients; i++) 
 	{
@@ -132,32 +154,49 @@ public Action:HudDrawTimer(Handle:hTimer)
 			return Plugin_Continue;
 		}
 
+		if(IsInPause())
+			return Plugin_Continue;
+
 		new Handle:TankHud = CreatePanel();
 		
 		FillTankInfo(TankHud);
 		for (new i = 1; i <= MaxClients; i++) 
 		{
-
-			if (!bTankHudActive[i] || !IsClientInGame(i) || IsFakeClient(i) || IsSurvivor(i) || IsClientVoteMenu(i) || IsClientInfoMenu(i) || IsInPause() )
+			if (!bTankHudActive[i] || !IsClientInGame(i) || IsFakeClient(i) || IsSurvivor(i) )
 				continue;
 
-			if (GetClientMenu(i) != MenuSource_None)
-			 	continue;
+			switch (GetClientMenu(i))
+			{
+				case MenuSource_External, MenuSource_Normal:
+				{ 
+					continue;
+				}
+			}
 			
 			if(IsSpectator(i) && IsClientSpecHud(i))
 				continue;
 
-			if( IsInfected(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == 5)//Tank自己不顯示
+			if( IsInfected(i) && IsPlayerAlive(i) && GetEntProp(i, Prop_Send, "m_zombieClass") == 5)//Tank自己不顯示
 				continue;
 
 			SendPanelToClient(TankHud, i, DummyTankHudHandler, 1);
+			delete g_hTankHudTimer[i];
+			g_hTankHudTimer[i] = CreateTimer(1.0, Timer_TankHudActive, i);
 		}
 		
 		CloseHandle(TankHud);
 	}
 	return Plugin_Continue;
 }
+
 public DummyTankHudHandler(Handle:hMenu, MenuAction:action, param1, param2) {}
+
+Action Timer_TankHudActive(Handle timer, int client)
+{
+	g_hTankHudTimer[client] = null;
+
+	return Plugin_Continue;
+}
 
 public OnTankFrustrated(Handle:event, const String:name[], bool:dontBroadcast)//失去控制權 已傳給玩家
 {

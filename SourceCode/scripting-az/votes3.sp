@@ -31,7 +31,6 @@ ConVar VotensKickED;
 ConVar VotensForceSpectateED;
 ConVar g_hCvarPlayerLimit;
 ConVar g_hKickImmueAccess;
-static bool:ClientVoteMenu[MAXPLAYERS + 1];
 #define L4D_TEAM_SPECTATE	1
 #define MAX_CAMPAIGN_LIMIT 64
 new g_iCount;
@@ -76,24 +75,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		return APLRes_SilentFailure;
 	}
 
-	CreateNative("IsClientVoteMenu", Native_IsClientVoteMenu);
-	CreateNative("ClientVoteMenuSet", Native_ClientVoteMenuSet);
 	return APLRes_Success;
-}
-
-public Native_IsClientVoteMenu(Handle:plugin, numParams)
-{
-   new num1 = GetNativeCell(1);
-   return ClientVoteMenu[num1];
-}
-public Native_ClientVoteMenuSet(Handle:plugin, numParams)
-{
-   new num1 = GetNativeCell(1);
-   new num2 = GetNativeCell(2);
-   if(num2 == 1)
-	ClientVoteMenu[num1] = true;
-   else
-	ClientVoteMenu[num1] = false;
 }
 
 public OnPluginStart()
@@ -129,8 +111,6 @@ public OnPluginStart()
 
 	GetCvars();
 	g_hKickImmueAccess.AddChangeHook(ConVarChanged_Cvars);
-
-	HookEvent("round_start", event_Round_Start);
 }
 
 public void ConVarChanged_Cvars(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -142,12 +122,6 @@ char g_sKickImmueAccesslvl[16];
 GetCvars()
 {
 	g_hKickImmueAccess.GetString(g_sKickImmueAccesslvl,sizeof(g_sKickImmueAccesslvl));
-}
-
-public Action:event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = false; 
-	
 }
 
 public OnClientPutInServer(client)
@@ -192,7 +166,6 @@ public Action:Command_Votes(client, args)
 	{
 		return Plugin_Handled;
 	}
-	ClientVoteMenu[client] = true;
 	if(GetConVarInt(VotensED) == 1)
 	{
 		new VotensHpE_D = GetConVarInt(VotensHpED);
@@ -206,226 +179,183 @@ public Action:Command_Votes(client, args)
 
 		decl String:Info[256];
 
-		new Handle:menu = CreatePanel();
+		Menu menu = new Menu(Votes_Menu, MENU_ACTIONS_ALL);
 		Format(Info, sizeof(Info), "%T", "Vote Menu", client);
-		SetPanelTitle(menu, Info);
+		menu.SetTitle(Info);
 		
 		if (VotensHpE_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "Give hp", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("1", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Give hp", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-1", Info);	
 		}
 		if (VotensAlltalkE_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "All talk", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("2", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "All talk", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-2",  Info);	
 		}
 		if (VotensAlltalk2E_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "Turn off all talk", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("3", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Turn off all talk", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-3", Info);	
 		}
 		if (VotensRestartmapE_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "Restartmap", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("4", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Restartmap", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-4", Info);	
 		}
 		if (VotensMapE_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "Change map", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("5", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Change map", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-5", Info);	
 		}
 		if (VotensMap2E_D == 1)
 		{
 			Format(Info, sizeof(Info), "%T", "Change addon map", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("6", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Change addon map", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-6", Info);	
 		}
 		if(VotensKickE_D)
 		{
 			Format(Info, sizeof(Info), "%T", "Kick player", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("7", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Kick player", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-7", Info);	
 		}
 		if(VotensForceSpectateE_D)
 		{
 			Format(Info, sizeof(Info), "%T", "Forcespectate player", client);
-			DrawPanelItem(menu, Info);
+			menu.AddItem("8", Info);
 		}
 		else
 		{
 			Format(Info, sizeof(Info), "%T(%T)", "Forcespectate player", client, "votes3_17", client);
-			DrawPanelItem(menu, Info);	
+			menu.AddItem("-8", Info);	
 		}
-		DrawPanelText(menu, " \n");
-		Format(Info, sizeof(Info), "0. %T","exit", client);
-		DrawPanelText(menu, Info);
-		SendPanelToClient(menu, client,Votes_Menu, MENU_TIME);
+		menu.ExitButton = true;
+		menu.Display(client, MENU_TIME);
 		return Plugin_Handled;
 	}
 	return Plugin_Stop;
 }
-public Votes_Menu(Handle:menu, MenuAction:action, client, itemNum)
+
+int Votes_Menu(Menu menu, MenuAction action, int param1, int param2)
 {
 	if ( action == MenuAction_Select ) 
 	{
-		new VotensHpE_D = GetConVarInt(VotensHpED); 
-		new VotensAlltalkE_D = GetConVarInt(VotensAlltalkED);
-		new VotensAlltalk2E_D = GetConVarInt(VotensAlltalk2ED);
-		new VotensRestartmapE_D = GetConVarInt(VotensRestartmapED);
-		new VotensMapE_D = GetConVarInt(VotensMapED);
-		new VotensMap2E_D = GetConVarInt(VotensMap2ED);
-		bool VotensKickE_D = VotensKickED.BoolValue;
-		bool VotensForceSpectateE_D = VotensForceSpectateED.BoolValue;
+		int client = param1;
+		int ItemIndex = param2;
+		static char info[64];
+		menu.GetItem(ItemIndex, info, sizeof(info));	
 
-		switch (itemNum)
+		if (strcmp(info, "1") == 0)
 		{
-			case 1: 
-			{
-				if (VotensHpE_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_2",client);
-					return;
-				}
-				else
-				{
-					FakeClientCommand(client,"voteshp");
-				}
-			}
-			case 2: 
-			{
-				if (VotensAlltalkE_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_3",client);
-					return;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesalltalk");
-				}
-			}
-			case 3: 
-			{
-				if (VotensAlltalk2E_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_4",client);
-					return;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesalltalk2");
-				}
-			}
-			case 4: 
-			{
-				if (VotensRestartmapE_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_5",client);
-					return;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesrestartmap");
-				}
-			}
-			case 5: 
-			{
-				if (VotensMapE_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_6",client);
-					return ;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesmapsmenu");
-				}
-			}
-			case 6: 
-			{
-				if (VotensMap2E_D == 0)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_7",client);
-					return ;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesmaps2menu");
-				}
-			}
-			case 7: 
-			{
-				if(VotensKickE_D == false)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_8",client);
-					return ;
-				}
-				else
-				{
-					FakeClientCommand(client,"voteskick");
-				}
-			}
-			case 8: 
-			{
-				if(VotensForceSpectateE_D == false)
-				{
-					FakeClientCommand(client,"sm_votes");
-					CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_9",client);
-					return ;
-				}
-				else
-				{
-					FakeClientCommand(client,"votesforcespectate");
-				}
-			}
-			
+			FakeClientCommand(client,"voteshp");
 		}
-	}
-	else if ( action == MenuAction_Cancel)
-	{
-		ClientVoteMenu[client] = false;
+		else if (strcmp(info, "-1") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_2",client);
+		}
+		else if (strcmp(info, "2") == 0)
+		{
+			FakeClientCommand(client,"votesalltalk");
+		}
+		else if (strcmp(info, "-2") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_3",client);
+		}
+		else if (strcmp(info, "3") == 0)
+		{
+			FakeClientCommand(client,"votesalltalk2");
+		}
+		else if (strcmp(info, "-3") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_4",client);
+		}
+		else if (strcmp(info, "4") == 0)
+		{
+			FakeClientCommand(client,"votesrestartmap");
+		}
+		else if (strcmp(info, "-4") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_5",client);
+		}
+		else if (strcmp(info, "5") == 0)
+		{
+			FakeClientCommand(client,"votesmapsmenu");
+		}
+		else if (strcmp(info, "-5") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_6",client);
+		}
+		else if (strcmp(info, "6") == 0)
+		{
+			FakeClientCommand(client,"votesmaps2menu");
+		}
+		else if (strcmp(info, "-6") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_7",client);
+		}
+		else if (strcmp(info, "7") == 0)
+		{
+			FakeClientCommand(client,"voteskick");
+		}
+		else if (strcmp(info, "-7") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_8",client);
+		}
+		else if (strcmp(info, "8") == 0)
+		{
+			FakeClientCommand(client,"votesforcespectate");
+		}
+		else if (strcmp(info, "-8") == 0)
+		{
+			FakeClientCommand(client,"sm_votes");
+			CPrintToChat(client, "{default}[{olive}TS{default}] %T","votes3_9",client);
+		}
 	}
 	else if ( action == MenuAction_End)
 			delete menu;
+
+	return 0;
 }
 
 public Action:Callvote_Handler(client, args)
@@ -454,9 +384,6 @@ public Action:Command_VoteHp(client, args)
 		if(CanStartVotes(client))
 		{
 			CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t",client,"starts a vote","Give hp");
-			
-			
-			for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
 			
 			g_voteType = voteType:hp;
 			decl String:SteamId[35];
@@ -492,8 +419,6 @@ public Action:Command_VoteAlltalk(client, args)
 		if(CanStartVotes(client))
 		{
 			CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t",client,"starts a vote","Turn on All talk");
-			
-			for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
 			
 			g_voteType = voteType:alltalk;
 			decl String:SteamId[35];
@@ -531,8 +456,6 @@ public Action:Command_VoteAlltalk2(client, args)
 		{
 			CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t",client,"starts a vote","Turn off all talk");
 			
-			for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
-			
 			g_voteType = voteType:alltalk2;
 			decl String:SteamId[35];
 			GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
@@ -568,9 +491,7 @@ public Action:Command_VoteRestartmap(client, args)
 		if(CanStartVotes(client))
 		{
 			CPrintToChatAll("{default}[{olive}TS{default}]{olive} %N {default}%t: {blue}%t",client,"starts a vote","Restartmap");
-			
-			for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
-			
+
 			g_voteType = voteType:restartmap;
 			decl String:SteamId[35];
 			GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
@@ -676,8 +597,6 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 		if (param2 == MenuCancel_ExitBack) {
 			FakeClientCommand(param1,"votes");
 		}
-		else
-			ClientVoteMenu[param1] = false;
 	}
 	else if ( action == MenuAction_End)
 			delete menu;
@@ -700,10 +619,6 @@ public DisplayVoteKickMenu(client, int player, const char name[MAX_NAME_LENGTH])
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: kick %s(%s)",  client, SteamId, kickplayer_name, kickplayer_SteamId);//紀錄在log文件
 		CPrintToChatAll("{default}[{olive}TS{default}]{olive} %N {default}%t: {blue}%t %s", client,"starts a vote", "Kick player", kickplayer_name);
-		
-		for(new i=1; i <= MaxClients; i++) 
-			if (IsClientInGame(i) && !IsFakeClient(i))
-				ClientVoteMenu[i] = true;
 		
 		g_voteType = voteType:kick;
 		
@@ -803,8 +718,6 @@ public MapMenuHandler(Handle:menu, MenuAction:action, client, itemNum)
 		if (itemNum == MenuCancel_ExitBack) {
 			FakeClientCommand(client,"votes");
 		}
-		else
-			ClientVoteMenu[client] = false;
 	}
 	else if ( action == MenuAction_End)
 			delete menu;
@@ -824,8 +737,6 @@ public DisplayVoteMapsMenu(client, const char info[MAX_NAME_LENGTH], const char 
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: change map %s",  client, SteamId, votesmapsname);//紀錄在log文件
 		CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t %s", client,"starts a vote","Change map", votesmapsname);
-		
-		for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = true;
 		
 		g_voteType = voteType:map;
 		
@@ -905,8 +816,6 @@ public Menu_Votesforcespectate(Handle:menu, MenuAction:action, param1, param2)
 		if (param2 == MenuCancel_ExitBack) {
 			FakeClientCommand(param1,"votes");
 		}
-		else
-			ClientVoteMenu[param1] = false;
 	}
 	else if ( action == MenuAction_End)
 			delete menu;
@@ -930,10 +839,6 @@ public DisplayVoteforcespectateMenu(client, int target, const char name[MAX_NAME
 		
 		new iTeam = GetClientTeam(client);
 		CPrintToChatAll("{default}[{olive}TS{default}] {olive}%N{default} %t: {blue}%t %s{default}, %t", client, "starts a vote","Forcespectate player",forcespectateplayername,"only their team can vote");
-		
-		for(new i=1; i <= MaxClients; i++) 
-			if (IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == iTeam)
-				ClientVoteMenu[i] = true;
 		
 		g_voteType = voteType:forcespectate;
 		
@@ -1140,7 +1045,6 @@ public Action:VoteEndDelay(Handle:timer)
 {
 	Votey = 0;
 	Voten = 0;
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenu[i] = false;
 }
 public Action:Changelevel_Map(Handle:timer)
 {

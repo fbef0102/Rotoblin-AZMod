@@ -90,7 +90,6 @@ ConVar g_hCvarPlayerLimit;
 new String:g_sCfg[32];
 Menu g_hMatchVote = null;
 new Handle:g_hModesKV = null;
-native ClientVoteMenuSet(client,trueorfalse);//from votes3
 new Votey = 0;
 new Voten = 0;
 #define VOTE_NO "no"
@@ -1027,7 +1026,6 @@ public Action:Config_Changer(client, args)
 		{
 			return Plugin_Handled;
 		}
-		ClientVoteMenuSet(client,1);
 		MatchModeMenu(client);
 		
 		return Plugin_Handled;
@@ -1988,8 +1986,6 @@ public Action:Config_Changer(client, args)
 					LogMessage("%s(%s) starts a vote: match %s.", curname, SteamId,PlayerCfg);//紀錄在log文件
 					CPrintToChatAll("{default}[{olive}TS{default}] %t", "comp_loader4",curname, PlayerCfg);
 					
-					for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
-					
 					g_hMatchVote = new Menu(Handler_VoteCallback, MENU_ACTIONS_ALL);
 					g_hMatchVote.SetTitle("%T","comp_loader5",LANG_SERVER,PlayerCfg);
 					g_hMatchVote.AddItem(VOTE_YES, "Yes");
@@ -2490,17 +2486,9 @@ public MatchModeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 			MatchModeMenu(param1);
 		}
 	}
-	else if(action == MenuAction_Cancel)
-	{
-		if (param1>0&&param1<= MaxClients&&IsClientConnected(param1) && IsClientInGame(param1)&& !IsFakeClient(param1))
-			ClientVoteMenuSet(param1,2);
-	}
-	
-	if (action == MenuAction_End)
+	else if (action == MenuAction_End)
 	{
 		CloseHandle(menu);
-		if (param1>0&&param1<= MaxClients&&IsClientConnected(param1) && IsClientInGame(param1)&& !IsFakeClient(param1))
-			ClientVoteMenuSet(param1,2);
 	}
 }
 
@@ -2520,8 +2508,6 @@ public ConfigsMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 			GetClientName(param1,curname,128);
 			LogMessage("%s(%s) starts a vote: match %s .",  curname, SteamId,PlayerCfg);//紀錄在log文件
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","comp_loader4", curname, PlayerCfg);
-			
-			for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
 
 			g_hMatchVote = new Menu(Handler_VoteCallback2, MENU_ACTIONS_ALL);
 			g_hMatchVote.SetTitle("%T","comp_loader5",LANG_SERVER,PlayerCfg);
@@ -2537,16 +2523,9 @@ public ConfigsMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 			MatchModeMenu(param1);
 		}
 	}
-	if (action == MenuAction_End)
+	else if (action == MenuAction_End)
 	{
-		if (param1>0&&param1<= MaxClients&&IsClientConnected(param1) && IsClientInGame(param1)&& !IsFakeClient(param1))
-			ClientVoteMenuSet(param1,2);
 		CloseHandle(menu);
-	}
-	if (action == MenuAction_Cancel)
-	{
-		if (param1>0&&param1<= MaxClients&&IsClientConnected(param1) && IsClientInGame(param1)&& !IsFakeClient(param1))
-			ClientVoteMenuSet(param1,2);
 	}
 }
 
@@ -2565,7 +2544,6 @@ public Action:VoteEndDelay(Handle:timer)
 {
 	Votey = 0;
 	Voten = 0;
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,2);
 }
 
 VoteMenuClose()

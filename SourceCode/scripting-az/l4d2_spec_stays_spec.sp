@@ -69,7 +69,7 @@ public void OnPluginStart()
 
 //Sourcemod API Forward-------------------------------
 
-public void OnClientPutInServer(int client)
+public void OnClientPostAdminCheck(int client)
 {
     if(!g_bCheckStart) return;
 
@@ -209,6 +209,16 @@ Action Timer_MoveToSpec(Handle timer, int client)
         ChangeClientTeam(client, 1);
         CreateTimer(2.0, ReSpec, GetClientUserId(client));
         //PrintToChatAll("[SM] Found %s in %s team. Moved him back to spec team.", name, (team == 2) ? "survivor" : "infected"); 
+    }
+    else
+    {
+        if (GetClientTeam(client) == 1)
+        {
+            CreateTimer(2.0, ReSpec, client);
+
+            spectatorTimer[client] = null;
+            return Plugin_Stop;
+        }
     }
 
     return Plugin_Continue;

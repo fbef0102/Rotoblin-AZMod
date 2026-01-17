@@ -53,18 +53,19 @@ native Is_Ready_Plugin_On();//from l4dready_scrds
 native GetTankPercent(); //from l4d_boss_percent
 native GetWitchPercent(); //from l4d_boss_percent
 native GetSurCurrent(); //from l4d_current_survivor_progress
-native bool:IsClientVoteMenu(client);//From Votes2
-native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 native Score_GetTeamCampaignScore(team);//From l4dscores
 native WhoIsTank();//From l4d_tank_control
 int g_hSpawnGhostTimer[MAXPLAYERS + 1];
+
+Handle
+	g_hSpecHudTimer[MAXPLAYERS + 1];
 
 public Plugin:myinfo = 
 {
 	name = "Hyper-V HUD Manager [Public Version]",
 	author = "Visor, L4D1 port by harry",
 	description = "Provides different HUDs for spectators",
-	version = "8.2",
+	version = "1.0h-2026/1/17",
 	url = "https://github.com/Attano/smplugins"
 };
 
@@ -76,7 +77,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public Native_IsClientSpecHud(Handle:plugin, numParams)
 {
    new num1 = GetNativeCell(1);
-   return bSpecHudActive[num1];
+   return (g_hSpecHudTimer[num1] != null);
 }
 public OnPluginStart() 
 {
@@ -197,10 +198,20 @@ public Action:HudDrawTimer(Handle:hTimer)
 
 		for (new i = 1; i <= MaxClients; i++) 
 		{
-			if (!bSpecHudActive[i] || !IsSpectator(i) || IsFakeClient(i) ||IsClientVoteMenu(i)||IsClientInfoMenu(i))
+			if (!bSpecHudActive[i] || !IsSpectator(i) || IsFakeClient(i))
 				continue;
+
+			switch (GetClientMenu(i))
+			{
+				case MenuSource_External, MenuSource_Normal:
+				{ 
+					continue;
+				}
+			}
 			
 			SendPanelToClient(specHud, i, DummySpecHudHandler, 3);
+			delete g_hSpecHudTimer[i];
+			g_hSpecHudTimer[i] = CreateTimer(3.0, Timer_SpecHudActive, i);
 		}
 
 		CloseHandle(specHud);
@@ -210,6 +221,13 @@ public Action:HudDrawTimer(Handle:hTimer)
 }
 
 public DummySpecHudHandler(Handle:hMenu, MenuAction:action, param1, param2) {}
+
+Action Timer_SpecHudActive(Handle timer, int client)
+{
+	g_hSpecHudTimer[client] = null;
+
+	return Plugin_Continue;
+}
 
 FillHeaderInfo(Handle:hSpecHud) 
 {

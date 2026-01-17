@@ -73,8 +73,6 @@ new Handle:menuPanel;
 new bool:teamReady[4];
 
 native IsInReady();
-native bool:IsClientVoteMenu(client);//From Votes3
-native bool:IsClientInfoMenu(client);//From l4d_Harry_Roto2-AZ_mod_info
 new TimeCount;
 
 // **********************************************
@@ -829,10 +827,19 @@ UpdatePanel()
 	}
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientVoteMenu(client) && !IsClientInfoMenu(client))
+		if(IsClientInGame(client) && !IsFakeClient(client))
 		{
-			if(!hiddenPanel[client])
-				SendPanelToClient(menuPanel, client, DummyHandler, 1);
+			if(hiddenPanel[client]) continue;
+
+			switch (GetClientMenu(client))
+			{
+				case MenuSource_External, MenuSource_Normal:
+				{ 
+					continue;
+				}
+			}
+
+			SendPanelToClient(menuPanel, client, DummyHandler, 1);
 		}
 	}
 }

@@ -132,7 +132,6 @@ int Votey = 0, Voten = 0;
 int score1, score2;
 #define VOTE_NO "no"
 #define VOTE_YES "yes"
-native void ClientVoteMenuSet(client,trueorfalse);//from votes3
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -2429,8 +2428,15 @@ CheckSurvivorProgress()
 		{
 			if(!IsClientInGame(i) || IsFakeClient(i)) continue;
 
-			if(GetClientMenu(i, INVALID_HANDLE) == MenuSource_None)
-				SendPanelToClient(PANEL, i, DummyPANELHudHandler, 3);
+			switch (GetClientMenu(i))
+			{
+				case MenuSource_External, MenuSource_Normal:
+				{ 
+					continue;
+				}
+			}
+			
+			SendPanelToClient(PANEL, i, DummyPANELHudHandler, 3);
 		}
 		
 		CloseHandle(PANEL);
@@ -2474,16 +2480,6 @@ StartVote(const String:sVoteHeader[])
 	hVote.DisplayVote(iPlayers, iTotal, 20, 0);
 	
 	EmitSoundToAll("ui/beep_synthtone01.wav");
-	
-	for(new i=1; i <= MaxClients; i++)
-	{
-		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
-		{
-			continue;
-		}
-		
-		ClientVoteMenuSet(i,1);
-	}
 }
 
 public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2)
@@ -2575,7 +2571,6 @@ public Action:VoteEndDelay(Handle:timer)
 {
 	Votey = 0;
 	Voten = 0;
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,0);
 
 	return Plugin_Continue;
 }
