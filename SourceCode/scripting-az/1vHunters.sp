@@ -23,12 +23,12 @@
 #include <multicolors>
 
 new Handle:hCvarDmgThreshold;
-new Handle:hCvarAnnounce;
+//new Handle:hCvarAnnounce;
 new Handle:hCvarHunterClawDamage;
 new Handle:hCvarSkipGetUpAnimation;
 new Handle:g_hGameMode;
 new CvarDmgThreshold;
-new CvarAnnounce;
+//new CvarAnnounce;
 new CvarHunterClawDamage;
 new CvarSkipGetUpAnimation;
 new String:CvarGameMode[20];
@@ -54,19 +54,19 @@ public OnPluginStart()
 	g_hGameMode = FindConVar("mp_gamemode");
 	GetConVarString(g_hGameMode,CvarGameMode,sizeof(CvarGameMode));
 
-	hCvarDmgThreshold = CreateConVar("sm_1v1_dmgthreshold", "24", "Amount of damage done (at once) before SI suicides. -1:Disable", FCVAR_NOTIFY, true, -1.0);
-	hCvarAnnounce = CreateConVar("sm_1v1_dmgannounce", "1", "Announce SI Health Left before SI suicides.", FCVAR_NOTIFY, true, 0.0);
+	hCvarDmgThreshold = CreateConVar("sm_1vh_dmgthreshold", "24", "Amount of damage done (at once) before SI suicides. -1:Disable", FCVAR_NOTIFY, true, -1.0);
+	//hCvarAnnounce = CreateConVar("sm_1vh_dmgannounce", "1", "Announce SI Health Left before SI suicides.", FCVAR_NOTIFY, true, 0.0);
 	hCvarHunterClawDamage = CreateConVar("sm_hunter_claw_dmg", "-1", "Hunter claw Dmg. -1:Default value dmg", FCVAR_NOTIFY, true, -1.0);
 	hCvarSkipGetUpAnimation = CreateConVar("sm_hunter_skip_getup", "1", "Skip Survivor Get Up Animation", FCVAR_NOTIFY, true, 0.0);
 	
 	
 	CvarDmgThreshold = GetConVarInt(hCvarDmgThreshold);
-	CvarAnnounce = GetConVarInt(hCvarAnnounce);
+	//CvarAnnounce = GetConVarInt(hCvarAnnounce);
 	CvarHunterClawDamage = GetConVarInt(hCvarHunterClawDamage);
 	CvarSkipGetUpAnimation = GetConVarInt(hCvarSkipGetUpAnimation);
 	
 	HookConVarChange(hCvarDmgThreshold, ConVarChange_hCvarDmgThreshold);
-	HookConVarChange(hCvarAnnounce, ConVarChange_hCvarAnnounce);
+	//HookConVarChange(hCvarAnnounce, ConVarChange_hCvarAnnounce);
 	HookConVarChange(hCvarHunterClawDamage, ConVarChange_hHunterClawDamage);
 	HookConVarChange(hCvarSkipGetUpAnimation,ConVarChange_hCvarSkipGetUpAnimation);
 	
@@ -100,11 +100,13 @@ public ConVarChange_hCvarDmgThreshold(Handle:convar, const String:oldValue[], co
 		CvarDmgThreshold = StringToInt(newValue);
 }
 
+/*
 public ConVarChange_hCvarAnnounce(Handle:convar, const String:oldValue[], const String:newValue[])
 {	
 	if (!StrEqual(oldValue, newValue))
 		CvarAnnounce = StringToInt(newValue);
 }
+*/
 public ConVarChange_hHunterClawDamage(Handle:convar, const String:oldValue[], const String:newValue[])
 {	
 	if (!StrEqual(oldValue, newValue))
@@ -132,22 +134,22 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 			{
 				if(damage >= CvarDmgThreshold && CvarDmgThreshold >=0)
 				{
-					new remaining_health = GetClientHealth(attacker);
+					/*new remaining_health = GetClientHealth(attacker);
 					if(CvarAnnounce == 1)
 					{
 						CPrintToChat(victim,"[{olive}TS 1vHunter{default}] {red}%N{default} had {green}%d{default} health remaining!", attacker, remaining_health);
 						if(!IsFakeClient(attacker))
 							CPrintToChat(attacker,"[{olive}TS 1vHunter{default}] You have {green}%d{default} health remaining!", remaining_health);
-					}
+					}*/
 				
 					CreateTimer(0.01, ColdDown, GetClientUserId(attacker),_);
 					if(CvarSkipGetUpAnimation == 1)
 						CreateTimer(0.1, CancelGetup, GetClientUserId(victim),_);
 
-					if (remaining_health == 1&&CvarAnnounce == 1)
+					/*if (remaining_health == 1 && CvarAnnounce == 1)
 					{
 						CPrintToChat(victim, "[{olive}TS 1vHunter{default}] You don't have to be mad...");
-					}	
+					}*/	
 				}
 			}
 			else if(CvarHunterClawDamage >= 0)

@@ -41,11 +41,11 @@ public OnPluginStart()
 	HookEvent("player_hurt", Event_PlayerHurt, EventHookMode_Post);
 	HookEvent("lunge_pounce", PlayerLunge_Pounce_Event);
 	HookEvent("player_spawn",		Event_PlayerSpawn);
-	HookEvent("player_death",		Event_PlayerDeath);
+	//HookEvent("player_death",		Event_PlayerDeath);
 	HookEvent("tank_spawn",			Event_TankSpawn);
 	HookEvent("witch_spawn",		WitchSpawn_Event);
 }
-
+/*
 public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -62,7 +62,7 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 		}
 	}
 }
-
+*/
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -82,24 +82,24 @@ public Action:Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
-	if (!IsClientAndInGame(attacker)||!haspounced)
+	if (!IsClientAndInGame(attacker) || !IsClientAndInGame(victim) || !haspounced)
 		return;
 
 	new damage = GetEventInt(event, "dmg_health");
 	new zombie_class = GetZombieClass(attacker);
 
-	if (GetClientTeam(attacker) == 3 && zombie_class != 5 && damage >= GetConVarInt(hCvarDmgThreshold))//承受設定的傷害
+	if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 3 && zombie_class != 5 && damage >= GetConVarInt(hCvarDmgThreshold))//承受設定的傷害
 	{
-		new remaining_health = GetClientHealth(attacker);
-		CPrintToChatAll("[{olive}TS 1v1{default}] {red}%N{default} had {green}%d{default} health remaining!", attacker, remaining_health);
-
 		ForcePlayerSuicide(attacker);    
 		haspounced = false;
+
+		/*new remaining_health = GetClientHealth(attacker);
+		CPrintToChatAll("[{olive}TS 1v1{default}] {red}%N{default} had {green}%d{default} health remaining!", attacker, remaining_health);
 		
 		if (remaining_health == 1)
 		{
 			CPrintToChat(victim, "[{olive}TS 1v1{default}] You don't have to be mad...");
-		}
+		}*/
 	}
 }
 

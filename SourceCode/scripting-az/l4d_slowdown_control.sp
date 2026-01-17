@@ -55,13 +55,15 @@ ConVar
 	hCvarSdInwaterSurvivorRunDuringTank,
 	hCvarSurvivorLimpHealth,
 	hCvarSurvivorLimpRunSpeed,
-	hCvarCrouchSpeedMod;
+	hCvarCrouchSpeedMod,
+	hCvarCrouchSpeedModGhost;
 
 float
 	fTankWaterRunSpeed,
 	fSurvWaterRunSpeed,
 	fSurvWaterRunSpeedDuringTank,
 	fCrouchSpeedMod,
+	fCvarCrouchSpeedModGhost,
 	fCvarSurvivorLimpRunSpeed;
 
 int iCvarSurvivorLimpHealth;
@@ -70,8 +72,10 @@ bool
 	tankInPlay = false,
 	g_bWaterSlowDownMap = false,
 	g_bIsFirstTank = false,
-	bFoundCrouchTrigger = false,
-	bPlayerInCrouchTrigger[MAXPLAYERS + 1];
+	bFoundCrouchTrigger = false;
+
+ArrayStack
+	g_asPlayerInCrouchTrigger[MAXPLAYERS + 1];
 
 int g_iRoundStart, g_iPlayerSpawn;
 
@@ -108,7 +112,8 @@ public void OnPluginStart()
 	hCvarSdInwaterTankRun = CreateConVar("l4d_slowdown_water_tank_run", "0", "Maximum tank Run speed in the water (0: don't modify speed; 210: default Tank Speed)", _, true, 0.0);
 	hCvarSdInwaterSurvivorRun = CreateConVar("l4d_slowdown_water_survivors_run", "170", "Maximum survivor Run speed in the water outside of Tank fights (0: don't modify speed; 220: default Survivor speed)", _, true, 0.0);
 	hCvarSdInwaterSurvivorRunDuringTank = CreateConVar("l4d_slowdown_water_survivors_run_during_tank", "220", "Maximum survivor Run speed in the water during Tank fights (0: don't modify speed; 220: default Survivor speed)", _, true, 0.0);
-	hCvarCrouchSpeedMod = CreateConVar("l4d2_slowdown_crouch_speed_mod", "1.4", "Modifier of player crouch speed when inside a designated trigger, 75 is the defualt for everyone (1: default speed)", _, true, 0.0);
+	hCvarCrouchSpeedMod = CreateConVar("l4d2_slowdown_crouch_speed_mod", "1.4", "Modifier of survivor and infected player crouch speed when inside a designated trigger, 75 is the defualt for everyone (1: default speed)", _, true, 0.0);
+	hCvarCrouchSpeedModGhost = CreateConVar("l4d2_slowdown_crouch_speed_mod_ghost", "3.0", "Modifier of ghost infected player crouch speed when inside a designated trigger, 75 is the defualt (1: default speed)", _, true, 0.0);
 
 	hCvarSdPistolMod = CreateConVar("l4d_slowdown_pistol_percent", "0.0", "Pistols cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
 	hCvarSdUziMod = CreateConVar("l4d_slowdown_uzi_percent", "0.8", "Unsilenced uzis cause this much slowdown * l4d_slowdown_gunfire at maximum damage.");
@@ -122,6 +127,7 @@ public void OnPluginStart()
 	hCvarSdInwaterSurvivorRun.AddChangeHook(OnConVarChanged);
 	hCvarSdInwaterSurvivorRunDuringTank.AddChangeHook(OnConVarChanged);
 	hCvarCrouchSpeedMod.AddChangeHook(OnConVarChanged);
+	hCvarCrouchSpeedModGhost.AddChangeHook(OnConVarChanged);
 
 	hCvarSurvivorLimpHealth = FindConVar("survivor_limp_health");
 	hCvarSurvivorLimpRunSpeed = FindConVar("survivor_limp_run_speed");
@@ -192,6 +198,7 @@ void CvarsToType()
 	fSurvWaterRunSpeed = hCvarSdInwaterSurvivorRun.FloatValue;
 	fSurvWaterRunSpeedDuringTank = hCvarSdInwaterSurvivorRunDuringTank.FloatValue;
 	fCrouchSpeedMod = hCvarCrouchSpeedMod.FloatValue;
+	fCvarCrouchSpeedModGhost = hCvarCrouchSpeedModGhost.FloatValue;
 	
 	iCvarSurvivorLimpHealth = hCvarSurvivorLimpHealth.IntValue;
 	fCvarSurvivorLimpRunSpeed = hCvarSurvivorLimpRunSpeed.FloatValue;
@@ -262,15 +269,16 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	ClearDefault();
 }
 
-public void HookCrouchTriggers()
+void HookCrouchTriggers()
 {
 	bFoundCrouchTrigger = false;
 	
 	// Hook trigger_multiple entities that are named "l4d2_slowdown_crouch_speed"
-	if (fCrouchSpeedMod != 1.0) {
+	if (fCrouchSpeedMod != 1.0 || fCvarCrouchSpeedModGhost != 1.0) {
 		// Reset array
 		for (int i = 1; i <= MaxClients; i++) {
-			bPlayerInCrouchTrigger[i] = false;
+			delete g_asPlayerInCrouchTrigger[i];
+			g_asPlayerInCrouchTrigger[i] = new ArrayStack();
 		}
 		
 		int iEntity = -1;
@@ -289,17 +297,17 @@ public void HookCrouchTriggers()
 	}
 }
 
-public void CrouchSpeedStartTouch(const char[] output, int caller, int activator, float delay)
+void CrouchSpeedStartTouch(const char[] output, int caller, int activator, float delay)
 {
 	if (0 < activator <= MaxClients && IsClientInGame(activator)) {
-		bPlayerInCrouchTrigger[activator] = true;
+		g_asPlayerInCrouchTrigger[activator].Push(true);
 	}
 }
 
-public void CrouchSpeedEndTouch(const char[] output, int caller, int activator, float delay)
+void CrouchSpeedEndTouch(const char[] output, int caller, int activator, float delay)
 {
 	if (0 < activator <= MaxClients && IsClientInGame(activator)) {
-		bPlayerInCrouchTrigger[activator] = false;
+		g_asPlayerInCrouchTrigger[activator].Pop();
 	}
 }
 
@@ -398,14 +406,17 @@ public Action L4D_OnGetRunTopSpeed(int client, float &retVal)
 **/
 public Action L4D_OnGetCrouchTopSpeed(int client, float &retVal)
 {
-	if (fCrouchSpeedMod == 1.0 || !bFoundCrouchTrigger || !IsClientInGame(client)) {
+	if ( (fCrouchSpeedMod == 1.0 && fCvarCrouchSpeedModGhost == 1.0) || !bFoundCrouchTrigger || !IsClientInGame(client)) {
 		return Plugin_Continue;
 	}
 	
-	if (IsPlayerInCrouchTrigger(client)) {
+	if (IsPlayerInCrouchTrigger(client)) 
+	{
 		bool bCrouched = (GetEntityFlags(client) & FL_DUCKING && GetEntityFlags(client) & FL_ONGROUND) ? true : false;
 		
-		if (bCrouched) {
+		if (bCrouched) 
+		{
+			if(L4D_IsPlayerGhost(client)) retVal = retVal * fCvarCrouchSpeedModGhost; // 75 * modifier
 			retVal = retVal * fCrouchSpeedMod; // 75 * modifier
 			return Plugin_Handled;
 		}
@@ -541,7 +552,7 @@ stock float L4D2Util_ClampFloat(float inc, float low, float high)
 bool IsPlayerInCrouchTrigger(int client)
 {
 	if (0 < client <= MaxClients && IsClientInGame(client) && IsPlayerAlive(client)){
-		return bPlayerInCrouchTrigger[client];
+		return !g_asPlayerInCrouchTrigger[client].Empty;
 	}
 	
 	return false;

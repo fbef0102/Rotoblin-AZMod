@@ -1012,16 +1012,13 @@ public Event_LungePounce(Handle:event, const String:name[], bool:dontBroadcast)
 		g_iMapStats[victim][DPsEaten]++;
 	}
 	
-	if(g_iSurvivorLimit != 1)
-	{
-		new String:attackername[128];
-		GetClientName(attacker,attackername,128);
-		new remaining_health = GetClientHealth(attacker);
-		CPrintToChat(victim,"[{olive}TS{default}] %T","l4dcompstats12",victim, attackername, remaining_health);
-		if (remaining_health == 1)
-			CPrintToChat(victim, "[{olive}TS{default}] %T","You don't have to be mad...",victim);
-		CPrintToChat(attacker,"[{olive}TS{default}] %T","l4dcompstats13",attacker, remaining_health);
-	}
+	static char attackername[128];
+	GetClientName(attacker,attackername,128);
+	int remaining_health = GetClientHealth(attacker);
+	CPrintToChat(victim,"[{olive}TS{default}] %T","l4dcompstats12",victim, attackername, remaining_health);
+	if (remaining_health == 1)
+		CPrintToChat(victim, "[{olive}TS{default}] %T","You don't have to be mad...",victim);
+	CPrintToChat(attacker,"[{olive}TS{default}] %T","l4dcompstats13",attacker, remaining_health);
 }
 
 public Event_PlayerBoomed(Handle:event, const String:name[], bool:dontBroadcast)

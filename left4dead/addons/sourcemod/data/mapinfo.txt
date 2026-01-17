@@ -1981,6 +1981,16 @@
 				"min"		"0"
 				"max"		"35"
 			}
+			"Prison_1"
+			{
+				"min"		"42"
+				"max"		"49"
+			}
+			"Prison_2"
+			{
+				"min"		"60"
+				"max"		"63"
+			}
 			"Map Nav Sucks"
 			{
 				"min"		"76"
@@ -1993,6 +2003,16 @@
 			{
 				"min"		"0"
 				"max"		"35"
+			}
+			"Prison_1"
+			{
+				"min"		"42"
+				"max"		"49"
+			}
+			"Prison_2"
+			{
+				"min"		"60"
+				"max"		"63"
 			}
 			"Map Nav Sucks"
 			{

@@ -3464,28 +3464,6 @@ bool:BotsAlive ()
 	return false;
 }
 
-MoreThanFivePlayers()
-{
-	new InfectedReal;
-	// First we count the ammount of infected real players and bots
-	for (new i=1;i<=MaxClients;i++)
-	{
-		// We check if player is in game
-		if (!IsClientInGame(i)) continue;
-		
-		// Check if client is infected human...
-		if (GetClientTeam(i) == TEAM_INFECTED && !IsFakeClient(i))
-		{
-			InfectedReal++;
-		}
-	}
-	if (InfectedReal > 5)
-	{
-		return true;
-	}
-	return false;
-}
-
 PlayerReady()
 {
 	// First we count the ammount of infected real players
@@ -3826,8 +3804,8 @@ public ShowInfectedHUD(src)
 		return;
 	}
 	
-	// If no bots are alive, and if there is 5 or less players, no point in showing the HUD
-	if (GameMode == 2 && !BotsAlive() && !MoreThanFivePlayers())
+	// If no bots are alive, no point in showing the HUD
+	if (!BotsAlive())
 	{
 		return;
 	}
@@ -3858,7 +3836,7 @@ public ShowInfectedHUD(src)
 	
 	// Display information panel to infected clients
 	pInfHUD = CreatePanel(GetMenuStyleHandle(MenuStyle_Radio));
-	if (GameMode == 2 && !MoreThanFivePlayers())
+	if (GameMode == 2)
 		SetPanelTitle(pInfHUD, "INFECTED BOTS:");
 	else
 	SetPanelTitle(pInfHUD, "INFECTED TEAM:");
@@ -3870,105 +3848,96 @@ public ShowInfectedHUD(src)
 		for (i = 1; i <= MaxClients; i++)
 		{
 			if (!IsClientInGame(i)) continue;
-			if (( MoreThanFivePlayers() && !IsFakeClient(i)) || IsFakeClient(i) || (GameMode != 2 && !IsFakeClient(i)))
+			if (IsFakeClient(i) || (GameMode != 2 && !IsFakeClient(i)))
 			{
-				if (GetClientMenu(i) == MenuSource_RawPanel || GetClientMenu(i) == MenuSource_None)
+				if (GetClientTeam(i) == TEAM_INFECTED)
 				{
-					if (GetClientTeam(i) == TEAM_INFECTED)
+					// Work out what they're playing as
+					if (IsPlayerHunter(i))
 					{
-						// Work out what they're playing as
-						if (IsPlayerHunter(i))
+						strcopy(iClass, sizeof(iClass), "Hunter");
+						iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[0]) * 100);
+					}
+					else if (IsPlayerSmoker(i))
+					{
+						strcopy(iClass, sizeof(iClass), "Smoker");
+						iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[1]) * 100);
+					}
+					else if (IsPlayerBoomer(i))
+					{
+						strcopy(iClass, sizeof(iClass), "Boomer");
+						iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[2]) * 100);
+					}
+					else if (IsPlayerTank(i))
+					{
+						strcopy(iClass, sizeof(iClass), "Tank");
+						iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[6]) * 100);	
+					}
+					
+					if (PlayerIsAlive(i))
+					{
+						// Check to see if they are a ghost or not
+						if (IsPlayerGhost(i))
 						{
-							strcopy(iClass, sizeof(iClass), "Hunter");
-							iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[0]) * 100);
+							strcopy(iStatus, sizeof(iStatus), "GHOST");
 						}
-						else if (IsPlayerSmoker(i))
+						else Format(iStatus, sizeof(iStatus), "%i%%", iHP);
+					}
+					else
+					{
+						if (respawnDelay[i] > 0 && !DirectorSpawn)
 						{
-							strcopy(iClass, sizeof(iClass), "Smoker");
-							iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[1]) * 100);
+							Format(iStatus, sizeof(iStatus), "DEAD (%i)", respawnDelay[i]);
+							strcopy(iClass, sizeof(iClass), "");
+							// As a failsafe if they're dead/waiting set HP to 0
+							iHP = 0;
+						} 
+						else if (respawnDelay[i] == 0 && GameMode != 2 && !DirectorSpawn)
+						{
+							Format(iStatus, sizeof(iStatus), "READY");
+							strcopy(iClass, sizeof(iClass), "");
+							// As a failsafe if they're dead/waiting set HP to 0
+							iHP = 0;
 						}
-						else if (IsPlayerBoomer(i))
+						else if (respawnDelay[i] > 0 && DirectorSpawn && GameMode != 2)
 						{
-							strcopy(iClass, sizeof(iClass), "Boomer");
-							iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[2]) * 100);
-						}
-						else if (IsPlayerTank(i))
+							Format(iStatus, sizeof(iStatus), "DELAY (%i)", respawnDelay[i]);
+							strcopy(iClass, sizeof(iClass), "");
+							// As a failsafe if they're dead/waiting set HP to 0
+							iHP = 0;
+						} 
+						else if (respawnDelay[i] == 0 && DirectorSpawn && GameMode != 2)
 						{
-							strcopy(iClass, sizeof(iClass), "Tank");
-							iHP = RoundFloat((float(GetClientHealth(i)) / zombieHP[6]) * 100);	
-						}
-						
-						if (PlayerIsAlive(i))
-						{
-							// Check to see if they are a ghost or not
-							if (IsPlayerGhost(i))
-							{
-								strcopy(iStatus, sizeof(iStatus), "GHOST");
-							}
-							else Format(iStatus, sizeof(iStatus), "%i%%", iHP);
-						}
-						else
-						{
-							if (respawnDelay[i] > 0 && !DirectorSpawn)
-							{
-								Format(iStatus, sizeof(iStatus), "DEAD (%i)", respawnDelay[i]);
-								strcopy(iClass, sizeof(iClass), "");
-								// As a failsafe if they're dead/waiting set HP to 0
-								iHP = 0;
-							} 
-							else if (respawnDelay[i] == 0 && GameMode != 2 && !DirectorSpawn)
-							{
-								Format(iStatus, sizeof(iStatus), "READY");
-								strcopy(iClass, sizeof(iClass), "");
-								// As a failsafe if they're dead/waiting set HP to 0
-								iHP = 0;
-							}
-							else if (respawnDelay[i] > 0 && DirectorSpawn && GameMode != 2)
-							{
-								Format(iStatus, sizeof(iStatus), "DELAY (%i)", respawnDelay[i]);
-								strcopy(iClass, sizeof(iClass), "");
-								// As a failsafe if they're dead/waiting set HP to 0
-								iHP = 0;
-							} 
-							else if (respawnDelay[i] == 0 && DirectorSpawn && GameMode != 2)
-							{
-								Format(iStatus, sizeof(iStatus), "WAITING");
-								strcopy(iClass, sizeof(iClass), "");
-								// As a failsafe if they're dead/waiting set HP to 0
-								iHP = 0;
-							}
-							else
-							{
-								Format(iStatus, sizeof(iStatus), "DEAD");
-								strcopy(iClass, sizeof(iClass), "");
-								// As a failsafe if they're dead/waiting set HP to 0
-								iHP = 0;
-							}
-						}
-						
-						// Special case - if player is Tank and on fire, show the countdown
-						if (StrContains(iClass, "Tank", false) != -1 && isTankOnFire[i] && PlayerIsAlive(i))
-						{
-							Format(iStatus, sizeof(iStatus), "%s-FIRE(%i)", iStatus, burningTankTimeLeft[i]);
-						}
-						
-						if (IsFakeClient(i))
-						{
-							Format(lineBuf, sizeof(lineBuf), "%N-%s", i, iStatus);
-							DrawPanelItem(pInfHUD, lineBuf);
+							Format(iStatus, sizeof(iStatus), "WAITING");
+							strcopy(iClass, sizeof(iClass), "");
+							// As a failsafe if they're dead/waiting set HP to 0
+							iHP = 0;
 						}
 						else
 						{
-							Format(lineBuf, sizeof(lineBuf), "%N-%s-%s", i, iClass, iStatus);
-							DrawPanelItem(pInfHUD, lineBuf);
+							Format(iStatus, sizeof(iStatus), "DEAD");
+							strcopy(iClass, sizeof(iClass), "");
+							// As a failsafe if they're dead/waiting set HP to 0
+							iHP = 0;
 						}
 					}
-				}
-				else
-				{
-					#if DEBUGHUD
-					PrintToChat(i, "x01\x04[infhud]\x01 [%f] Not showing infected HUD as vote/menu (%i) is active", GetClientMenu(i), GetGameTime());
-					#endif
+					
+					// Special case - if player is Tank and on fire, show the countdown
+					if (StrContains(iClass, "Tank", false) != -1 && isTankOnFire[i] && PlayerIsAlive(i))
+					{
+						Format(iStatus, sizeof(iStatus), "%s-FIRE(%i)", iStatus, burningTankTimeLeft[i]);
+					}
+					
+					if (IsFakeClient(i))
+					{
+						Format(lineBuf, sizeof(lineBuf), "%N-%s", i, iStatus);
+						DrawPanelItem(pInfHUD, lineBuf);
+					}
+					else
+					{
+						Format(lineBuf, sizeof(lineBuf), "%N-%s-%s", i, iClass, iStatus);
+						DrawPanelItem(pInfHUD, lineBuf);
+					}
 				}
 			}
 		}
@@ -3981,7 +3950,7 @@ public ShowInfectedHUD(src)
 	{
 		if (IsClientInGame(i) && !IsFakeClient(i))
 		{
-			if ((GetClientTeam(i) == TEAM_INFECTED || GetClientTeam(i) == TEAM_SPECTATOR) && (hudDisabled[i] == 0) && (GetClientMenu(i) == MenuSource_RawPanel || GetClientMenu(i) == MenuSource_None))
+			if (GetClientTeam(i) == TEAM_INFECTED && hudDisabled[i] == 0 && (GetClientMenu(i) == MenuSource_None))
 			{	
 				SendPanelToClient(pInfHUD, i, Menu_InfHUDPanel, 5);
 			}

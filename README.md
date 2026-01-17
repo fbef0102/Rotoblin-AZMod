@@ -501,7 +501,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *(2v2)*: **✘**
       - *(1v1)*: **✘**
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
-    * claw Damage: 6 (vanilla: 6)
+    * Claw Damage: 5 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
     * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)

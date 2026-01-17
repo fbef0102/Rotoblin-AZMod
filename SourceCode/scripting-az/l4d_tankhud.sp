@@ -141,8 +141,8 @@ public Action:HudDrawTimer(Handle:hTimer)
 			if (!bTankHudActive[i] || !IsClientInGame(i) || IsFakeClient(i) || IsSurvivor(i) || IsClientVoteMenu(i) || IsClientInfoMenu(i) || IsInPause() )
 				continue;
 
-			// if (GetClientMenu(i) != MenuSource_None)
-			// 	continue;
+			if (GetClientMenu(i) != MenuSource_None)
+			 	continue;
 			
 			if(IsSpectator(i) && IsClientSpecHud(i))
 				continue;
