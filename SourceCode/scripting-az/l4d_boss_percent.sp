@@ -24,6 +24,7 @@ new Handle:hCvarTankPercent;
 new Handle:hCvarWitchPercent;
 new bool:InSecondHalfOfRound;
 
+Handle g_forwardUpdateBosses;
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 { 
 	CreateNative("GetTankPercent",Native_GetTankPercent);
@@ -31,6 +32,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("GetWitchPercentFloat",Native_GetWitchPercentFloat);
 	CreateNative("PrintBossPercents",Native_PrintBossPercents);
 	CreateNative("SaveBossPercents",Native_SaveBossPercents);
+
+	g_forwardUpdateBosses = CreateGlobalForward("OnUpdateBosses", ET_Ignore, Param_Cell, Param_Cell);
 	RegPluginLibrary("l4d_boss_percent");
 	return APLRes_Success;
 }
@@ -45,12 +48,9 @@ public Native_GetWitchPercent(Handle:plugin, numParams) {
     return iWitchPercent;
 }
 
-Handle g_forwardUpdateBosses;
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-
-	g_forwardUpdateBosses = CreateGlobalForward("OnUpdateBosses", ET_Ignore, Param_Cell, Param_Cell);
 
 	hCvarPrintToEveryone = CreateConVar("l4d_global_percent", "0", "Display boss percentages to entire team when using commands", FCVAR_NOTIFY);
 	hCvarTankPercent = CreateConVar("l4d_tank_percent", "1", "Display Tank flow percentage in chat", FCVAR_NOTIFY);
@@ -95,7 +95,7 @@ public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 		InSecondHalfOfRound = true;
 }
 
-public Action:SaveBossFlows(Handle:timer)
+Action SaveBossFlows(Handle timer)
 {
 	if (!InSecondHalfOfRound)
 	{
@@ -126,10 +126,10 @@ public Action:SaveBossFlows(Handle:timer)
 		}
 	}
 
-	new Handle:WITCHPARTY = FindConVar("l4d_multiwitch_enabled");
-	if(WITCHPARTY != INVALID_HANDLE)
+	ConVar l4d_multiwitch_enabled = FindConVar("l4d_multiwitch_enabled");
+	if(l4d_multiwitch_enabled != null)
 	{
-		if(GetConVarInt(WITCHPARTY) == 1)
+		if(l4d_multiwitch_enabled.IntValue == 1)
 			iWitchPercent = -2;
 	}
 
@@ -137,6 +137,8 @@ public Action:SaveBossFlows(Handle:timer)
 	Call_PushCell(iTankPercent);
 	Call_PushCell(iWitchPercent);
 	Call_Finish();
+
+	return Plugin_Continue;
 }
 
 stock PrintBossPercents(client)

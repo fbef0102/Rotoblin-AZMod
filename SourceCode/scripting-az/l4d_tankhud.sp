@@ -37,7 +37,7 @@ public Plugin:myinfo =
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	EngineVersion test = GetEngineVersion();
-	
+
 	if( test != Engine_Left4Dead )
 	{
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
@@ -45,6 +45,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	}
 
 	CreateNative("IsClientTankHud", Native_IsClientTankHud);
+	RegPluginLibrary("l4d_tankhud");
 	return APLRes_Success;
 }
 

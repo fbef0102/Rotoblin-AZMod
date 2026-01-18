@@ -319,6 +319,22 @@ public OnPluginStart()
 	RegConsoleCmd("sm_timer", Console_Timer);
 }
 
+bool l4d_tankhudAvailable;
+public void OnAllPluginsLoaded()
+{
+    l4d_tankhudAvailable = LibraryExists("l4d_tankhud");
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if (strcmp(name, "l4d_tankhud") == 0) l4d_tankhudAvailable = false;
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+    if (strcmp(name, "l4d_tankhud") == 0) l4d_tankhudAvailable = true;
+}
+
 public Action:Console_Ht(client, args)
 {
 	if (client == 0)
@@ -3546,12 +3562,12 @@ public ShowInfectedHUD(src)
 			{
 				case TEAM_INFECTED:
 				{ 
-					if(IsClientTankHud(i)) continue;
+					if(l4d_tankhudAvailable && IsClientTankHud(i)) continue;
 				}
 				case TEAM_SPECTATOR:
 				{ 
 					if(IsClientSpecHud(i)) continue;
-					if(IsClientTankHud(i)) continue;
+					if(l4d_tankhudAvailable && IsClientTankHud(i)) continue;
 				}
 				default:
 				{

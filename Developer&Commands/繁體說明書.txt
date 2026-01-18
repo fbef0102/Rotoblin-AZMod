@@ -804,6 +804,10 @@
 //Tank and witch can break doors in resident evil 3 map
 //Tank and witch 在 resident evil 3 地圖可以打破門
 
+[223] l4d2_tankrage 
+//For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
+//倖存者每回退7%路程, Tank有4秒時間不會失去控制權
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

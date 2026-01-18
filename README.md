@@ -452,6 +452,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fixed passing Tank (going AI) triggering next stage of script finales.
     * Fix tank's punch getting cancelled when they heavily land on ground.
     * Stops the Tanks footsteps causing the screen to shake.
+    * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
