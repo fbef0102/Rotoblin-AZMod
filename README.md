@@ -185,8 +185,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Remove miniguns and machine guns
   * Extra Pills
     * Limit 2 pill in cabinets, but the pill is not fixed spawn
-    * On the road: 1~2 pills
     * Final rescue area: 4 pills
+    * On the road: Spawn varying numbers of pills depending on the route length of the map
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress

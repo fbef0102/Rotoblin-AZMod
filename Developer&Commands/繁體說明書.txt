@@ -24,7 +24,7 @@
 * 地圖藥丸
 	-醫療箱限制兩顆藥丸但不一定會出現
 	-救援區域: 四顆
-	-路上: 隨機出現1~2顆數量
+	-路上: 根據路程長短生成不同數量的藥丸
 * 清除或穿透一些小型物件，使玩家能移動順暢
 * 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
 * 最終關卡路程符合救援進度
@@ -45,6 +45,8 @@
 12. City Of The Dead: gamemaps.com/details/25778
 13. Dead Vacation: gamemaps.com/details/30523
 14. Undead Zone: gamemaps.com/details/31513
+15. Resident Evil 3: gamemaps.com/details/34693
+16. Dark Wood: gamemaps.com/details/32164
 
 --------支援二代地圖--------
 * L4D2 on L4D1 Maps: https://www.gamemaps.com/details/32168
@@ -65,10 +67,11 @@
 {		3.0->2.0	} 邊移動邊開槍的準度
 {		480->800	} 後備子彈
 {		0.84->0.78	} 傷害距離遞減
-{  		2.23->1.8   } 裝彈速度
-{  		20->22      } 傷害
+{  		2.23->1.9   } 裝彈速度
+{  		20->24      } 傷害
 {		3		 	} 隊伍可拿數量
-{		37		 	} 友傷保護範圍
+{		30		 	} 友傷保護範圍
+{		0.3		 	} 友傷保護秒數
 
 * Pumpshotgun 霰彈槍
 {		128->96		} 後備子彈
@@ -78,6 +81,7 @@
 
 * Pistol 手槍
 {		25			} 友傷保護範圍
+{		0.3		 	} 友傷保護秒數
 
 * Hunting_Rifle 狙擊槍 
 {   	1->1.25 	} 彈夾完全空的裝彈時間
@@ -88,7 +92,7 @@
 {   	90->120 	} 一槍對Tank的傷害
 {		胸部: 250,  腹部: 168 } 一槍對Hunter的傷害
 {		1			} 隊伍可拿數量
-{		37			} 友傷保護範圍
+{		25			} 友傷保護範圍
 
 --------插件使用--------
 [01] pounceannounce 
@@ -795,6 +799,10 @@
 //Rules of props' move away, moved above props.
 //防止玩家碰到物件被移開
 //防止玩家碰到能移開物件
+
+[222] l4d_re3_door_break 
+//Tank and witch can break doors in resident evil 3 map
+//Tank and witch 在 resident evil 3 地圖可以打破門
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

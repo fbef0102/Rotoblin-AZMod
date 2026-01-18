@@ -17,7 +17,6 @@ new Votey = 0;
 new Voten = 0;
 #define VOTE_NO "no"
 #define VOTE_YES "yes"
-native ClientVoteMenuSet(client,trueorfalse);//from votes3
 native SaveWitchPercent(Float:fWitchFlow); //from l4d_versus_same_UnprohibitBosses
 native float GetSurCurrentFloat(); // from l4d_current_survivor_progress
 
@@ -196,16 +195,6 @@ StartVote(const String:sVoteHeader[])
 	hVote.DisplayVote(iPlayers, iTotal, 20, 0);
 	
 	EmitSoundToAll("ui/beep_synthtone01.wav");
-	
-	for(new i=1; i <= MaxClients; i++)
-	{
-		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) == 1)
-		{
-			continue;
-		}
-		
-		ClientVoteMenuSet(i,1);
-	}
 }
 
 public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2)
@@ -358,7 +347,6 @@ public Action:VoteEndDelay(Handle:timer)
 {
 	Votey = 0;
 	Voten = 0;
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,0);
 }
 VoteMenuClose()
 {

@@ -45,8 +45,6 @@ static Handle:g_cvarSvVisibleMaxPlayers = INVALID_HANDLE;
 new bool:g_bSlotsLocked = false;
 static g_slotdelay;
 new Handle:g_hCvarPlayerLimit;
-native IsInPause();
-native ClientVoteMenuSet(client,trueorfalse);//from votes3
 #define SlotVoteCommandDelay 2.5
 Menu g_hSlotVote = null;
 new Votey = 0;
@@ -159,11 +157,6 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 	}
 	if(!GetConVarBool(g_cvarSlotsPluginEnabled)) return Plugin_Handled;
 	
-	if (IsInPause())
-	{
-		return Plugin_Handled;
-	}
-	
 	if(iClient < 1) return Plugin_Handled;
 
 	if(GetAdminFlag(GetUserAdmin(iClient), Admin_Generic))
@@ -230,7 +223,6 @@ public Action:Cmd_SlotVote(iClient, iArgs)
 
 			return Plugin_Handled;
 		}
-		ClientVoteMenuSet(iClient,1);
 		CreateTimer(0.1, Timer_CreateSlotMenu, iClient, TIMER_FLAG_NO_MAPCHANGE);
 	}
 	else
@@ -264,11 +256,6 @@ public Action:Cmd_NoSpec(iClient, iArgs)
 		return Plugin_Handled;
 	}
 	if(!GetConVarBool(g_cvarSlotsPluginEnabled)) return Plugin_Handled;
-
-	if (IsInPause())
-	{
-		return Plugin_Handled;
-	}
 	
 	new iSpecs = 0;
 
@@ -379,8 +366,6 @@ static StartSlotVote(iClient)
 		LogMessage("%N(%s) starts a vote: Change server slots to %i?",  iClient, SteamId,g_iDesiredSlots);//紀錄在log文件
 		CPrintToChatAll("{default}[{olive}TS{default}]{blue} %N {default}%t: %t ->%i?", iClient,"starts a vote","Change_Server_Slots", g_iDesiredSlots);
 		
-		for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
-		
 		g_hSlotVote = new Menu(Handler_SlotCallback, MENU_ACTIONS_ALL);
 		g_hSlotVote.SetTitle("%T->%i?","Change_Server_Slots",LANG_SERVER,g_iDesiredSlots);
 		g_hSlotVote.AddItem(VOTE_YES, "Yes");
@@ -423,9 +408,6 @@ static StartNoSpecVote(iClient)
 		GetClientAuthId(iClient, AuthId_Steam2,SteamId, sizeof(SteamId));
 		LogMessage("%N(%s) starts a vote: kick spectators?",  iClient, SteamId);//紀錄在log文件
 		CPrintToChatAll("{default}[{olive}TS{default}]{blue} %N {default}%t: %t?", iClient,"starts a vote","kicks all spectators");
-		
-		for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
-		
 
 		g_hSlotVote = new Menu(Handler_SlotCallback2, MENU_ACTIONS_ALL);
 		g_hSlotVote.SetTitle("%T?","kicks all spectators",LANG_SERVER);
@@ -522,7 +504,6 @@ public Action:VoteEndDelay(Handle:timer)
 {
 	Votey = 0;
 	Voten = 0;
-	for(new i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,2);
 }
 VoteMenuClose()
 {

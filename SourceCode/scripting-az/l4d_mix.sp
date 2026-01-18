@@ -55,7 +55,6 @@ char teamName[64] ;
 char oppositeTeamName[64] ;
 native bool IsInReady();
 native bool Is_Ready_Plugin_On();
-native void ClientVoteMenuSet(int client,int true_or_false);//From Votes3
 
 public Plugin myinfo = 
 {
@@ -147,7 +146,6 @@ public void CaptainVote_ConVarChange_MixStatus(Handle convar, char[] oldValue, c
 	if (StrEqual(oldValue, newValue, true)) return;
 	if (g_CvarMixStatus.IntValue == 0)
 	{
-		for(int i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,2);
 		ResetSelectedPlayers();
 		ResetTeams();
 		ResetCaptains();
@@ -158,10 +156,6 @@ public void CaptainVote_ConVarChange_MixStatus(Handle convar, char[] oldValue, c
 	}
 	if (g_CvarMixStatus.IntValue == 3)
 	{
-		for(int i=1; i <= MaxClients; i++) 
-			ClientVoteMenuSet(i,2);
-		ClientVoteMenuSet(g_iSurvivorCaptain,1);	
-		ClientVoteMenuSet(g_iInfectedCaptain,1);
 		g_bSelectToggle = false;
 		g_SelectToggleNum = 1;
 		if(g_bPlayerSelectOrder)
@@ -335,7 +329,6 @@ public Action Timer_LoadMix(Handle timer)
 
 void VoteSurvivorCaptain()
 {
-    for(int i=1; i <= MaxClients; i++) ClientVoteMenuSet(i,1);
     ResetSelectedPlayers();
     ResetTeams();
     ResetCaptains();
@@ -396,7 +389,6 @@ public Action TimerCheckSurvivorCaptainVote(Handle timer)
 			GetClientName(g_iSurvivorCaptain,g_iSurvivorCaptainName,128);
 
 			CPrintToChatAll("{default}[{olive}Mix{default}] %t","l4d_Modo_mix_mm8", g_iSurvivorCaptainName, g_iVotesSurvivorCaptain[g_iSurvivorCaptain]);
-			ClientVoteMenuSet(g_iSurvivorCaptain,1);	
 			DisplayVoteMenuCaptainInfected();
 		}
 		return Plugin_Handled;
@@ -616,7 +608,6 @@ public Action TimerCheckInfectedCaptainVote(Handle timer)
 			GetClientName(g_iInfectedCaptain,g_iInfectedCaptainName,128);
 			
 			CPrintToChatAll("{default}[{olive}Mix{default}] %t","l4d_Modo_mix_mm12", g_iInfectedCaptainName, g_iVotesInfectedCaptain[g_iInfectedCaptain]);
-			ClientVoteMenuSet(g_iInfectedCaptain,1);
 			g_CvarMixStatus.SetInt(3, false, false);
 		}
 		return Plugin_Handled;
