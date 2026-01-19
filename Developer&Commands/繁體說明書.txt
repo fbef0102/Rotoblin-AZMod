@@ -7,8 +7,8 @@
 //如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
 --------引擎主要--------
-* sourcemod v1.11
-* metamod v1.11
+* sourcemod v1.12
+* metamod v1.12
 * stripper
 * l4dtoolz
 * Tickrate Enabler

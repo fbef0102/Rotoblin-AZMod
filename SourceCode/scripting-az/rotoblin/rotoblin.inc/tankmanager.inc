@@ -8,7 +8,7 @@
  *  Description:	Keep track of the current tank player
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2025  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2026  Harry <fbef0102@gmail.com>
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or

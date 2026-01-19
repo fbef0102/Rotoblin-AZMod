@@ -1,7 +1,7 @@
-Roto-AZ mod plugins work @ 2017-2025 Harry
-* Using [sourcemod compiler v1.11-git6968](https://www.sourcemod.net/smdrop/1.11/)
-    * 使用 sourcemod v1.11-git6968 的編譯環境
-* Some codes are old syntax since project started from 2017, and I am lazy to convert them all :D
+Roto-AZ mod plugins work @ 2017-2026 Harry
+* Using [sourcemod compiler v1.12-git7221](https://www.sourcemod.net/smdrop/1.12/)
+    * 使用 sourcemod v1.12-git7221 的編譯環境
+* Some codes are old syntax since project started from 2017, and I am lazy to convert them all to latest syntax :D
     * 某些代碼你會看到使用舊的語法, 因為此專案是從2017年開始的, 我懶得全部翻新 :D
 * This project is licensed under the [GNU General Public License, version 3](https://www.sourcemod.net/license.php)
     * 此專案內所有開源碼皆在授權條款下: [GNU General Public License, version 3](https://www.sourcemod.net/license.php)

@@ -8,7 +8,7 @@
  *  Description:	Replaces tier 2 weapons with tier 1
  *
  *  Copyright (C) 2010  Mr. Zero <mrzerodk@gmail.com>
- *  Copyright (C) 2017-2025  Harry <fbef0102@gmail.com>
+ *  Copyright (C) 2017-2026  Harry <fbef0102@gmail.com>
  *  This file is part of Rotoblin.
  *
  *  This program is free software: you can redistribute it and/or modify

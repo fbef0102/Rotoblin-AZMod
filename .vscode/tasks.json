@@ -3,7 +3,7 @@
     "tasks": 
     [
         {
-            "label": "1.11 compiler",
+            "label": "1.12 compiler",
             "type": "shell",
             "command": "cmd",
             "args": [

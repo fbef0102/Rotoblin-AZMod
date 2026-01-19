@@ -1,6 +1,6 @@
 # Rotoblin-AZMod
 v8.6.2
-<br/>Developer @ 2017-2025 [Harry](http://steamcommunity.com/profiles/76561198026784913)
+<br/>Developer @ 2017-2026 [Harry](http://steamcommunity.com/profiles/76561198026784913)
 <br/><img src="https://i.imgur.com/FGkLDMp.png">
 - [Navigation](#rotoblin-azmod)
     - [Server Install | 如何安裝](#server-install)
@@ -22,7 +22,7 @@ v8.6.2
     - [Project Source Code | 專案源碼](/SourceCode)
 
 **LINUX/WINDOWS SERVERS WORK**
-* This repository only supports Sourcemod 1.11 and up.
+* This repository only supports Sourcemod 1.12 and up.
 
 A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、L4D2 [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, increase max damage pounce, more Tank hp and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 
@@ -502,9 +502,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *(2v2)*: **✘**
       - *(1v1)*: **✘**
     * Pounce Damage: 2, Interval: 0.2 (10 dps, same as vanilla)
-    * Claw Damage: 5 (vanilla: 6)
+    * Claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
-    * Allow Hunters being shoved when not pouncing. (Shove fov: **50**)
+    * Allow Hunters being shoved when not pouncing. (Shove fov: **70**)
     * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
     * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
     * M2 godframes after a hunter lands on the ground: 0.25s
