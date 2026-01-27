@@ -5,6 +5,17 @@
 	{
 		"no_start_area" 				"0"
 		"custom_start_area_distance"	"300.0"
+
+		"GauntletFinale_map"			"0"
+		"no_final_first_tank"			"1"
+		"pill_limit" 					"2"
+		"VersusModifier"				"1.0"
+		"WaterSlowDown_map"				"0"
+		"tank_map_off"					"0"
+		"witch_map_off"					"0"
+
+		"WAIT_FOR_FINALE_map"			"0"
+		"GasCan_map" 					"0"
 	}
 
 	"l4d_vs_hospital01_apartment"
@@ -1895,7 +1906,7 @@
 		"pill_limit" "4"
 		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
-
+		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank"
@@ -1917,6 +1928,7 @@
 		"pill_limit" "4"
 		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
+		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank + 1st On Way Drop"
@@ -1941,6 +1953,7 @@
 	{
 		"pill_limit" "4"
 		"VersusModifier"		"1.4"
+		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank + Map NAV sucks"
@@ -1974,6 +1987,7 @@
 		"pill_limit" "4"
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
+		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Evelator"
@@ -2024,9 +2038,10 @@
 
 	"dw5_final"
 	{
-		"pill_limit" "3"
+		"pill_limit" "2"
 		"VersusModifier"		"2.0"
 		"WaterSlowDown_map" 	"1"
+		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"One way drop"

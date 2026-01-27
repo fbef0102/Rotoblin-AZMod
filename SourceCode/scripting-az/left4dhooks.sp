@@ -18,8 +18,8 @@
 
 
 
-#define PLUGIN_VERSION		"1.161"
-#define PLUGIN_VERLONG		1161
+#define PLUGIN_VERSION		"1.162"
+#define PLUGIN_VERLONG		1162
 
 #define DEBUG				0
 // #define DEBUG			1	// Prints addresses + detour info (only use for debugging, slows server down).
@@ -536,10 +536,10 @@ public void OnPluginStart()
 	GameData hGameData = new GameData(g_bLeft4Dead2 ? GAMEDATA_2 : GAMEDATA_1);
 	if( hGameData == null ) SetFailState("Failed to load \"%s.txt\" gamedata.", g_bLeft4Dead2 ? GAMEDATA_2 : GAMEDATA_1);
 
+	g_hGameData = hGameData;
+
 	g_bLinuxOS = hGameData.GetOffset("OS") == 1;
 	FormatEx(g_sSystem, sizeof(g_sSystem), "%s/%d/%s", g_bLinuxOS ? "NIX" : "WIN", g_bLeft4Dead2 ? 2 : 1, PLUGIN_VERSION);
-
-	delete hGameData;
 
 
 

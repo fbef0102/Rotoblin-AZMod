@@ -771,11 +771,18 @@ static EnumeratePillSpawns()
 	new psychonic = GetEntityCount();
 
 	int mylimit = 2;
-	if(KvJumpToKey(g_hMIData, g_sCurMap))
+	if(g_hMIData.JumpToKey("default"))
 	{
-		mylimit = KvGetNum(g_hMIData, "pill_limit", 2);
-		KvRewind(g_hMIData);
+		mylimit = KvGetNum(g_hMIData, "pill_limit", mylimit);
+
+		g_hMIData.GoBack();
 	}
+
+	if (g_hMIData.JumpToKey(g_sCurMap)) 
+	{
+		mylimit = KvGetNum(g_hMIData, "pill_limit", mylimit);
+	}
+	KvRewind(g_hMIData);
 
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
@@ -827,7 +834,14 @@ static RemoveToLimits()
 	ItemTracking curitem;
 
 	int curlimit = 2;
-	if(KvJumpToKey(g_hMIData, g_sCurMap))
+	if(g_hMIData.JumpToKey("default"))
+	{
+		curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
+
+		g_hMIData.GoBack();
+	}
+
+	if (g_hMIData.JumpToKey(g_sCurMap)) 
 	{
 		curlimit = KvGetNum(g_hMIData, "pill_limit", 2);
 		KvRewind(g_hMIData);

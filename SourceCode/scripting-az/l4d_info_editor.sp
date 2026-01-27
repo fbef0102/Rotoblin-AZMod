@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.27"
+#define PLUGIN_VERSION		"1.28"
 
 /*======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.28 (25-Jan-2026)
+	- L4D2: Fixed the previous update skipping the last melee weapon type in the "meleeweapons" list.
 
 1.27 (04-Jan-2026)
 	- L4D2: Fixed the "riotshield" classname being wrongly named, causing errors in certain maps. Thanks to "gabuch2" for reporting.
@@ -181,7 +184,7 @@
 #define MAX_STRING_LENGTH		4096
 #define MAX_MELEE_STRING		64 // Maximum string length of melee weapons
 #define MAX_MELEE_LIMITS		16 // Maximum number of melee weapons that can be enabled (Valve limit)
-#define DEBUG_VALUES			false
+#define DEBUG_VALUES			0
 
 bool g_bGameMode;
 ConVar g_hCvarMPGameMode;
@@ -1012,6 +1015,8 @@ void ValidateMelee(char input[MAX_STRING_LENGTH])
 
 	if( input[0] )
 	{
+		StrCat(input, sizeof(input), ";");
+
 		while( (last = SplitString(input[pos], ";", buffer, sizeof(buffer))) != -1 )
 		{
 			// Ignore unknown melee weapons that have no valid script

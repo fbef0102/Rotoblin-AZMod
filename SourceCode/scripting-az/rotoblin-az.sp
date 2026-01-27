@@ -262,19 +262,19 @@ public void _Roto_OnMapStart()
 	MI_KV_Close();
 	MI_KV_Load();
 
-	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
+	if(g_hMIData.JumpToKey("default"))
 	{
-		if (g_hMIData.GetNum("GasCan_map", 0) == 1)
-		{
-			g_bGasMap = true;
-		}
+		g_bGasMap = view_as<bool>(g_hMIData.GetNum("GasCan_map", g_bGasMap));
+		g_bWAIT_FOR_FINALE_map = view_as<bool>(g_hMIData.GetNum("WAIT_FOR_FINALE_map", g_bWAIT_FOR_FINALE_map));
 
-		if (g_hMIData.GetNum("WAIT_FOR_FINALE_map", 0) == 1)
-		{
-			g_bWAIT_FOR_FINALE_map = true;
-		}
+		g_hMIData.GoBack();
+	}
+
+	if (g_hMIData.JumpToKey(g_sCurMap)) 
+	{
+		g_bGasMap = view_as<bool>(g_hMIData.GetNum("GasCan_map", g_bGasMap));
+		g_bWAIT_FOR_FINALE_map = view_as<bool>(g_hMIData.GetNum("WAIT_FOR_FINALE_map", g_bWAIT_FOR_FINALE_map));
+		g_hMIData.GoBack();
 	}
 
 	KvRewind(g_hMIData);

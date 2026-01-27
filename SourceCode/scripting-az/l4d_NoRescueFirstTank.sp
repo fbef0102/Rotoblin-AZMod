@@ -70,19 +70,20 @@ public OnMapStart()
 
 	MI_KV_Close();
 	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, sCurMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
-	{
-		if (g_hMIData.GetNum("no_final_first_tank", 1) == 0)
-		{
-			g_bNoFinalFirstTankMap = false;
-		}
 
-		if (g_hMIData.GetNum("GauntletFinale_map", 0) == 1)
-		{
-			g_bGauntletFinaleMap = true;
-		}
+	if(g_hMIData.JumpToKey("default"))
+	{
+		g_bNoFinalFirstTankMap = view_as<bool>(g_hMIData.GetNum("no_final_first_tank", g_bNoFinalFirstTankMap));
+		g_bGauntletFinaleMap = view_as<bool>(g_hMIData.GetNum("GauntletFinale_map", g_bGauntletFinaleMap));
+
+		g_hMIData.GoBack();
+	}
+
+	if (g_hMIData.JumpToKey(sCurMap)) 
+	{
+		g_bNoFinalFirstTankMap = view_as<bool>(g_hMIData.GetNum("no_final_first_tank", g_bNoFinalFirstTankMap));
+		g_bGauntletFinaleMap = view_as<bool>(g_hMIData.GetNum("GauntletFinale_map", g_bGauntletFinaleMap));
+		g_hMIData.GoBack();
 	}
 	MI_KV_Close();
 }

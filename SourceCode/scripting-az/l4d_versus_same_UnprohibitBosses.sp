@@ -138,28 +138,27 @@ public void OnAllPluginsLoaded()
 }
 
 char g_sCurMap[64];
-bool g_bTankVaildMap, g_bWitchValidMap;
+bool g_bTankMapOff, g_bWitchMapOff;
 public OnMapStart()
 {
-	g_bTankVaildMap = true;
-	g_bWitchValidMap = true;
+	g_bTankMapOff = false;
+	g_bWitchMapOff = false;
 	GetCurrentMap(g_sCurMap, sizeof(g_sCurMap));
 
 	MI_KV_Close();
 	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, g_sCurMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
+	if(g_hMIData.JumpToKey("default"))
 	{
-		if (g_hMIData.GetNum("tank_map_off", 0) == 1)
-		{
-			g_bTankVaildMap = false;
-		}
+		g_bTankMapOff = view_as<bool>(g_hMIData.GetNum("tank_map_off", g_bTankMapOff));
+		g_bWitchMapOff = view_as<bool>(g_hMIData.GetNum("witch_map_off", g_bWitchMapOff));
 
-		if (g_hMIData.GetNum("witch_map_off", 0) == 1)
-		{
-			g_bWitchValidMap = false;
-		}
+		g_hMIData.GoBack();
+	}
+
+	if (g_hMIData.JumpToKey(g_sCurMap)) 
+	{
+		g_bTankMapOff = view_as<bool>(g_hMIData.GetNum("tank_map_off", g_bTankMapOff));
+		g_bWitchMapOff = view_as<bool>(g_hMIData.GetNum("witch_map_off", g_bWitchMapOff));
 	}
 	KvRewind(g_hMIData);
 }
@@ -232,7 +231,7 @@ public Action:COLD_DOWN(Handle:timer)
 
 		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
 		{
-			if (g_bTankVaildMap == true)
+			if (g_bTankMapOff == false)
 			{
 				ArrayList hBannedFlows = new ArrayList(2);
 				
@@ -294,7 +293,7 @@ public Action:COLD_DOWN(Handle:timer)
 
 		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
 		{
-			if (g_bWitchValidMap == true && !IsWitchProhibit())
+			if (g_bWitchMapOff == false && !IsWitchProhibit())
 			{
 				ArrayList hBannedFlows = new ArrayList(2);
 				

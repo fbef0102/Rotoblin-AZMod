@@ -637,20 +637,28 @@ public OnMapStart()
 	IsSecondRound = false;
 	
 	// Load config
-	new Handle:hFile = OpenConfig(false);
-	if( hFile == INVALID_HANDLE )
+	KeyValues hFile = OpenConfig();
+	if( hFile == null )
 		return;
+
 	// Check for current map in the config
 	decl String:sMap[64];
 	GetCurrentMap(sMap, 64);
 
-	if( !KvJumpToKey(hFile, sMap) )
+	if(hFile.JumpToKey("default"))
 	{
-		CloseHandle(hFile);
-		MapVersusDifficulty = 0.0;
-		return;
+		MapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
+
+		hFile.GoBack();
 	}
-	MapVersusDifficulty = KvGetFloat(hFile, "VersusModifier", 1.0);
+
+	if (hFile.JumpToKey(sMap)) 
+	{
+		MapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
+
+		hFile.GoBack();
+	}
+
 	#if SCORE_DEBUG
 		LogMessage("%s: %f",sMap,MapVersusDifficulty);
 	#endif
@@ -691,27 +699,18 @@ public OnMapStart()
 	VoteMenuClose();
 }
 
-Handle:OpenConfig(bool:create = true)
+KeyValues OpenConfig()
 {
 	// Create config if it does not exist
 	decl String:sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "%s", CONFIG_MAPINFO);
-	if( !FileExists(sPath) )
-	{
-		if( create == false )
-			return INVALID_HANDLE;
-
-		new Handle:hCfg = OpenFile(sPath, "w");
-		WriteFileLine(hCfg, "");
-		CloseHandle(hCfg);
-	}
 
 	// Open the jukebox config
-	new Handle:hFile = CreateKeyValues("MapInfo");
+	KeyValues hFile = new KeyValues("MapInfo");
 	if( !FileToKeyValues(hFile, sPath) )
 	{
 		CloseHandle(hFile);
-		return INVALID_HANDLE;
+		return null;
 	}
 
 	return hFile;

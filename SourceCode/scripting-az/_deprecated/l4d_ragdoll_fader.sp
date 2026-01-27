@@ -172,16 +172,21 @@ public void OnMapStart()
 
 	MI_KV_Close();
 	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, sMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
+	if(g_hMIData.JumpToKey("default"))
 	{
-		if (g_hMIData.GetNum("WaterCrash_map", 0) == 1)
-		{
-			g_bCrashMap = true;
-		}
+		g_bCrashMap = view_as<bool>(g_hMIData.GetNum("WaterCrash_map", g_bCrashMap));
+
+		g_hMIData.GoBack();
 	}
-	KvRewind(g_hMIData);
+
+	if (g_hMIData.JumpToKey(sMap)) 
+	{
+		g_bCrashMap = view_as<bool>(g_hMIData.GetNum("WaterCrash_map", g_bCrashMap));
+
+		g_hMIData.GoBack();
+	}
+
+	delete g_hMIData;
 }
 
 

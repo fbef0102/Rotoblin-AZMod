@@ -165,16 +165,22 @@ public void OnMapStart()
 
 	MI_KV_Close();
 	MI_KV_Load();
-	if (!KvJumpToKey(g_hMIData, sMap)) {
-		//LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-	} else
+
+	if(g_hMIData.JumpToKey("default"))
 	{
-		if (g_hMIData.GetNum("WaterSlowDown_map", 0) == 1)
-		{
-			g_bWaterSlowDownMap = true;
-		}
+		g_bWaterSlowDownMap = view_as<bool>(g_hMIData.GetNum("WaterSlowDown_map", g_bWaterSlowDownMap));
+
+		g_hMIData.GoBack();
 	}
-	KvRewind(g_hMIData);
+
+	if (g_hMIData.JumpToKey(sMap)) 
+	{
+		g_bWaterSlowDownMap = view_as<bool>(g_hMIData.GetNum("WaterSlowDown_map", g_bWaterSlowDownMap));
+
+		g_hMIData.GoBack();
+	}
+
+	delete g_hMIData;
 }
 
 public void OnMapEnd()
