@@ -3,13 +3,14 @@
 
 #include <sourcemod>
 #include <dhooks>
+#include <left4dhooks>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <readyup>
 
 #define DEBUG		   	0
 #define PLUGIN_NAME		"l4d_start_safe_area"
-#define PLUGIN_VERSION 	"1.1h-2025/1/2"
+#define PLUGIN_VERSION 	"1.2h-2026/1/28"
 
 public Plugin myinfo =
 {
@@ -76,7 +77,8 @@ int
 bool 
 	g_bEnable,
 	g_bGameOSIsLinux,
-	g_bHasLeftCustomSafeArea;
+	g_bHasLeftCustomSafeArea,
+	g_bHasIntroCamera;
 
 Handle
 	g_hStartTimer,
@@ -209,16 +211,17 @@ void LoadData()
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
-		CreateTimer(0.1, Timer_PluginStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.3, Timer_PluginStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iRoundStart = 1;
 
 	g_bHasLeftCustomSafeArea = false;
+	g_bHasIntroCamera = false;
 }
 
 void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
-		CreateTimer(0.1, Timer_PluginStart, _, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(0.3, Timer_PluginStart, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_iPlayerSpawn = 1;	
 }
 
@@ -248,17 +251,23 @@ Action Timer_PluginStart(Handle timer)
 
 Action DelayTelepAndGetStartArea(Handle timer, int client)
 {
-	int viewEnt;
+	if(g_bHasIntroCamera && L4D_IsInIntro())
+	{
+		return Plugin_Continue;
+	}
+
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(!IsClientInGame(i)) continue;
 		if(GetClientTeam(i) != 2) continue;
 		if(!IsPlayerAlive(i)) continue;
 
-		viewEnt = GetEntPropEnt(i, Prop_Send, "m_hViewEntity");
-		if (viewEnt != -1)
+		// 看intro cutscene
+		if (!g_bHasIntroCamera && GetEntPropEnt(i, Prop_Send, "m_hViewEntity") != -1)
+		{
+			g_bHasIntroCamera = true;
 			return Plugin_Continue;
-
+		}
 
 		for(int j = 1; j <= MaxClients; j++)
 		{
@@ -290,9 +299,9 @@ Action CheckAnyOneLeftSafeArea(Handle timer)
 	{
 		if (IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i))
 		{
-			int viewEnt = GetEntPropEnt(i, Prop_Send, "m_hViewEntity");
-			if (viewEnt != -1)
-				return Plugin_Continue;
+			// 看intro cutscene期間不能動
+			if (GetEntityFlags(i) & FL_FROZEN) continue;
+			if (GetEntPropEnt(i, Prop_Send, "m_hViewEntity") != -1) continue;
 
 			float v_pos[3];
 			GetClientAbsOrigin(i, v_pos);
