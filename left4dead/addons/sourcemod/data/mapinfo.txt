@@ -693,7 +693,7 @@
 	}
 	"c5m3_cemetery"
 	{
-		"pill_limit" "2"
+		"pill_limit" "3"
 		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
