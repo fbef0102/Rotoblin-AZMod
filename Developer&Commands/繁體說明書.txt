@@ -808,6 +808,10 @@
 //For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
 //倖存者每回退7%路程, Tank有4秒時間不會失去控制權
 
+[224] l4d_return_thrown_items 
+//Return pills/adrenalines thrown through shoving key if not successfully given.
+//當右鍵給藥丸無法傳送到隊友身上時返回給持有者
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

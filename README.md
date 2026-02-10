@@ -613,6 +613,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fixed slowdown which caused by common infected is overridden by other damage.
   * Allows gravity when survivors are staggering + allows staggering over a ledge and falling.
     * Survivor still gets stumble even in the air
+  * Return pills/adrenalines thrown through shoving key if not successfully given
   
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud
