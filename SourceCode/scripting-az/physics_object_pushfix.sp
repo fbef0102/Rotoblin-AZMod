@@ -16,33 +16,15 @@
 *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// alternative to https://forums.alliedmods.net/showthread.php?p=1706053
-// credit silvershot for using some code.
-
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <dhooks>
 
-#pragma newdecls required
-
-#define GAMEDATA "physics_object_pushfix"
-
-#define PLUGIN_VERSION	"1.0"
-
-#define PROPMODELS_MAX 4
-int g_iPropModelIndex[4];
-char g_sPropModels[4][] =
-{
-	"models/props_equipment/oxygentank01.mdl",
-	"models/props_junk/explosive_box001.mdl",
-	"models/props_junk/gascan001a.mdl",
-	"models/props_junk/propanecanister001a.mdl"
-};
-
-bool g_bIsPhysics[2048+1];
+#define PLUGIN_VERSION	"1.1h-2026/2/11"
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -52,17 +34,37 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1/2.");
 		return APLRes_SilentFailure;
 	}
+
 	return APLRes_Success;
 }
 
 public Plugin myinfo =
 {
-	name = "[L4D1/2]physics_object_pushfix",
-	author = "Lux",
-	description = "Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them",
+	name = "[L4D1/2] physics_object_pushfix",
+	author = "Lux, Harry",
+	description = "Prevents firework crates, gascans, oxygen, propane tanks being pushed when players walk into them",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/LuxLuma/Left-4-fix"
 };
+
+#define GAMEDATA "physics_object_pushfix"
+
+#define PROPMODELS_MAX 4
+
+int g_iPropModelIndex[4];
+char g_sPropModels[4][] =
+{
+	"models/props_equipment/oxygentank01.mdl",
+	"models/props_junk/explosive_box001.mdl",
+	"models/props_junk/gascan001a.mdl",
+	"models/props_junk/propanecanister001a.mdl"
+};
+
+#define MAX_EDICTS		2048 //(1 << 11)
+
+bool 
+	g_bIsPhysics[MAX_EDICTS+1],
+	g_bIsHittable[MAX_EDICTS+1];
 
 public void OnPluginStart()
 {
@@ -77,6 +79,7 @@ public void OnPluginStart()
 	if(!DHookEnableDetour(hDetour, false, MovePropAwayPre))
 		SetFailState("Failed to detour 'MovePropAway'");
 	
+	delete hDetour;
 	delete hGamedata;
 	
 	CreateConVar("physics_object_pushfix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
@@ -92,41 +95,61 @@ public void OnMapStart()
 	}
 }
 
-
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if(entity < 1)
+	if (!IsValidEntityIndex(entity))
 		return;
 	
 	g_bIsPhysics[entity] = false;
+	g_bIsHittable[entity] = false;
 	
 	if(classname[0] != 'p')
 		return;
 	
-	if(strncmp(classname, "prop_physics", 12, false) != 0 && strncmp(classname, "physics_prop", 12, false) != 0)
-		return;
-	
-	g_bIsPhysics[entity] = true;
+	if(	strncmp(classname, "prop_physics", 12, false) == 0 // prop_physics, prop_physics_override, prop_physics_multiplayer
+		|| strncmp(classname, "physics_prop", 12, false) == 0) // physics_prop
+	{
+		RequestFrame(OnNextFrame_prop, EntIndexToEntRef(entity));
+	}
 }
 
-public MRESReturn MovePropAwayPre(Handle hReturn, Handle hParams)
+void OnNextFrame_prop(int entityRef)
 {
-	//param 1 = physics entity
-	//param 2 = client
-	//has potental to fix exploit of pushing props in chokes, e.g. mercy 4 pushing generator infront of elevator
+	int entity = EntRefToEntIndex(entityRef);
 
-	int iEnt = DHookGetParam(hParams, 1);
-	if(!g_bIsPhysics[iEnt])
-		return MRES_Ignored;
+	if (entity == INVALID_ENT_REFERENCE)
+		return;
 
-	int iModelIndex = GetEntProp(iEnt, Prop_Data, "m_nModelIndex", 2);
+	int iModelIndex = GetEntProp(entity, Prop_Data, "m_nModelIndex", 2);
 	for(int i = 0; i < PROPMODELS_MAX; i++)
 	{
 		if(iModelIndex == g_iPropModelIndex[i])
 		{
-			DHookSetReturn(hReturn, false);
-			return MRES_Supercede;
+			g_bIsPhysics[entity] = true;
+			return;
 		}
 	}
+}
+
+MRESReturn MovePropAwayPre(Handle hReturn, Handle hParams)
+{
+	//param 1 = physics entity
+	//param 2 = client
+
+	int iEnt = DHookGetParam(hParams, 1);
+
+	if(iEnt == -1 || iEnt > 2048) return MRES_Ignored;
+
+	if(g_bIsPhysics[iEnt])
+	{
+		DHookSetReturn(hReturn, false);
+		return MRES_Supercede;
+	}
+
 	return MRES_Ignored;
+}
+
+bool IsValidEntityIndex(int entity)
+{
+	return (MaxClients+1 <= entity <= GetMaxEntities());
 }

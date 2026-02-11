@@ -275,7 +275,7 @@ public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
 
 void FixAllInfected()
 {
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i) && GetClientTeam(i) == 3) 
 		{
