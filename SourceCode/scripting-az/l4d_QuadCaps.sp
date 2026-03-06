@@ -68,7 +68,7 @@ public OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("round_end", Event_RoundEnd);
 	HookEvent("mission_lost", Event_RoundEnd);
-	HookEvent("finale_vehicle_leaving", Event_RoundEnd);
+	HookEvent("finale_win", Event_RoundEnd);
 	HookEvent("player_death", Event_PlayerDeath,	EventHookMode_PostNoCopy);
 	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	

@@ -319,7 +319,7 @@ public OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd); //對抗上下回合結束的時候觸發
 	HookEvent("map_transition", Event_RoundEnd); //戰役過關到下一關的時候 (之後沒有觸發round_end)
 	HookEvent("mission_lost", Event_RoundEnd); //戰役滅團重來該關卡的時候 (之後有觸發round_end)
-	HookEvent("finale_vehicle_leaving", Event_RoundEnd); //救援載具離開之時  (之後沒有觸發round_end)
+	HookEvent("finale_win", Event_RoundEnd);
 	
 	HookEvent("player_bot_replace", eventPlayerBotReplaceCallback);
 	HookEvent("bot_player_replace", eventBotPlayerReplaceCallback);

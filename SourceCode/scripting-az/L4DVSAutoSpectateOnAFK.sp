@@ -97,11 +97,11 @@ public OnPluginStart()
 	
 	// For roundstart and roundend..
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
-	HookEvent("round_end", Event_RoundEnd, EventHookMode_Pre);
 	HookEvent("player_left_start_area", PlayerLeftStart);
-	HookEvent("finale_vehicle_leaving", Event_RoundEnd, EventHookMode_Pre);
+	HookEvent("round_end", Event_RoundEnd, EventHookMode_Pre);
 	HookEvent("mission_lost", Event_RoundEnd);
 	HookEvent("map_transition", Event_RoundEnd, EventHookMode_Pre);
+	HookEvent("finale_win", Event_RoundEnd, EventHookMode_Pre);
 
 	// Afk manager time limits
 	h_AfkWarnSpecTime = CreateConVar("l4d_specafk_warnspectime", "20", "Warn time before spec", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY, false, 0.0, false, 0.0);

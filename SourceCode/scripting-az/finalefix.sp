@@ -14,14 +14,20 @@ public Plugin myinfo =
 	url = "https://bitbucket.org/CanadaRox/random-sourcemod-stuff"
 };
 
+bool 
+	g_bFinalEnd;
+
 public void OnPluginStart()
 {
 	HookEvent("round_start",            Event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("finale_vehicle_leaving", FinaleEnd_Event, EventHookMode_PostNoCopy);
+	HookEvent("finale_win", 			FinaleEnd_Event, EventHookMode_PostNoCopy);
 }
 
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast) 
 {
+	g_bFinalEnd = false;
+
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(!IsClientInGame(i))
@@ -33,6 +39,9 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 
 void FinaleEnd_Event(Event event, const char[] name, bool dontBroadcast)
 {
+	if(g_bFinalEnd) return;
+	g_bFinalEnd = true;
+	
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i)) 

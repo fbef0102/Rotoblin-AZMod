@@ -71,7 +71,7 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
 	HookEvent("mission_lost", Event_RoundEnd, EventHookMode_PostNoCopy);
 	HookEvent("map_transition", Event_RoundEnd, EventHookMode_PostNoCopy);
-	HookEvent("finale_vehicle_leaving", Event_RoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("finale_win", Event_RoundEnd, EventHookMode_PostNoCopy);
 }
 /*
 MRESReturn DTR_OnDetonate_Pre(int entity)
