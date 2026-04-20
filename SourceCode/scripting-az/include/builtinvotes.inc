@@ -31,11 +31,13 @@
  */
 
 #if defined _builtinvotes_included
- #endinput
+	#endinput
 #endif
 #define _builtinvotes_included
 
-/* Version from here - https://github.com/A1mDev/builtinvotes/blob/master/sourcemod/scripting/include/builtinvotes.inc */
+#include "builtinvotes_stocks.inc"
+
+/* Source: https://github.com/L4D-Community/builtinvotes/blob/master/extra/include/builtinvotes.inc */
 
 #define BUILTINVOTES_EXTEND 			"Extend current Map" /** Defined in TF2, but doesn't appear to be localized */
 
@@ -175,13 +177,6 @@ enum BuiltinVoteFailReason
 	BuiltinVoteFail_NotEnoughVotes = 4,	/**< Vote did not receive enough votes. */	
 }
 
-enum eVoteType
-{
-	eVoteNone = -1,
-	eBuiltinVote = 0,
-	eGameVote = 1
-};
-
 enum eBuiltinVoteCreateError
 {
 	eBuiltinVoteErrorNone = 0, // Vote was created
@@ -268,31 +263,6 @@ native Handle CreateBuiltinVoteEx(BuiltinVoteActionHandler handler, BuiltinVoteT
  * @error					Invalid Handle, or a vote is already in progress.
  */
 native bool DisplayBuiltinVote(Handle vote, int[] clients, int numClients, int time);
-
-/**
- * Sends a vote menu to all clients.  See DisplayBuiltinVote() for more information.
- *
- * @param vote				Vote Handle.
- * @param time				Maximum time to leave menu on the screen.
- * @return					True on success, false if this menu already has a vote session
- *							in progress.
- * @error					Invalid Handle.
- */
-stock bool DisplayBuiltinVoteToAll(Handle vote, int time)
-{
-	int iNumPlayers;
-	int[] iPlayers = new int[MaxClients];
-
-	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsClientInGame(i) || IsFakeClient(i)) {
-			continue;
-		}
-
-		iPlayers[iNumPlayers++] = i;
-	}
-
-	return DisplayBuiltinVote(vote, iPlayers, iNumPlayers, time);
-}
 
 /**
  * Appends a new item to the end of a vote.  Only valid for Multiple Choice votes
@@ -438,7 +408,6 @@ native void CancelBuiltinVote();
  *							defines.
  * @noreturn
  */
-//typedef BuiltinVoteHandler = function void(Handle vote, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info);
 typeset BuiltinVoteHandler
 {
 	function void(Handle vote, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info);
@@ -574,20 +543,6 @@ native void DisplayBuiltinVotePass2(Handle vote, char[] translation, char[] para
 native void DisplayBuiltinVoteFail(Handle vote, BuiltinVoteFailReason reason=BuiltinVoteFail_Generic);
 
 /**
- * Quick stock to determine whether voting is allowed.  This doesn't let you
- * fine-tune a reason for not voting, so it's not recommended for lazily
- * telling clients that voting isn't allowed.
- * Checks if a game or builtinvote vote is in progress
- *
- * @return				True if voting is allowed, false if voting is in progress
- *						or the cooldown is active.
- */
-stock bool IsNewBuiltinVoteAllowed()
-{
-	return (!(IsBuiltinVoteInProgress() || CheckBuiltinVoteDelay() != 0));
-}
-
-/**
  * Checks if the BuiltinVote is in progress
  * By default this is already built into the native IsBuiltinVoteInProgress(),
  * you can use this for something else
@@ -616,162 +571,11 @@ native bool Game_IsVoteInProgress();
 native int Game_GetVoteTeam();
 
 /**
- * Returns the type of vote currently in progress
+ * Return entity index 'CVoteController'
  *
- * @return eVoteType        eVoteNone (-1) - if the vote is not in progress now,
- *							eBuiltinVote (0) - if 'builtinvote' voting is in progress,
- *							eGameVote (1) - if in-game voting is in progress.
+ * @return int				-1 if 'CVoteController' not found, otherwise entity index
  */
-stock eVoteType GetVoteType_InProgress()
-{
-	if (BuiltinVote_IsVoteInProgress()) {
-		return eBuiltinVote;
-	}
-
-	if (Game_IsVoteInProgress()) {
-		return eGameVote;
-	}
-
-	return eVoteNone;
-}
-
-/**
- * Retrieves voting information from BuiltinVoteAction_VoteEnd.
- *
- * @param param2		Second parameter of BuiltinVoteAction_VoteEnd.
- * @param winningVotes	Number of votes received by the winning option.
- * @param totalVotes	Number of total votes received.
- * @noreturn
- */
-stock void GetBuiltinVoteInfo(int param2, int &winningVotes, int &totalVotes)
-{
-	winningVotes = param2 & 0xFFFF;
-	totalVotes = param2 >> 16;
-}
-
-/**
- * Sends a vote menu to a single team.  See DisplayBuiltinVote() for more information.
- *
- * @param vote				Vote Handle.
- * @param team				Team to send vote to. 1 = spectators, 2 = RED/Survivors, 3 = BLU/Infected
- * @param time				Maximum time to leave menu on the screen.
- * @return					True on success, false if this menu already has a vote session
- *							in progress.
- * @error					Invalid Handle.
- */
-stock bool DisplayBuiltinVoteToTeam(Handle vote, int team, int time)
-{
-	SetBuiltinVoteTeam(vote, team);
-
-	int iNumPlayers;
-	int[] iPlayers = new int[MaxClients];
-
-	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (GetClientTeam(i) != team)) {
-			continue;
-		}
-
-		iPlayers[iNumPlayers++] = i;
-	}
-
-	return DisplayBuiltinVote(vote, iPlayers, iNumPlayers, time);
-}
-
-/**
- * Sends a vote menu to all clients except one.  See DisplayBuiltinVote() for more information.
- * Useful for kick/ban votes
- *
- * @param vote				Vote Handle.
- * @param client			Client index not to send vote to
- * @param time				Maximum time to leave menu on the screen.
- * @return					True on success, false if this menu already has a vote session
- *							in progress or if the client isn't in the game.
- * @error					Invalid Handle.
- */
-stock bool DisplayBuiltinVoteToAllButOne(Handle vote, int client, int time)
-{
-	if (!IsClientInGame(client)) {
-		return false;
-	}
-
-	int iNumPlayers;
-	int[] iPlayers = new int[MaxClients];
-
-	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (i == client)) {
-			continue;
-		}
-
-		iPlayers[iNumPlayers++] = i;
-	}
-
-	return DisplayBuiltinVote(vote, iPlayers, iNumPlayers, time);
-}
-
-/**
- * Sends a vote menu to a single team except one player.  See DisplayBuiltinVote() for more information.
- *
- * @param vote				Vote Handle.
- * @param client			Client index not to send vote to.  Team is derived from this client.
- * @param time				Maximum time to leave menu on the screen.
- * @return					True on success, false if this menu already has a vote session
- *							in progress or the client isn't in the game.
- * @error					Invalid Handle.
- */
-stock bool DisplayBuiltinVoteToTeamButOne(Handle vote, int client, int time)
-{
-	if (!IsClientInGame(client)) {
-		return false;
-	}
-
-	int team = GetClientTeam(client);
-
-#if 0
-	if (team < 2) {
-		return false;
-	}
-#endif
-
-	SetBuiltinVoteTeam(vote, team);
-
-	int iNumPlayers;
-	int[] iPlayers = new int[MaxClients];
-
-	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (i == client) || (GetClientTeam(i) != team)) {
-			continue;
-		}
-
-		iPlayers[iNumPlayers++] = i;
-	}
-
-	return DisplayBuiltinVote(vote, iPlayers, iNumPlayers, time);
-}
-
-/**
- * Sends a vote menu to all clients who are not spectators or waiting to choose a team.  See DisplayBuiltinVote() for more information.
- *
- * @param vote				Vote Handle.
- * @param time				Maximum time to leave menu on the screen.
- * @return					True on success, false if this menu already has a vote session
- *							in progress.
- * @error					Invalid Handle.
- */
-stock bool DisplayBuiltinVoteToAllNonSpectators(Handle vote, int time)
-{
-	int iNumPlayers;
-	int[] iPlayers = new int[MaxClients];
-
-	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (GetClientTeam(i) < 2)) {
-			continue;
-		}
-
-		iPlayers[iNumPlayers++] = i;
-	}
-
-	return DisplayBuiltinVote(vote, iPlayers, iNumPlayers, time);
-}
+native int Game_GetVoteController();
 
 /**
  * Do not edit below this line!
@@ -825,5 +629,6 @@ public void __ext_builtinvotes_SetNTVOptional()
 	MarkNativeAsOptional("BuiltinVote_IsVoteInProgress");
 	MarkNativeAsOptional("Game_IsVoteInProgress");
 	MarkNativeAsOptional("Game_GetVoteTeam");
+	MarkNativeAsOptional("Game_GetVoteController");
 }
 #endif

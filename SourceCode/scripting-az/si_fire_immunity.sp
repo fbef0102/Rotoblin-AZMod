@@ -57,8 +57,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
-static KeyValues g_hMIData = null;
-
 public void OnPluginStart()
 {
 	infected_fire_immunity = CreateConVar( \
@@ -92,13 +90,6 @@ public void OnPluginStart()
 	HookEvent("player_hurt", Event_PlayerHurt, EventHookMode_Post);
 	HookEvent("round_start", EventReset, EventHookMode_PostNoCopy);
 	HookEvent("round_end", EventReset, EventHookMode_PostNoCopy);
-
-	MI_KV_Load();
-}
-
-public void OnPluginEnd()
-{
-    MI_KV_Close();
 }
 
 bool g_bValidMap;
@@ -108,18 +99,30 @@ public void OnMapStart()
     char sMap[64];
     GetCurrentMap(sMap, sizeof(sMap));
 
-    MI_KV_Close();
-    MI_KV_Load();
-    if (!KvJumpToKey(g_hMIData, sMap)) {
-        //LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-    } else
-    {
-        if (g_hMIData.GetNum("GasCan_map", 0) == 1)
-        {
-            g_bValidMap = true;
-        }
-    }
-    KvRewind(g_hMIData);
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	KeyValues hMIData = new KeyValues("MapInfo");
+	if (!hMIData.ImportFromFile(sNameBuff)) 
+	{
+		delete hMIData;
+	}
+
+	if (hMIData.JumpToKey("default")) 
+	{
+		g_bValidMap = view_as<bool>(hMIData.GetNum("GasCan_map", g_bValidMap));
+
+		hMIData.GoBack();
+	}
+
+	if (hMIData.JumpToKey(sMap)) 
+	{
+		g_bValidMap = view_as<bool>(hMIData.GetNum("GasCan_map", g_bValidMap));
+
+		hMIData.GoBack();
+	}
+
+	delete hMIData;
 }
 
 public void EventReset(Event hEvent, const char[] eName, bool dontBroadcast)
@@ -266,24 +269,4 @@ bool IsFireEntity(char[] sEntityName)
 	}
 
 	return false;
-}
-
-void MI_KV_Load()
-{
-	char sNameBuff[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
-
-	g_hMIData = CreateKeyValues("MapInfo");
-	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
-		//LogError("[MI] Couldn't load MapInfo data!");
-		MI_KV_Close();
-	}
-}
-
-void MI_KV_Close()
-{
-	if (g_hMIData != null) {
-		CloseHandle(g_hMIData);
-		g_hMIData = null;
-	}
 }

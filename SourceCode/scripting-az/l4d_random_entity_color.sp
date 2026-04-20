@@ -128,8 +128,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 /****************************************************************************************************/
 
-static KeyValues g_hMIData = null;
-
 public void OnPluginStart()
 {
     g_alPluginEntities = new ArrayList();
@@ -159,8 +157,6 @@ public void OnPluginStart()
     RegAdminCmd("sm_coloradd", CmdAdd, ADMFLAG_ROOT, "Add color (with default config) to entity at crosshair.");
     RegAdminCmd("sm_colorall", CmdAll, ADMFLAG_ROOT, "Add color (with default config) to everything possible.");
     RegAdminCmd("sm_print_cvars_l4d_random_entity_color", CmdPrintCvars, ADMFLAG_ROOT, "Print the plugin related cvars and their respective values to the console.");
-
-    MI_KV_Load();
 }
 
 /****************************************************************************************************/
@@ -178,18 +174,30 @@ public void OnMapStart()
     char sMap[64];
     GetCurrentMap(sMap, sizeof(sMap));
 
-    MI_KV_Close();
-    MI_KV_Load();
-    if (!KvJumpToKey(g_hMIData, sMap)) {
-        //LogError("[MI] MapInfo for %s is missing.", g_sCurMap);
-    } else
+    char sNameBuff[PLATFORM_MAX_PATH];
+    BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+    KeyValues hMIData = new KeyValues("MapInfo");
+    if (!hMIData.ImportFromFile(sNameBuff)) 
     {
-        if (g_hMIData.GetNum("GasCan_map", 0) == 1)
-        {
-            g_bValidMap = true;
-        }
+        delete hMIData;
     }
-    KvRewind(g_hMIData);
+
+    if (hMIData.JumpToKey("default")) 
+    {
+        g_bValidMap = view_as<bool>(hMIData.GetNum("GasCan_map", g_bValidMap));
+
+        hMIData.GoBack();
+    }
+
+    if (hMIData.JumpToKey(sMap)) 
+    {
+        g_bValidMap = view_as<bool>(hMIData.GetNum("GasCan_map", g_bValidMap));
+
+        hMIData.GoBack();
+    }
+
+    delete hMIData;
 }
 
 public void OnMapEnd()
@@ -487,7 +495,6 @@ void OnNextFrame(int entityRef)
 public void OnPluginEnd()
 {
     RemoveAll();
-    MI_KV_Close();
 }
 
 /****************************************************************************************************/
@@ -827,24 +834,4 @@ int[] ConvertRGBToIntArray(char[] sColor)
     }
 
     return color;
-}
-
-void MI_KV_Load()
-{
-	char sNameBuff[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
-
-	g_hMIData = CreateKeyValues("MapInfo");
-	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
-		//LogError("[MI] Couldn't load MapInfo data!");
-		MI_KV_Close();
-	}
-}
-
-void MI_KV_Close()
-{
-	if (g_hMIData != null) {
-		CloseHandle(g_hMIData);
-		g_hMIData = null;
-	}
 }

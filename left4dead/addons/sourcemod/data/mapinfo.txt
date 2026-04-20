@@ -5,6 +5,7 @@
 	{
 		"no_start_area" 				"0"
 		"custom_start_area_distance"	"300.0"
+		"custom_start_area_beam_ring"	"1"
 
 		"GauntletFinale_map"			"0"
 		"no_final_first_tank"			"1"
@@ -16,6 +17,7 @@
 
 		"WAIT_FOR_FINALE_map"			"0"
 		"GasCan_map" 					"0"
+		"BridgeWitch_map"				"0"
 	}
 
 	"l4d_vs_hospital01_apartment"
@@ -621,7 +623,15 @@
 		{
 			"Field"
 			{
-				"min"		"82"
+				"min"		"77"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Field"
+			{
+				"min"		"92"
 				"max"		"100"
 			}
 		}
@@ -661,7 +671,7 @@
 		"pill_limit" "0"
 		"VersusModifier"		"2.0"
 		"tank_map_off" "1"
-		"no_final_first_tank" "0"
+		"no_final_first_tank" 	"0"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 	}

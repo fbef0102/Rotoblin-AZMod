@@ -589,7 +589,7 @@
 [156] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活
 
-[157] l4d2_block_rocketjump
+[157] l4d_fix_rocket_jump
 //防止玩家踩在投擲物品、Tank石頭、普通殭屍、Witch頭上會飛高跳
 
 [158] l4d_tongue_float_fix
