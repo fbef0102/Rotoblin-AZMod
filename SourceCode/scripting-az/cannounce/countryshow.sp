@@ -5,11 +5,11 @@
 
 
 *****************************************************************/
-new Handle:g_CvarShowConnect = INVALID_HANDLE;
-new Handle:g_CvarShowDisconnect = INVALID_HANDLE;
-new Handle:g_CvarShowEnhancedToAdmins = INVALID_HANDLE;
+ConVar g_CvarShowConnect = null;
+ConVar g_CvarShowDisconnect = null;
+ConVar g_CvarShowEnhancedToAdmins = null;
 
-new String:dcreason[65];
+
 /*****************************************************************
 
 
@@ -17,27 +17,29 @@ new String:dcreason[65];
 
 
 *****************************************************************/
-SetupCountryShow()
+void SetupCountryShow()
 {
 	g_CvarShowConnect = CreateConVar("sm_ca_showenhanced", "1", "displays enhanced message when player connects");
 	g_CvarShowDisconnect = CreateConVar("sm_ca_showenhanceddisc", "1", "displays enhanced message when player disconnects");
 	g_CvarShowEnhancedToAdmins = CreateConVar("sm_ca_showenhancedadmins", "1", "displays a different enhanced message to admin players (ADMFLAG_GENERIC)");
 }
 
-OnPostAdminCheck_CountryShow(client)
+void OnPostAdminCheck_CountryShow(int client)
 {
 	//if enabled, show message
-	if( GetConVarInt(g_CvarShowConnect) )
+	if( g_CvarShowConnect.BoolValue )
 	{
 		//if sm_ca_showenhancedadmins - show diff messages to admins
-		if( GetConVarInt(g_CvarShowEnhancedToAdmins) )
+		if( g_CvarShowEnhancedToAdmins.BoolValue )
 		{
-			PrintFormattedMessageToAdmins( client,1 );
-			PrintFormattedMsgToNonAdmins( client,1 );
+			PrintFormattedMessageToAdmins( client, true );
+			PrintFormattedMsgToNonAdmins( client, true );
+			PrintMsgToSourceTV( client, true );
 		}
 		else
 		{
-			PrintFormattedMessageToAll( client,1 );
+			PrintFormattedMessageToAll( client, true );
+			PrintMsgToSourceTV( client, true );
 		}
 	}	
 }
@@ -50,22 +52,28 @@ OnPostAdminCheck_CountryShow(client)
 
 
 ****************************************************************/
-void event_PlayerDisc_CountryShow(Event event, int client)
+void event_PlayerDisc_CountryShow(Event event)
 {
-	//if enabled, show message
-	if( GetConVarInt(g_CvarShowDisconnect) )
-	{
-		GetEventString(event, "reason", dcreason, sizeof(dcreason));
+	char sReason[128];
+	
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 
+	//if enabled, show message
+	if( g_CvarShowDisconnect.BoolValue )
+	{
+		event.GetString("reason", sReason, sizeof(sReason));
+		
 		//if sm_ca_showenhancedadmins - show diff messages to admins
-		if( GetConVarInt(g_CvarShowEnhancedToAdmins) )
+		if( g_CvarShowEnhancedToAdmins.BoolValue )
 		{
-			PrintFormattedMessageToAdmins( client,0 );
-			PrintFormattedMsgToNonAdmins( client,0 );
+			PrintFormattedMessageToAdmins( client, false, sReason );
+			PrintFormattedMsgToNonAdmins( client, false, sReason );
+			PrintMsgToSourceTV( client, false );
 		}
 		else
 		{
-			PrintFormattedMessageToAll( client,0 );
+			PrintFormattedMessageToAll( client, false, sReason );
+			PrintMsgToSourceTV( client, false );
 		}
 	}
 }

@@ -1935,19 +1935,7 @@
 		"en"	"{olive}%N{default} tries to kick you, but you have kick immue."
 		"zho"	"{olive}%N{default} 嘗試投票踢你, 但是你有免疫權限."
 	}
-	///////////////cannounce.smx///////////////
-	"cannounce1"
-	{
-		"#format"	"{1:s}"
-		"en"	"{blue}Player {green}{1} {blue}joined{default}."
-		"zho"	"{blue}玩家 {green}{1} {blue}來了{default}."
-	}
-	"cannounce2"
-	{
-		"#format"	"{1:s}"
-		"en"	"{red}Player {green}{1} {red}left{default}."
-		"zho"	"{red}玩家 {green}{1} {red}跑了{default}."
-	}		///////////////l4d_current_survivor_progress.smx//////////////
+	///////////////l4d_current_survivor_progress.smx//////////////
 	"l4d_current_survivor_progress"
 	{
 		"#format"	"{1:i}"

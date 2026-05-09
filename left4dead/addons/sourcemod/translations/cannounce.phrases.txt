@@ -1,56 +1,173 @@
+/*
+	支援以下顏色:
+	 - {default}	(白色)
+	 - {green}		(橘色)
+	 - {olive}		(綠色)
+	 - {lightgreen}	(淺綠色)
+	 - {red}		(紅色) - 特感隊伍要有人或bot在才會顯示紅色，否則顯示橘色
+	 - {blue}		(藍色) - 人類隊伍要有人或bot在才會顯示藍色，否則顯示橘色
+	 注意事項: 藍色, 紅色, 淺綠色，這三種顏色的其中任意兩種不可出現在同一句話裡
+*/
+
+/*
+	Following named colors are supported:
+	 - {default}	(whilte)
+	 - {green}		(olive color)
+	 - {olive}		(green color)
+	 - {lightgreen}	(light green)
+	 - {red}		(red) - There must be at least one player or bot in infected team，or red will turn into {green} color
+	 - {blue}		(blue) - There must be at least one player or bot in survivor team，or blue will turn into {green} color 
+	 Warning:  2 of (Blue, Red, Lightgreen) colors can not be used together in one sentence
+*/
+
 "Phrases"
 {
+	// "messages_playerjoin", "messages_playerdisc", "messages_admin_playerjoin", "messages_admin_playerdisc" 可以填入以下的{參數}
+	// {PLAYERNAME}: 玩家名稱
+	// {STEAMID}: 玩家steam id
+	// {PLAYERCOUNTRY}: 玩家的國家
+	// {PLAYERCOUNTRYSHORT}: 玩家的國家短代號
+	// {PLAYERCOUNTRYSHORT3}: 玩家的國家短代號(多一些代號)
+	// {PLAYERCITY}: 玩家的城市
+	// {PLAYERREGION}: 玩家的地區(省,州)
+	// {PLAYERIP}: 玩家IP
+	// {PLAYERTYPE}: 玩家是否為管理員
+	// -
+	// Write the follwing in "messages_playerjoin", "messages_playerdisc", "messages_admin_playerjoin", "messages_admin_playerdisc" translation phrase
+	// {PLAYERNAME}: player name
+	// {STEAMID}: player STEAMID
+	// {PLAYERCOUNTRY}: player country name
+	// {PLAYERCOUNTRYSHORT}: player country short name
+	// {PLAYERCOUNTRYSHORT3}: player country another short name
+	// {PLAYERCITY}: player city name
+	// {PLAYERREGION}: player region name
+	// {PLAYERIP}: player IP
+	// {PLAYERTYPE}: player is Adm or not
+	
+	//除了管理員外所有人會看到的句子
+	//display message to everyone (Non-admin)
+	"messages_playerjoin"
+	{
+		"en"		"[{olive}TS{default}] {blue}Player {green}{PLAYERNAME} {blue}joined{default}. ({green}{PLAYERCOUNTRY},{PLAYERCITY}{default})"
+		"zho"		"[{olive}TS{default}] {blue}玩家 {green}{PLAYERNAME} {blue}來了{default}. ({green}{PLAYERCOUNTRY},{PLAYERCITY}{default})"
+		"chi"		"[{olive}TS{default}] {blue}玩家 {green}{PLAYERNAME} {blue}来了{default}. ({green}{PLAYERCOUNTRY},{PLAYERCITY}{default})"
+	}
+	"messages_playerdisc"
+	{
+		"en"		"[{olive}TS{default}] {red}Player {green}{PLAYERNAME} {red}disconnected{default}. ({green}{DISC_REASON}{default})"
+		"zho"		"[{olive}TS{default}] {red}玩家 {green}{PLAYERNAME} {red}跑了{default}. ({green}{DISC_REASON}{default})"
+		"chi"		"[{olive}TS{default}] {red}玩家 {green}{PLAYERNAME} {red}跑了{default}. ({green}{DISC_REASON}{default})"
+	}
+
+	//管理員會看到的句子 (權限: ADMFLAG_GENERIC)
+	//only display message to adm (flag: ADMFLAG_GENERIC)
+	"messages_admin_playerjoin"
+	{
+		"en"		"[{olive}TS{default}] {blue}Player {green}{PLAYERNAME} {blue}joined{default}. ({green}{PLAYERCOUNTRY}, {PLAYERCITY}{default}) {olive}<ID:{STEAMID}>"
+		"zho"		"[{olive}TS{default}] {blue}玩家 {green}{PLAYERNAME} {blue}來了{default}. ({green}{PLAYERCOUNTRY}, {PLAYERCITY}{default}) {olive}<ID:{STEAMID}>"
+		"chi"		"[{olive}TS{default}] {blue}玩家 {green}{PLAYERNAME} {blue}来了{default}. ({green}{PLAYERCOUNTRY}, {PLAYERCITY}{default}) {olive}<ID:{STEAMID}>"
+	}
+	
+	"messages_admin_playerdisc"
+	{
+		"en"		"[{olive}TS{default}] {red}Player {green}{PLAYERNAME} {red}disconnected{default}. ({green}{DISC_REASON}{default}) {olive}<ID:{STEAMID}>"
+		"zho"		"[{olive}TS{default}] {red}玩家 {green}{PLAYERNAME} {red}跑了{default}. ({green}{DISC_REASON}{default}) {olive}<ID:{STEAMID}>"
+		"chi"		"[{olive}TS{default}] {red}玩家 {green}{PLAYERNAME} {red}跑了{default}. ({green}{DISC_REASON}{default}) {olive}<ID:{STEAMID}>"
+	}
+	
+	
+	
+	
+	
 	"CA Admin"
 	{
 		"en"			"Admin"
+		"zho"			"管理員"
+		"chi"			"管理员"
+		"ru"			"Администратор"
 	}
 	"CA Public"
 	{
 		"en"			"Player"
+		"zho"			"玩家"
+		"chi"			"玩家"
+		"ru"			"Игрок"
 	}
 	"LAN City Desc"
 	{
 		"en"			"an IP Address"
+		"zho"			"IP地址"	
+		"chi"			"IP地址"
+		"ru"			"IP-адрес"
 	}
 	"LAN Region Desc"
 	{
 		"en"			"a Local Subnet"
+		"zho"			"區域子網路"
+		"chi"			"本地子网"
+		"ru"			"Локальная подсеть"
 	}
 	"LAN Country Desc"
 	{
 		"en"			"a Local Area Network"
+		"zho"			"區域網路"
+		"chi"			"局域网"
+
+		"ru"			"Локальная сеть"
 	}
 	
 	"LAN Country Short"
 	{
-		"en"			"LN"
+		"en"			"LAN"
+		"chi"			"LAN"
+		"zho"			"區網"
+		"ru"			"ЛОК."
 	}
 	
 	"LAN Country Short 3"
 	{
 		"en"			"LAN"
+		"zho"			"區域"
+		"ru"			"ЛОК."
 	}
+
 	
 	"Unknown City Desc"
 	{
 		"en"			"Somewhere"
+		"zho"			"某地方"
+		"chi"			"某地方"
+		"ru"			"Где-то"
 	}
 	"Unknown Region Desc"
 	{
 		"en"			"an Unknown Region"
+		"zho"			"未知地區"
+		"chi"			"未知地区"
+		"ru"			"Неизвестный регион"
 	}
 	"Unknown Country Desc"
 	{
 		"en"			"an Unknown Country"
+		"zho"			"未知國家"
+		"chi"			"未知国家"
+		"ru"			"Неизвестная страна"
 	}
 	
 	"Unknown Country Short"
 	{
 		"en"			"??"
+		"zho"			"??"
+		"chi"			"??"
+		"ru"			"??"
+		
 	}
 	
 	"Unknown Country Short 3"
 	{
 		"en"			"???"
+		"zho"			"???"
+		"chi"			"???"
+		"ru"			"???"
 	}
 }

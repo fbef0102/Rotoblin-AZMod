@@ -32,10 +32,11 @@ bool g_bMapStarted;
 
 *****************************************************************/
 
-SetupJoinMsg()
+void SetupJoinMsg()
 {
+	
 	//cvars
-	g_CvarPlaySound = CreateConVar("sm_ca_playsound", "0", "Plays a specified (sm_ca_playsoundfile) sound on player connect");
+	g_CvarPlaySound = CreateConVar("sm_ca_playsound", "1", "Plays a specified (sm_ca_playsoundfile) sound on player connect");
 	g_CvarPlaySoundFile = CreateConVar("sm_ca_playsoundfile", "ambient/alarms/klaxon1.wav", "Sound to play on player connect if sm_ca_playsound = 1");
 
 	g_CvarPlayDiscSound = CreateConVar("sm_ca_playdiscsound", "0", "Plays a specified (sm_ca_playdiscsoundfile) sound on player discconnect");
@@ -48,12 +49,12 @@ SetupJoinMsg()
 	g_CvarPlayDiscSoundFile.AddChangeHook(ConVarChanged_Cvars);
 }
 
-void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+static void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {
 	GetCvars();
 }
 
-void GetCvars()
+static void GetCvars()
 {
 	g_CvarPlaySoundFile.GetString(g_sCvarPlaySoundFile, sizeof(g_sCvarPlaySoundFile));
 	g_CvarPlayDiscSoundFile.GetString(g_sCvarPlayDiscSoundFile, sizeof(g_sCvarPlayDiscSoundFile));
@@ -72,6 +73,12 @@ void GetCvars()
 	}
 }
 
+void OnAdminMenuReady_JoinMsg()
+{
+
+}
+
+
 void OnMapStart_JoinMsg()
 {
 	g_bMapStarted = true;
@@ -83,6 +90,12 @@ void OnMapStart_JoinMsg()
 		delete g_hMapStartNoSoundTimer;
 		g_hMapStartNoSoundTimer = CreateTimer(waitPeriod, Timer_MapStartNoSound);	
 	}
+}
+
+void OnMapEnd_JoinMsg()
+{
+	g_bMapStarted = false;
+	delete g_hMapStartNoSoundTimer;
 }
 
 void OnPostAdminCheck_Sound()
@@ -113,6 +126,11 @@ void OnClientDisconnect_Sound()
 }
 
 
+void OnPluginEnd_JoinMsg()
+{		
+}
+
+
 Action Timer_MapStartNoSound(Handle timer)
 {	
 	g_hMapStartNoSoundTimer = null;
@@ -128,39 +146,7 @@ Action Timer_MapStartNoSound(Handle timer)
 
 
 *****************************************************************/
-LoadSoundFilesAll()
+void OnConfigsExecuted_JoinMsg()
 {
-	new String:c_soundFile[SOUNDFILE_PATH_LEN];
-	new String:c_soundFileFullPath[SOUNDFILE_PATH_LEN + 6];
-	
-	new String:dc_soundFile[SOUNDFILE_PATH_LEN];
-	new String:dc_soundFileFullPath[SOUNDFILE_PATH_LEN + 6];
-	
-	//download and cache connect sound
-	if( GetConVarInt(g_CvarPlaySound))
-	{
-		GetConVarString(g_CvarPlaySoundFile, c_soundFile, sizeof(c_soundFile));
-		Format(c_soundFileFullPath, sizeof(c_soundFileFullPath), "sound/%s", c_soundFile);
-		
-		if( FileExists( c_soundFileFullPath ) )
-		{
-			AddFileToDownloadsTable(c_soundFileFullPath);
-			
-			PrecacheSound( c_soundFile );
-		}
-	}
-	
-	//cache disconnect sound
-	if( GetConVarInt(g_CvarPlayDiscSound))
-	{
-		GetConVarString(g_CvarPlayDiscSoundFile, dc_soundFile, sizeof(dc_soundFile));
-		Format(dc_soundFileFullPath, sizeof(dc_soundFileFullPath), "sound/%s", dc_soundFile);
-		
-		if( FileExists( dc_soundFileFullPath ) )
-		{
-			AddFileToDownloadsTable(dc_soundFileFullPath);
-			
-			PrecacheSound( dc_soundFile );
-		}
-	}
+	GetCvars();
 }

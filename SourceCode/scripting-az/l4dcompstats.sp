@@ -290,7 +290,9 @@ public PrintMVPAndTeamStats(iclient)
 		GetClientName(client,curname,128);
 		
 		if(iclient == 0)
+		{
 			CPrintToChatAll("{green}★{default} %t","l4dcompstats1",curname, val, percent, kills,RoundFloat((float(kills) / float(totalkills)) * 100.0));
+		}
 		else
 		{
 			CPrintToChat(iclient,"{green}★{default} %T","l4dcompstats1",iclient,curname, val, percent, kills,RoundFloat((float(kills) / float(totalkills)) * 100.0));

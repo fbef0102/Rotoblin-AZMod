@@ -1,28 +1,28 @@
 
 
-SetupGeoList()
+void SetupGeoList()
 {
 	RegAdminCmd("sm_geolist", Command_GeoList, ADMFLAG_GENERIC, "sm_geolist <name or #userid> - prints geopraphical information about target(s)");
 }
 
 
-public Action:Command_GeoList(client, args)
+public Action Command_GeoList(int client, int args)
 {
-	decl String:target[65];
+	char target[65];
 	
-	decl String:target_name[MAX_TARGET_LENGTH];
-	decl target_list[MAXPLAYERS];
-	decl target_count;
-	decl bool:tn_is_ml;
-	decl String:name[32];
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
+	char name[32];
 	
-	decl String:ip[16];
-	decl String:city[45];
-	decl String:region[45];
-	decl String:country[45];
-	decl String:ccode[3];
-	decl String:ccode3[4];
-	new bool:bIsLanIp;
+	char ip[16];
+	char city[45];
+	char region[45];
+	char country[45];
+	char ccode[3];
+	char ccode3[4];
+	bool bIsLanIp;
 
 	//not enough arguments, display usage
 	if (args < 1)
@@ -59,7 +59,6 @@ public Action:Command_GeoList(client, args)
 		//detect LAN ip
 		bIsLanIp = IsLanIP( ip );
 		
-		// Using GeoIP default extension...
 		if( !GeoipCode2(ip, ccode) )
 		{
 			if( bIsLanIp )
