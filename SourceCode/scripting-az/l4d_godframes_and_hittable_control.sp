@@ -15,7 +15,7 @@ public Plugin myinfo =
 {
 	name = "L4D2 Godframes Control combined with FF Plugins + L4D2 Hittable Control",
 	author = "Stabby, CircleSquared, Tabun, Visor, dcx, Sir, Spoon, A1m`, Derpduck, Forgetest, Harry",
-	version = "0.9.1h-2026/4/20",
+	version = "0.9.3h-2026/5/16",
 	description = "控制人類無敵狀態的時間並顯示顏色. Allows for customisation of hittable damage values."
 };
 
@@ -822,7 +822,8 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 
 	/********l4d2_hittable_control*******/
 	if (IsValidEdict(attacker)
-	 	&& g_nPhysicsHitInfoEntry[inflictor] != -1)
+	 	&& g_nPhysicsHitInfoEntry[inflictor] != -1
+		&& (IsEntityClassname(inflictor, "prop_physics*") || IsEntityClassname(inflictor, "prop_car_alarm")) )
 	{
 		if (IsClientAndInGame(attacker) && IsTank(attacker) && victim == attacker && hTankSelfDamage.BoolValue)
 			return Plugin_Handled; // Tank is hitting himself with the Hittable (+added usecase when the Tank would be hit by a hittable that he punched a hittable against before it hit him)
@@ -1241,19 +1242,20 @@ public void OnEntityCreated(int entity, const char[] classname)
 	}
 }
 
-public void OnEntityDestroyed(int entity)
-{
-	if (entity > 0 && entity < MAX_EDICTS)
-	{
-		g_nPhysicsHitInfoEntry[entity] = -1;
-	}
-}
-
 void Physics_OnSpawnPost(int entity)
 {
+	g_nPhysicsHitInfoEntry[entity] = -1;
+
 	int parent = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (parent != -1)
 	{
+		// In case the breakable parent was forced to
+		if (g_nPhysicsHitInfoEntry[parent] == -1)
+		{
+			g_nPhysicsHitInfoEntry[parent] = NewPhysicsHitInfo();
+			DebugMsg("Physics_OnSpawnPost (missing info from breakable parent#%d) [#%d]", parent, g_nPhysicsHitInfoEntry[parent]);
+		}
+
 		g_nPhysicsHitInfoEntry[entity] = g_nPhysicsHitInfoEntry[parent];
 	}
 	g_iPhysicsDamage[entity] = -1;
@@ -1275,13 +1277,13 @@ Action Physics_OnTakeDamage(int victim, int &attacker, int &inflictor, float &da
 	if (!IsValidEdict(attacker))
 		return Plugin_Continue;
 
-	DebugMsg("(#%d) Physics_OnTakeDamage (attacker %d)", victim, attacker);
-
 	if (attacker > 0 && attacker <= MaxClients && IsTank(attacker))
 	{
 		// A tank punches me, create a new entry if not
 		if (g_nPhysicsHitInfoEntry[victim] == -1)
 		{
+			DebugMsg("(#%d) Physics_OnTakeDamage tank (%N #%d)", victim, attacker, attacker);
+
 			g_nPhysicsHitInfoEntry[victim] = NewPhysicsHitInfo();
 			DebugMsg("(#%d) Physics_OnTakeDamage (new) [#%d]", victim, g_nPhysicsHitInfoEntry[victim]);
 		}
@@ -1295,8 +1297,10 @@ Action Physics_OnTakeDamage(int victim, int &attacker, int &inflictor, float &da
 		g_PhysicsHitInfos.SetArray(g_nPhysicsHitInfoEntry[victim], info);
 		DebugMsg("(#%d) Physics_OnTakeDamage [%N]", victim, attacker);
 	}
-	else if (IsEntityClassname(attacker, "prop_physics*"))
+	else if (IsEntityClassname(attacker, "prop_physics*") || IsEntityClassname(attacker, "prop_car_alarm"))
 	{
+		DebugMsg("(#%d) Physics_OnTakeDamage prop_physics (#%d)", victim, attacker);
+
 		// Collides with other physics, clone their hit info
 		if (g_nPhysicsHitInfoEntry[attacker] != -1)
 		{
@@ -1319,7 +1323,7 @@ Action Physics_OnTakeDamage(int victim, int &attacker, int &inflictor, float &da
 				selfinfo.lastAttackerTime = GetGameTime();
 
 				g_PhysicsHitInfos.SetArray(g_nPhysicsHitInfoEntry[victim], selfinfo);
-				DebugMsg("(#%d) Physics_OnTakeDamage prop_physics (#%d) [%d]", victim, g_nPhysicsHitInfoEntry[attacker], selfinfo.lastAttackerId);
+				DebugMsg("(#%d) Physics_OnTakeDamage prop_physics (#%d) [lastAttackerId %d]", victim, g_nPhysicsHitInfoEntry[attacker], selfinfo.lastAttackerId);
 			}
 		}
 		else

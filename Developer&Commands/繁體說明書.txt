@@ -809,8 +809,14 @@
 //倖存者每回退7%路程, Tank有4秒時間不會失去控制權
 
 [224] l4d_return_thrown_items 
+//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_return_thrown_items
 //Return pills/adrenalines thrown through shoving key if not successfully given.
 //當右鍵給藥丸無法傳送到隊友身上時返回給持有者
+
+[225] l4d_fix_prop_los 
+//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_prop_los
+//Fix thin/small 'prop_*' entity not blocking LOS.
+//修復小型的物件無法擋住玩家視野 (靈魂特感無法在物件後面生成, 顯示會被玩家看到)
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
