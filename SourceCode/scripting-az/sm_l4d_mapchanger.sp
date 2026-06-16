@@ -85,7 +85,7 @@ public OnPluginStart()
 }
 
 bool g_bFinalMap;
-public OnMapStart()
+public void L4D_OnLeft4DHooks_OnMapStart()
 {
 	// Execute the config file
 
@@ -93,10 +93,7 @@ public OnMapStart()
 	RoundEndBlock = 0;
 	g_bFinalMap = L4D_IsMissionFinalMap(true);
 
-	if(GetConVarInt(Allowed) == 1)
-	{
-		PluginInitialization();
-	}
+	PluginInitialization();
 }
 
 public OnClientPutInServer(client)
@@ -248,6 +245,9 @@ PluginInitialization()
 
 	ClearKV(hKVSettings);
 	int GameMode = L4D_GetGameModeType();
+	ConVar g_hCvar_MPGameMode = FindConVar("mp_gamemode");
+	char ss[64];
+	g_hCvar_MPGameMode.GetString(ss, sizeof ss);
 	if (GameMode == GAMEMODE_COOP)
 	{
 		BuildPath(Path_SM, FMC_FileSettings, 128, "data/sm_l4dco_mapchanger.txt");
