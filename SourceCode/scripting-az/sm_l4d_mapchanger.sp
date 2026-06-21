@@ -245,9 +245,6 @@ PluginInitialization()
 
 	ClearKV(hKVSettings);
 	int GameMode = L4D_GetGameModeType();
-	ConVar g_hCvar_MPGameMode = FindConVar("mp_gamemode");
-	char ss[64];
-	g_hCvar_MPGameMode.GetString(ss, sizeof ss);
 	if (GameMode == GAMEMODE_COOP)
 	{
 		BuildPath(Path_SM, FMC_FileSettings, 128, "data/sm_l4dco_mapchanger.txt");
