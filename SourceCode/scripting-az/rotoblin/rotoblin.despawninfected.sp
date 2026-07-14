@@ -146,6 +146,7 @@ void OnNextFrame(int entityRef)
 		return;
 
 	SetEntProp(infected, Prop_Send, "m_mobRush", 1);
+	SDKCall(hInfectedAttackSurvivorTeam, infected);
 }
 
 /**
@@ -349,7 +350,7 @@ static void DespawningCommons(float lastSurvivorFlow, int firstSurvivor, int las
 		// Remove common
 		RemoveEntity(entity);
 
-		//PrintToChatAll("Despawned common %i and added to the respawn queue", entity);
+		//PrintToChatAll("Despawned common %i (rush: %d) and added to the respawn queue", entity, GetEntProp(entity, Prop_Send, "m_mobRush"));
 	}
 }
 

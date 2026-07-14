@@ -110,8 +110,6 @@ GlobalForward
 	g_hLiveForward,
 	g_hPreLiveForward;
 
-new hookedPlayerHurt; //if we hooked player_hurt event?
-
 new pauseBetweenHalves; //should we ready up before starting the 2nd round or go live right away
 new bool:isSecondRound;
 
@@ -882,12 +880,10 @@ public OnAllPluginsLoaded()
 		SetFailState("Could not find ConVar \"sv_maxplayers\".");
 }
 
-new bool:insidePluginEnd = false;
 public OnPluginEnd()
 {
 	ResetVariable();
 	ResetTimer();
-	insidePluginEnd = true;
 	
 	readyOff();	
 }
@@ -1002,7 +998,10 @@ public void OnClientPutInServer(int client)
 	//CreateTimer(PreventSpecBlockInfectedTeamIcon_DELAY, Timer_PreventSpecBlockInfectedTeamIcon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
 	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
+	{
 		SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+		SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+	}
 
 	if(readyMode) 
 	{
@@ -1010,12 +1009,9 @@ public void OnClientPutInServer(int client)
 	}
 }
 
-public void OnPreThinkPost(int client)
+void OnPreThinkPost(int client)
 {
-	if (cvarEnforceReady.BoolValue == false||
-		hasdirectorStart||
-		!IsClientInGame(client) ||
-		GetClientTeam(client) != L4D_TEAM_INFECTED ||
+	if (GetClientTeam(client) != L4D_TEAM_INFECTED ||
 		!IsPlayerGhost(client))
 	{
 		return;
@@ -1027,16 +1023,45 @@ public void OnPreThinkPost(int client)
 	}
 }
 
-static HookOrUnhookPreThinkPost(bool:bHook)
+Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	for (new client = 1; client <= MaxClients; client++){
+	if (GetClientTeam(victim) != L4D_TEAM_SURVIVOR
+		|| !IsPlayerAlive(victim))
+	{
+		return Plugin_Continue;
+	}
 
-		if (!IsClientInGame(client) || IsFakeClient(client)) continue;
+	if (attacker > 0 && attacker <= MaxClients)
+	{
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
+void HookOrUnhookPreThinkPost(bool bHook)
+{
+	for (new client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client)) continue;
 
 		if (bHook)
-			SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+		{
+			if(!IsFakeClient(client))
+			{
+				SDKUnhook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+				SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+			}
+
+			SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+		}
 		else
-			SDKUnhook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+		{
+			if(!IsFakeClient(client)) SDKUnhook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+
+			SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+		}
 	}
 }
 
@@ -1526,25 +1551,6 @@ Action PlayerChangeTeamCheck(Handle timer, int userid)
 	}
 
 	return Plugin_Continue;
-}
-
-//When a player gets hurt during ready mode, block all damage
-public Action:eventPlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new player = GetClientOfUserId(GetEventInt(event, "userid"));
-	new health = GetEventInt(event, "health");
-	new dmg_health = GetEventInt(event, "dmg_health");
-
-	if(!player || !IsClientInGame(player) || GetClientTeam(player) != L4D_TEAM_SURVIVOR) return;
-	
-	#if READY_DEBUG
-	new String:curname[128];
-	GetClientName(player,curname,128);
-	
-	DebugPrintToAll("[DEBUG] Player hurt %s [%d], health = %d, dmg_health = %d.", curname, player, health, dmg_health);
-	#endif
-	
-	SetEntityHealth(player, health + dmg_health);
 }
 
 public Action:eventVotePassed(Handle:event, const String:name[], bool:dontBroadcast)
@@ -2507,12 +2513,6 @@ readyOn()
 	readyMode = true;
 	
 	PrintHintTextToAll("%t","ReadyPlugin_29");
-
-	if(!hookedPlayerHurt) 
-	{
-		HookEvent("player_hurt", eventPlayerHurt);
-		hookedPlayerHurt = 1;
-	}
 	
 	if(!unreadyTimerExists)
 	{
@@ -2545,18 +2545,6 @@ readyOff()
 	DebugPrintToAll("readyOff() called");
 	
 	readyMode = false;
-	
-	//events seem to be all unhooked _before_ OnPluginEnd
-	//though even if it wasnt, they'd get unhooked after anyway..
-	if(hookedPlayerHurt && !insidePluginEnd) 
-	{
-		UnhookEvent("player_hurt", eventPlayerHurt);
-		hookedPlayerHurt = 0;
-	}
-	
-	//used to unfreeze all players here always
-	//now we will do it at the beginning of the round when its live
-	//so that players cant open the safe room door during the restarts
 }
 
 UnfreezeAllPlayers()

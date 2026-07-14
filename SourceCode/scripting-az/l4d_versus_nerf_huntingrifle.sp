@@ -33,7 +33,6 @@ float fRateOfFireCvar;
 
 float g_fNextPrimaryAttack[MAXPLAYERS + 1]	=	{0.0};		//next gametime client's sniper is allowed to fire;
 float g_fFireSpeed							= 	0.27;		//min low input values are 0.05 - 1.5 if you prefer stock speed * modifier, 
-int OLD_WEAPON[MAXPLAYERS+1], NEW_WEAPON[MAXPLAYERS+1];
 Handle g_hTimerFireAnimation[MAXPLAYERS + 1];
 
 public Plugin myinfo = 
@@ -41,7 +40,7 @@ public Plugin myinfo =
 	name = "Nerf Huntingrifle",
 	author = "Tester:Xeno, Coder:Timocop, archer, L4D1 Huntingrifle modify by Harry",
 	description = "Beta Reloading Animations",
-	version = "1.5",
+	version = "1.6-2026/7/14",
 	url = "Harry Potter myself,bitch"
 };
 
@@ -188,8 +187,6 @@ Action COLD_DOWN(Handle timer, DataPack hPack) //拉勾動畫
 	int weapon = EntRefToEntIndex(hPack.ReadCell());
 	if(weapon == INVALID_ENT_REFERENCE)
 		return Plugin_Continue;
-
-	//PrintToChatAll("here2");
 		
 	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
 	if(!IsValidEntity(iViewModel))
@@ -206,51 +203,26 @@ Action COLD_DOWN(Handle timer, DataPack hPack) //拉勾動畫
 	return Plugin_Continue;
 }
 
-int 
-    g_iPerfAllowedWeapon[MAXPLAYERS+1] = {0}, // [0 = Nothing | 1 = True | 2 = False]
-    g_iPerfActiveWeapon[MAXPLAYERS+1] = {-1}; // Previous Active Weapons
+public void L4D_OnSwingStart(int client, int weapon)
+{
+	delete g_hTimerFireAnimation[client];
+}
 
-public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVelocity[3], float fAngles[3], int &iWeapon)
-{ 
-	if(iConVar_Huntrifle_SwtichLayer <= 0) return Plugin_Continue;
-	if(!IsClientInGame(iClient)) return Plugin_Continue;
-	if(GetClientTeam(iClient) != 2) return Plugin_Continue;
-	if(!IsPlayerAlive(iClient)) return Plugin_Continue;
+void OnWeaponSwitchPost(int client, int weapon)
+{
+	if(iConVar_Huntrifle_SwtichLayer <= 0) return;
 
-	NEW_WEAPON[iClient] = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	if(NEW_WEAPON[iClient] <= 0 ) return Plugin_Continue;
-	
-	bool bWeaponChanged = ((NEW_WEAPON[iClient] != g_iPerfActiveWeapon[iClient]) || (g_iPerfActiveWeapon[iClient] == -1));
-	g_iPerfActiveWeapon[iClient] = NEW_WEAPON[iClient];
+	if (client <= 0) return;
+	if(GetClientTeam(client) != 2) return;
+	if(!IsPlayerAlive(client)) return;
+	if(weapon <= MaxClients || !IsValidEntity(weapon)) return;
 
-	if(bWeaponChanged) // weapons changed
+	static char sCurrentWeaponName[32];
+	GetEntityClassname(weapon, sCurrentWeaponName, sizeof(sCurrentWeaponName));
+	if(strcmp(sCurrentWeaponName, "weapon_hunting_rifle", false) == 0)
 	{
-		g_iPerfAllowedWeapon[iClient] = 0;
+		WeaponChangeAnimation(client, weapon);
 	}
-
-	if(!IsHuntingRifle(iClient, NEW_WEAPON[iClient]))
-	{
-		OLD_WEAPON[iClient] = NEW_WEAPON[iClient];
-		return Plugin_Continue;
-	}
-
-	if(NEW_WEAPON[iClient] != OLD_WEAPON[iClient])
-	{
-		if(!g_bIgnoreWeaponSwitch[iClient])
-			WeaponChangeAnimation(iClient, NEW_WEAPON[iClient]);
-		else
-			g_bIgnoreWeaponSwitch[iClient] = false;
-		
-		g_bIsWeaponEmpty[NEW_WEAPON[iClient]] = (GetEntProp(NEW_WEAPON[iClient], Prop_Data, "m_iClip1") <= 0);
-	}
-	OLD_WEAPON[iClient] = NEW_WEAPON[iClient];
-
-	if(g_hTimerFireAnimation[iClient] != null && iButtons & IN_ATTACK2)
-	{
-		delete g_hTimerFireAnimation[iClient];
-	}
-
-	return Plugin_Continue;
 }
 
 void WeaponChangeAnimation(int iClient, int hActiveWeapon)
@@ -401,26 +373,11 @@ public void OnClientDisconnect(int client)
 public void OnClientPutInServer(int client)
 {
 	ResetClientSniperData(client);
+
+	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponSwitchPost);
 }
 
 void ResetClientSniperData(int client)
 {
 	g_fNextPrimaryAttack[client] = 0.0;
-}
-
-bool IsHuntingRifle(int client, int weapon)
-{
-    if(g_iPerfAllowedWeapon[client] == 1) return true;
-    else if(g_iPerfAllowedWeapon[client] == 2) return false;
-
-    static char sCurrentWeaponName[32];
-    GetEntityClassname(weapon, sCurrentWeaponName, sizeof(sCurrentWeaponName));
-    if(strcmp(sCurrentWeaponName, "weapon_hunting_rifle", false) == 0)
-    {
-        g_iPerfAllowedWeapon[client] = 1;
-        return true;
-    }
-
-    g_iPerfAllowedWeapon[client] = 2;
-    return false;
 }

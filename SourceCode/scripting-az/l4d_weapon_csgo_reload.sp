@@ -3,19 +3,20 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
+#include <dhooks>
 #include <left4dhooks>
-#define CLASSNAME_LENGTH 	64
 #define DEBUG 0
 
 public Plugin myinfo = 
 {
-	name = "weapon csgo reload",
+	name = "[L4D1] weapon csgo reload",
 	author = "Harry Potter",
 	description = "reload like csgo weapon",
-	version = "2.3",
+	version = "2.4-2026/7/14",
 	url = "https://forums.alliedmods.net/showthread.php?t=318820"
 };
 
+bool bLate;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	EngineVersion test = GetEngineVersion();
@@ -25,8 +26,14 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
 		return APLRes_SilentFailure;
 	}
+
+	bLate = late;
 	return APLRes_Success;
 }
+
+#define MAXENTITIES                   2048
+#define GAMEDATA_FILE           	 "l4d_weapon_csgo_reload"
+#define PISTOL_RELOAD_INCAP_MULTIPLY 1.3
 
 enum WeaponID
 {
@@ -41,35 +48,60 @@ enum WeaponID
 	ID_WEAPON_MAX
 }
 
-#define PISTOL_RELOAD_INCAP_MULTIPLY 1.3
+WeaponID
+	g_iGlobalWeaponId[MAXENTITIES+1];
 
 StringMap g_smWeaponNameID;
 ConVar g_hAmmoHunting, g_hAmmoRifle, g_hAmmoSmg;
 int g_iAmmoHunting, g_iAmmoRifle, g_iAmmoSmg;
 
-int WeaponAmmoOffest[view_as<int>(ID_WEAPON_MAX)];
 int WeaponMaxClip[view_as<int>(ID_WEAPON_MAX)];
 
 //cvars
-ConVar hEnable, hEnableClipRecoverCvar, hSmgTimeCvar, hRifleTimeCvar, hHuntingRifleTimeCvar, hPistolTimeCvar, hDualPistolTimeCvar;
+ConVar hEnable, hSmgTimeCvar, hRifleTimeCvar, hHuntingRifleTimeCvar, hPistolTimeCvar, hDualPistolTimeCvar;
 
 bool g_bEnable;
-bool g_EnableClipRecoverCvar;
 float g_SmgTimeCvar;
 float g_RifleTimeCvar;
 float g_HuntingRifleTimeCvar;
 float g_PistolTimeCvar;
 float g_DualPistolTimeCvar;
 
-//value
-float g_hClientReload_Time[MAXPLAYERS+1]	= {0.0};	
+float 
+	g_hClientReload_Time[MAXPLAYERS+1]	= {0.0};	
 
-//offest
-int ammoOffset;		
+int
+	g_iOffsetActive,
+	g_iOffsetClip,
+	g_iOffsetPrimaryAmmoType,
+	g_iOffsetInReload,
+	g_iOffsetAmmo,
+	g_iOffset_PistolisDualWielding;	
 
 public void OnPluginStart()
 {
-	ammoOffset = FindSendPropInfo("CCSPlayer", "m_iAmmo");
+	GameData hGameData = new GameData(GAMEDATA_FILE);
+	if( hGameData == null ) SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA_FILE);
+
+	Handle hDetour = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_CBaseEntity);
+	if( !hDetour )
+		SetFailState("Failed to setup detour handle: CTerrorGun::Reload");
+
+	if( !DHookSetFromConf(hDetour, hGameData, SDKConf_Signature, "CTerrorGun::Reload") )
+		SetFailState("Failed to find signature: CTerrorGun::Reload");
+
+	if( !DHookEnableDetour(hDetour, false, L4D1_OnGunReload_Pre) )
+		SetFailState("Failed to detour: CTerrorGun::Reload");
+
+	delete hDetour;
+	delete hGameData;
+
+	g_iOffsetActive 				= FindSendPropInfo("CBaseCombatCharacter","m_hActiveWeapon");
+	g_iOffsetClip					= FindSendPropInfo("CBaseCombatWeapon", "m_iClip1");
+	g_iOffsetPrimaryAmmoType 		= FindSendPropInfo("CBaseCombatWeapon", "m_iPrimaryAmmoType");
+	g_iOffsetInReload 				= FindSendPropInfo("CBaseCombatWeapon", "m_bInReload");
+	g_iOffsetAmmo 					= FindSendPropInfo("CCSPlayer", "m_iAmmo");
+	g_iOffset_PistolisDualWielding 	= FindSendPropInfo("CPistol", "m_isDualWielding");
 
 	g_hAmmoRifle =		FindConVar("ammo_assaultrifle_max");
 	g_hAmmoSmg =		FindConVar("ammo_smg_max");
@@ -81,7 +113,6 @@ public void OnPluginStart()
 	g_hAmmoHunting.AddChangeHook(ConVarChanged_AmmoCvars);
 
 	hEnable					= CreateConVar("l4d_weapon_csgo_reload_allow", 			"1", 	"0=off plugin, 1=on plugin"				 , FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	hEnableClipRecoverCvar	= CreateConVar("l4d_weapon_csgo_reload_clip_recover", 	"1", 	"enable previous clip recover?"			 , FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	hSmgTimeCvar			= CreateConVar("l4d_smg_reload_clip_time", 				"1.65", "reload time for smg clip"				 , FCVAR_NOTIFY, true, 0.0);
 	hRifleTimeCvar			= CreateConVar("l4d_rifle_reload_clip_time", 			"1.2",  "reload time for rifle clip"			 , FCVAR_NOTIFY, true, 0.0);
 	hHuntingRifleTimeCvar   = CreateConVar("l4d_huntingrifle_reload_clip_time", 	"2.6",  "reload time for hunting rifle clip"	 , FCVAR_NOTIFY, true, 0.0);
@@ -90,7 +121,6 @@ public void OnPluginStart()
 
 	GetCvars();
 	hEnable.AddChangeHook(ConVarChange_CvarChanged);
-	hEnableClipRecoverCvar.AddChangeHook(ConVarChange_CvarChanged);
 	hSmgTimeCvar.AddChangeHook(ConVarChange_CvarChanged);
 	hRifleTimeCvar.AddChangeHook(ConVarChange_CvarChanged);
 	hHuntingRifleTimeCvar.AddChangeHook(ConVarChange_CvarChanged);
@@ -104,6 +134,27 @@ public void OnPluginStart()
 	SetWeaponNameId();
 
 	//AutoExecConfig(true, "l4d_weapon_csgo_reload");
+
+	if(bLate)
+	{
+		LateLoad();
+	}
+}
+
+void LateLoad()
+{
+    int entity;
+    char classname[36];
+
+    entity = INVALID_ENT_REFERENCE;
+    while ((entity = FindEntityByClassname(entity, "weapon_*")) != INVALID_ENT_REFERENCE)
+    {
+        if (!IsValidEntity(entity))
+            continue;
+
+        GetEntityClassname(entity, classname, sizeof(classname));
+        OnEntityCreated(entity, classname);
+    }
 }
 
 void RoundStart_Event(Event event, const char[] name, bool dontBroadcast) 
@@ -124,15 +175,6 @@ void SetWeaponNameId()
 	g_smWeaponNameID.SetValue("weapon_rifle", ID_RIFLE);
 	//g_smWeaponNameID.SetValue("weapon_autoshotgun", ID_AUTOSHOTGUN);
 	g_smWeaponNameID.SetValue("weapon_hunting_rifle", ID_HUNTING_RIFLE);
-
-	WeaponAmmoOffest[ID_NONE] = 0;
-	WeaponAmmoOffest[ID_PISTOL] = 0;
-	WeaponAmmoOffest[ID_DUAL_PISTOL] = 0;
-	WeaponAmmoOffest[ID_SMG] = 5;
-	//WeaponAmmoOffest[ID_PUMPSHOTGUN] = 6;
-	WeaponAmmoOffest[ID_RIFLE] = 3;
-	//WeaponAmmoOffest[ID_AUTOSHOTGUN] = 6;
-	WeaponAmmoOffest[ID_HUNTING_RIFLE] = 2;
 }
 
 void SetWeaponMaxClip()
@@ -166,56 +208,87 @@ void OnNextFrame_weapon_reparse_server()
 	SetWeaponMaxClip();
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+public void OnEntityCreated(int entity, const char[] classname)
 {
-	if(g_bEnable == false || g_EnableClipRecoverCvar == false)	return Plugin_Continue;
-	
-	if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 2 && IsPlayerAlive(client) && buttons & IN_RELOAD) //If survivor alive player is holding weapon and wants to reload
-	{
-		int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon"); //抓人類目前裝彈的武器
-		if (iCurrentWeapon == -1 || !IsValidEntity(iCurrentWeapon))
-		{
-			return Plugin_Continue;
-		}
+	if (!g_bEnable || !IsValidEntityIndex(entity))
+		return;
 		
-		if(GetEntProp(iCurrentWeapon, Prop_Send, "m_bInReload") == 0)
+	g_iGlobalWeaponId[entity] = ID_NONE;
+
+	switch (classname[0])
+	{
+		case 'w':
 		{
-			char sWeaponName[32];
-			GetClientWeapon(client, sWeaponName, sizeof(sWeaponName));
-			int previousclip = GetWeaponClip(iCurrentWeapon);
-			#if DEBUG
-				PrintToChatAll("%N - %s clip:%d",client,sWeaponName,previousclip);
-			#endif
-			WeaponID weaponid = GetWeaponID(iCurrentWeapon,sWeaponName);
-			int MaxClip = WeaponMaxClip[weaponid];
+			WeaponID weaponid = GetWeaponID(entity, classname);
+			if(weaponid == ID_NONE) return;
 			
-			switch(weaponid)
+			g_iGlobalWeaponId[entity] = weaponid;
+		}
+	}
+}
+
+// Dhooks---
+
+MRESReturn L4D1_OnGunReload_Pre(int pThis, Handle hReturn, Handle hParams)
+{
+	// Validate weapon
+	if( pThis > MaxClients )
+	{
+		int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwnerEntity");
+
+		// Validate weapon owner
+		if( client > 0 && client <= MaxClients && !IsFakeClient(client) && GetClientTeam(client) == 2 && IsPlayerAlive(client) )
+		{
+			// Validate weapon in hand
+			int weapon = GetEntDataEnt2(client, g_iOffsetActive);
+			if( weapon > MaxClients && pThis == weapon )
 			{
-				case ID_SMG,ID_RIFLE,ID_HUNTING_RIFLE:
+				WeaponID weaponid = g_iGlobalWeaponId[weapon];
+				if(weaponid == ID_PISTOL)
 				{
-					if (0 < previousclip && previousclip < MaxClip)	//If the his current mag equals the maximum allowed, remove reload from buttons
+					if( GetEntData(weapon, g_iOffset_PistolisDualWielding, 1) > 0) //dual pistol
 					{
-						DataPack data = new DataPack();
-						data.WriteCell(GetClientUserId(client));
-						data.WriteCell(EntIndexToEntRef(iCurrentWeapon));
-						data.WriteCell(previousclip);
-						data.WriteCell(weaponid);
-						data.Reset();
-						RequestFrame(RecoverWeaponClip, data);
+						g_iGlobalWeaponId[weapon] = ID_DUAL_PISTOL;
+						weaponid = ID_DUAL_PISTOL;
 					}
 				}
-				default:
+
+				int MaxClip = WeaponMaxClip[weaponid];
+				int previousclip = GetWeaponClip(weapon);
+
+				// 官方無限子彈時, 不會清除clip
+				if(IsInifiniteAmmo(weaponid)) return MRES_Ignored;
+
+				switch(weaponid)
 				{
-					return Plugin_Continue;
+					case ID_SMG,ID_RIFLE,ID_HUNTING_RIFLE:
+					{
+						if (0 < previousclip && previousclip < MaxClip)	//If his current mag equals the maximum allowed, remove reload from buttons
+						{
+							//PrintToChatAll("L4D1_OnGunReload_Pre client: %N, weapon: %d, previousclip: %d", client, weapon, previousclip);
+							DataPack data = new DataPack();
+							data.WriteCell(GetClientUserId(client));
+							data.WriteCell(EntIndexToEntRef(weapon));
+							data.WriteCell(previousclip);
+							data.WriteCell(weaponid);
+							RequestFrame(OnNextFrame_RecoverWeaponClip, data);
+						}
+					}
+					default:
+					{
+						return MRES_Ignored;
+					}
 				}
 			}
 		}
 	}
 
-	return Plugin_Continue;
+	return MRES_Ignored;
 }
 
-void RecoverWeaponClip(DataPack data) { 
+void OnNextFrame_RecoverWeaponClip(DataPack data) 
+{ 
+	data.Reset();
 	int client = GetClientOfUserId(data.ReadCell());
 	int CurrentWeapon = EntRefToEntIndex(data.ReadCell());
 	int previousclip = data.ReadCell();
@@ -225,63 +298,44 @@ void RecoverWeaponClip(DataPack data) {
 	
 	if (!IsValidAliveSurvivor(client) || //client wrong
 		CurrentWeapon == INVALID_ENT_REFERENCE || //weapon entity wrong
+		CurrentWeapon != GetEntDataEnt2(client, g_iOffsetActive) ||
 		(nowweaponclip = GetWeaponClip(CurrentWeapon)) >= WeaponMaxClip[weaponid] || //CurrentWeapon complete reload finished
 		nowweaponclip == previousclip //CurrentWeapon clip has been recovered
 	)
 	{
 		return;
 	}
-	
-	switch(weaponid)
-	{
-		case ID_SMG:
-		{
-			if(g_iAmmoSmg == -2) return;
-		}
-		case ID_RIFLE:
-		{
-			if(g_iAmmoRifle == -2) return;
-		}
-		case ID_HUNTING_RIFLE:
-		{
-			if(g_iAmmoHunting == -2) return;
-		}
-	}
 
-	int ammo = GetWeaponAmmo(client, WeaponAmmoOffest[weaponid]);
+	int ammo = GetOrSetPlayerAmmo(client, CurrentWeapon);
 	ammo -= previousclip;
-	#if DEBUG
-		PrintToChatAll("CurrentWeapon clip recovered");
-	#endif
-	SetWeaponAmmo(client,WeaponAmmoOffest[weaponid],ammo);
-	SetWeaponClip(CurrentWeapon,previousclip);
-} 
+	GetOrSetPlayerAmmo(client, CurrentWeapon, ammo);
+	SetWeaponClip(CurrentWeapon, previousclip);
+}
 
 void OnWeaponReload_Event(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 		
-	if (!IsValidAliveSurvivor(client) || g_bEnable == false)
+	if (g_bEnable == false || !IsValidAliveSurvivor(client))
 		return;
 
-	int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon"); //抓人類目前裝彈的武器
-	if (iCurrentWeapon == -1 || !IsValidEntity(iCurrentWeapon))
+	int weapon = GetEntDataEnt2(client, g_iOffsetActive); //抓人類目前裝彈的武器
+	if (weapon <= 0 || !IsValidEntity(weapon))
 	{
 		return;
 	}
 	
 	g_hClientReload_Time[client] = GetEngineTime();
 	
-	char sWeaponName[32];
-	GetClientWeapon(client, sWeaponName, sizeof(sWeaponName));
-	WeaponID weaponid = GetWeaponID(iCurrentWeapon,sWeaponName);
-	#if DEBUG
-		PrintToChatAll("%N - %s - weaponid: %d",client,sWeaponName,weaponid);
-		for (int i = 0; i < 32; i++)
+	WeaponID weaponid = g_iGlobalWeaponId[weapon];
+	if(weaponid == ID_PISTOL)
+	{
+		if( GetEntData(weapon, g_iOffset_PistolisDualWielding, 1) > 0) //dual pistol
 		{
-			PrintToConsole(client, "Offset: %i - Count: %i", i, GetEntData(client, ammoOffset+(i*4)));
-		} 
-	#endif
+			g_iGlobalWeaponId[weapon] = ID_DUAL_PISTOL;
+			weaponid = ID_DUAL_PISTOL;
+		}
+	}
 	
 	DataPack pack;
 	switch(weaponid)
@@ -311,7 +365,7 @@ void OnWeaponReload_Event(Event event, const char[] name, bool dontBroadcast)
 	}
 	
 	pack.WriteCell(GetClientUserId(client));
-	pack.WriteCell(EntIndexToEntRef(iCurrentWeapon));
+	pack.WriteCell(EntIndexToEntRef(weapon));
 	pack.WriteCell(weaponid);
 	pack.WriteCell(g_hClientReload_Time[client]);
 }
@@ -328,37 +382,18 @@ Action WeaponReloadClip(Handle timer, DataPack pack)
 	if ( reloadtime != g_hClientReload_Time[client] || //裝彈時間被刷新
 		!IsValidAliveSurvivor(client) || //client wrong
 		CurrentWeapon == INVALID_ENT_REFERENCE || //weapon entity wrong
-		HasEntProp(CurrentWeapon, Prop_Send, "m_bInReload") == false || GetEntProp(CurrentWeapon, Prop_Send, "m_bInReload") == 0 || //reload interrupted
+		HasEntProp(CurrentWeapon, Prop_Send, "m_bInReload") == false || GetEntData(CurrentWeapon, g_iOffsetInReload, 1) == 0 || //reload interrupted
 		(clip = GetWeaponClip(CurrentWeapon)) >= WeaponMaxClip[weaponid] //CurrentWeapon complete reload finished
 	)
 	{
 		return Plugin_Continue;
 	}
 		
-	bool bIsInfiniteAmmo;
-	switch(weaponid)
-	{
-		case ID_SMG:
-		{
-			if(g_iAmmoSmg == -2) bIsInfiniteAmmo = true;
-		}
-		case ID_RIFLE:
-		{
-			if(g_iAmmoRifle == -2) bIsInfiniteAmmo = true;
-		}
-		case ID_HUNTING_RIFLE:
-		{
-			if(g_iAmmoHunting == -2) bIsInfiniteAmmo = true;
-		}
-		case ID_PISTOL, ID_DUAL_PISTOL:
-		{
-			bIsInfiniteAmmo = true;
-		}
-	}
+	bool bIsInfiniteAmmo = IsInifiniteAmmo(weaponid);
 	
 	if (bIsInfiniteAmmo == false)
 	{
-		int ammo = GetWeaponAmmo(client, WeaponAmmoOffest[weaponid]);
+		int ammo = GetOrSetPlayerAmmo(client, CurrentWeapon);
 		if( (ammo - (WeaponMaxClip[weaponid] - clip)) <= 0)
 		{
 			clip = clip + ammo;
@@ -374,7 +409,7 @@ Action WeaponReloadClip(Handle timer, DataPack pack)
 			PrintToChatAll("WeaponReloadClip, client: %N, ammo: %d, clip: %d", client, ammo, clip);
 		#endif
 
-		SetWeaponAmmo(client, WeaponAmmoOffest[weaponid],ammo);
+		GetOrSetPlayerAmmo(client, CurrentWeapon, ammo);
 		SetWeaponClip(CurrentWeapon, clip);
 	}
 	else
@@ -393,7 +428,6 @@ void ConVarChange_CvarChanged(ConVar convar, const char[] oldValue, const char[]
 void GetCvars()
 {
 	g_bEnable  = hEnable.BoolValue;
-	g_EnableClipRecoverCvar = hEnableClipRecoverCvar.BoolValue;
 	g_SmgTimeCvar = hSmgTimeCvar.FloatValue;
 	g_RifleTimeCvar = hRifleTimeCvar.FloatValue;
 	g_HuntingRifleTimeCvar = hHuntingRifleTimeCvar.FloatValue;
@@ -413,23 +447,31 @@ void GetAmmoCvars()
 	g_iAmmoHunting		= g_hAmmoHunting.IntValue;
 }
 
-int GetWeaponAmmo(int client, int offest)
+int GetOrSetPlayerAmmo(int client, int iWeapon, int iAmmo = -1)
 {
-    return GetEntData(client, ammoOffset+(offest*4));
-} 
+	int offset = GetEntData(iWeapon, g_iOffsetPrimaryAmmoType) * 4; // Thanks to "Root" or whoever for this method of not hard-coding offsets: https://github.com/zadroot/AmmoManager/blob/master/scripting/ammo_manager.sp
+
+	if( offset )
+	{
+		if( iAmmo != -1 ) SetEntData(client, g_iOffsetAmmo + offset, iAmmo);
+		else
+		{
+			int ammo = GetEntData(client, g_iOffsetAmmo + offset);
+			return ammo;
+		}
+	}
+
+	return 0;
+}
 
 int GetWeaponClip(int weapon)
 {
-    return GetEntProp(weapon, Prop_Send, "m_iClip1");
+    return GetEntData(weapon, g_iOffsetClip);
 } 
 
-void SetWeaponAmmo(int client, int offest, int ammo)
-{
-    SetEntData(client, ammoOffset+(offest*4), ammo);
-} 
 void SetWeaponClip(int weapon, int clip)
 {
-	SetEntProp(weapon, Prop_Send, "m_iClip1", clip);
+	SetEntData(weapon, g_iOffsetClip, clip);
 } 
 
 bool IsIncapacitated(int client)
@@ -445,7 +487,7 @@ WeaponID GetWeaponID(int weapon,const char[] weapon_name)
 	{
 		if(index == ID_PISTOL)
 		{
-			if( GetEntProp(weapon, Prop_Send, "m_isDualWielding") > 0) //dual pistol
+			if( GetEntData(weapon, g_iOffset_PistolisDualWielding, 1) > 0) //dual pistol
 			{
 				return ID_DUAL_PISTOL;
 			}
@@ -465,4 +507,34 @@ bool IsValidAliveSurvivor(int client)
 		return true;  
 			
 	return false; 
+}
+
+bool IsValidEntityIndex(int entity)
+{
+    return (MaxClients+1 <= entity <= GetMaxEntities());
+}
+
+bool IsInifiniteAmmo(WeaponID weaponid)
+{
+	switch(weaponid)
+	{
+		case ID_SMG:
+		{
+			if(g_iAmmoSmg == -2) return true;
+		}
+		case ID_RIFLE:
+		{
+			if(g_iAmmoRifle == -2) return true;
+		}
+		case ID_HUNTING_RIFLE:
+		{
+			if(g_iAmmoHunting == -2) return true;
+		}
+		case ID_PISTOL, ID_DUAL_PISTOL:
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

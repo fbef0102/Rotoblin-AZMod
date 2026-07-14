@@ -35,8 +35,6 @@
 #endif
 #define _builtinvotes_included
 
-#include "builtinvotes_stocks.inc"
-
 /* Source: https://github.com/L4D-Community/builtinvotes/blob/master/extra/include/builtinvotes.inc */
 
 #define BUILTINVOTES_EXTEND 			"Extend current Map" /** Defined in TF2, but doesn't appear to be localized */
@@ -174,7 +172,7 @@ enum BuiltinVoteFailReason
 {
 	BuiltinVoteFail_Generic = 0,		/**< Vote was generically cancelled. */
 	BuiltinVoteFail_Loses = 3,			/**< No votes outnumbered Yes votes */
-	BuiltinVoteFail_NotEnoughVotes = 4,	/**< Vote did not receive enough votes. */	
+	BuiltinVoteFail_NotEnoughVotes = 4,	/**< Vote did not receive enough votes. */
 }
 
 enum eBuiltinVoteCreateError
@@ -632,3 +630,5 @@ public void __ext_builtinvotes_SetNTVOptional()
 	MarkNativeAsOptional("Game_GetVoteController");
 }
 #endif
+
+#include "builtinvotes_stocks.inc"

@@ -53,28 +53,26 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.6.1"								// Version
+#define PLUGIN_VERSION			"8.6.4-2026/7/14"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
 #define PLUGIN_TAG				"Rotoblin"							// Tag for prints and commands
 #define	PLUGIN_GAMECONFIG_FILE	PLUGIN_SHORTNAME				// Name of gameconfig file
 
-// **********************************************
-//                    Cross plugin variables
-// **********************************************
+
 KeyValues g_hMIData = null;
 char g_sCurMap[64];
 bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
 
-// **********************************************
-//                    Includes
-// **********************************************
+Handle 
+	hInfectedAttackSurvivorTeam = null;
 
 // Globals
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <dhooks>
 #include <l4d_lib>
 #include <left4dhooks>
 #include <multicolors>
@@ -105,9 +103,6 @@ bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
 #include "rotoblin/rotoblin.healthcontrol.sp"
 #include "rotoblin/rotoblin.finalespawn.sp"
 
-// **********************************************
-//					  Forwards
-// **********************************************
 
 public Plugin:myinfo = 
 {
@@ -118,15 +113,6 @@ public Plugin:myinfo =
 	url = PLUGIN_URL
 }
 
-/**
- * Called on pre plugin start.
- *
- * @param myself		Handle to the plugin.
- * @param late			Whether or not the plugin was loaded "late" (after map load).
- * @param error			Error message buffer in case load failed.
- * @param err_max		Maximum number of characters for error message buffer.
- * @return				APLRes_Success for load success, APLRes_Failure or APLRes_SilentFailure otherwise.
- */
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	CreateNative("GiveSurAllPills", Native_GiveSurAllPills);
@@ -151,21 +137,47 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	return APLRes_Success; // Allow load
 }
 
-/**
- * On plugin start extended. Called by the event manager once its done setting up.
- *
- * @noreturn
- */
+methodmap GameDataWrapper < GameData {
+	public GameDataWrapper(const char[] file) {
+		GameData gd = new GameData(file);
+		if (!gd) SetFailState("Missing gamedata \"%s\"", file);
+		return view_as<GameDataWrapper>(gd);
+	}
+	public DynamicDetour CreateDetourOrFail(
+			const char[] name,
+			DHookCallback preHook = INVALID_FUNCTION,
+			DHookCallback postHook = INVALID_FUNCTION) {
+		DynamicDetour hSetup = DynamicDetour.FromConf(this, name);
+		if (!hSetup)
+			SetFailState("Missing detour setup \"%s\"", name);
+		if (preHook != INVALID_FUNCTION && !hSetup.Enable(Hook_Pre, preHook))
+			SetFailState("Failed to pre-detour \"%s\"", name);
+		if (postHook != INVALID_FUNCTION && !hSetup.Enable(Hook_Post, postHook))
+			SetFailState("Failed to post-detour \"%s\"", name);
+		return hSetup;
+	}
+}
+
 public OnPluginStartEx()
 {
-	DebugPrintToAll(DEBUG_CHANNEL_GENERAL, "[Main] Setting up...");
-
 	LoadTranslations("Roto2-AZ_mod.phrases");
+
+	GameDataWrapper hConf = new GameDataWrapper("rotoblin-az");
+	StartPrepSDKCall(SDKCall_Entity);
+	PrepSDKCall_SetFromConf(hConf, SDKConf_Signature, "Infected::AttackSurvivorTeam");
+	hInfectedAttackSurvivorTeam = EndPrepSDKCall();
+	if (hInfectedAttackSurvivorTeam == null)
+	{ 
+		PrintToServer("WARNING: Cannot initialize %s SDKCall, signature is broken. Chase infected spawn is disabled.", "Infected::AttackSurvivorTeam"); 
+	}
+
+	
+	delete hConf.CreateDetourOrFail("CTerrorPlayer::PlayerZombieAbortControl", _IEF_DTR_PlayerZombieAbortControl_Pre, _);
+	delete hConf;
 
 	HookPublicEvent(EVENT_ONPLUGINEND, _Roto_OnPluginEnd);
 	HookPublicEvent(EVENT_ONMAPSTART, _Roto_OnMapStart);
 	HookPublicEvent(EVENT_ONMAPEND, _Roto_OnMapEnd);
-
 
 	decl String:buffer[128];
 	Format(buffer, sizeof(buffer), "%s version", PLUGIN_FULLNAME);

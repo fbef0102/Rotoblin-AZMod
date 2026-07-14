@@ -85,7 +85,7 @@ public OnPluginStart()
 }
 
 bool g_bFinalMap;
-public void L4D_OnLeft4DHooks_OnMapStart()
+public void OnMapStart()
 {
 	// Execute the config file
 
@@ -93,6 +93,12 @@ public void L4D_OnLeft4DHooks_OnMapStart()
 	RoundEndBlock = 0;
 	g_bFinalMap = L4D_IsMissionFinalMap(true);
 
+	RequestFrame(OnNextFrame_OnMapStart);
+	
+}
+
+void OnNextFrame_OnMapStart()
+{
 	PluginInitialization();
 }
 

@@ -24,8 +24,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
-#undef REQUIRE_PLUGIN
-#tryinclude <builtinvotes> //https://github.com/L4D-Community/builtinvotes/actions
+//#include <builtinvotes> //https://github.com/L4D-Community/builtinvotes/actions
 
 static Handle:g_hCVarMinAllowedSlots;
 static Handle:g_hCVarMaxAllowedSlots;

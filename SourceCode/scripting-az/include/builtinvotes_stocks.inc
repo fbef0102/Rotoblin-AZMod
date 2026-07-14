@@ -85,7 +85,7 @@ stock bool DisplayBuiltinVoteToAll(Handle vote, int time)
  */
 stock bool IsNewBuiltinVoteAllowed()
 {
-	return (!(IsBuiltinVoteInProgress() || CheckBuiltinVoteDelay() != 0));
+	return (!IsBuiltinVoteInProgress() && CheckBuiltinVoteDelay() == 0);
 }
 
 /**
