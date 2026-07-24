@@ -11,7 +11,6 @@ int g_iModelIndex[MAX_ENTITY +1];
 int g_iModelIndex2[MAX_ENTITY +1];
 float WitchvPos[MAX_ENTITY +1][3];
 float WitchvAvg[MAX_ENTITY +1][3];
-bool WitchWokeup[MAX_ENTITY +1];
 
 #define InfoPlugin "\x04L4D1 WitchGlow creado por\x03:\nIDgarena: thejuaneco | IDsteam: thejuaneco, assist: Harry Potter"
 
@@ -20,7 +19,7 @@ public Plugin myinfo =
 	name = "L4D1 Witch Glow + fixed being pushing away!",
 	author = "JNC & Harry Potter",
 	description = "Set glow on witch only infected + Prevent common infected from pushing witch away when witch not startled yet",
-	version = "1.6",
+	version = "1.7-2026/7/24",
 	url = "https://forums.alliedmods.net/showthread.php?p=2656161"
 };
 
@@ -32,7 +31,6 @@ public void OnPluginStart()
 	HookEvent("map_transition", Event_RoundEnd, EventHookMode_PostNoCopy); //戰役過關到下一關的時候 (之後沒有觸發round_end)
 	HookEvent("mission_lost", Event_RoundEnd, EventHookMode_PostNoCopy); //戰役滅團重來該關卡的時候 (之後有觸發round_end)
 	HookEvent("finale_win", Event_RoundEnd, EventHookMode_PostNoCopy);
-	HookEvent("witch_harasser_set", OnWitchWokeup);
 }
 
 public void OnPluginEnd()
@@ -51,8 +49,6 @@ public void WitchSpawn_Event(Event event, const char[] name, bool dontBroadcast)
 
 	CreateWitchGlow(witch);
 	CreateWitchGlowForSpectator(witch);
-
-	WitchWokeup[witch] = false;
 }
 
 public void Event_WitchKilled(Event event, const char[] name, bool dontBroadcast)
@@ -62,13 +58,6 @@ public void Event_WitchKilled(Event event, const char[] name, bool dontBroadcast
 	RemoveWitchSpecGlow(witch);
 	SDKUnhook(witch, SDKHook_ThinkPost, WitchThink);
 	SDKUnhook(witch, SDKHook_ThinkPost, WitchSpecThink);
-}
-
-public void OnWitchWokeup(Event event, const char[] name, bool dontBroadcast)
-{
-	int witch = GetEventInt(event, "witchid");
-
-	WitchWokeup[witch] = true;
 }
 
 void CreateWitchGlow(int witch)
@@ -113,25 +102,13 @@ void CreateWitchGlow(int witch)
 	SDKHook(entity, SDKHook_SetTransmit, Hook_SetTransmit);
 }
 
-public void WitchThink(int witch)
+void WitchThink(int witch)
 {
 	int entity = g_iModelIndex[witch];
 	int nSequence = GetEntProp(witch, Prop_Send, "m_nSequence");
 	if(IsValidEntRef(entity))
 	{
 		SetEntProp(entity, Prop_Send, "m_nSequence", nSequence);
-	}
-
-	if(!WitchWokeup[witch])
-	{
-		if(nSequence == 3 || nSequence == 6  //witch lost target
-			|| nSequence == 31) //witch on fire
-		{
-			WitchWokeup[witch] = true;
-			return;
-		}
-
-		TeleportEntity(witch, WitchvPos[witch], WitchvAvg[witch], NULL_VECTOR);
 	}
 }
 
@@ -189,7 +166,7 @@ public void WitchSpecThink(int witch)
 }
 
 
-public Action Hook_SetTransmit(int entity, int client)
+Action Hook_SetTransmit(int entity, int client)
 {
 	return Plugin_Handled;
 }

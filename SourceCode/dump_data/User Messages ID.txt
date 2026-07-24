@@ -1,0 +1,68 @@
+// 伺服器的控制台輸入可以查看User Messages ID
+meta game
+
+// User messages 介紹
+https://wiki.alliedmods.net/User_messages
+
+
+  Interface: ServerGameDLL005
+  Engine: Left 4 Dead (2008)
+  User Messages:  Name                              Index  Size
+                  Geiger                            0      1
+                  Train                             1      1
+                  HudText                           2      -1
+                  SayText                           3      -1
+                  SayText2                          4      -1
+                  TextMsg                           5      -1
+                  HudMsg                            6      -1
+                  ResetHUD                          7      1
+                  GameTitle                         8      0
+                  ItemPickup                        9      -1
+                  ShowMenu                          10     -1
+                  Shake                             11     13
+                  Fade                              12     10
+                  VGUIMenu                          13     -1
+                  Rumble                            14     3
+                  CloseCaption                      15     -1
+                  CloseCaptionDirect                16     -1
+                  SendAudio                         17     -1
+                  RawAudio                          18     -1
+                  VoiceMask                         19     9
+                  RequestState                      20     0
+                  BarTime                           21     -1
+                  Damage                            22     -1
+                  RadioText                         23     -1
+                  HintText                          24     -1
+                  KeyHintText                       25     -1
+                  ReloadEffect                      26     4
+                  PlayerAnimEvent                   27     -1
+                  AmmoDenied                        28     2
+                  UpdateRadar                       29     -1
+                  KillCam                           30     -1
+                  MarkAchievement                   31     -1
+                  Splatter                          32     1
+                  SplatterClear                     33     0
+                  MessageText                       34     -1
+                  TransitionRestore                 35     0
+                  Spawn                             36     1
+                  CreditsLine                       37     -1
+                  CreditsMsg                        38     0
+                  StatsCrawlMsg                     39     0
+                  StatsSkipState                    40     2
+                  ShowStats                         41     -1
+                  MusicCmd                          42     -1
+                  WitchBloodSplatter                43     -1
+                  AchievementEvent                  44     -1
+                  PZDmgMsg                          45     -1
+                  AllPlayersConnectedGameStarting   46     0
+                  VoteRegistered                    47     1
+                  DisconnectToLobby                 48     0
+                  CallVoteFailed                    49     1
+                  SteamWeaponStatData               50     -1
+                  SPHapWeapEvent                    51     4
+                  HapDmg                            52     -1
+                  HapPunch                          53     -1
+                  HapSetDrag                        54     -1
+                  HapSetConst                       55     -1
+                  HapMeleeContact                   56     0
+  57 user messages in total

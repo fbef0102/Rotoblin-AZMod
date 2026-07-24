@@ -818,6 +818,12 @@
 //Fix thin/small 'prop_*' entity not blocking LOS.
 //修復小型的物件無法擋住玩家視野 (靈魂特感無法在物件後面生成, 顯示會被玩家看到)
 
+[226] l4d_lagcomp_skeet 
+//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_lagcomp_skeet
+//Make hunter skeets more consistent across different pings.
+//使高ping的玩家可以更容易打爆飛行中的hunter
+
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
