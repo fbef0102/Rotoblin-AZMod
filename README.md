@@ -47,14 +47,15 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 	
 - - - -	
 ### Server Install Optional ###
-* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart) is a useful plugin, restart server as soon as all human players are disconnected. Recommended for **LINUX**
-* [L4D Modified Talker](https://www.gamemaps.com/details/3863) is an addon which improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
-* [Top 5 Skeet](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_skeet_database_remake) records players' skeets, and save to server-side Database.
-* [Top 5 Pounce](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_pounce_database_remake) records players' pounces, and save to server-side Database. 
+* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart): Restart server as soon as all human players are disconnected. Recommended for **LINUX**
+* [l4d2_mixmap](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d2_mixmap): Randomly select five maps for versus/coop/realism. Adding for fun
+* [L4D Modified Talker](https://www.gamemaps.com/details/3863): Improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
+* [Top 5 Skeet](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_skeet_database_remake): Records players' skeets, and save to server-side Database.
+* [Top 5 Pounce](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_pounce_database_remake): Records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
-* [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors) Changes the colors of players chat based on config file.
-* [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly) Attaches an extra flashlight to spectators and dead survivors.
-* [Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin#l4d12-plugin-list--l4d1%E5%92%8C2%E6%8F%92%E4%BB%B6%E5%88%97%E8%A1%A8) Harry personal private plugins (Paid)
+* [simple-chatcolors](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Fun_%E5%A8%9B%E6%A8%82/simple-chatcolors): Changes the colors of players chat based on config file.
+* [l4d_flashlight_speconly](https://github.com/fbef0102/Game-Private_Plugin/tree/main/Plugin_%E6%8F%92%E4%BB%B6/Spectator_%E6%97%81%E8%A7%80%E8%80%85/l4d_flashlight_speconly): Attaches an extra flashlight to spectators and dead survivors.
+* [Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin#l4d12-plugin-list--l4d1%E5%92%8C2%E6%8F%92%E4%BB%B6%E5%88%97%E8%A1%A8): Harry personal private plugins (Paid)
 
 - - - -	
 ### Server Anti Cheat ###
@@ -278,7 +279,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 - - - -
 ### Bug / Exploit Fixes ###
-* Blocking a rocket jump exploit (with pipebomb/molotov/tank rock/common head).
+* Fix some "grounds" launching survivors into the air (A rocket jump exploit with pipebomb/molotov/tank rock/common head).
 * Prevents firework crates, gascans, oxygen and propane tanks being pushed when players walk into them.
 * Allows bots to shoot while a PipeBomb projectile is active on the map.
 * Survivors cannot hear ghost footsteps and spawn sound.
@@ -293,7 +294,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
 * Prevents calling votes while others are loading
 * Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
-* Blocking [exploits by using Engine](https://forums.alliedmods.net/showthread.php?t=182002)
+* Blocking [exploits by using engine](https://forums.alliedmods.net/showthread.php?t=182002)
      * no fall damage bug - jump on the incapped survivor while holding USE key
      * health boost glitch - heal yourself while under water.
 * Fixes the problem where tank-punches get a survivor stuck in the roof
@@ -319,13 +320,15 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed second team having different SI spawns on round start.
      * Spawns for the first hit are announced once round starts.
 * Blocks all button presses during stumbles
-* Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s))
+* Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door ([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s)).
 * Fixes an exploit where unlimited grenades could be created.
 * Mother fucker no collisions to fix a handful of silly collision bugs in l4d1
      * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
-     * Pulled Survivors go through Common Infected
+     * Pulled Survivors go through Common Infected. ([video](https://www.youtube.com/watch?v=Jj04A73AYk0))
      * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
-     * Commons go through Witch (prevent commons from pushing witch in l4d1)
+     * Commons go through Witch (Prevent commons from pushing witch in l4d1)
+     * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
+     * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
@@ -337,6 +340,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
   * e.g. You won't slide on ice surfaces.
 * Change rules of props' move away, moved above props. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules)
+* Fix thin/small 'prop_*' entity not blocking LOS.
 
 - - - -
 ### Gameplay / Balance Changes ###
@@ -465,8 +469,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?t=316965)
 	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
     * Instantly incapacitate Survivors
-    * Allows witches to chase victims into safezones, [video](https://www.youtube.com/watch?v=PU_yx-fzjUU)
-    * Prevents the witch from randomly loosing target.
+    * Allows witches to chase victims into safezones.
+    * Prevents the witch from randomly loosing target if survivors standind on "god" spot or out of the map
     * Survivor will startle witch if shoot boomer nearby.
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
 	
@@ -486,7 +490,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix unable to stagger smoker when smoker is shooting tongue
 	
   * **Hunter:**
-    * Fixed silence Hunter produces growl sound when [player MIC on](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s)
+    * Fixed silence Hunter produces growl sound when player MIC on. ([video](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s))
     * Allow Bunny hop pounce (one of l4d1 original feature)
     * Maximum pounce damage: **35**
     * Wallkick/Backjumps
@@ -505,9 +509,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Claw Damage: 6 (vanilla: 6)
     * Fixed Hunters were deadstopped potentially when versus_shove_hunter_fov_pouncing is 0
     * Allow Hunters being shoved when not pouncing. (Shove fov: **70**)
-    * Forces silent but [crouched hunters to emitt sounds](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s)
+    * Forces silent but crouched hunters to emitt sounds. ([video](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s))
     * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
     * M2 godframes after a hunter lands on the ground: 0.25s
+    * Make hunter skeets more consistent across different pings.
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
@@ -581,8 +586,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
   * Survivors bleed out Temp Health every **4.0s** (vanilla: **3.7s**)
-  * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [details here](https://forums.alliedmods.net/showthread.php?t=315405)
-  * Weapon [Quickswitch Reloading](https://www.youtube.com/watch?v=Ur0uNQTZhbU) in L4D
+  * Fixes shooting/bullet displacement by 1 tick problems so you can accurately hit by moving. [Details here](https://forums.alliedmods.net/showthread.php?t=315405)
+  * Weapon Quickswitch Reloading in L4D. ([video](https://www.youtube.com/watch?v=JqhY-ubmoLo))
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
   * Prevents small push effect between survior players, bots still get pushed.
   * Auto Switch to Weapons/Pills on pick-up/given is now Off, type !secondary to turn On

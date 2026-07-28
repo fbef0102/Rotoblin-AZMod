@@ -1446,64 +1446,61 @@
 	{
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
-		"tank_map_off" "1"
-		//"tank_ban_flow"
-		//{
-		//	"Too early"
-		//	{
-		//		"min"		"0"
-		//		"max"		"40"
-		//	}
-		//	"One Way Drop"
-		//	{
-		//		"min"		"81"
-		//		"max"		"100"
-		//	}
-		//}
+		"tank_ban_flow"
+		{
+			"Too early"
+			{
+				"min"		"0"
+				"max"		"40"
+			}
+			"One Way Drop"
+			{
+				"min"		"81"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_darkblood02_engine"
 	{
 		"pill_limit" "3"
 		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
-		"tank_map_off" "1"
-		//"tank_ban_flow"
-		//{
-		//	"Too early"
-		//	{
-		//		"min"		"0"
-		//		"max"		"26"
-		//	}
-		//	"Water"
-		//	{
-		//		"min"		"31"
-		//		"max"		"37"
-		//	}
-		//	"The End of the Map"
-		//	{
-		//		"min"		"74"
-		//		"max"		"100"
-		//	}
-		//}
+		"tank_ban_flow"
+		{
+			"Too early"
+			{
+				"min"		"0"
+				"max"		"26"
+			}
+			"Water"
+			{
+				"min"		"31"
+				"max"		"37"
+			}
+			"The End of the Map"
+			{
+				"min"		"74"
+				"max"		"100"
+			}
+		}
 	}
 	"l4d_darkblood03_platform"
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.5"
-		"tank_map_off" "1"
-		//"tank_ban_flow"
-		//{
-		//	"Too early"
-		//	{
-		//		"min"		"0"
-		//		"max"		"33"
-		//	}
-		//	"Too late"
-		//	{
-		//		"min"		"85"
-		//		"max"		"100"
-		//	}
-		//}
+		"tank_ban_flow"
+		{
+			"Too early"
+			{
+				"min"		"0"
+				"max"		"33"
+			}
+			"Too late"
+			{
+				"min"		"85"
+				"max"		"100"
+			}
+		}
 		"witch_ban_flow"
 		{
 			"Too late"
@@ -1922,20 +1919,20 @@
 		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
 		"tank_map_off" "1"
-		"tank_ban_flow"
-		{
-			"Early Tank"
-			{
-				"min"		"0"
-				"max"		"20"
-			}
-
-			"Late Tank"
-			{
-				"min"		"81"
-				"max"		"100"
-			}
-		}
+		//"tank_ban_flow"
+		//{
+		//	"Early Tank"
+		//	{
+		//		"min"		"0"
+		//		"max"		"20"
+		//	}
+		//
+		//	"Late Tank"
+		//	{
+		//		"min"		"81"
+		//		"max"		"100"
+		//	}
+		//}
 	}
 
 	"dw2_underground"
@@ -1944,24 +1941,24 @@
 		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
 		"tank_map_off" "1"
-		"tank_ban_flow"
-		{
-			"Early Tank + 1st On Way Drop"
-			{
-				"min"		"0"
-				"max"		"20"
-			}
-			"2nd On Way Drop + Alarm Door"
-			{
-				"min"		"30"
-				"max"		"50"
-			}
-			"3rd On Way Drop + Late Tank"
-			{
-				"min"		"81"
-				"max"		"100"
-			}
-		}
+		//"tank_ban_flow"
+		//{
+		//	"Early Tank + 1st On Way Drop"
+		//	{
+		//		"min"		"0"
+		//		"max"		"20"
+		//	}
+		//	"2nd On Way Drop + Alarm Door"
+		//	{
+		//		"min"		"30"
+		//		"max"		"50"
+		//	}
+		//	"3rd On Way Drop + Late Tank"
+		//	{
+		//		"min"		"81"
+		//		"max"		"100"
+		//	}
+		//}
 	}
 
 	"dw3_complex"
@@ -1969,19 +1966,19 @@
 		"pill_limit" "4"
 		"VersusModifier"		"1.4"
 		"tank_map_off" "1"
-		"tank_ban_flow"
-		{
-			"Early Tank + Map NAV sucks"
-			{
-				"min"		"0"
-				"max"		"61"
-			}
-			"The End"
-			{
-				"min"		"85"
-				"max"		"100"
-			}
-		}
+		//"tank_ban_flow"
+		//{
+		//	"Early Tank + Map NAV sucks"
+		//	{
+		//		"min"		"0"
+		//		"max"		"61"
+		//	}
+		//	"The End"
+		//	{
+		//		"min"		"85"
+		//		"max"		"100"
+		//	}
+		//}
 		"witch_ban_flow"
 		{
 			"Early Witch + Map NAV sucks"
@@ -2003,29 +2000,29 @@
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_map_off" "1"
-		"tank_ban_flow"
-		{
-			"Evelator"
-			{
-				"min"		"0"
-				"max"		"35"
-			}
-			"Prison_1"
-			{
-				"min"		"42"
-				"max"		"49"
-			}
-			"Prison_2"
-			{
-				"min"		"60"
-				"max"		"63"
-			}
-			"Map Nav Sucks"
-			{
-				"min"		"76"
-				"max"		"100"
-			}
-		}
+		//"tank_ban_flow"
+		//{
+		//	"Evelator"
+		//	{
+		//		"min"		"0"
+		//		"max"		"35"
+		//	}
+		//	"Prison_1"
+		//	{
+		//		"min"		"42"
+		//		"max"		"49"
+		//	}
+		//	"Prison_2"
+		//	{
+		//		"min"		"60"
+		//		"max"		"63"
+		//	}
+		//	"Map Nav Sucks"
+		//	{
+		//		"min"		"76"
+		//		"max"		"100"
+		//	}
+		//}
 		"witch_ban_flow"
 		{
 			"Evelator"
@@ -2057,13 +2054,13 @@
 		"VersusModifier"		"2.0"
 		"WaterSlowDown_map" 	"1"
 		"tank_map_off" "1"
-		"tank_ban_flow"
-		{
-			"One way drop"
-			{
-				"min"		"0"
-				"max"		"40"
-			}
-		}
+		//"tank_ban_flow"
+		//{
+		//	"One way drop"
+		//	{
+		//		"min"		"0"
+		//		"max"		"40"
+		//	}
+		//}
 	}
 }

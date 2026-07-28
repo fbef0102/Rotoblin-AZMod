@@ -8,14 +8,15 @@ Roto-AZ mod plugins work @ 2017-2026 Harry
 
 Credit | 靈感與來源
 * [l4d1 roto1](https://code.google.com/archive/p/rotoblin/source)
-* [l4d1 roto2](https://github.com/raziEiL/rotoblin2/tree/left4dhooks/src)
+* [l4d1 roto2](https://github.com/raziEiL/rotoblin2/tree/left4dhooks)
 * [raziEiL/l4d competitive plugins](https://bitbucket.org/disawar1/l4d-competitive-plugins/src/left4dhooks/)
 * [l4d2 acemod](http://imgur.com/a/8Ptck)
-* [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/addons/sourcemod/scripting)
+* [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework)
 * [Alliedmodders](http://www.sourcemod.net/plugins.php?mod=6&search=1)
 * [Forgetest/plugins](https://github.com/Target5150/MoYu_Server_Stupid_Plugins)
 
 Looking for more? | 想看更多?
 * [L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)
+* [Sourcemod-Plugins](https://github.com/fbef0102/Sourcemod-Plugins)
 * [Game-Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin)
 
