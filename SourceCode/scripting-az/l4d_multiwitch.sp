@@ -8,15 +8,15 @@
 #define MIN(%0,%1) (((%0) < (%1)) ? (%0) : (%1))
 #define ZOMBIESPAWN_Attempts 5
 
-new Handle:	hEnabled;
+ConVar	hEnabled;
 new bool:	bEnabled;
 
-new Handle:	hSpawnFreq;
+ConVar	hSpawnFreq;
 new Float:	fSpawnFreq;
 
 native IsInPause();
 
-new Handle:	hMaxWitchAllowed;
+ConVar	hMaxWitchAllowed;
 new MaxWitchAllowed;
 new Handle:	hWitchSpawnTimer;
 
@@ -85,6 +85,11 @@ public OnPluginStart()
 	hw_perm_gain = CreateConVar("l4d_multiwitch_perm_gain", "5", "Amount of perm health to gain for killing a witch", FCVAR_NOTIFY, true, 0.0);
 	hw_temp_gain = CreateConVar("l4d_multiwitch_temp_gain", "10", "Amount of temp health to gain for killing a witch", FCVAR_NOTIFY, true, 0.0);
 	h_WitchKillTime = CreateConVar("l4d_multiwitch_lifespan", "200", "Amount of seconds before a witch is kicked", FCVAR_NOTIFY, true, 1.0);
+}
+
+public void OnPluginEnd()
+{
+	hEnabled.BoolValue = false;
 }
 
 public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
