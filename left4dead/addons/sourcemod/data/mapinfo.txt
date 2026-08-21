@@ -1838,6 +1838,22 @@
 		"pill_limit" "2"
 		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
+		"tank_ban_flow"
+		{
+			"Unable to spawn"
+			{
+				"min"		"0"
+				"max"		"15"
+			}
+		}
+		"witch_ban_flow"
+		{
+			"Unable to spawn"
+			{
+				"min"		"0"
+				"max"		"15"
+			}
+		}
 	}
 	"uz_bunker"
 	{

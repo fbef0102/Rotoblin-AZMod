@@ -1140,12 +1140,6 @@
 		"en"	"{green}Tank {olive}{1}{default} {2}teammate."
 		"zho"	"{green}Tank {olive}{1}{default} {2}隊友."
 	}
-	"l4d_pig_infected1"
-	{
-		"#format"	"{1:s}"
-		"en"	"{olive}{1}{default} used door to stumble {green}Tank{default}."
-		"zho"	"{olive}{1}{default} 用門暈眩 {green}Tank{default}."
-	}
 	"l4d_pig_infected2"
 	{
 		"en"	"{red}Witch{default} killed teammate."
@@ -3105,4 +3099,9 @@
 		"en"		"[{green}Pause{default}] {olive}%N {default}has fully loaded"
 		"zho"		"[{green}Pause{default}] {olive}%N {default}已加載入伺服器"
 	}	
+	"l4d_tank_stumble_door_break_1"
+	{
+		"en"	"[{olive}TS{default}] {green}Tank{default} get stumbled by door."
+		"zho"	"[{olive}TS{default}] {green}Tank{default} 被門夾到暈眩."
+	}
 }

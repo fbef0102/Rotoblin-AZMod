@@ -823,6 +823,15 @@
 //Make hunter skeets more consistent across different pings.
 //使高ping的玩家可以更容易打爆飛行中的hunter
 
+[227] l4d2_incap_fire_fix 
+//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
+//Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
+//修復倒地的玩家按住右鍵期間開槍(手槍)沒有聲音
+
+[228] l4d_tank_stumble_door_break 
+//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
+//Door would break if survivors use it to stumble the tank in l4d1
+//Tank被門夾到後，門會自動斷裂
 
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)

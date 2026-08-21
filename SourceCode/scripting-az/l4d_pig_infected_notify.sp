@@ -6,7 +6,7 @@
 #include <multicolors>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION "2.4"
+#define PLUGIN_VERSION "2.4-2026/8/21"
 int Tankclient;
 
 public Plugin myinfo = 
@@ -23,53 +23,6 @@ public void OnPluginStart()
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	
 	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("door_open", Event_DoorOpen);
-	HookEvent("door_close", Event_DoorClose);
-}
-
-
-public void Event_DoorOpen(Event event, const char[] name, bool dontBroadcast)
-{
-	Tankclient = GetTankClient();
-	if(Tankclient == -1)	return;
-	
-	new Surplayer = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(Surplayer<=0 || !IsClientInGame(Surplayer) || GetClientTeam(Surplayer) != 2) return;
-
-
-	if(IsTooClose(Surplayer, Tankclient))
-	{
-		CreateTimer(1.0, Timer_TankStumbleByDoorCheck, Surplayer);//tank stumble check
-	}
-}
-
-public void Event_DoorClose(Event event, const char[] name, bool dontBroadcast)
-{
-	Tankclient = GetTankClient();
-	if(Tankclient == -1)	return;
-	
-	new Surplayer = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(Surplayer<=0 || !IsClientInGame(Surplayer) || GetClientTeam(Surplayer) != 2) return;
-	
-	if(IsTooClose(Surplayer, Tankclient))
-	{
-		CreateTimer(1.0, Timer_TankStumbleByDoorCheck, Surplayer);//tank stumble check
-	}
-}
-
-public Action Timer_TankStumbleByDoorCheck(Handle timer, any client)
-{
-	if(Tankclient<0 || !IsClientInGame(Tankclient)) return Plugin_Continue;
-	if(client<0 || !IsClientInGame(client)) return Plugin_Continue;
-	
-	if (L4D_IsPlayerStaggering(Tankclient))//tank在暈眩 by door
-	{
-		static char clientName[128];
-		GetClientName(client,clientName,128);
-		CPrintToChatAll("{green}[TS] %t","l4d_pig_infected1",clientName);
-	}
-	
-	return Plugin_Continue;
 }
 
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)

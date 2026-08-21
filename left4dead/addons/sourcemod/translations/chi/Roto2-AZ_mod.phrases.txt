@@ -857,10 +857,6 @@
 	{
 		"chi"	"{green}坦克 {olive}{1}{default} {2}队友。"
 	}
-	"l4d_pig_infected1"
-	{
-		"chi"	"{olive}{1}{default} 用门击晕 {green}坦克{default}。"
-	}
 	"l4d_pig_infected2"
 	{
 		"chi"	"{red}妹子{default} 使出 {olive}天马流星拳 {default}打死队友。"
@@ -2327,4 +2323,8 @@
 	{
 		"chi"		"[{green}Pause{default}] {olive}%N {default}已加载入服务器"
 	}	
+	"l4d_tank_stumble_door_break_1"
+	{
+		"chi"	"[{olive}TS{default}] {green}Tank{default} 被门夹到晕眩。"
+	}
 }
