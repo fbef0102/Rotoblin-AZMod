@@ -33,9 +33,11 @@
 #define SURVIVOR_WALKSPEED		85.0
 #define SURVIVOR_CROUCHSPEED	75.0
 
-/*In l4d2 official versus mode, water speed: 170, deep water speed: 136*/
+/*In l4d2 official versus mode, water speed: 170, deep water speed: 136 (fake, still same as 170)*/
+/*In l4d2 official coop mode, water speed: 115, deep water speed: 92*/
+/*In l4d1 official versus/coop mode, water speed: 175*/
 #define SURVIVOR_WATERSPEED_VS_L4D2	170.0
-#define SURVIVOR_DEEP_WATERSPEED_VS_L4D2 136.0
+//#define SURVIVOR_DEEP_WATERSPEED_VS_L4D2 136.0
 
 #define TEAM_SURVIVORS 2
 #define TEAM_INFECTED 3

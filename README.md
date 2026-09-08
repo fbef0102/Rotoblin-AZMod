@@ -236,7 +236,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * FF Protect Interval: 0.3 second
 
 * **Pumpshotgun**
-  * Air Spread: 2.5->1.5
   * Ammo: 128->96
   * Limit: None
   * FF Protect Range: 37
@@ -341,6 +340,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * e.g. You won't slide on ice surfaces.
 * Change rules of props' move away, moved above props. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules)
 * Fix thin/small 'prop_*' entity not blocking LOS.
+* Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
 
 - - - -
 ### Gameplay / Balance Changes ###
@@ -457,6 +457,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix tank's punch getting cancelled when they heavily land on ground.
     * Stops the Tanks footsteps causing the screen to shake.
     * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
+    * Door would break if survivors use it to stumble the tank
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
@@ -473,6 +474,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Prevents the witch from randomly loosing target if survivors standind on "god" spot or out of the map
     * Survivor will startle witch if shoot boomer nearby.
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
+    * Fixed a door can startle the witch, causing her to lose target
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -595,7 +597,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Prevent filling the clip and skipping the reload animation when taking the same weapon.
   * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
   * Block survivors from being able to open/close doors while incapacitated/hanging.
-  * Block survivors from being able to open/close doors while immobilized by hunter/smoker.
+  * Block survivors from being able to open/close doors while pinned by hunter/smoker.
   * Prevent Sounds from playing
     * Heartbeat
     * Incapacitated Injury
