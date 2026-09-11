@@ -457,7 +457,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fix tank's punch getting cancelled when they heavily land on ground.
     * Stops the Tanks footsteps causing the screen to shake.
     * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
-    * Door would break if survivors use it to stumble the tank
+    * Tank won't get stumbled by a door
 
   * **Witch:**
     * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread

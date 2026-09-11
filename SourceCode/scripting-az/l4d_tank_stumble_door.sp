@@ -9,10 +9,10 @@
 
 public Plugin myinfo =
 {
-	name = "l4d_tank_stumble_door_break",
+	name = "l4d_tank_stumble_door",
 	author = "Harry Potter",
-	description = "Door would break if survivors use it to stumble the tank in l4d1",
-	version = "1.0-2026/8/21",
+	description = "Tank won't get stumbled by a door in l4d1",
+	version = "1.1-2026/9/11",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -36,8 +36,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 bool 
     g_bIsDoor[MAXENTITIES+1];
 
-float 
-    g_fNotifyEngimeTime;
+//float 
+//    g_fNotifyEngimeTime;
 
 public void OnPluginStart()
 {
@@ -72,17 +72,21 @@ public Action L4D2_OnStagger(int client, int source)
         && GetEntProp(client, Prop_Send, "m_zombieClass") == ZC_TANK
         && g_bIsDoor[source])
     {
-        float now = GetEngineTime();
+        /*float now = GetEngineTime();
         if(now > g_fNotifyEngimeTime)
         {
             CPrintToChatAll("%t","l4d_tank_stumble_door_break_1");
             g_fNotifyEngimeTime = now + 0.2;
-        }
-        CreateTimer(0.0, Timer_RemoveDoor, EntIndexToEntRef(source), TIMER_FLAG_NO_MAPCHANGE);
+        }*/
+
+        return Plugin_Handled;
+        //CreateTimer(0.0, Timer_RemoveDoor, EntIndexToEntRef(source), TIMER_FLAG_NO_MAPCHANGE);
     }
+
+    return Plugin_Continue;
 }
 
-Action Timer_RemoveDoor(Handle timer, int door)
+/*Action Timer_RemoveDoor(Handle timer, int door)
 {
 	door = EntRefToEntIndex(door);
 	if(door == INVALID_ENT_REFERENCE) return Plugin_Continue;
@@ -93,7 +97,7 @@ Action Timer_RemoveDoor(Handle timer, int door)
 	AcceptEntityInput(door, "Break");
 
 	return Plugin_Continue;
-}
+}*/
 
 bool IsValidEntityIndex(int entity)
 {
