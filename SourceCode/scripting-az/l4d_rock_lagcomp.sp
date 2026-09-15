@@ -107,11 +107,11 @@ ConVar cvarRockGodframesRender;
 ConVar cvarRockHitboxRadius;
 
 ConVar cvarDamagePistol;
-ConVar cvarDamageMagnum;
+//ConVar cvarDamageMagnum;
 ConVar cvarDamageShotgun;
 ConVar cvarDamageSmg;
 ConVar cvarDamageRifle;
-ConVar cvarDamageMelee;
+//ConVar cvarDamageMelee;
 ConVar cvarDamageSniper;
 ConVar cvarDamageMinigun;
 ConVar cvarDamageMountedMachineGun;
@@ -119,11 +119,11 @@ ConVar cvarDamageMountedMachineGun;
 ConVar cvarRangeMinAll;
 ConVar cvarRangeMaxAll;
 ConVar cvarRangePistol;
-ConVar cvarRangeMagnum;
+//ConVar cvarRangeMagnum;
 ConVar cvarRangeShotgun;
 ConVar cvarRangeSmg;
 ConVar cvarRangeRifle;
-ConVar cvarRangeMelee;
+//ConVar cvarRangeMelee;
 ConVar cvarRangeSniper;
 ConVar cvarRangeMinigun;
 ConVar cvarRangeMountedMachineGun;
@@ -176,11 +176,11 @@ public void OnPluginStart()
 	cvarRockHitboxRadius = CreateConVar("sm_rock_hitbox_radius", "30", "Rock hitbox radius", FCVAR_NONE, true, 0.0, true, 10000.0);
 
 	cvarDamagePistol = CreateConVar("sm_rock_damage_pistol", "75", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
-	cvarDamageMagnum = CreateConVar("sm_rock_damage_magnum", "1000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
+	//cvarDamageMagnum = CreateConVar("sm_rock_damage_magnum", "1000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageShotgun = CreateConVar("sm_rock_damage_shotgun", "600", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageSmg = CreateConVar("sm_rock_damage_smg", "75", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageRifle = CreateConVar("sm_rock_damage_rifle", "200", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
-	cvarDamageMelee = CreateConVar("sm_rock_damage_melee", "1000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
+	//cvarDamageMelee = CreateConVar("sm_rock_damage_melee", "1000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageSniper = CreateConVar("sm_rock_damage_sniper", "10000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageMinigun = CreateConVar("sm_rock_damage_minigun", "300", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
 	cvarDamageMountedMachineGun = CreateConVar("sm_rock_damage_mounted_machinegun", "10000", "Gun category damage", FCVAR_NONE, true, 0.0, true, DAMAGE_MAX_ALL_);
@@ -188,11 +188,11 @@ public void OnPluginStart()
 	cvarRangeMinAll = CreateConVar("sm_rock_range_min_all", "1", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeMaxAll = CreateConVar("sm_rock_range_max_all", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangePistol = CreateConVar("sm_rock_range_pistol", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
-	cvarRangeMagnum = CreateConVar("sm_rock_range_magnum", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
+	//cvarRangeMagnum = CreateConVar("sm_rock_range_magnum", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeShotgun = CreateConVar("sm_rock_range_shotgun", "1000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeSmg = CreateConVar("sm_rock_range_smg", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeRifle = CreateConVar("sm_rock_range_rifle", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
-	cvarRangeMelee = CreateConVar("sm_rock_range_melee", "200", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
+	//cvarRangeMelee = CreateConVar("sm_rock_range_melee", "200", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeSniper = CreateConVar("sm_rock_range_sniper", "10000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeMinigun = CreateConVar("sm_rock_range_minigun", "2000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
 	cvarRangeMountedMachineGun = CreateConVar("sm_rock_range_mounted_machinegun", "10000", "Gun category range", FCVAR_NONE, true, 0.0, true, RANGE_MAX_ALL_);
@@ -451,27 +451,37 @@ public void ApplyDamageOnRock(rockIndex, client, float eyePos[3], float c[3], Ev
 		if (range > RANGE_PISTOL) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_PISTOL, range);
 		
-	} else if (IsMagnum(weaponName)) {
+	} 
+	/*else if (IsMagnum(weaponName)) 
+	{
 		if (range > RANGE_MAGNUM) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_MAGNUM, range);
 		
-	} else if (IsShotgun(weaponName)) {
+	} */
+	else if (IsShotgun(weaponName)) 
+	{
 		if (range > RANGE_SHOTGUN) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_SHOTGUN, range);
 		
-	} else if (IsRifle(weaponName)) {
+	} 
+	else if (IsRifle(weaponName)) 
+	{
 		if (range > RANGE_RIFLE) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_RIFLE, range);
 		
-	} else if (IsMelee(weaponName)) {
+	} 
+	/*else if (IsMelee(weaponName)) {
 		if (range > RANGE_MELEE) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_MELEE, range);
 		
-	} else if (IsSniper(weaponName)) {
+	} */
+	else if (IsSniper(weaponName)) 
+	{
 		if (range > RANGE_SNIPER) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_SNIPER, range);
 		
-	} else if (IsMiniGun(weaponName)) {
+	} 
+	else if (IsMiniGun(weaponName)) {
 		if (range > RANGE_MINIGUN) return;
 		ApplyBulletToRock(client, rockIndex, rockEntity, DAMAGE_MINIGUN, range);
 		
@@ -525,17 +535,17 @@ public bool IsShotgun(const char[] weaponName)
 public bool IsSmg(const char[] weaponName)
 {
 	return StrEqual(weaponName, "smg")
-		|| StrEqual(weaponName, "smg_silenced")
-		|| StrEqual(weaponName, "smg_mp5");
+		//|| StrEqual(weaponName, "smg_silenced")
+		//|| StrEqual(weaponName, "smg_mp5");
 }
 
 public bool IsRifle(const char[] weaponName)
 {
 	return StrEqual(weaponName, "rifle")
-		|| StrEqual(weaponName, "rifle_ak47")
-		|| StrEqual(weaponName, "rifle_desert")
-		|| StrEqual(weaponName, "rifle_m60")
-		|| StrEqual(weaponName, "rifle_sg552");
+		//|| StrEqual(weaponName, "rifle_ak47")
+		//|| StrEqual(weaponName, "rifle_desert")
+		//|| StrEqual(weaponName, "rifle_m60")
+		//|| StrEqual(weaponName, "rifle_sg552");
 }
 
 public bool IsMelee(const char[] weaponName)
@@ -546,16 +556,16 @@ public bool IsMelee(const char[] weaponName)
 
 public bool IsSniper(const char[] weaponName)
 {
-	return StrEqual(weaponName, "sniper_awp")
-		|| StrEqual(weaponName, "sniper_military")
-		|| StrEqual(weaponName, "sniper_scout")
-		|| StrEqual(weaponName, "hunting_rifle");
+	return StrEqual(weaponName, "hunting_rifle");
+		//|| StrEqual(weaponName, "sniper_awp")
+		//|| StrEqual(weaponName, "sniper_military")
+		//|| StrEqual(weaponName, "sniper_scout")
 }
 
 public bool IsMiniGun(const char[] weaponName)
 {
-	return StrEqual(weaponName, "prop_minigun_l4d1")
-		|| StrEqual(weaponName, "prop_minigun");
+	return StrEqual(weaponName, "prop_minigun");
+		//|| StrEqual(weaponName, "prop_minigun_l4d1")
 	
 }
 

@@ -18,7 +18,7 @@ ConVar ConVar_Huntrifle_PickupTime = null;
 ConVar ConVar_Huntrifle_SwtichLayer = null;
 ConVar ConVar_Huntrifle_FireLayer = null;
 ConVar ConVar_Huntrifle_SwtichTime = null;
-ConVar hRateOfFireCvar;
+ConVar ConVar_Huntrifle_FireCycle;
 
 int iConVar_Huntrifle_EReloadLayer;
 float fConVar_Huntrifle_EReloadTime;
@@ -29,18 +29,17 @@ float fConVar_Huntrifle_PickupTime;
 int iConVar_Huntrifle_SwtichLayer;
 float fConVar_Huntrifle_SwtichTime;
 int iConVar_Huntrifle_FireLayer;
-float fRateOfFireCvar;
+float fConVar_Huntrifle_FireCycle;
 
 float g_fNextPrimaryAttack[MAXPLAYERS + 1]	=	{0.0};		//next gametime client's sniper is allowed to fire;
-float g_fFireSpeed							= 	0.27;		//min low input values are 0.05 - 1.5 if you prefer stock speed * modifier, 
 Handle g_hTimerFireAnimation[MAXPLAYERS + 1];
 
 public Plugin myinfo = 
 {
 	name = "Nerf Huntingrifle",
 	author = "Tester:Xeno, Coder:Timocop, archer, L4D1 Huntingrifle modify by Harry",
-	description = "Beta Reloading Animations",
-	version = "1.6-2026/7/14",
+	description = "Hunting rifle Beta Reloading Animations",
+	version = "1.7-2026/9/15",
 	url = "Harry Potter myself,bitch"
 };
 
@@ -61,19 +60,18 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	ConVar_Huntrifle_EReloadLayer = CreateConVar( "l4dbeta_huntingrifle_empty_reloadlayer", "15", "[-1 = DISABLED] <The Empty Reload Layer Sequence>",  FCVAR_NOTIFY );
-	ConVar_Huntrifle_EReloadTime = CreateConVar( "l4dbeta_huntingrifle_empty_reloadtime", "1.25", "[-1 = DISABLED] <Time to Block the Empty Reload Sequence>",  FCVAR_NOTIFY );
-	ConVar_Huntrifle_ReloadLayer = CreateConVar( "l4dbeta_huntingrifle_normal_reloadlayer", "-1", "[-1 = DISABLED] <The Normal Reload Layer Sequence>", FCVAR_NOTIFY );
-	ConVar_Huntrifle_ReloadTime = CreateConVar( "l4dbeta_huntingrifle_normal_reloadtime", "-1", "[-1 = DISABLED] <Time to Block the Normal Reload Sequence>", FCVAR_NOTIFY );
-	ConVar_Huntrifle_PickupLayer = CreateConVar( "l4dbeta_huntingrifle_pickuplayer", "-1", "[-1 = DISABLED] <The Pickup Layer Sequence>", FCVAR_NOTIFY );
-	ConVar_Huntrifle_PickupTime = CreateConVar( "l4dbeta_huntingrifle_pickuptime", "-1", "[-1 = DISABLED] <Time to Block the Pickup Reload Sequence>", FCVAR_NOTIFY );
-	ConVar_Huntrifle_SwtichLayer = CreateConVar( "l4dbeta_huntingrifle_swtichlayer", "7", "[-1 = DISABLED] <The Swtich Layer Sequence>", FCVAR_NOTIFY );
-	ConVar_Huntrifle_SwtichTime = CreateConVar( "l4dbeta_huntingrifle_swtichtime", "1.8", "[-1 = DISABLED] <Time to Block the Swtich Layer Sequence>",  FCVAR_NOTIFY );
-	ConVar_Huntrifle_FireLayer = CreateConVar( "l4d_huntingrifle_firelayer", "19", "[-1 = DISABLED] <The Fire Layer Sequence>", FCVAR_NOTIFY );
-	hRateOfFireCvar	= CreateConVar("l4d_huntingrifle_fire_rate", "0.20", "[1.0 = Value Default] In percentage, rate of fire (min 0.05; max 1.50).",  FCVAR_NOTIFY);
+	ConVar_Huntrifle_EReloadLayer 	= CreateConVar( "l4dbeta_huntingrifle_empty_reloadlayer", 	"17", 	"[-1 = DISABLED] Empty Reload Layer Sequence",  FCVAR_NOTIFY );
+	ConVar_Huntrifle_EReloadTime 	= CreateConVar( "l4dbeta_huntingrifle_empty_reloadtime", 	"2.65", "[-1 = DISABLED] Empty Reload Time",  FCVAR_NOTIFY );
+	ConVar_Huntrifle_ReloadLayer 	= CreateConVar( "l4dbeta_huntingrifle_normal_reloadlayer", 	"13", 	"[-1 = DISABLED] Normal Reload Layer Sequence", FCVAR_NOTIFY );
+	ConVar_Huntrifle_ReloadTime 	= CreateConVar( "l4dbeta_huntingrifle_normal_reloadtime", 	"1.85", "[-1 = DISABLED] Normal Reload Time", FCVAR_NOTIFY );
+	ConVar_Huntrifle_PickupLayer 	= CreateConVar( "l4dbeta_huntingrifle_pickuplayer", 		"-1", 	"[-1 = DISABLED] Pickup Layer Sequence", FCVAR_NOTIFY );
+	ConVar_Huntrifle_PickupTime 	= CreateConVar( "l4dbeta_huntingrifle_pickuptime", 			"-1", 	"[-1 = DISABLED] Pickup Time", FCVAR_NOTIFY );
+	ConVar_Huntrifle_SwtichLayer 	= CreateConVar( "l4dbeta_huntingrifle_swtichlayer", 		"7", 	"[-1 = DISABLED] Swtich Layer Sequence", FCVAR_NOTIFY );
+	ConVar_Huntrifle_SwtichTime 	= CreateConVar( "l4dbeta_huntingrifle_swtichtime", 			"1.8", 	"[-1 = DISABLED] Swtich Time",  FCVAR_NOTIFY );
+	ConVar_Huntrifle_FireLayer 		= CreateConVar( "l4dbeta_huntingrifle_firelayer", 			"19", 	"[-1 = DISABLED] Fire Layer Sequence", FCVAR_NOTIFY );
+	ConVar_Huntrifle_FireCycle		= CreateConVar( "l4dbeta_huntingrifle_fire_cycle",			"1.2", 	"[-1 = DISABLED] Fire Cycle",  FCVAR_NOTIFY);
 
 	GetCvars();
-	SetFireSpeed();
 	ConVar_Huntrifle_EReloadLayer.AddChangeHook(ConVarChanged_Cvars);
 	ConVar_Huntrifle_EReloadTime.AddChangeHook(ConVarChanged_Cvars);
 	ConVar_Huntrifle_ReloadLayer.AddChangeHook(ConVarChanged_Cvars);
@@ -83,7 +81,7 @@ public void OnPluginStart()
 	ConVar_Huntrifle_SwtichLayer.AddChangeHook(ConVarChanged_Cvars);
 	ConVar_Huntrifle_SwtichTime.AddChangeHook(ConVarChanged_Cvars);
 	ConVar_Huntrifle_FireLayer.AddChangeHook(ConVarChanged_Cvars);
-	hRateOfFireCvar.AddChangeHook(ConVarChange_Slow);
+	ConVar_Huntrifle_FireCycle.AddChangeHook(ConVarChange_Slow);
 
 	HookEvent("weapon_fire", eWeaponFire, EventHookMode_Pre);
 	HookEvent("weapon_reload", eReloadWeapon);
@@ -100,15 +98,14 @@ public void OnPluginStart()
 	}
 }
 
-public void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {
 	GetCvars();
 }
 
-public void ConVarChange_Slow(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+void ConVarChange_Slow(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {	
 	GetCvars();
-	SetFireSpeed();
 }
 
 void GetCvars()
@@ -122,7 +119,7 @@ void GetCvars()
 	iConVar_Huntrifle_SwtichLayer = ConVar_Huntrifle_SwtichLayer.IntValue;
 	fConVar_Huntrifle_SwtichTime = ConVar_Huntrifle_SwtichTime.FloatValue;
 	iConVar_Huntrifle_FireLayer = ConVar_Huntrifle_FireLayer.IntValue;
-	fRateOfFireCvar = hRateOfFireCvar.FloatValue;
+	fConVar_Huntrifle_FireCycle = ConVar_Huntrifle_FireCycle.FloatValue;
 }
 
 /****************************************************************************************************************************
@@ -159,7 +156,8 @@ void eWeaponFire(Event event, const char[] name, bool dontBroadcast)
 	}
 	else
 	{
-		g_fNextPrimaryAttack[iClient] = GetGameTime() + g_fFireSpeed;//射速
+		g_bIsWeaponEmpty[iCurrentWeapon] = false;
+		g_fNextPrimaryAttack[iClient] = GetGameTime() + fConVar_Huntrifle_FireCycle; //射速
 		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
 
 		delete g_hTimerFireAnimation[iClient];
@@ -331,15 +329,13 @@ void Weapon_Speed(int iClient, float fValue) //WITHOUT ANIMATION SPEED CHANGE!
 	
 	if(IsValidEntity(iCurrentWeapon))
 	{
-		float fNextPrimaryAttack  = GetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack");
+		//float fNextPrimaryAttack  = GetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack");
 		float fGameTime = GetGameTime();
-		float fNextPrimaryAttack_Mod = (fNextPrimaryAttack - fGameTime ) * fValue;
-
-		fNextPrimaryAttack_Mod += fGameTime;
+		float fNextPrimaryAttack_New = fGameTime + fValue;
 		
-		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", fNextPrimaryAttack_Mod);
-		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flTimeWeaponIdle", fNextPrimaryAttack_Mod);
-		SetEntPropFloat(iClient, Prop_Send, "m_flNextAttack", fNextPrimaryAttack_Mod);
+		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", fNextPrimaryAttack_New);
+		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flTimeWeaponIdle", fNextPrimaryAttack_New);
+		SetEntPropFloat(iClient, Prop_Send, "m_flNextAttack", fNextPrimaryAttack_New);
 	}
 }
 
@@ -351,18 +347,6 @@ bool IsValidClient(int iClient)
 	return IsClientInGame(iClient);
 }
 
-void SetFireSpeed()
-{
-	float fPercentage = fRateOfFireCvar;
-	if (FloatAbs(fPercentage) <= 1.5)
-	{
-		fPercentage = fPercentage * 100.0;
-	}
-	if (fPercentage < 5.0) fPercentage = 5.0;
-	if (fPercentage > 150.0) fPercentage = 150.0;
-	fPercentage = 100.0 / fPercentage;
-	g_fFireSpeed = 0.25 * fPercentage;	
-}
 public void OnClientDisconnect(int client)
 {
 	if(!IsClientInGame(client)) return;

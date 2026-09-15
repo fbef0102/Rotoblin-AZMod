@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "l4d_tank_stumble_door",
 	author = "Harry Potter",
 	description = "Tank won't get stumbled by a door in l4d1",
-	version = "1.1-2026/9/11",
+	version = "1.2-2026/9/15",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -56,7 +56,17 @@ public void OnEntityCreated(int entity, const char[] classname)
     {
         case 'p':
         {
+            // prop_door_rotating
+            // prop_door_rotating_checkpoint
             if (strcmp(classname, "prop_door_rotating", false) == 0)
+            {
+                g_bIsDoor[entity] = true;
+            }
+            else if (strcmp(classname, "prop_door_rotating_checkpoint", false) == 0)
+            {
+                g_bIsDoor[entity] = true;
+            }
+            else if (strcmp(classname, "func_door_rotating", false) == 0)
             {
                 g_bIsDoor[entity] = true;
             }

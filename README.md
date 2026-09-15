@@ -224,55 +224,57 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Weapon Adjustments ###
 * **Uzi** (Based on Acemod/Zonemod)
-  * Still Spread: 0.32->0.22
-  * Moveing Spread: 3.0->2.0
+  * Still Spread: 0.32 -> 0.22
+  * Moveing Spread: 3.0 -> 2.0
   * Ammo: 480->800
-  * Damage Drop-off: 0.84->0.78
-  * Reload Speed: 2.23s->1.9s
+  * Damage Drop-off: 0.84 -> 0.78
+  * Reload Time: 2.23s -> 1.9s
   * Magazine Quick Reload: 1.43s
-  * Damage: 20->24
+  * Damage: 20 -> 24
   * Limit: 3
   * FF Protect Range: 30
   * FF Protect Interval: 0.3 second
 
 * **Pumpshotgun**
   * Ammo: 128->96
+  * Pellet Vertical Spread: 5.0 -> 3.0
+  * Pellet Horizontal Spread: 7.5 -> 5.0
   * Limit: None
   * FF Protect Range: 37
   * FF DMG: 1~10
 
 * **Pistol**
-  * Reload Speed: Unchanged
+  * Reload Time: Unchanged
   * Magazine Quick Reload: 1.5s
   * FF Protect Range: 25
   * FF Protect Interval: 0.3 second
 
 * **Dual Pistol**
-  * Reload Speed: Unchanged
+  * Reload Time: Unchanged
   * Magazine Quick Reload: 2.1s
   * FF Protect Range: 25
   * FF Protect Interval: 0.3 second
 
 * **Hunting Rifle**
-  * Empty Reload Time: 1->1.25
-  * Normal Reload Time: 1 (unchanged)
-  * Magazine Quick Reload: 2.6s
-  * Pickup Time: 1 (unchanged)
-  * Swtich Time: 1 -> 1.8
-  * Rate of fire: 1->0.2
-  * Tank dmg: 90->120
-  * Hunter dmg: Chest 250, Stomach 168
+  * Empty Reload Time: 3.25s -> 2.65s
+  * Normal Reload Time: 3.25s -> 1.85s
+  * Magazine Quick Reload: 1.25s
+  * Pickup Weapon Time: Unchanged
+  * Switch Weapon Time: 1s -> 1.8s
+  * Fire Delay: 0.25s -> 1.2s
+  * Tank dmg: 90 -> 110
+  * Hunter dmg: Chest 90->130, Stomach 112.5->130
   * Limit: 1
   * FF Protect Range: 25
   > **Developer Comment:** As we've noticed in L4D1, the Uzis were completely nothing and shotguns were taking over everything. In the release of Roto-AZMod, I want to make the Uzi more attractiv, which result into the Uzi having more advantages. And there can be a sniper in a team, this Hunting Rifle is nerfed a lot as you can see rate of fire is very slow. Peope can choose thier desired weapons. Each performs one's own best part in a team.
 
 - - - -
 ### Score Calculation(!health/!bonus) ###
-* ( AD + HB + PILLS ) x Alive x Map 
+* Versus Score = ( AD + HB + PILLS ) x Alive x Map 
    * AD = Average distance
    * HB = Health Bonus, (PermanentHealth/2) + (TemporaryHealth/4)
    * PILLS = 15 Health Bonus per pill
-   * Alive = Number of players that survived
+   * Alive = Number of players that survived, this value is 1.0 if all survivors are dead
    * Map = That level's score multiplier
    > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
@@ -460,7 +462,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Tank won't get stumbled by a door
 
   * **Witch:**
-    * Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
     * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space: 500 (vanilla: 100)
