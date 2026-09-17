@@ -262,7 +262,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Pickup Weapon Time: Unchanged
   * Switch Weapon Time: 1s -> 1.8s
   * Fire Delay: 0.25s -> 1.2s
-  * Tank dmg: 90 -> 110
+  * Tank dmg: 90 -> 120
   * Hunter dmg: Chest 90->130, Stomach 112.5->130
   * Limit: 1
   * FF Protect Range: 25

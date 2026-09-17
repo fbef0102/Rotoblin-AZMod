@@ -5,9 +5,31 @@
 #include <sdktools>
 #include <sdkhooks>
 
-bool g_bIsWeaponEmpty[2048];
-bool g_bIgnoreWeaponSwitch[MAXPLAYERS+1];
+public Plugin myinfo = 
+{
+	name = "Nerf Huntingrifle",
+	author = "Tester:Xeno, Coder:Timocop, archer, L4D1 Huntingrifle modify by Harry",
+	description = "Hunting rifle Beta Reloading Animations",
+	version = "1.8-2026/9/17",
+	url = "Harry Potter myself,bitch"
+};
 
+bool bLate;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    EngineVersion test = GetEngineVersion();
+
+    if( test != Engine_Left4Dead )
+    {
+        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+        return APLRes_SilentFailure;
+    }
+
+    bLate = late;
+    return APLRes_Success;
+}
+
+#define MAXENTITIES                   2048
 
 ConVar ConVar_Huntrifle_EReloadLayer = null;
 ConVar ConVar_Huntrifle_EReloadTime = null;
@@ -34,29 +56,10 @@ float fConVar_Huntrifle_FireCycle;
 float g_fNextPrimaryAttack[MAXPLAYERS + 1]	=	{0.0};		//next gametime client's sniper is allowed to fire;
 Handle g_hTimerFireAnimation[MAXPLAYERS + 1];
 
-public Plugin myinfo = 
-{
-	name = "Nerf Huntingrifle",
-	author = "Tester:Xeno, Coder:Timocop, archer, L4D1 Huntingrifle modify by Harry",
-	description = "Hunting rifle Beta Reloading Animations",
-	version = "1.7-2026/9/15",
-	url = "Harry Potter myself,bitch"
-};
+bool g_bIsWeaponEmpty[MAXENTITIES+1],
+	g_bIsWeaponHT[MAXENTITIES+1],
+	g_bIsWeaponOnEquip[MAXENTITIES+1];
 
-bool bLate;
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-    EngineVersion test = GetEngineVersion();
-
-    if( test != Engine_Left4Dead )
-    {
-        strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
-        return APLRes_SilentFailure;
-    }
-
-    bLate = late;
-    return APLRes_Success;
-}
 
 public void OnPluginStart()
 {
@@ -85,16 +88,42 @@ public void OnPluginStart()
 
 	HookEvent("weapon_fire", eWeaponFire, EventHookMode_Pre);
 	HookEvent("weapon_reload", eReloadWeapon);
-	HookEvent("item_pickup", ePlayerItemPickup);
+	//HookEvent("item_pickup", ePlayerItemPickup);
+	//HookEvent("spawner_give_item", Event_Spawner_give_item);
 
 	if(bLate)
 	{
+		LateLoad();
 		for (int client = 1; client <= MaxClients; client++)
 		{
 			if (!IsClientInGame(client)) continue;
 
 			OnClientPutInServer(client);
 		}
+	}
+}
+
+void LateLoad()
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+
+		OnClientPutInServer(client);
+	}
+
+	int entity;
+	char classname[64];
+
+	entity = INVALID_ENT_REFERENCE;
+	while ((entity = FindEntityByClassname(entity, "weapon_hunting_rifle*")) != INVALID_ENT_REFERENCE)
+	{
+		if (!IsValidEntity(entity))
+			continue;
+
+		GetEntityClassname(entity, classname, sizeof(classname));
+		OnEntityCreated(entity, classname);
 	}
 }
 
@@ -122,31 +151,58 @@ void GetCvars()
 	fConVar_Huntrifle_FireCycle = ConVar_Huntrifle_FireCycle.FloatValue;
 }
 
-/****************************************************************************************************************************
-	*****************************************************************************************************************************
-	*****************************************************************************************************************************
-	WARNING!
-		If you're using your own animations, make sure its a LAYER(!!!!!) (ModelViewer > "v_models" and select "_LAYERS" only!) or your animation will mess up!
-		Good Luck...
-	*****************************************************************************************************************************
-	*****************************************************************************************************************************
-	*****************************************************************************************************************************/
+public void OnClientDisconnect(int client)
+{
+	if(!IsClientInGame(client)) return;
 
+	delete g_hTimerFireAnimation[client];
+}
+
+public void OnClientPutInServer(int client)
+{
+	SDKHook(client, SDKHook_WeaponEquip, OnWeaponEquip);
+	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponSwitchPost);
+}
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (!IsValidEntityIndex(entity))
+		return;
+
+	switch (classname[0])
+	{
+		case 'w':
+		{
+			if (StrEqual(classname, "weapon_hunting_rifle"))
+			{
+				g_bIsWeaponHT[entity] = true;
+			}
+		}
+	}
+}
+
+public void OnEntityDestroyed(int entity)
+{
+	if (!IsValidEntityIndex(entity))
+		return;
+
+	g_bIsWeaponHT[entity] = false;
+}
 
 void eWeaponFire(Event event, const char[] name, bool dontBroadcast) 
 {
-	int iClient = GetClientOfUserId(event.GetInt("userid"));
-	if (!IsValidClient(iClient) 	
-			|| !IsPlayerAlive(iClient) 
-			|| GetClientTeam(iClient) != 2
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (!IsValidClient(client) 	
+			|| !IsPlayerAlive(client) 
+			|| GetClientTeam(client) != 2
 			|| iConVar_Huntrifle_FireLayer <= 0)
 		return;
 
 	int weaponid = event.GetInt("weaponid");
 	if(weaponid != 6) return;
 	
-	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	if (iCurrentWeapon <= MaxClients)
+	int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (iCurrentWeapon <= MaxClients || g_bIsWeaponHT[iCurrentWeapon] == false)
 		return;	
 		
 	if (GetEntProp(iCurrentWeapon, Prop_Data, "m_iClip1") == 1)//最後一發射出去不使用拉勾動畫
@@ -157,14 +213,14 @@ void eWeaponFire(Event event, const char[] name, bool dontBroadcast)
 	else
 	{
 		g_bIsWeaponEmpty[iCurrentWeapon] = false;
-		g_fNextPrimaryAttack[iClient] = GetGameTime() + fConVar_Huntrifle_FireCycle; //射速
-		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
+		g_fNextPrimaryAttack[client] = GetGameTime() + fConVar_Huntrifle_FireCycle; //射速
+		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[client]);
 
-		delete g_hTimerFireAnimation[iClient];
+		delete g_hTimerFireAnimation[client];
 		DataPack hPack;
-		g_hTimerFireAnimation[iClient] = CreateDataTimer(0.1, COLD_DOWN, hPack); //拉勾動畫
-		hPack.WriteCell(iClient);
-		hPack.WriteCell(GetClientUserId(iClient));
+		g_hTimerFireAnimation[client] = CreateDataTimer(0.1, COLD_DOWN, hPack); //拉勾動畫
+		hPack.WriteCell(client);
+		hPack.WriteCell(GetClientUserId(client));
 		hPack.WriteCell(EntIndexToEntRef(iCurrentWeapon));
 	}
 }
@@ -175,26 +231,26 @@ Action COLD_DOWN(Handle timer, DataPack hPack) //拉勾動畫
 	int index = hPack.ReadCell();
 	g_hTimerFireAnimation[index] = null;
 
-	int iClient = GetClientOfUserId(hPack.ReadCell());
-	if(!iClient || !IsClientInGame(iClient))
+	int client = GetClientOfUserId(hPack.ReadCell());
+	if(!client || !IsClientInGame(client))
 		return Plugin_Continue;
 	
-	if(GetClientTeam(iClient) != 2 || !IsPlayerAlive(iClient))
+	if(GetClientTeam(client) != 2 || !IsPlayerAlive(client))
 		return Plugin_Continue;
 
 	int weapon = EntRefToEntIndex(hPack.ReadCell());
 	if(weapon == INVALID_ENT_REFERENCE)
 		return Plugin_Continue;
 		
-	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
+	int iViewModel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
 	if(!IsValidEntity(iViewModel))
 		return Plugin_Continue;
 
-	int iActiveWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
+	int iActiveWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if(iActiveWeapon <= MaxClients || iActiveWeapon != weapon)
 		return Plugin_Continue;
 		
-	SetEntPropFloat(iActiveWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[iClient]);
+	SetEntPropFloat(iActiveWeapon, Prop_Send, "m_flNextPrimaryAttack", g_fNextPrimaryAttack[client]);
 	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_FireLayer); //16
 	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
 	
@@ -206,162 +262,141 @@ public void L4D_OnSwingStart(int client, int weapon)
 	delete g_hTimerFireAnimation[client];
 }
 
+//從weapon_xxx_spawner撿起不同武器或是相同武器時也會觸發: OnWeaponEquip -> OnWeaponSwitchPost -> "item_pickup" -> "spawner_give_item"
+//撿起地上的武器會觸發
+//滾輪會觸發
 void OnWeaponSwitchPost(int client, int weapon)
 {
-	if(iConVar_Huntrifle_SwtichLayer <= 0) return;
-
 	if (client <= 0) return;
 	if(GetClientTeam(client) != 2) return;
 	if(!IsPlayerAlive(client)) return;
-	if(weapon <= MaxClients || !IsValidEntity(weapon)) return;
+	if(weapon <= MaxClients) return;
+	if(g_bIsWeaponHT[weapon] == false) return;
 
-	static char sCurrentWeaponName[32];
-	GetEntityClassname(weapon, sCurrentWeaponName, sizeof(sCurrentWeaponName));
-	if(strcmp(sCurrentWeaponName, "weapon_hunting_rifle", false) == 0)
-	{
-		WeaponChangeAnimation(client, weapon);
-	}
+	if(g_bIsWeaponOnEquip[weapon]) return;
+
+	//PrintToChatAll("OnWeaponSwitchPost - client: %N, weapon: %d", client, weapon);
+
+	if(iConVar_Huntrifle_SwtichLayer <= 0) return;
+	Weapon_ChangeAnimation(client, weapon, iConVar_Huntrifle_SwtichLayer, fConVar_Huntrifle_SwtichTime);
 }
 
-void WeaponChangeAnimation(int iClient, int hActiveWeapon)
+//撿起地上的武器會觸發
+//滾輪不觸發
+Action OnWeaponEquip(int client, int weapon)
 {
-	if (GetEntProp(hActiveWeapon, Prop_Data, "m_iClip1") > 0)
-	{
-		int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-		if(!IsValidEntity(iViewModel)) return;
-	
-		SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_SwtichLayer); 
-		SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
+	if (client <= 0) return Plugin_Continue;
+	if(GetClientTeam(client) != 2) return Plugin_Continue;
+	if(!IsPlayerAlive(client)) return Plugin_Continue;
+	if(weapon <= MaxClients) return Plugin_Continue;
+	if(g_bIsWeaponHT[weapon] == false) return Plugin_Continue;
 
-		if(fConVar_Huntrifle_SwtichTime > 0)
-		{
-			Weapon_Speed(iClient, fConVar_Huntrifle_SwtichTime);
-		}
-	}
+	//PrintToChatAll("OnWeaponEquip - client: %N, weapon: %d", client, weapon);
+	g_bIsWeaponOnEquip[weapon] = true;
+	RequestFrame(OnNextFrame_OnWeaponEquip, weapon);
+
+	if(iConVar_Huntrifle_PickupLayer <= 0) return Plugin_Continue;
+	Weapon_ChangeAnimation(client, weapon, iConVar_Huntrifle_PickupLayer, fConVar_Huntrifle_PickupTime);
+
+	return Plugin_Continue;
 }
 
 void eReloadWeapon(Event event, const char[] name, bool dontBroadcast) 
 {
-	int iClient = GetClientOfUserId(event.GetInt("userid"));
-	if(!IsValidClient(iClient) 	
-			|| !IsPlayerAlive(iClient) 
-			|| GetClientTeam(iClient) != 2)
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(!IsValidClient(client) 	
+			|| !IsPlayerAlive(client) 
+			|| GetClientTeam(client) != 2)
 		return;
 
-	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
+	int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if(iCurrentWeapon <= 0)
 		return;
-
-	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
 	
-	if(!IsValidEntity(iViewModel))
-		return;
-	
-	static char sWeaponName[64];
-	GetEntityClassname(iCurrentWeapon, sWeaponName, sizeof(sWeaponName));
-	if (strcmp(sWeaponName, "weapon_hunting_rifle", false) != 0)
+	if (g_bIsWeaponHT[iCurrentWeapon] == false)
 		return;
 
 	if(g_bIsWeaponEmpty[iCurrentWeapon])
 	{
 		if(iConVar_Huntrifle_EReloadLayer <= 0) return;
-
-		SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", ConVar_Huntrifle_EReloadLayer.IntValue); //16
-		SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime()); //Some Animation Glich Fixes
-		if(fConVar_Huntrifle_EReloadTime > 0)
-		{
-			Weapon_Speed(iClient, fConVar_Huntrifle_EReloadTime);
-		}
+		Weapon_ChangeAnimation(client, iCurrentWeapon, iConVar_Huntrifle_EReloadLayer, fConVar_Huntrifle_EReloadTime);
 	}
 	else
 	{
 		if(iConVar_Huntrifle_ReloadLayer <= 0) return;
-		
-		SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_ReloadLayer);
-		SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
-
-		if(fConVar_Huntrifle_ReloadTime > 0)
-		{
-			Weapon_Speed(iClient, fConVar_Huntrifle_ReloadTime);
-		}
+		Weapon_ChangeAnimation(client, iCurrentWeapon, iConVar_Huntrifle_ReloadLayer, fConVar_Huntrifle_ReloadTime);
 	}
 }
 
-void ePlayerItemPickup(Event event, const char[] name, bool dontBroadcast) 
+/*void ePlayerItemPickup(Event event, const char[] name, bool dontBroadcast) 
 {
-	int iClient = GetClientOfUserId(event.GetInt("userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(!IsValidClient(iClient) 	
-			|| !IsPlayerAlive(iClient) 
-			/*|| IsFakeClient(iClient)*/
-			|| GetClientTeam(iClient) != 2)
+	if(!IsValidClient(client) 	
+			|| !IsPlayerAlive(client) 
+			|| GetClientTeam(client) != 2)
 		return;
+
+	PrintToChatAll("item_pickup");
 	
 	static char sPickupName[64];
 	event.GetString("item", sPickupName, sizeof(sPickupName)); 
 	if (strcmp(sPickupName, "hunting_rifle", false) != 0)
 		return;
 
-	int iViewModel = GetEntPropEnt(iClient, Prop_Send, "m_hViewModel");
-	if (!IsValidEntity(iViewModel))
+	int iCurrentWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if(iCurrentWeapon <= 0)
 		return;
-	
-	g_bIgnoreWeaponSwitch[iClient] = true;
 
 	if(iConVar_Huntrifle_PickupLayer <= 0) return;
+	Weapon_ChangeAnimation(client, iCurrentWeapon, iConVar_Huntrifle_PickupLayer, fConVar_Huntrifle_PickupTime);
+}*/
+
+/*void Event_Spawner_give_item(Event event, const char[] name, bool dontBroadcast) 
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iConVar_Huntrifle_PickupLayer);
-	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
+	if(!IsValidClient(client) 	
+			|| !IsPlayerAlive(client) 
+			|| GetClientTeam(client) != 2)
+		return;
 
-	if(fConVar_Huntrifle_PickupTime > 0)
-	{
-		Weapon_Speed(iClient, fConVar_Huntrifle_PickupTime);
-	}
+	PrintToChatAll("spawner_give_item");
+}*/
 
+void OnNextFrame_OnWeaponEquip(int weapon)
+{
+	g_bIsWeaponOnEquip[weapon] = false;
 }
 
-void Weapon_Speed(int iClient, float fValue) //WITHOUT ANIMATION SPEED CHANGE!
+void Weapon_ChangeAnimation(int client, int iCurrentWeapon, int iViewModelLayer, float fAttackTime)
 {
-	if(fValue < 0) return;
+	int iViewModel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
+	if(iViewModel <= MaxClients) return;
 
-	int iCurrentWeapon = GetEntPropEnt(iClient, Prop_Send, "m_hActiveWeapon");
-	
-	if(IsValidEntity(iCurrentWeapon))
+	SetEntProp(iViewModel, Prop_Send, "m_nLayerSequence", iViewModelLayer); 
+	SetEntPropFloat(iViewModel, Prop_Send, "m_flLayerStartTime", GetGameTime());
+
+	if(fAttackTime > 0)
 	{
-		//float fNextPrimaryAttack  = GetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack");
 		float fGameTime = GetGameTime();
-		float fNextPrimaryAttack_New = fGameTime + fValue;
+		float fNextPrimaryAttack_New = fGameTime + fAttackTime;
 		
 		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flNextPrimaryAttack", fNextPrimaryAttack_New);
 		SetEntPropFloat(iCurrentWeapon, Prop_Send, "m_flTimeWeaponIdle", fNextPrimaryAttack_New);
-		SetEntPropFloat(iClient, Prop_Send, "m_flNextAttack", fNextPrimaryAttack_New);
+		SetEntPropFloat(client, Prop_Send, "m_flNextAttack", fNextPrimaryAttack_New);
 	}
 }
 
-bool IsValidClient(int iClient)
+bool IsValidClient(int client)
 {
-	if(iClient < 1 || iClient > MaxClients)
+	if(client < 1 || client > MaxClients)
 	return false;
 
-	return IsClientInGame(iClient);
+	return IsClientInGame(client);
 }
 
-public void OnClientDisconnect(int client)
+bool IsValidEntityIndex(int entity)
 {
-	if(!IsClientInGame(client)) return;
-
-	ResetClientSniperData(client);
-}
-
-public void OnClientPutInServer(int client)
-{
-	ResetClientSniperData(client);
-
-	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponSwitchPost);
-}
-
-void ResetClientSniperData(int client)
-{
-	g_fNextPrimaryAttack[client] = 0.0;
+	return (MaxClients+1 <= entity <= GetMaxEntities());
 }

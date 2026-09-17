@@ -123,9 +123,9 @@ Action OnTakeDamage_Client(int victim, int &attacker, int &inflictor, float &dam
 		return Plugin_Continue;
 	}
 
-	PrintToChatAll("OnTakeDamage - victim: %d, attacker: %d, inflictor: %d, damage: %.2f, damagetype: %d, weapon: %d, \n"...
-		"hitgroup: %d", 
-		victim, attacker, inflictor, damage, damagetype, weapon, g_iClientHitGroup[victim]);
+	//PrintToChatAll("OnTakeDamage - victim: %d, attacker: %d, inflictor: %d, damage: %.2f, damagetype: %d, weapon: %d, \n"...
+	//	"hitgroup: %d", 
+	//	victim, attacker, inflictor, damage, damagetype, weapon, g_iClientHitGroup[victim]);
 
 	//在l4d1中, 玩家使用槍械攻擊時, attacker=inflictor, weapon=-1, damagetype有DMG_BULLET
 	//在l4d1中, 玩家推死特感時, attacker=victim, weapon=-1, damagetype=DMG_CLUB
