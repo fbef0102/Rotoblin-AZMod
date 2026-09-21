@@ -460,6 +460,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops the Tanks footsteps causing the screen to shake.
     * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
     * Tank won't get stumbled by a door
+    * Sends Survivors flying on the incapping punch
 
   * **Witch:**
     * Announce in chat when a Which has spawned

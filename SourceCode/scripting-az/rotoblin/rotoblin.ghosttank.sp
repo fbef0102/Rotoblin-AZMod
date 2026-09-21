@@ -35,23 +35,11 @@
 static 	const	String:	SELECTION_TIME_CVAR[]				= "director_tank_lottery_selection_time";
 
 static	const	Float:	FIRE_IMMUNITY_TIME					= 5.0;			// How long the tank is fire immune after a player gains control.
-static	const			FIRE_DAMAGE_TYPE					= 8;			/* "Pre" fire damage type. This damage type is applied to the tank before he gets lit
-																			 * on fire. By detecting this damage type instead of using GetEntityFlags on tank, we
-																			 * can prevent the rage meter from disappear from the tank. */
-static	const			INCAP_HEALTH						= 300;			// Punch fix, incap health
-static	const	Float:	INCAP_DELAY							= 0.4;			// Punch fix, how long before incaping the survivor again
-static	const	String:	INCAP_WEAPON[]						= "tank_claw";	// Punch fix, which weapon used to incap the survivor before applying punch fix
-
 static			Handle:	g_hSelectionTimeCvar				= INVALID_HANDLE;
 
-static	const	String:	WEAPON_TANK_ROCK[]					= "tank_rock";	// Tank rock weapon name
-static	const	Float:	BLOCK_USE_TIME						= 1.5;			// After a survivor have been "rock'd", how long is use blocked
-static			bool:	g_bBlockUse[MAXPLAYERS +1]			= {false};
-static			Handle:	g_hBlockUse_Timer[MAXPLAYERS +1]	= {INVALID_HANDLE};
+bool g_bBlockGhostTank_Attack[MAXPLAYERS+1]	= {false, ...};			// block rock throws and attack during ghost ai tank
 
-static					g_iBlockClientThrow					= 0;			// Client index to block rock throws from
-
-static			bool:	g_bIsTankFireImmune					= false;			// Boolean for fire immunity
+float g_fTankFireImmuneEngineTime[MAXPLAYERS+1]		= {0.0, ...};			// tank fire immunity
 
 static					g_iDebugChannel							= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]					= "GhostTank";
@@ -85,13 +73,11 @@ public _GT_OnPluginEnable()
 
 	HookEvent("round_start"			, _GT_RoundStart_Event, EventHookMode_PostNoCopy);
 	HookEvent("player_hurt"			, _GT_PlayerHurt_Event);
-	HookEvent("player_incapacitated", _GT_PlayerIncap_Event);
+	HookEvent("bot_player_replace", _GT_PlayerReplaceBot);
+	HookEvent("player_bot_replace", _GT_BotReplacePlayer);
 	HookTankEvent(TANK_SPAWNED	, _GT_TankSpawn_Event);
 	HookTankEvent(TANK_KILLED	, _GT_TankKilled_Event);
-	HookTankEvent(TANK_PASSED	, _GT_TankPassed_Event);
 	HookPublicEvent(EVENT_ONPLAYERRUNCMD, _GT_OnPlayerRunCmd);
-	
-	g_bIsTankFireImmune = false;
 
 	DebugPrintToAllEx("Module is now loaded");
 }
@@ -107,7 +93,8 @@ public _GT_OnPluginDisable()
 
 	UnhookEvent("round_start",			_GT_RoundStart_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("player_hurt",			_GT_PlayerHurt_Event);
-	UnhookEvent("player_incapacitated", _GT_PlayerIncap_Event);
+	UnhookEvent("bot_player_replace", _GT_PlayerReplaceBot);
+	UnhookEvent("player_bot_replace",  _GT_BotReplacePlayer);
 	UnhookPublicEvent(EVENT_ONPLAYERRUNCMD, _GT_OnPlayerRunCmd);
 
 	DebugPrintToAllEx("Module is now unloaded");
@@ -115,64 +102,69 @@ public _GT_OnPluginDisable()
 
 /**
  * Called when round start event is fired.
- *
- * @param event			INVALID_HANDLE, post no copy data.
- * @param name			String containing the name of the event.
- * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
- * @noreturn
  */
-public _GT_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
+void _GT_RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 {
 	DebugPrintToAllEx("Round start");
-	g_bIsTankFireImmune = false;
+
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		g_bBlockGhostTank_Attack[i] = false;
+		g_fTankFireImmuneEngineTime[i] = 0.0;
+	}
 }
 
 /**
- * Called when tank is spawned.
- *
- * @noreturn
+ * Called when tank is spawned if no tank in play
  */
-public _GT_TankSpawn_Event()
+public void _GT_TankSpawn_Event(int client)
 {
-	new client = GetTankClient(); // Get current tank client
-	new Float:fFireImmunityTime = FIRE_IMMUNITY_TIME;
-
 	if (!IsFakeClient(client)) return;
 
 	new Float:fSelectionTime = GetConVarFloat(g_hSelectionTimeCvar); // Get selection time
 
-	g_iBlockClientThrow = client;
+	g_bBlockGhostTank_Attack[client] = true;
+	CreateTimer(fSelectionTime, _GT_ResumeThrow_Timer, client);	// Create timer for restoring ai tank
+
 	SetEntityMoveType(client, MOVETYPE_NONE);			// Freeze ai tank
 	SetPlayerGhostState(client, true);					// Ghost ai tank
+	CreateTimer(fSelectionTime, _GT_ResumeTank_Timer, GetClientUserId(client));	// Create timer for restoring ai tank
+	float fFireImmunityTime = fSelectionTime + FIRE_IMMUNITY_TIME;				// Add some more time to fire immunity
 
-	CreateTimer(fSelectionTime, _GT_ResumeTank_Timer,client);	// Create timer for restoring ai tank
-	fFireImmunityTime += fSelectionTime;				// Add some more time to fire immunity
-
-	//CreateTimer(0.1, _GT_TankOnFire_Timer, client, TIMER_REPEAT);
-	g_bIsTankFireImmune = true;
-	CreateTimer(fFireImmunityTime, _GT_FireImmunity_Timer); // Create fire immunity timer
+	g_fTankFireImmuneEngineTime[client] = GetEngineTime() + fFireImmunityTime;
 	//PrintToChatAll("Tank spawned, created fire immunity timer. Immunity time %.2f", fFireImmunityTime);
 }
 
-/**
- * Called when tank is killed.
- *
- * @noreturn
- */
-public _GT_TankKilled_Event()
+void _GT_PlayerReplaceBot(Event event, const char[] name, bool dontBroadcast)
 {
-	g_bIsTankFireImmune = false;
+	int bot = GetClientOfUserId(GetEventInt(event, "bot"));
+	int player = GetClientOfUserId(GetEventInt(event, "player"));
+	if(bot > 0 && IsClientInGame(bot) && player > 0 && IsClientInGame(player))
+	{
+		g_fTankFireImmuneEngineTime[player] = g_fTankFireImmuneEngineTime[bot];
+		g_fTankFireImmuneEngineTime[bot] = 0.0;
+	}
+}
+
+void _GT_BotReplacePlayer(Event event, const char[] name, bool dontBroadcast)
+{
+	int bot = GetClientOfUserId(GetEventInt(event, "bot"));
+	int player = GetClientOfUserId(GetEventInt(event, "player"));
+	if(bot > 0 && IsClientInGame(bot) && player > 0 && IsClientInGame(player))
+	{
+		g_fTankFireImmuneEngineTime[bot] = g_fTankFireImmuneEngineTime[player];
+		g_fTankFireImmuneEngineTime[player] = 0.0;
+	}
 }
 
 /**
- * Called when tank is passed.
+ * Called when tank was killed and is no longer in play
  *
  * @noreturn
  */
-public _GT_TankPassed_Event()
+public void _GT_TankKilled_Event(int client)
 {
-	g_iBlockClientThrow = 0;
-	DebugPrintToAllEx("Tank passed");
+	g_fTankFireImmuneEngineTime[client] = 0.0;
 }
 
 /**
@@ -183,81 +175,27 @@ public _GT_TankPassed_Event()
  * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
  * @noreturn
  */
-public _GT_PlayerHurt_Event(Handle:event, const String:name[], bool:dontBroadcast)
+void _GT_PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!client || !IsClientInGame(client)) return;
 
-	if (g_bIsTankFireImmune && GetClientTeam(client) == TEAM_INFECTED && IsPlayerAlive(client) && GetEntProp(client,Prop_Send,"m_zombieClass") == ZOMBIECLASS_TANK)
-	{
-		new dmgtype = GetEventInt(event, "type");
-		if (dmgtype != FIRE_DAMAGE_TYPE) return; // If it wasn't fire that hurt the tank, return
+	int dmgtype = GetEventInt(event, "type");
+	if ( (dmgtype | DMG_BURN) == 0 ) return; // If it wasn't fire that hurt the tank, return
 
-		ExtinguishEntity(client);
+	if (g_fTankFireImmuneEngineTime[client] > GetEngineTime() && GetClientTeam(client) == TEAM_INFECTED && IsPlayerAlive(client) && GetEntProp(client,Prop_Send,"m_zombieClass") == ZOMBIECLASS_TANK)
+	{
+		if(GetEntityFlags(client) & FL_ONFIRE) ExtinguishEntity(client);
 		new CurHealth = GetClientHealth(client);
 		new DmgDone = GetEventInt(event, "dmg_health");
 		SetEntityHealth(client, (CurHealth + DmgDone));
 		DebugPrintToAllEx("Tank was burned while being fire immune, health restored and fire put out");
 	}
-	else if (GetClientTeam(client) == TEAM_SURVIVOR)
-	{
-		decl String:weapon[32];
-		GetEventString(event, "weapon", weapon, sizeof(weapon));
-		if (!StrEqual(weapon, WEAPON_TANK_ROCK)) return; // If the weapon that hurt the survivor isn't a rock from tank, return
-
-		if (g_hBlockUse_Timer[client] != INVALID_HANDLE)
-		{
-			CloseHandle(g_hBlockUse_Timer[client]);
-		}
-		g_hBlockUse_Timer[client] = CreateTimer(BLOCK_USE_TIME, _GT_BlockUse_Timer, client);
-		g_bBlockUse[client] = true;
-		DebugPrintToAllEx("Survivor client %i: \"%N\" took a rock and can't use for %f", client, client, BLOCK_USE_TIME);
-	}
 }
 
-/**
- * Called when a player gets incapacitated.
- *
- * @param event			Handle to event.
- * @param name			String containing the name of the event.
- * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
- * @noreturn
- */
-public _GT_PlayerIncap_Event(Handle:event, String:event_name[], bool:dontBroadcast)
-{
-	if (!IsTankInPlay()) return; // If the tank isn't in play, return
-
-	decl String:weapon[16];
-	GetEventString(event, "weapon", weapon, 16); // Get the weapon used to incap the survivor
-	if (!StrEqual(weapon, INCAP_WEAPON)) return; // If tank incap'd the survivor
-
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	SetEntProp(client, Prop_Send, "m_isIncapacitated", 0);			// Unincap the survivor
-	SetEntityHealth(client, 1);										// Set his health to 1
-	CreateTimer(INCAP_DELAY, _GT_PlayerIncap_Timer, client);		// Create timer to reincap him
-	DebugPrintToAllEx("Client %i: \"%N\" have been tank punch upon being incap'd", client, client);
-}
-
-/**
- * Called when a clients movement buttons are being processed.
- *
- * @param client		Index of the client.
- * @param buttons		Copyback buffer containing the current commands (as bitflags - see entity_prop_stocks.inc).
- * @param impulse		Copyback buffer containing the current impulse command.
- * @param vel			Players desired velocity.
- * @param angles		Players desired view angles.
- * @param weapon		Entity index of the new weapon if player switches weapon, 0 otherwise.
- * @noreturn
- */
 public _GT_OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	if (g_bBlockUse[client] && buttons & IN_USE)
-	{
-		buttons ^= IN_USE; // remove use from pressed buttons
-		DebugPrintToAllEx("Client %i: \"%N\" tried to use while being prohibit", client, client);
-	}
-
-	if (g_iBlockClientThrow == client)
+	if (g_bBlockGhostTank_Attack[client])
 	{
 		if(buttons & IN_ATTACK2)
 			buttons ^= IN_ATTACK2; // remove attack 2 from pressed buttons
@@ -267,78 +205,24 @@ public _GT_OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles
 	}
 }
 
-/**
- * Called when the resume tank timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-public Action:_GT_ResumeTank_Timer(Handle:timer,any:client)
+Action _GT_ResumeThrow_Timer(Handle timer, int client)
 {
-	g_iBlockClientThrow = 0; // Reset throw block
+	g_bBlockGhostTank_Attack[client] = false; // Reset throw block
 
-	if(!client || !IsClientInGame(client) || !IsFakeClient(client) || GetClientTeam(client) !=3 || GetEntProp(client, Prop_Send, "m_zombieClass") != 5) return;
+	return Plugin_Continue;
+}
+
+Action _GT_ResumeTank_Timer(Handle timer, int client)
+{
+	client = GetClientOfUserId(client);
+	if(!client || !IsClientInGame(client) || !IsFakeClient(client) || GetClientTeam(client) !=3 || GetEntProp(client, Prop_Send, "m_zombieClass") != 5) 
+		return Plugin_Continue;
 
 	SetEntityMoveType(client, MOVETYPE_CUSTOM);			// Reset movetype
 	SetPlayerGhostState(client, false);					// And unghost
 	DebugPrintToAllEx("Restored AI Tank");
-}
 
-/**
- * Called when the fire immunity timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-public Action:_GT_FireImmunity_Timer(Handle:timer)
-{
-	g_bIsTankFireImmune = false; // Tank is no longer fire immune
-}
-
-/**
- * Called when the fire timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-/*public Action:_GT_TankOnFire_Timer(Handle:timer,any:client)
-{
-	if (!g_bIsTankFireImmune || !client || !IsClientInGame(client) || GetClientTeam(client) !=3 || GetEntProp(client, Prop_Send, "m_zombieClass") != 5) return Plugin_Stop;
-
-	if(GetEntityFlags(client) & FL_ONFIRE)
-	{
-		ExtinguishEntity(client);
-		DebugPrintToAllEx("Fire was put out");
-	}
 	return Plugin_Continue;
-}*/
-
-/**
- * Called when the block use timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @param client		Client index.
- * @noreturn
- */
-public Action:_GT_BlockUse_Timer(Handle:timer, any:client)
-{
-	g_bBlockUse[client] = false;
-	g_hBlockUse_Timer[client] = INVALID_HANDLE;
-}
-
-/**
- * Called when the player incap timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-public Action:_GT_PlayerIncap_Timer(Handle:timer, any:client)
-{
-	if(IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR)
-	{
-		SetEntProp(client, Prop_Send, "m_isIncapacitated", 1);	// Incap survivor
-		SetEntityHealth(client, INCAP_HEALTH);					// Reset health
-	}
 }
 
 // **********************************************

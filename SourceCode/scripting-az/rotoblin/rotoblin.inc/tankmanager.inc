@@ -43,7 +43,6 @@ enum TANK_EVENT_TYPE
 {
 	TANK_SPAWNED,
 	TANK_KILLED,
-	TANK_PASSED
 }
 
 // --------------------
@@ -62,7 +61,6 @@ static					g_iTankClient			= 0;					// Which client is currently playing as tank
 static			bool:	g_bIsTankInPlay			= false;				// Whether or not the tank is active
 static			Handle: g_hFwd_TankSpawn		= INVALID_HANDLE;
 static			Handle: g_hFwd_TankKilled		= INVALID_HANDLE;
-static			Handle: g_hFwd_TankPassed		= INVALID_HANDLE;
 
 static					g_iDebugChannel			= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]	= "TankManager";
@@ -102,9 +100,8 @@ public _H_TM_OnPluginEnabled()
 	HookEvent("round_start", _H_TM_RoundStart_Event);
 	HookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _H_TM_OnClientDisconnect_Post);
 
-	g_hFwd_TankSpawn = CreateForward(ET_Ignore);
-	g_hFwd_TankKilled = CreateForward(ET_Ignore);
-	g_hFwd_TankPassed = CreateForward(ET_Ignore);
+	g_hFwd_TankSpawn = new PrivateForward(ET_Ignore, Param_Cell);
+	g_hFwd_TankKilled = new PrivateForward(ET_Ignore, Param_Cell);
 	DebugPrintToAllEx("Module is now loaded");
 }
 
@@ -127,8 +124,6 @@ public _H_TM_OnPluginDisabled()
 	CloseHandle(g_hFwd_TankSpawn);
 	RemoveAllFromForward(g_hFwd_TankKilled, INVALID_HANDLE);
 	CloseHandle(g_hFwd_TankKilled);
-	RemoveAllFromForward(g_hFwd_TankPassed, INVALID_HANDLE);
-	CloseHandle(g_hFwd_TankPassed);
 	DebugPrintToAllEx("Module is now unloaded");
 }
 
@@ -179,15 +174,13 @@ public _H_TM_TankSpawn_Event(Handle:event, const String:name[], bool:dontBroadca
 	{
 		DebugPrintToAllEx("Tank spawned, updated tank client var. Client %i: \"%N\"", client, client);
 
-		Call_StartForward(g_hFwd_TankPassed); // Forward passed event
-		Call_Finish();
-
 		return; // If tank is already in play (passed to another player), return
 	}
 	DebugPrintToAllEx("Tank spawned, tank is now in play. Client %i: \"%N\"", client, client);
 	g_bIsTankInPlay = true;
 
 	Call_StartForward(g_hFwd_TankSpawn); // Forward event
+	Call_PushCell(client); // Forward event
 	Call_Finish();
 }
 
@@ -220,12 +213,8 @@ public _H_TM_TankKilled_Event(Handle:event, const String:name[], bool:dontBroadc
 
 /**
  * Called when the tank killed timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @param oldtankclient	The client that was playing as tank before.
- * @noreturn
  */
-public Action:_H_TM_TankKilled_Timer(Handle:timer, any:oldtankclient)
+Action _H_TM_TankKilled_Timer(Handle timer, int oldtankclient)
 {
 	if (g_iTankClient != oldtankclient) return; // If the tank client var have been changed (tank have been passed), return
 
@@ -235,15 +224,13 @@ public Action:_H_TM_TankKilled_Timer(Handle:timer, any:oldtankclient)
 		g_iTankClient = tankclient; // Set tank client
 		DebugPrintToAllEx("Found new tank client. Client %i: \"%N\"", tankclient, tankclient);
 
-		Call_StartForward(g_hFwd_TankPassed); // Forward passed event
-		Call_Finish();
-
 		return; // Found tank, return
 	}
 
 	DebugPrintToAllEx("Tank was killed and is no longer in play. Forward event");
 	g_bIsTankInPlay = false; // No tank in play
 	Call_StartForward(g_hFwd_TankKilled); // Forward tank killed event
+	Call_PushCell(oldtankclient); // Forward tank killed event
 	Call_Finish();
 }
 
@@ -337,7 +324,6 @@ stock bool:HookTankEvent(const TANK_EVENT_TYPE:type, const Function:func)
 	decl Handle:Fwd;
 	if (type == TANK_SPAWNED) Fwd = g_hFwd_TankSpawn;
 	else if (type == TANK_KILLED) Fwd = g_hFwd_TankKilled;
-	else if (type == TANK_PASSED) Fwd = g_hFwd_TankPassed;
 	else return false; // Invalid selection
 
 	return AddToForward(Fwd, INVALID_HANDLE, func);
@@ -355,7 +341,6 @@ stock bool:UnhookTankEvent(const TANK_EVENT_TYPE:type, const Function:func)
 	decl Handle:Fwd;
 	if (type == TANK_SPAWNED) Fwd = g_hFwd_TankSpawn;
 	else if (type == TANK_KILLED) Fwd = g_hFwd_TankKilled;
-	else if (type == TANK_PASSED) Fwd = g_hFwd_TankPassed;
 	else return false; // Invalid selection
 
 	return RemoveFromForward(Fwd, INVALID_HANDLE, func);

@@ -96,7 +96,7 @@ public void OnPluginStart()
 
 	g_hCvarGhostWarpDelay = CreateConVar( \
 		"l4d_ghost_warp_delay", \
-		"0.35", \
+		"0.45", \
 		"After how many seconds can ghost warp be reused. 0.0 - delay disabled (maximum delay 120 seconds).", \
 		_, true, 0.0, true, 120.0
 	);
