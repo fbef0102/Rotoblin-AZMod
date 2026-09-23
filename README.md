@@ -1,7 +1,7 @@
 # Rotoblin-AZMod
 v8.6.4
 <br/>Developer @ 2017-2026 [Harry](http://steamcommunity.com/profiles/76561198026784913)
-<br/><img src="https://i.imgur.com/FGkLDMp.png">
+<br/>![Roto_AZ](image/Roto_AZ.jpg)
 - [Navigation](#rotoblin-azmod)
     - [Server Install | 如何安裝](#server-install)
     - [Server Anti Cheat | 反作弊插件](#server-anti-cheat)
@@ -24,7 +24,7 @@ v8.6.4
 **LINUX/WINDOWS SERVERS WORK**
 * This repository only supports Sourcemod 1.12 and up.
 
-A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](http://imgur.com/a/8Ptck)、L4D2 [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, increase max damage pounce, more Tank hp and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
+A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release](image/Acemod_V4_Changelog.jpg)、L4D2 [Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework)、L4D1 [rotoblin2](https://github.com/raziEiL/rotoblin2). Roto-AZMod's focus is not only to make setting things up a lot easier for Server but also to make more difficult challenges and add some features such as Uzi more powerful, Hunting Rifle avaible, increase max damage pounce, more Tank hp and more map changes. The whole environment is similar to l4d2, but don't worry, the core is still around l4d1 gameplay.
 
 - - - -	
 ### If you appreciate my work, please [PayPal Donate](https://paypal.me/Harry0215?locale.x=zh_TW) me.
@@ -147,9 +147,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   
 * Skeet Practice
   * [l4d1 Multi Hunters](https://steamcommunity.com/groups/ibserver#announcements/detail/2924417816908996494)
-  <br/><img src="https://i.imgur.com/ycHlIRZ.jpg">
+  <br/>![Multi_Hunters_mode](image/Multi_Hunters_mode.jpg)
   * [l4d1 Witch Party](https://steamcommunity.com/groups/ibserver#announcements/detail/1720837068961859143)  
-  <br/><img src="https://i.imgur.com/72oUS2W.jpg">
+  <br/>![Witch_Party_mode](image/Witch_Party_mode.jpg)
 
   > **Developer Comment:** Add glow effect to items in "Skeet Practice" mode, which helps players quickly get familiar with the maps
   > * Survivor can see pills、kits、weapons、ammo
@@ -157,7 +157,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 
 * Special
   * Dark Coop (A super difficult, dark, and challenging gamemode, there are many cool things you will nerver see in realism game)
-  <br/><img src="https://i.imgur.com/IMVp3NI.jpg">
+  <br/>![Dark_Coop_mode](image/Dark_Coop_mode.jpg)
       
 - - - -
 ### Votes Menu ###
@@ -174,13 +174,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
    
 - - - -
 ### Map Changes ###
-<br/><img src="https://i.imgur.com/JDlwzs7.jpg">
-<br/><img src="https://i.imgur.com/cgkKT9S.jpg">
-<br/><img src="https://i.imgur.com/h4I6s9c.jpg">
-<br/><img src="https://i.imgur.com/nQlwMhT.jpg">
-<br/><img src="https://i.imgur.com/mCW8LHK.jpg">
-<br/><img src="https://i.imgur.com/4B5MaSD.jpg">
-<br/><img src="https://i.imgur.com/gTvOcdd.jpg">
+<br/>![Map_Changes_01](image/Map_Changes_01.jpg)
+<br/>![Map_Changes_02](image/Map_Changes_02.jpg)
+<br/>![Map_Changes_03](image/Map_Changes_03.jpg)
+<br/>![Map_Changes_04](image/Map_Changes_04.jpg)
+<br/>![Map_Changes_05](image/Map_Changes_05.jpg)
+<br/>![Map_Changes_06](image/Map_Changes_06.jpg)
+<br/>![Map_Changes_07](image/Map_Changes_07.jpg)
+
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
   * Remove miniguns and machine guns
@@ -242,6 +243,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Limit: None
   * FF Protect Range: 37
   * FF DMG: 1~10
+  * Static shotgun spread replaces the random pellet spread. [Image for comparison](image/l4d2_static_shotgun_spread.jpg)
 
 * **Pistol**
   * Reload Time: Unchanged
@@ -266,7 +268,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Hunter dmg: Chest 90->130, Stomach 112.5->130
   * Limit: 1
   * FF Protect Range: 25
-  > **Developer Comment:** As we've noticed in L4D1, the Uzis were completely nothing and shotguns were taking over everything. In the release of Roto-AZMod, I want to make the Uzi more attractiv, which result into the Uzi having more advantages. And there can be a sniper in a team, this Hunting Rifle is nerfed a lot as you can see rate of fire is very slow. Peope can choose thier desired weapons. Each performs one's own best part in a team.
+  > **Developer Comment:** As we've noticed in L4D1, the Uzis were completely nothing and shotguns were taking over everything. In the release of Roto-AZMod, I want to make the Uzi more attractive, which result into the Uzi having more advantages. And there can be a sniper in a team, this Hunting Rifle is nerfed a lot as you can see rate of fire is very slow. Peope can choose thier desired weapons. Each performs one's own best part in a team.
 
 - - - -
 ### Score Calculation(!health/!bonus) ###
@@ -416,9 +418,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops rocks from passing through soon-to-be-dead Survivors
     * Tanks speed: 210 (survivors speed: 220, vanilla: 210)
     * When a Tank throws a rock, it adds a Glow to the rock which all infected players can see
-    <br/><img src="https://i.imgur.com/H6gFGOf.jpg">
+    <br/>![tank_rock_glow](image/tank_rock_glow.jpg)
     * When a Tank punches a Hittable it adds a Glow to the hittable which all infected players and spectators can see
-    <br/><img src="https://i.imgur.com/jtIWewR.jpg">
+    <br/>![tank_hittable_glow](image/tank_hittable_glow.jpg)
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
     * Players cannot shove tanks.
@@ -463,6 +465,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Sends Survivors flying on the incapping punch
 
   * **Witch:**
+    * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
+      * Removed because shotgun spread is now static
     * Announce in chat when a Which has spawned
     * Damage dealt to witch is announced after witch dies, or when the witch successfully scratches a player.
     * Enlarge witch personal space: 500 (vanilla: 100)
@@ -470,7 +474,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Rate at which Witches become agitated: 0.35 (vanilla: 0.2)
     * ~~Witch is restored at the same spot if she gets killed by a Tank before someone startles her~~
     * Glow for Infected Team. Credit: [rahzel ‧ JNC](https://forums.alliedmods.net/showthread.php?t=316965)
-	  <br/><img src="https://i.imgur.com/RKAuCjY.jpg">
+    <br/>![witch_glow](image/witch_glow.jpg)
     * Instantly incapacitate Survivors
     * Allows witches to chase victims into safezones.
     * Prevents the witch from randomly loosing target if survivors standind on "god" spot or out of the map
@@ -534,8 +538,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
     * Fixes boomer teleport whenever hes close enough to ladder
     * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
-    * Boomer's vomit is now able to pass through fence and barricade
-    <br/><img src="https://i.imgur.com/MV6azfX.gif">
+    * Boomer's vomit is now able to pass through some fences and barricades
+    <br/>![Boomer_vomit_pass_fence](image/Boomer_vomit_pass_fence.gif)
     * Boomer's exploding can trigger alarm car and startle witch
 	  
   * **Charger/Spitter/Jockey:**
@@ -664,7 +668,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Shows a laser for straight-flying fired projectiles during ready up.
 * Free movement after round ends.
 * Allows changing of displayed game type in server browser
-<br/><img src="https://i.imgur.com/hbJd1Hs.png">
+<br/>![displayed_name_type](image/displayed_name_type.jpg)
 
 - - - -
 ### Roto-AZ l4d2onl4d1 ###
@@ -679,17 +683,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   7. **C13 - Cold Stream**
   8. **C14 - The Last Stand (New)**
 
-  <br/><img src="https://i.imgur.com/utcIlA8.png">
-  <br/><img src="https://i.imgur.com/OXWBfsg.jpg">
-  <br/><img src="https://i.imgur.com/cSsbd2o.jpg">
-  <br/><img src="https://i.imgur.com/TDPqp4i.jpg">
-  <br/><img src="https://i.imgur.com/Iv7Ns0E.jpg">
-  <br/><img src="https://i.imgur.com/BpH0wDk.jpg">
-  <br/><img src="https://i.imgur.com/XKjIfTF.jpg">
+  <br/>![l4d2onl4d1maps_01](image/l4d2onl4d1maps_01.jpg)
+  <br/>![l4d2onl4d1maps_02](image/l4d2onl4d1maps_02.jpg)
+  <br/>![l4d2onl4d1maps_03](image/l4d2onl4d1maps_03.jpg)
+  <br/>![l4d2onl4d1maps_04](image/l4d2onl4d1maps_04.jpg)
+  <br/>![l4d2onl4d1maps_05](image/l4d2onl4d1maps_05.jpg)
+  <br/>![l4d2onl4d1maps_06](image/l4d2onl4d1maps_06.jpg)
+  <br/>![l4d2onl4d1maps_07](image/l4d2onl4d1maps_07.jpg)
 
 * <details><summary><b>L4D2 Map Modify</b></summary>
 
-  <img src="https://user-images.githubusercontent.com/12229810/216926016-b46037ac-576e-47f8-98b9-7dfec4af94de.png">
+  <br/>![L4D2_Map_Modify](image/L4D2_Map_Modify.jpg)
 
   * Add models, materials, objects, infected ladders, invisible blocks in 2019 L4D2 The Last Stand update. ([mapfixes](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_mapfixes.nut), [versus](https://github.com/jacob404/Official-Vscripts-Decompiled/blob/master/update/anv_versus.nut))
   * Add ammo, weapons, and objects, infected ladders, invisible blocks (Based on [L4D2-Comp-Stripper-Rework by Derpduck](https://github.com/Derpduck/L4D2-Comp-Stripper-Rework))
@@ -722,6 +726,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Others ###
 * <b>[Our Group](https://steamcommunity.com/groups/ibserver)</b>
-* <b>[L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)</b>: L4D1/2 enhancement, bug/glitch fixes, freaky-fun, and useful plugins.
+* <b>[Sourcemod-Plugins](https://github.com/fbef0102/Sourcemod-Plugins)</b>
+* <b>[L4D1_2-Plugins](https://github.com/fbef0102/L4D1_2-Plugins)</b>
 * <b>[Game-Private_Plugin](https://github.com/fbef0102/Game-Private_Plugin)</b>: Private Plugin List.
 
