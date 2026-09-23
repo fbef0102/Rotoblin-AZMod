@@ -515,7 +515,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Allow Hunters being shoved when not pouncing. (Shove fov: **70**)
     * Forces silent but crouched hunters to emitt sounds. ([video](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=48s))
     * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
-    * M2 godframes after a hunter lands on the ground: 0.25s
+    * M2 godframes after a hunter lands on the ground: 0.75s
     * Make hunter skeets more consistent across different pings.
 	
   * **Boomer:**
