@@ -66,7 +66,7 @@ static const MAX_EXISTING_FATIGUE					= 3;
 
 static const Float:MELEE_DURATION					= 0.6;
 
-static bool:soundHookDelay[MAXPLAYERS+1] 			= {false};
+static bool:soundHookDelay[MAXPLAYERS+1] 			= {false, ...};
 
 static			g_iDebugChannel						= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]	= "MeleeFatigue";

@@ -69,7 +69,9 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if(IsInReady()) return;
-	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
+
+	int victimid = GetEventInt(event, "userid");
+	new victim = GetClientOfUserId(victimid);
 	if ( victim == 0 || !IsClientConnected(victim)||!IsClientInGame(victim)) return;
 	
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
@@ -91,7 +93,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 		else if (StrEqual(weapon,"infected")) //普通感染者抓死
 			return;
 		else
-			CreateTimer(1.0,Timer_CheckPunch,victim);
+			CreateTimer(1.0, Timer_CheckPunch, victimid);
 	}	
 	
 	if (attacker == 0 ||!IsClientConnected(attacker) || !IsClientInGame(attacker) ) return;
@@ -108,9 +110,10 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	}	
 }
 
-public Action: Timer_CheckPunch(Handle:hTimer, any:client)
+Action Timer_CheckPunch(Handle hTimer, int client)
 {
-	if(!IsClientConnected(client)||!IsClientInGame(client)) return;
+	client = GetClientOfUserId(client);
+	if(!client ||!IsClientInGame(client)) return Plugin_Continue;
 	
 	decl String:clientName[128];
 	GetClientName(client,clientName,128);
@@ -118,23 +121,28 @@ public Action: Timer_CheckPunch(Handle:hTimer, any:client)
 		CPrintToChatAll("{green}[TS] %t","Tank Punch survivor fly away and die",clientName);
 	else if(!IsFakeClient(client))
 		CPrintToChatAll("{green}[TS] {olive}%N{default} : %t",client,"Survivor suicides");
+
+	return Plugin_Continue;
+	
 }
 
 public Action:Event_HurtConcise(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if(IsInReady()) return;
 	
-	new attacker = GetEventInt(event, "attackerentid");
-	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
+	int attacker = GetEventInt(event, "attackerentid");
+	int victimid = GetEventInt(event, "userid");
+	int victim = GetClientOfUserId(victimid);
 	if(attacker ==0 && IsClientConnected(victim) && IsClientInGame(victim) && GetClientTeam(victim) == 2)
 	{
 		if(GetEntProp(victim, Prop_Send, "m_isHangingFromLedge"))
 		{
 			return;
 		}
+
 		if(IsIncapacitated(victim)) 
 		{
-			CreateTimer(1.0,COLD_DOWN,victim);
+			CreateTimer(0.1, COLD_DOWN, victimid);
 		}
 	}
 	
@@ -200,16 +208,20 @@ public void Event_IncapacitatedStart(Event event, const char[] name, bool dontBr
 	}
 }
 
-public Action:COLD_DOWN(Handle:timer,any:victim)
+Action COLD_DOWN(Handle timer, int victim)
 {
-	if(!IsClientConnected(victim)||!IsClientInGame(victim)) return;
+	victim = GetClientOfUserId(victim);
+	if(!victim || !IsClientInGame(victim)) return Plugin_Continue;
+
 	if(IsPlayerAlive(victim) && IsIncapacitated(victim)) 
 	{
 		ClientHasDown[victim] = true;
 	}
+
+	return Plugin_Continue;
 }
 
-public Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not friendly fire recently, and announces all FF they did
+Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not friendly fire recently, and announces all FF they did
 {
 	decl String:victim[128];
 	decl String:attacker[128];
@@ -271,11 +283,7 @@ public Event_revive_success(Handle:event, const String:name[], bool:dontBroadcas
 	new subject = GetClientOfUserId(GetEventInt(event, "subject"));//被救的那位
 	if (subject<=0||!IsClientAndInGame(subject)) { return; } //just in case
 	
-	if (GetEventBool(event,"ledge_hang"))
-	{
-		ClientGrabLedge[subject] = false;
-		return;
-	}
+	ClientGrabLedge[subject] = false;
 	ClientHasDown[subject] = false;
 }
 
@@ -311,7 +319,7 @@ public Action:OnPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcas
 	if(IsInReady()) return;
 	
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(IsClientIndex(client)&&IsClientConnected(client)&&IsClientInGame(client)&&GetClientTeam(client)==2)
+	if(IsClientIndex(client)&&IsClientInGame(client)&&GetClientTeam(client)==2)
 	{
 		ClientGrabLedge[client] = false;
 		ClientHasDown[client] = false;

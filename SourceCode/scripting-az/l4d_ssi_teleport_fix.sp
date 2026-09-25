@@ -33,8 +33,8 @@ float g_minRange;
 float g_maxRange;
 float g_DiscardRange;
 int g_iSsitpLimit;
-int sitele2[MAXPLAYERS + 1] = {-1};
-int si2tele[MAXPLAYERS + 1] = {-1};
+int sitele2[MAXPLAYERS + 1] = {-1, ...};
+int si2tele[MAXPLAYERS + 1] = {-1, ...};
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {

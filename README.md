@@ -80,6 +80,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * CustomMapVote: -left4dead/addons/sourcemod/configs/VoteCustomCampaigns.txt
   * Save player chat (and team chat) to a file: -left4dead/addons/sourcemod/logs/chat/
   * Control Map Info: -left4dead/addons/sourcemod/data/mapinfo.txt
+    * Tank spawn flow, Witch spawn flow, Pills spawn limit, etc.
   * Rcon passeword、rates、maxplayers、tags、group: -left4dead/cfg/server.cfg、server_rates.cfg、server_startup.cfg
   * [Translations](/Developer%26Commands/Translation%20Language.txt): -left4dead/addons/sourcemod/translations/Roto2-AZ_mod.phrases.txt
   * If you have a prefered edition of a Plugin, you are able to simply replace the file in sourcemod/plugins folder.
@@ -96,7 +97,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Block name change announcement
     * Block server convars change announcement
     * Block chat with '!' or '/'
-  * l4d_versus_specListener3.0.smx comes with a "Spec-Listening Feature", even if sv_alltalk 0, spectators can still see in-game players teamchat and hear their mic voice. To close this feature, use ```sm_hear```.
+  * l4d_versus_specListener.smx comes with a "Spec-Listening Feature", even if sv_alltalk 0, spectators can still see in-game players teamchat and hear their mic voice. To close this feature, use ```sm_hear```.
   * TickRateFixes now also fixes Slow Doors and Pistol Scripts, useful for use with other configs.
     * Make sure you're not loading l4dpistoldelay if you're using this Plugin.
     * Make sure you don't have any adjustments to prop_rotating and prop_rotating_checkpoint speeds in your cfg/stripper folder.
@@ -189,10 +190,10 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Limit 2 pill in cabinets, but the pill is not fixed spawn
     * Final rescue area: 4 pills
     * On the road: Spawn varying numbers of pills depending on the route length of the map
+    * Remove pill spawns in bad locations or excessive density in a location 
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
-  * Remove item spawns in bad locations or excessive density in a location
   
 * **Nav Remake:**
   * No Mercy Map 1~5
@@ -372,13 +373,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * When a spawned Infected Player disconnects or becomes Tank the AI SI will instantly get killed unless it has someone capped.
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
-    * Allows ghost infected to warp to survivors, Command: ```sm_warpto [#|name]``` or MOUSE2 (```sm_warpm2off``` to disable, say ```sm_warpm2on``` to enable)
-      - *1*: **Francis**
-      - *2*: **Bill**
-      - *3*: **Zoey**
-      - *4*: **Louis**
+    * Allows ghost infected to warp to survivors
+      * Command: ```sm_warpto [#|name]```
+        - *1*: **Francis**
+        - *2*: **Bill**
+        - *3*: **Zoey**
+        - *4*: **Louis**
+      * Buttons: MOUSE2
+        - Disabled by default, ```sm_warpm2``` to enable it individually
     * No gunfire slowdown and shove slowdown
-    * Can't spawn in saferoom or any "this is restricted area" rooms (one of l4d1 original feature)
+    * ~~Can't spawn in any "this is restricted area" rooms (one of l4d1 original feature)~~
+      * Fixed
     * Allow duck fastspeed exploit when infected ghost state (one of l4d1 original feature)
 	* Allow water bhop and swim (one of l4d1 original feature)
     * Special infected cannot damage each other.(but still move back) The tank can kill other special infected.
@@ -401,7 +406,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 	* Fix SI being unable to break props/walls within finale area before finale starts.
 	* No more explosion damage to the infected from entity
 	* Fixed infected unable to break the rescue door
-	* remove restricted area where infected ghost unable to spawn inside the info_survivor_rescue room/area
+	* Remove restricted area where infected ghost unable to spawn inside the info_survivor_rescue room/area
 	* Blocks smoekr, boomer, hunter bacteria sounds.
 	* Fix SI getting **shoved by nothing**.
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
@@ -452,7 +457,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Fixed an issue where tank rock is harder to land on survivors in saferoom area.
     * Disables the Car Alarm when a Tank hittable hits the alarmed car.
     * Make AI Tank be more stupid, think twice if you wanna pass tank to AI.
-    * Tank burn life time: 125s (vanilla: **75**)
+    * Tank burn life time: 150s (vanilla: **75**)
     * Ghost Tank freezes and being immune to fire for a while.
     * Fix frozen tanks, force tank player suicide when playing death animation.
     * Fix punch get-up varying in length, along with flexible setting to it.
@@ -582,7 +587,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Allow ladder speed glitch(keyboard shortcuts AS,AW,DS,DW depends on your view.), but can't shoot when climb on the ladder
   * Survivor who is Incapacitated will not hurt other teammate with pistol
   * Survivor players will drop their secondary weapon when they die
-  * Fixed if one of survivors didn't leave out saferoom completely, infected players can use endless instant spawn. (one of l4d1 original feature)
+  * ~~If one of survivors didn't leave out saferoom completely, infected players can use endless instant spawn. (one of l4d1 original feature)~~
+    * Fixed
   * While selected, pills can be passed with +reload to avoid accidental drops and canceling reload animations.
   * Survivors now get fatigued after **2** Shoves. (vanilla: **5**)
   * Stops Survivors from saying 'Hunter!'

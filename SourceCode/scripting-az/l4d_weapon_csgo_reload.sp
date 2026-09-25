@@ -68,7 +68,7 @@ float g_PistolTimeCvar;
 float g_DualPistolTimeCvar;
 
 float 
-	g_hClientReload_Time[MAXPLAYERS+1]	= {0.0};	
+	g_hClientReload_Time[MAXPLAYERS+1]	= {0.0, ...};	
 
 int
 	g_iOffsetActive,

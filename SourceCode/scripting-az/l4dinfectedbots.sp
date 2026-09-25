@@ -109,8 +109,8 @@ bool hudDisabled[MAXPLAYERS+1];				// Stores the client preference for whether H
 static clientGreeted[MAXPLAYERS+1]; 			// Stores whether or not client has been shown the mod commands/announce
 static zombieHP[7];					// Stores special infected max HP
 static Handle:cvarZombieHP[7];				// Array of handles to the 4 cvars we have to hook to monitor HP changes
-static bool:isTankOnFire[MAXPLAYERS+1]		= {false}; 		// Used to store whether tank is on fire
-static burningTankTimeLeft[MAXPLAYERS+1]		= {0}; 			// Stores number of seconds Tank has left before he dies
+static bool:isTankOnFire[MAXPLAYERS+1]		= {false, ...}; 		// Used to store whether tank is on fire
+static burningTankTimeLeft[MAXPLAYERS+1]		= {0, ...}; 			// Stores number of seconds Tank has left before he dies
 static bool:roundInProgress 		= false;		// Flag that marks whether or not a round is currently in progress
 static Handle:infHUDTimer 		= INVALID_HANDLE;	// The main HUD refresh timer
 static Handle:respawnTimer 	= INVALID_HANDLE;	// Respawn countdown timer

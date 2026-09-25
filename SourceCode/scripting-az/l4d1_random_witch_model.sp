@@ -154,14 +154,14 @@ public void OnMapStart()
 
 	if (hMIData.JumpToKey("default")) 
 	{
-		g_bValidMap = view_as<bool>(hMIData.GetNum("BridgeWitch_map", g_bValidMap));
+		g_bValidMap = view_as<bool>(hMIData.GetNum("BrideWitch_map", g_bValidMap));
 
 		hMIData.GoBack();
 	}
 
 	if (hMIData.JumpToKey(sMap)) 
 	{
-		g_bValidMap = view_as<bool>(hMIData.GetNum("BridgeWitch_map", g_bValidMap));
+		g_bValidMap = view_as<bool>(hMIData.GetNum("BrideWitch_map", g_bValidMap));
 
 		hMIData.GoBack();
 	}

@@ -50,7 +50,7 @@ static	const	Float:	MIN_COMMON_LIFETIME					= 3.0; //15
 static 	const	Float:	NEAR_SAFEROOM_DISTANCE				= 800.0; //1000
 
 static			Handle:	g_hCommonTimer						= INVALID_HANDLE;
-static			Float:	g_fCommonLifetime[MAX_EDICTS+1]		= {0.0};
+static			Float:	g_fCommonLifetime[MAX_EDICTS+1]		= {0.0, ...};
 static					g_iCommonSpawnQueue					= 0;
 static			Float:	g_fLastLowestSurvivorFlow			= 0.0;
 

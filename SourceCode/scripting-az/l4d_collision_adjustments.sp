@@ -47,7 +47,7 @@ ConVar g_hCvarRockFix, g_hCvarPullThrough, g_hCvarRockThroughIncap ,g_hCvarCommo
 	g_hCvarClientPushPipeBombFix;
 bool g_bCvarRockFix,g_bCvarPullThrough,g_bCvarRockThroughIncap,g_bCvarCommonThroughWitch, g_bCvarHunterThroughInacp, g_bCvarSIThroughWitch,
 	g_bCvarClientPushPipeBombFix;
-bool g_bPulled[MAXPLAYERS + 1] = {false};
+bool g_bPulled[MAXPLAYERS + 1] = {false, ...};
 float g_fPouncingStartTime[MAXPLAYERS+1];
 
 

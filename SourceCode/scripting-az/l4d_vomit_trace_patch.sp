@@ -1,3 +1,6 @@
+// 1. Fix Boomer's vomit being unable to pass through their teammates (ghosts as well) some fences.
+// 2. Boomer's vomit is now able to pass through some fences and barricades
+
 #pragma semicolon 1
 #pragma newdecls required
 

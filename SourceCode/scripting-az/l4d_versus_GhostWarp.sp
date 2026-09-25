@@ -46,7 +46,17 @@ ConVar
 	g_hCvarGhostWarpDelay = null,
 	g_hCvarGhostWarpFlag = null;
 
-bool DisableGhostM2Teleport[MAXPLAYERS+1];
+int 
+	g_iCvarSurvivorLimit;
+
+bool
+	g_bCvarGhostWarpFlagAllowCommand,
+	g_bCvarGhostWarpFlagAllowButton;
+
+float 
+	g_fCvarGhostWarpDelay;
+
+bool g_bEnableGhostM2Warp[MAXPLAYERS+1];
 int g_iSurvivorIndex[MAXPLAYERS+1], g_iSurvivorCount;
 
 enum
@@ -102,6 +112,10 @@ public void OnPluginStart()
 	);
 
 	g_hCvarSurvivorLimit = FindConVar("survivor_limit");
+	GetCvars();
+	g_hCvarGhostWarpFlag.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarGhostWarpDelay.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarSurvivorLimit.AddChangeHook(ConVarChanged_Cvars);
 
 	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 	HookEvent("player_disconnect", 	Event_PlayerDisconnect);
@@ -113,8 +127,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_warpto", Cmd_WarpToSurvivor);
 	RegConsoleCmd("sm_warp", Cmd_WarpToSurvivor);
 
-	RegConsoleCmd("sm_warpm2on",	Enable_Cmd, "Enable the ghost m2 teleport");
-	RegConsoleCmd("sm_warpm2off",	Disable_Cmd, "Disable the ghost m2 teleport");
+	RegConsoleCmd("sm_warpm2",	sm_warpm2, "Enable/Disable warp via button 'IN_ATTACK2' individually, this feature is not affected by cvar");
 }
 
 void InitTrie()
@@ -127,93 +140,54 @@ void InitTrie()
 	g_hNameToCharIDTrie.SetValue("francis", L4DNameId_Biker);
 }
 
-public Action Disable_Cmd(int client, int args)
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
 {
-	if(client == 0) return Plugin_Handled;
-
-	if(GetClientTeam(client) != L4D_TEAM_INFECTED) return Plugin_Handled;
-
-	DisableGhostM2Teleport[client] = true;
-
-	CPrintToChat(client, "[{olive}TS{default}] Ghost M2 Teleport {green}Disabled.");
-
-	return Plugin_Handled;
+	GetCvars();
 }
 
-public Action Enable_Cmd(int client, int args)
+void GetCvars()
 {
-	if(client == 0) return Plugin_Handled;
+	g_bCvarGhostWarpFlagAllowCommand = (g_hCvarGhostWarpFlag.IntValue & eAllowCommand) > 0;
+	g_bCvarGhostWarpFlagAllowButton = (g_hCvarGhostWarpFlag.IntValue & eAllowButton) > 0;
 
-	if(GetClientTeam(client) != L4D_TEAM_INFECTED) return Plugin_Handled;
-
-	DisableGhostM2Teleport[client] = false;
-
-	CPrintToChat(client, "[{olive}TS{default}] Ghost M2 Teleport {green}Enabled.");
-
-	return Plugin_Handled;
+	g_fCvarGhostWarpDelay = g_hCvarGhostWarpDelay.FloatValue;
+	g_iCvarSurvivorLimit = g_hCvarSurvivorLimit.IntValue;
 }
 
-public void Event_PlayerTeamChange(Event event, const char[] name, bool dontBroadcast)//有人跳隊到則reset
+Action sm_warpm2(int client, int args)
 {
-	if(event.GetInt("oldteam") == L4D_TEAM_SURVIVOR || event.GetInt("team") == L4D_TEAM_SURVIVOR) //從survivor隊伍跳隊 或 跳隊到sur
-		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
-}
-
-public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	if(client && IsClientInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR) 
-		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
-}
-
-public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	if(client && IsClientInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR) 
-		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
-}
-
-
-public Action PlayerChangeTeamCheck(Handle timer)
-{
-	RebuildIndex();
-
-	return Plugin_Continue;
-}
-
-public void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	DisableGhostM2Teleport[client] = false;
-}
-
-public void Event_RoundStart(Event hEvent, const char[] sEventName, bool bDontBroadcast)
-{
-	// GetGameTime (gpGlobals->curtime) starts from scratch every map.
-	// Let's clean this up
-
-	for (int iClient = 1; iClient <= MaxClients; iClient++) {
-		g_iLastTargetSurvivor[iClient] = 0;
-		g_fGhostWarpDelay[iClient] = 0.0;
+	if (client == 0)
+	{
+		PrintToServer("[TS] This command cannot be used by server.");
+		return Plugin_Handled;
 	}
 
-	RebuildIndex();
+	if(!IsClientInGame(client) || IsFakeClient(client)) return Plugin_Continue;
+
+	//if(GetClientTeam(client) != L4D_TEAM_INFECTED) return Plugin_Handled;
+
+	if(g_bEnableGhostM2Warp[client])
+	{
+		g_bEnableGhostM2Warp[client] = false;
+		CPrintToChat(client, "[{olive}TS{default}] Ghost Infected M2 Warp {green}Disabled.");
+	}
+	else
+	{
+		g_bEnableGhostM2Warp[client] = true;
+		CPrintToChat(client, "[{olive}TS{default}] Ghost Infected M2 Warp {green}Enabled.");
+	}
+
+	return Plugin_Handled;
 }
 
-public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
-{
-	RebuildIndex();
-}
-
-public Action Cmd_WarpToSurvivor(int iClient, int iArgs)
+Action Cmd_WarpToSurvivor(int iClient, int iArgs)
 {
 	if (iClient == 0) {
 		ReplyToCommand(iClient, "%s This command is not available for the server!", PLUGIN_TAG);
 		return Plugin_Handled;
 	}
 
-	if (!(g_hCvarGhostWarpFlag.IntValue & eAllowCommand)) {
+	if (g_bCvarGhostWarpFlagAllowCommand == false) {
 		PrintToChat(iClient, "%s This command is \x04disabled\x01 now.", PLUGIN_TAG_COLOR);
 		return Plugin_Handled;
 	}
@@ -245,7 +219,7 @@ public Action Cmd_WarpToSurvivor(int iClient, int iArgs)
 	if (IsStringNumeric(sBuffer, sizeof(sBuffer))) {
 		int iSurvivorFlowRank = StringToInt(sBuffer);
 
-		if (iSurvivorFlowRank > 0 && iSurvivorFlowRank <= g_hCvarSurvivorLimit.IntValue) {
+		if (iSurvivorFlowRank > 0 && iSurvivorFlowRank <= g_iCvarSurvivorLimit) {
 			int iSurvivorIndex = GetSurvivorOfFlowRank(iSurvivorFlowRank);
 
 			if (iSurvivorIndex == 0) {
@@ -265,7 +239,7 @@ public Action Cmd_WarpToSurvivor(int iClient, int iArgs)
 		GetCmdArg(0, sCmdName, sizeof(sCmdName));
 
 		PrintToChat(iClient, "%s You entered an \x04invalid\x01 alive survivor index!", PLUGIN_TAG_COLOR);
-		PrintToChat(iClient, "%s Usage: \x04%s\x01 <1 - %d> - %T", PLUGIN_TAG_COLOR, sCmdName, g_hCvarSurvivorLimit.IntValue, "l4d_versus_GhostWarp", iClient);
+		PrintToChat(iClient, "%s Usage: \x04%s\x01 <1 - %d> - %T", PLUGIN_TAG_COLOR, sCmdName, g_iCvarSurvivorLimit, "l4d_versus_GhostWarp", iClient);
 
 		return Plugin_Handled;
 	}
@@ -303,26 +277,74 @@ public Action Cmd_WarpToSurvivor(int iClient, int iArgs)
 	return Plugin_Handled;
 }
 
+void Event_PlayerTeamChange(Event event, const char[] name, bool dontBroadcast)//有人跳隊到則reset
+{
+	if(event.GetInt("oldteam") == L4D_TEAM_SURVIVOR || event.GetInt("team") == L4D_TEAM_SURVIVOR) //從survivor隊伍跳隊 或 跳隊到sur
+		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
+}
+
+void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(client && IsClientInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR) 
+		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
+}
+
+void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(client && IsClientInGame(client) && GetClientTeam(client) == L4D_TEAM_SURVIVOR) 
+		CreateTimer(0.1, PlayerChangeTeamCheck);//延遲
+}
+
+
+Action PlayerChangeTeamCheck(Handle timer)
+{
+	RebuildIndex();
+
+	return Plugin_Continue;
+}
+
+void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	g_bEnableGhostM2Warp[client] = g_bCvarGhostWarpFlagAllowButton;
+}
+
+void Event_RoundStart(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+	// GetGameTime (gpGlobals->curtime) starts from scratch every map.
+	// Let's clean this up
+
+	for (int iClient = 1; iClient <= MaxClients; iClient++) {
+		g_iLastTargetSurvivor[iClient] = 0;
+		g_fGhostWarpDelay[iClient] = 0.0;
+	}
+
+	RebuildIndex();
+}
+
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
+{
+	RebuildIndex();
+}
+
 public void L4D_OnEnterGhostState(int iClient)
 {
-	if (!(g_hCvarGhostWarpFlag.IntValue & eAllowButton)) {
-		return;
-	}
 
 	g_iLastTargetSurvivor[iClient] = 0;
 	g_fGhostWarpDelay[iClient] = 0.0;
+	
+	if (!g_bEnableGhostM2Warp[iClient] ) return;
 
 	SDKUnhook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 	SDKHook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 }
 
-public void Hook_OnPostThinkPost(int iClient)
+void Hook_OnPostThinkPost(int iClient)
 {
 	int iPressButtons = GetEntProp(iClient, Prop_Data, "m_afButtonPressed");
-
-	if (DisableGhostM2Teleport[iClient]){
-		return;
-	}
 
 	// Key 'IN_RELOAD' was used in plugin 'confoglcompmod', do we need it?
 	if (!(iPressButtons & IN_ATTACK2)/* && !(iPressButtons & IN_RELOAD)*/) {
@@ -383,7 +405,7 @@ void TeleportToSurvivor(int iInfected, int iSurvivor)
 
 	TeleportEntity(iInfected, fPosition, fAnglestarget, NULL_VECTOR);
 
-	g_fGhostWarpDelay[iInfected] = GetGameTime() + g_hCvarGhostWarpDelay.FloatValue;
+	g_fGhostWarpDelay[iInfected] = GetGameTime() + g_fCvarGhostWarpDelay;
 }
 
 int GetClientOfCharID(int characterID, int &iSurvivorCount)
@@ -435,7 +457,7 @@ int GetSurvivorOfFlowRank(int iRank)
 	return strSurvArray.eiSurvivorIndex;
 }
 
-public int sortFunc(int iIndex1, int iIndex2, Handle hArray, Handle hndl)
+int sortFunc(int iIndex1, int iIndex2, Handle hArray, Handle hndl)
 {
 	eSurvFlow strSurvArray1;
 	eSurvFlow strSurvArray2;
@@ -486,7 +508,7 @@ int GetSurvivorOfFlowRank(int iRank)
 	return strSurvArray[eiSurvivorIndex];
 }
 
-public int sortFunc(int iIndex1, int iIndex2, Handle hArray, Handle hndl)
+int sortFunc(int iIndex1, int iIndex2, Handle hArray, Handle hndl)
 {
 	eSurvFlow strSurvArray1[eSurvFlow];
 	eSurvFlow strSurvArray2[eSurvFlow];

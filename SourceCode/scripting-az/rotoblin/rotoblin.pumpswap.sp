@@ -46,9 +46,9 @@ static	const	String:	NETPROP_NEEDPUMP[]					= "m_needPump"; // Net prop for the 
 
 static	const	Float:	PUMPSHOTGUN_COOLDOWN				= 1.0; // How long we will track the weapon fire for
 
-static			bool:	g_bInCooldown[MAXPLAYERS + 1]		= {false}; // In cooddown after weapon fire
-static			bool:	g_bSwapedWeapon[MAXPLAYERS + 1]		= {false}; // If client swaped weapon and back to pumpshotgun
-static			bool:	g_bIsShotgunActive[MAXPLAYERS + 1]	= {false}; // And if the clients current active weapon is the shotgun
+static			bool:	g_bInCooldown[MAXPLAYERS + 1]		= {false, ...}; // In cooddown after weapon fire
+static			bool:	g_bSwapedWeapon[MAXPLAYERS + 1]		= {false, ...}; // If client swaped weapon and back to pumpshotgun
+static			bool:	g_bIsShotgunActive[MAXPLAYERS + 1]	= {false, ...}; // And if the clients current active weapon is the shotgun
 
 /*
  * ==================================================

@@ -1,3 +1,21 @@
+// "VersusModifier" is locked by mission file of each map, can not be modified here
+//
+// "pill_limit" only works when cvar "rotoblin_health_style" is 4	
+//
+// "WaterSlowDown_map": Control survivor speed in the water
+//
+// "WaterCrash_map": The map contains water areas. 
+// When a large number of infected corpses die on the water, it generates multiple ripples, causing players' games to crash. 
+// The reason lies in how players' modern, high-end graphics cards render water ripples in old source engine games, poorly optimized.
+//
+// "GauntletFinale_map": Hittable car does less damage to survivors (for custom maps and l4d2 maps)
+//
+// "WAIT_FOR_FINALE_map": Fixed stupid "WAIT_FOR_FINALE_map" spawn issue when playing infected (usually happen in custom maps and l4d2 maps)
+//
+// "GasCan_map": Give glow to gascans (for l4d2 maps)
+//
+// "BrideWitch_map": Force Witch model to be Witch Bride (for l4d2 maps)
+
 "MapInfo"
 {
 	// apply to all maps by default
@@ -12,12 +30,13 @@
 		"pill_limit" 					"2"
 		"VersusModifier"				"1.0"
 		"WaterSlowDown_map"				"0"
+		"WaterCrash_map"				"0"
 		"tank_map_off"					"0"
 		"witch_map_off"					"0"
 
 		"WAIT_FOR_FINALE_map"			"0"
 		"GasCan_map" 					"0"
-		"BridgeWitch_map"				"0"
+		"BrideWitch_map"				"0"
 	}
 
 	"l4d_vs_hospital01_apartment"
@@ -751,7 +770,7 @@
 		"pill_limit" "1"
 		"VersusModifier"		"1.0"
 		"witch_map_off" "1"
-		"BridgeWitch_map" "1"
+		"BrideWitch_map" "1"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{

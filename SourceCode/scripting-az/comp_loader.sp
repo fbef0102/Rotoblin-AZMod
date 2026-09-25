@@ -365,8 +365,8 @@ void GetCvars()
 
 new String:Team_Names[TEAM_INFECTED + 1][64] = {"", "Spectator", "Survivors", "Infected"}; //array containing teamnames, used in Map_Changer and Config_Changer
 
-new bool:Config_Requests[TEAM_INFECTED + 1] = {false, false};	//creating Config_Requests[Client_Team] and Config_Requests[Opposite_Team] and set them to false
-new bool:Map_Requests[TEAM_INFECTED + 1] = {false, false};		//creating Map_Requests[Client_Team] and Map_Requests[Opposite_Team] and set them to false
+new bool:Config_Requests[TEAM_INFECTED + 1] = {false, ...};	//creating Config_Requests[Client_Team] and Config_Requests[Opposite_Team] and set them to false
+new bool:Map_Requests[TEAM_INFECTED + 1] = {false, ...};		//creating Map_Requests[Client_Team] and Map_Requests[Opposite_Team] and set them to false
 
 //variables and bools controlling the !load and !map timeout and admin cancellation
 new numberOfLoadTimers = 0;

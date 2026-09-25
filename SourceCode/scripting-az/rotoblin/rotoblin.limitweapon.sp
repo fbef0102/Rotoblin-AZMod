@@ -59,7 +59,7 @@ static					g_iLimitPumpShotgun				= 1;
 static					g_iLimitSmg						= 1;
 
 static	const	Float:	TIP_TIMEOUT						= 1.0;
-static			bool:	g_bHaveTipped[MAXPLAYERS + 1] 	= {false};
+static			bool:	g_bHaveTipped[MAXPLAYERS + 1] 	= {false, ...};
 
 /*
  * ==================================================
