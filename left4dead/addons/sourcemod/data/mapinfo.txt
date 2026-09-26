@@ -1,20 +1,34 @@
-// "VersusModifier" is locked by mission file of each map, can not be modified here
 //
-// "pill_limit" only works when cvar "rotoblin_health_style" is 4	
+// "VersusModifier": Level's score multiplier. 
+//	Value is locked by mission file of each map, can not be modified here
 //
-// "WaterSlowDown_map": Control survivor speed in the water
+// "pill_limit": Configure the pill spawn limit on the map
+//	Only works when cvar "rotoblin_health_style" is 4	
 //
-// "WaterCrash_map": The map contains water areas. 
+// "WaterSlowDown_map": The map contains water areas
+// 1. Control survivor speed in the water
+//
+// "WaterCrash_map": The map contains water areas
+//	1. Dissolves the witch, common, survivor or special infected when killed. 
+//	2. Fades common infected/witch/special infected ragdolls.
 // When a large number of infected corpses die on the water, it generates multiple ripples, causing players' games to crash. 
 // The reason lies in how players' modern, high-end graphics cards render water ripples in old source engine games, poorly optimized.
 //
-// "GauntletFinale_map": Hittable car does less damage to survivors (for custom maps and l4d2 maps)
+// "GauntletFinale_map": Gauntlet Finale
+// Rather than having the player holdout in an enclosed arena, gauntlets force players to run to the end of the level, where the rescue vehicle is already waiting for them.
+// For example: In The Parish map 5, the players must run across a bridge to make it to a rescue helicopter.
+// 1. Hittable car does less damage to survivors (for custom maps and l4d2 maps)
+// 2. First tank spawns during final
 //
-// "WAIT_FOR_FINALE_map": Fixed stupid "WAIT_FOR_FINALE_map" spawn issue when playing infected (usually happen in custom maps and l4d2 maps)
+// "WAIT_FOR_FINALE_map": Fixed stupid "WAIT_FOR_FINALE_map" spawn issue when playing infected 
+// (Usually happen in custom maps and l4d2 maps)
 //
-// "GasCan_map": Give glow to gascans (for l4d2 maps)
+// "GasCan_map": Give glow to gascans (For l4d2 maps)
+// 1. Tank and Special Infected have fire immunity
 //
-// "BrideWitch_map": Force Witch model to be Witch Bride (for l4d2 maps)
+// "BrideWitch_map": 
+// Force Witch model to be Witch Bride (For l4d2 maps)
+//
 
 "MapInfo"
 {
@@ -25,7 +39,6 @@
 		"custom_start_area_distance"	"300.0"
 		"custom_start_area_beam_ring"	"1"
 
-		"GauntletFinale_map"			"0"
 		"no_final_first_tank"			"1"
 		"pill_limit" 					"2"
 		"VersusModifier"				"1.0"
@@ -33,7 +46,8 @@
 		"WaterCrash_map"				"0"
 		"tank_map_off"					"0"
 		"witch_map_off"					"0"
-
+		
+		"GauntletFinale_map"			"0"
 		"WAIT_FOR_FINALE_map"			"0"
 		"GasCan_map" 					"0"
 		"BrideWitch_map"				"0"
@@ -753,7 +767,7 @@
 		"pill_limit" "1"
 		"VersusModifier"		"2.0"
 		"WAIT_FOR_FINALE_map"	"1"
-		"GauntletFinale_map"	"1"
+		"GauntletFinale_map"	"0" //1 hittable car left by the tank fight
 		"witch_map_off" "1"
 		"versus_boss_flow_min" 	"12"
 		"tank_ban_flow"

@@ -47,9 +47,11 @@ A Competitive L4D1 Versus Configuration. Based upon the L4D2 [Acemod V4 Release]
 	
 - - - -	
 ### Server Install Optional ###
-* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart): Restart server as soon as all human players are disconnected. Recommended for **LINUX**
-* [l4d2_mixmap](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d2_mixmap): Randomly select five maps for versus/coop/realism. Adding for fun
 * [L4D Modified Talker](https://www.gamemaps.com/details/3863): Improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
+* [Auto_restart](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/linux_auto_restart): Restart server as soon as all human players are disconnected. Recommended for **LINUX**
+* [Colorful Common Infected](https://forums.alliedmods.net/showthread.php?t=328901): Adds more colors to the clothes of the common infected
+* [l4d2_item_hint](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d2_item_hint): Use ```!mark``` or 'Look' in vocalize menu, print corresponding item to chat area and make item glow or create spot marker/infeced maker.
+* [l4d2_mixmap](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d2_mixmap): Randomly select five maps for versus/coop/realism. Adding for fun
 * [Top 5 Skeet](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_skeet_database_remake): Records players' skeets, and save to server-side Database.
 * [Top 5 Pounce](https://github.com/fbef0102/Game-Private_Plugin/tree/main/L4D_%E6%8F%92%E4%BB%B6/Hunter_Hunter/l4d_pounce_database_remake): Records players' pounces, and save to server-side Database. 
 * [Gag/Mute/Ban Ex](https://github.com/fbef0102/L4D1_2-Plugins/tree/master/GagMuteBanEx) enhances and improves ban/gag/mute for admin.
@@ -542,9 +544,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Explode after 3 times shove (original: 5)
     * Make sure Boomers are unable to bile Survivors during a stumble (basically reinforce shoves)
     * Fixes boomer teleport whenever hes close enough to ladder
-    * Fix Boomer's vomit being unable to pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
-    * Boomer's vomit is now able to pass through some fences and barricades
-    <br/>![Boomer_vomit_pass_fence](image/Boomer_vomit_pass_fence.gif)
+    * Fixed Boomer vomit stuck bug and optimized tracing.
+      * Pass through their teammates (ghosts as well).([video](https://youtu.be/GeURlehdoTo))
+      * Pass through some chain-link fences
+      <br/>![Boomer_vomit_pass_fence](image/Boomer_vomit_pass_fence.gif)
+      * Pass through incapacitated survivors who have already been vomited on.
     * Boomer's exploding can trigger alarm car and startle witch
 	  
   * **Charger/Spitter/Jockey:**

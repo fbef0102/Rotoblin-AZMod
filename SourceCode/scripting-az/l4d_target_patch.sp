@@ -54,7 +54,7 @@ int g_iCvarTargets;
 bool g_bCvarAllow, g_bCvarTarget_Incap, g_bCvarTarget_Pinned,
 	g_bCvarTarget_Hanging;
 Handle g_hDetour;
-bool g_bBlind[MAXPLAYERS+1];
+//bool g_bBlind[MAXPLAYERS+1];
 
 
 // ====================================================================================================
@@ -171,16 +171,16 @@ void IsAllowed()
 
 	if( g_bCvarAllow == false && bCvarAllow == true && bAllowMode == true )
 	{
-		HookEvent("player_spawn",					Event_PlayerSpawn);
-		HookEvent("round_start",					Event_RoundStart);
+		//HookEvent("player_spawn",					Event_PlayerSpawn);
+		//HookEvent("round_start",					Event_RoundStart);
 		DetourAddress(true);
 		g_bCvarAllow = true;
 	}
 
 	else if( g_bCvarAllow == true && (bCvarAllow == false || bAllowMode == false) )
 	{
-		UnhookEvent("player_spawn",					Event_PlayerSpawn);
-		UnhookEvent("round_start",					Event_RoundStart);
+		//UnhookEvent("player_spawn",					Event_PlayerSpawn);
+		//UnhookEvent("round_start",					Event_RoundStart);
 		DetourAddress(false);
 		g_bCvarAllow = false;
 	}
@@ -249,27 +249,27 @@ void OnGamemode(const char[] output, int caller, int activator, float delay)
 		g_iCurrentMode = 8;
 }
 
-public void OnClientPutInServer(int client)
-{
-	g_bBlind[client] = false;
-}
+//public void OnClientPutInServer(int client)
+//{
+//	g_bBlind[client] = false;
+//}
 
 // ====================================================================================================
 //					EVENT
 // ====================================================================================================
-void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
-{
-	for( int i = 0; i <= MaxClients; i++ )
-	{
-		g_bBlind[i] = false;
-	}
-}
+//void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+//{
+//	for( int i = 0; i <= MaxClients; i++ )
+//	{
+//		g_bBlind[i] = false;
+//	}
+//}
 
-void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	g_bBlind[client] = false;
-}
+//void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+//{
+//	int client = GetClientOfUserId(event.GetInt("userid"));
+//	g_bBlind[client] = false;
+//}
 
 // ====================================================================================================
 //					DETOUR
@@ -358,19 +358,22 @@ MRESReturn ChooseVictimPost(int client, Handle hReturn)
 	// Override victim
 	if( newVictim > 0 )
 	{
-		if(g_bBlind[client] == true)
-		{
-			g_bBlind[client] = false;
-			//ToggleFreezePlayer(client, false);
-		}
+		//if(g_bBlind[client] == true)
+		//{
+		//	g_bBlind[client] = false;
+		//	//ToggleFreezePlayer(client, false);
+		//}
 		DHookSetReturn(hReturn, newVictim);
 		return MRES_Supercede;
 	}
 
-	g_bBlind[client] = true;
+	//g_bBlind[client] = true;
 	//if(GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) ToggleFreezePlayer(client, true); // stop attacking if all players are down.
 	//else ToggleFreezePlayer(client, false);
-	return MRES_Ignored;
+	//return MRES_Ignored;
+
+	DHookSetReturn(hReturn, -1);
+	return MRES_Supercede;
 }
 /*
 void ToggleFreezePlayer(int client, int freeze)
@@ -378,7 +381,7 @@ void ToggleFreezePlayer(int client, int freeze)
 	SetEntityMoveType(client, freeze ? MOVETYPE_NONE : MOVETYPE_WALK);
 }
 */
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+/*public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
 	if(IsClientInGame(client) && IsFakeClient(client) && g_bBlind[client])
 	{
@@ -387,7 +390,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	
 	return Plugin_Continue;
-}
+}*/
 
 bool IsPlayerPinned(int client)
 {
