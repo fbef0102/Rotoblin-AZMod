@@ -66,7 +66,10 @@ public void OnEntityCreated(int entity, const char[] classname)
             {
                 g_bIsDoor[entity] = true;
             }
-            else if (strcmp(classname, "func_door_rotating", false) == 0)
+        }
+        case 'f':
+        {
+            if (strcmp(classname, "func_door_rotating", false) == 0)
             {
                 g_bIsDoor[entity] = true;
             }
