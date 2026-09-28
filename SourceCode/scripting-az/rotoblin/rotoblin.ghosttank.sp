@@ -181,7 +181,7 @@ void _GT_PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 	if (!client || !IsClientInGame(client)) return;
 
 	int dmgtype = GetEventInt(event, "type");
-	if ( (dmgtype | DMG_BURN) == 0 ) return; // If it wasn't fire that hurt the tank, return
+	if ( (dmgtype & DMG_BURN) == 0 ) return; // If it wasn't fire that hurt the tank, return
 
 	if (g_fTankFireImmuneEngineTime[client] > GetEngineTime() && GetClientTeam(client) == TEAM_INFECTED && IsPlayerAlive(client) && GetEntProp(client,Prop_Send,"m_zombieClass") == ZOMBIECLASS_TANK)
 	{
