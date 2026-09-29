@@ -445,7 +445,7 @@ public Action:Console_Timer(client, args)
 			{
 				ReplyToCommand(client, "[TS] why so long?");
 			}
-			if(DD<=0)
+			else if(DD<=0)
 			{
 				ReplyToCommand(client, "[TS] Failed to set timer! minimum value is 1.");
 			}
