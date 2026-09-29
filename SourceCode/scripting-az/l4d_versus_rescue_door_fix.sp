@@ -145,7 +145,9 @@ void FixRescueDoors()
 		if(GetEntProp(entity, Prop_Data, "m_takedamage") >= 2) continue;
 		
 		m_spawnflags = GetEntProp(entity, Prop_Data, "m_spawnflags");
-		if(m_spawnflags & (39424)) //rescure door m_spawnflags is |= 0x9A00
+		//CBasePropDoor::VersusRescueDisable() sets all four bits (0x8000|0x800|0x1000|0x200) at once, no map door has 0x200 set,
+		//so require the whole mask, otherwise any locked/ignore-use event door (c5m2 trailer exit, hospital03 gas station...) gets unlocked too
+		if((m_spawnflags & (39424)) == 39424) //rescure door m_spawnflags is |= 0x9A00
 		{
 			//LogMessage("rescue door %d is rescue door", entity);
 			SetEntProp(entity, Prop_Data, "m_takedamage", 2); //breakable
