@@ -890,6 +890,9 @@ public OnPluginEnd()
 
 public OnMapEnd()
 {
+	//liveTimer has TIMER_FLAG_NO_MAPCHANGE, it dies with the map
+	liveTimer = INVALID_HANDLE;
+	goingLive = 0;
 	isSecondRound = false;	
 	g_bGameTeamSwitchBlock = false;
 	ResetVariable();
@@ -1088,16 +1091,28 @@ checkStatus()
 		goingLive = 0;
 		PrintHintTextToAll("%t","ReadyPlugin_9");
 		KillTimer(liveTimer);
+		liveTimer = INVALID_HANDLE;
 	}
 	else if(!goingLive && (humans == ready))
 	{
-		if(!insideCampaignRestart)
+		//liveTimer already pending (goingLive stays 0 with l4d_ready_live_countdown 0), do not stack another one
+		if(!insideCampaignRestart && liveTimer == INVALID_HANDLE)
 		{
 			goingLive = GetConVarInt(cvarReadyLiveCountdown);
 			liveTimer = CreateTimer(1.0, timerLiveCountCallback, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
-	else if(!goingLive && (humans != ready)) PrintHintTextToAll("%t","ReadyPlugin_10", ready, humans);
+	else if(!goingLive && (humans != ready))
+	{
+		//someone unreadied while the live timer is pending with goingLive 0 (countdown 0, or the last second of a countdown)
+		if(liveTimer != INVALID_HANDLE)
+		{
+			PrintHintTextToAll("%t","ReadyPlugin_9");
+			KillTimer(liveTimer);
+			liveTimer = INVALID_HANDLE;
+		}
+		else PrintHintTextToAll("%t","ReadyPlugin_10", ready, humans);
+	}
 }
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon, &subtype, &cmdnum, &tickcount, &seed, mouse[2]) //should prevent players from moving
@@ -1150,6 +1165,21 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 
 }
 
+//every non-spectator human is ready and both teams are full
+bool:AreAllHumansReady()
+{
+	new humans, ready;
+	for(new i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) != L4D_TEAM_SPECTATE)
+		{
+			humans++;
+			if(readyStatus[i]) ready++;
+		}
+	}
+	return humans > 0 && humans == ready && humans >= GetTeamMaxHumans(2)+GetTeamMaxHumans(3);
+}
+
 //repeatedly count down until the match goes live
 public Action:timerLiveCountCallback(Handle:timer)
 {
@@ -1157,13 +1187,22 @@ public Action:timerLiveCountCallback(Handle:timer)
 	if(goingLive)
 	{
 		if(forcedStart) CPrintToChatAll("{default}[{olive}TS{default}] %t","ReadyPlugin_11", goingLive);
-		else CPrintToChatAll("{default}[{olive}TS{default}] %T","ReadyPlugin_12", goingLive);
+		else CPrintToChatAll("{default}[{olive}TS{default}] %t","ReadyPlugin_12", goingLive);
 		goingLive--;
 	}
 	//actually go live and unfreeze everyone
 	else
 	{
 		//readyOff();
+		
+		liveTimer = INVALID_HANDLE;
+		
+		//checkStatus() returns early when a team is short, so re-check that everyone is still ready right before going live
+		if(!forcedStart && !AreAllHumansReady())
+		{
+			PrintHintTextToAll("%t","ReadyPlugin_9");
+			return Plugin_Stop;
+		}
 		
 		if(GetConVarBool(cvarReadyRestartRound) && !GetConVarBool(cvarReadyUpStyle))
 		{
