@@ -1704,7 +1704,7 @@ public Action:Command_PrintScores(client, args)//打這指令的只有自己看�
 	}
 	
 	if(surtotalscore != GetTeamCampaignScore(L4D_TEAM_SURVIVORS) || inftotalscore != GetTeamCampaignScore(L4D_TEAM_INFECTED))
-		CPrintToChat(client,"Others\x04#附加\x01: \x05%d/\x04%d",GetTeamCampaignScore(L4D_TEAM_SURVIVORS) - surtotalscore,GetTeamCampaignScore(L4D_TEAM_INFECTED) - inftotalscore);	
+		CPrintToChat(client,"Others\x01: \x05%d/\x04%d",GetTeamCampaignScore(L4D_TEAM_SURVIVORS) - surtotalscore,GetTeamCampaignScore(L4D_TEAM_INFECTED) - inftotalscore);	
 	
 	CPrintToChat(client,"%T\x01: \x05%d\x01/\x04%d","l4dscores9",client,GetTeamCampaignScore(L4D_TEAM_SURVIVORS),GetTeamCampaignScore(L4D_TEAM_INFECTED));
 			
