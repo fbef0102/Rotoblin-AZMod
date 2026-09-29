@@ -191,7 +191,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 							if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 3))
 							{
 								SetGlobalTransTarget(i);
-								CPrintToChat(i,"{green}[TS] %t","Tank kill teammate",Tank_weapon,"AI");
+								CPrintToChat(i,"{green}[TS] %t","Tank kill teammate",Tank_weapon,"AI ");
 							}
 					}
 				}
