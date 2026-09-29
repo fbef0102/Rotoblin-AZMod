@@ -258,7 +258,6 @@ void LogChat2(int client, const char[] sArgs, bool teamchat)
 	}
 	FormatTime(time, sizeof(time), "%H:%M:%S", -1);
 	FormatEx(Args, sizeof(Args), "%s", sArgs);
-	ReplaceString(Args, sizeof(Args), "%", "%%");
 
 	FormatEx(msg, sizeof(msg), "[%s] (%-20s | %-15s) [%s] %-25N : %s%s",
 		time,
@@ -313,7 +312,6 @@ void LogCommand(int client)
 		GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID));
 	}
 	FormatTime(time, sizeof(time), "%H:%M:%S", -1);
-	ReplaceString(text, sizeof(text), "%", "%%");
 
 	FormatEx(msg, sizeof(msg), "[%s] (%-20s | %-15s) [%s] %-25N : (CMD) %s %s",
 		time,
@@ -341,7 +339,7 @@ void SaveMessage(const char[] message)
 		}
 	}
 
-	WriteFileLine(fileHandle, message);
+	WriteFileLine(fileHandle, "%s", message);
 	delete fileHandle;
 }
 
