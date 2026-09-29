@@ -367,7 +367,7 @@ public Action:Callvote_Handler(client, args)
 		return Plugin_Continue;
 	}
 
-	CPrintToChat(client, "[TS] Valve Vote is blocked. Use {green}!votes{default} instead");
+	CPrintToChat(client, "[TS] Valve votes are blocked. Use {green}!votes{default} instead.");
 
 	return Plugin_Handled;
 }
@@ -568,7 +568,7 @@ public Menu_VotesKick(Handle:menu, MenuAction:action, param1, param2)
 		{
 			if (player == param1)
 			{
-				CPrintToChat(param1, "{default}[{olive}TS{default}] Kick yourself? choose again");
+				CPrintToChat(param1, "{default}[{olive}TS{default}] You can't kick yourself, choose again.");
 				CreateVoteKickMenu(param1);
 			}
 			else 
@@ -1156,7 +1156,7 @@ public Action:COLD_DOWN(Handle:timer,any:client)
 			}
 			else
 			{
-				CPrintToChatAll("[{olive}TS{default}] %s player not found", forcespectateplayername);	
+				CPrintToChatAll("[{olive}TS{default}] Player %s not found.", forcespectateplayername);	
 			}
 		}
 	}

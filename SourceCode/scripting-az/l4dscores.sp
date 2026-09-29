@@ -435,7 +435,7 @@ public Action:Command_ResetScores(client, args)
 {
 	if(!IsInReady())
 	{
-		ReplyToCommand(client, "ResetScores only allowed during ready-up");
+		ReplyToCommand(client, "Scores can only be reset during ready-up.");
 		return Plugin_Handled;
 	}
 	ResetCampaignScores();
@@ -1581,7 +1581,7 @@ PrintGetNowScores(client,roundend = false)
 			
 			if(roundend){
 				if(Round2WipedOut)
-					CPrintToChat(client,"\x01R\x04#%d\x01 Scores: \x05%d %T",round,Round2Score,"wiped out",client);
+					CPrintToChat(client,"\x01R\x04#%d\x01 Score: \x05%d %T",round,Round2Score,"wiped out",client);
 				else
 					CPrintToChat(client,"%T \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",client,round,Round2Score,Round2ScorePercent,Round2SurAlive,surplayer);
 			}
@@ -2038,7 +2038,7 @@ public Action:Command_SetCampaignScores(client, args)
 
 	if(!IsInReady())
 	{
-		ReplyToCommand(client, "[SM] sm_setscores <survs> <inf> only allowed during ready-up.");
+		ReplyToCommand(client, "[SM] sm_setscores <survs> <inf> is only allowed during ready-up.");
 		return Plugin_Handled;
 	}
 
