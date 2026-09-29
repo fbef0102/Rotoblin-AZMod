@@ -859,6 +859,10 @@
 //Static shotgun spread replaces the random pellet spread.
 //將散彈槍的彈丸散步成固定彈道，移除官方過於隨機的彈道
 
+[232] l4d_hunter_phantom_fix
+//A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
+//嘗試修復殺死撲人的hunter之後．依然原地播放hunter撲人音效與噴血特效
+
 --------vpk支援--------
 [01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
 //improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!

@@ -216,7 +216,7 @@ public _H_TM_TankKilled_Event(Handle:event, const String:name[], bool:dontBroadc
  */
 Action _H_TM_TankKilled_Timer(Handle timer, int oldtankclient)
 {
-	if (g_iTankClient != oldtankclient) return; // If the tank client var have been changed (tank have been passed), return
+	if (g_iTankClient != oldtankclient) return Plugin_Continue; // If the tank client var have been changed (tank have been passed), return
 
 	new tankclient = FindTankClient();
 	if (tankclient && tankclient != oldtankclient)
@@ -224,7 +224,7 @@ Action _H_TM_TankKilled_Timer(Handle timer, int oldtankclient)
 		g_iTankClient = tankclient; // Set tank client
 		DebugPrintToAllEx("Found new tank client. Client %i: \"%N\"", tankclient, tankclient);
 
-		return; // Found tank, return
+		return Plugin_Continue; // Found tank, return
 	}
 
 	DebugPrintToAllEx("Tank was killed and is no longer in play. Forward event");
@@ -232,6 +232,8 @@ Action _H_TM_TankKilled_Timer(Handle timer, int oldtankclient)
 	Call_StartForward(g_hFwd_TankKilled); // Forward tank killed event
 	Call_PushCell(oldtankclient); // Forward tank killed event
 	Call_Finish();
+
+	return Plugin_Continue;
 }
 
 // **********************************************

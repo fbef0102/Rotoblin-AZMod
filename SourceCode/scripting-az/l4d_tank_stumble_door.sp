@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "l4d_tank_stumble_door",
 	author = "Harry Potter",
 	description = "Tank won't get stumbled by a door in l4d1",
-	version = "1.2-2026/9/15",
+	version = "1.2-2026/9/28",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 

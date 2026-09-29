@@ -528,6 +528,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Hunter can wallkick if the touched other is a solid non-world entity (stripper entity)
     * M2 godframes after a hunter lands on the ground: 0.75s
     * Make hunter skeets more consistent across different pings.
+    * A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
 	
   * **Boomer:**
     * Boomer can be getting bashed to death
