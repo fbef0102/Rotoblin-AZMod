@@ -32,25 +32,25 @@
 	}
 	"No Any Dead Survivor"
 	{
-		"en"		"There Are No Any Dead Survivor"
+		"en"		"There are no dead survivors"
 		"zho"       "沒有死掉的玩家"
 		"chi"       "没有死掉的玩家"
 	}
 	"message_1"
 	{
-		"en"		"You Dumb? %N is still alive!"
+		"en"		"Are you dumb? %N is still alive!"
 		"zho"       "蠢? 目標玩家還活著!"
 		"chi"       "傻B? 目标玩家还活着!"
 	}
 	"message_2"
 	{
-		"en"		"Failed! %N is not survivor"
+		"en"		"Failed! %N is not a survivor"
 		"zho"       "失敗! 目標玩家不是倖存者"
 		"chi"       "失败! 目标玩家不是生还者"
 	}
 	"message_3"
 	{
-		"en"		"Failed! %N is spectator"
+		"en"		"Failed! %N is a spectator"
 		"zho"       "失敗! 目標玩家是旁觀者"
 		"chi"       "失败! 目标玩家是旁观者"
 	}
