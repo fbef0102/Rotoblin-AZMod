@@ -740,7 +740,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			CreateTimer(0.2, Timer_BoomerKilledCheck, victim);
 			g_iBoomerKiller = attacker;
 		}
-		else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
+		else if (zombieclass == ZC_HUNTER && IsPouncing(victim) && !IsGrounded(victim)) // g_bIsPouncing can be up to 0.5s stale after a missed pounce lands
 		{ // Skeet!
 			if (!IsFakeClient(victim))
 			{
