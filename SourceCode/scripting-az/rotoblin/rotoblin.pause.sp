@@ -799,7 +799,7 @@ UpdatePanel()
 			Format(Info, 35, "->1. ☆Admin: !%s", PLUGIN_FORCEUNPAUSE_COMMAND);
 		
 		decl String:Notice[64];
-		FormatEx(Notice, 64, "Pause by Admin: %s", g_sAdminName);
+		FormatEx(Notice, 64, "Paused by admin: %s", g_sAdminName);
 		DrawPanelText(menuPanel, Notice);	
 		
 		Format(Notice, 64, "%s%d:%s%d", (TimeCount/60 < 10) ? "0" : "",TimeCount/60, (TimeCount%60 < 10) ? "0" : "", TimeCount%60);

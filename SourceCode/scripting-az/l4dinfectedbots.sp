@@ -362,7 +362,7 @@ public Action:Console_Ht(client, args)
 		}
 		else if(GetClientTeam(client) == 3)
 		{
-			ReplyToCommand(client, "[TS] You are not survivor, dumbass!");
+			ReplyToCommand(client, "[TS] You are not a survivor, dumbass!");
 			return Plugin_Handled;
 		}
 	}
@@ -374,7 +374,7 @@ public Action:Console_Ht(client, args)
 		new newlimit = StringToInt(arg1);
 		if(newlimit>20)
 		{
-			ReplyToCommand(client, "[TS] why you need so many hunter bots?");
+			ReplyToCommand(client, "[TS] Why do you need so many hunter bots?");
 		}
 		else if (newlimit<0)
 		{
@@ -428,7 +428,7 @@ public Action:Console_Timer(client, args)
 		}
 		else if(GetClientTeam(client) == 3)
 		{
-			ReplyToCommand(client, "[TS] You are not survivor, dumbass!");
+			ReplyToCommand(client, "[TS] You are not a survivor, dumbass!");
 			return Plugin_Handled;
 		}
 	}
@@ -443,11 +443,11 @@ public Action:Console_Timer(client, args)
 			
 			if(DD>120)
 			{
-				ReplyToCommand(client, "[TS] why so long?");
+				ReplyToCommand(client, "[TS] Why so long?");
 			}
 			if(DD<=0)
 			{
-				ReplyToCommand(client, "[TS] Failed to set timer! minimum value is 1.");
+				ReplyToCommand(client, "[TS] Failed to set timer! The minimum value is 1.");
 			}
 			else
 			{
@@ -483,7 +483,7 @@ public Action:Console_Timer(client, args)
 			
 			if(Max>120)
 			{
-				ReplyToCommand(client, "[TS] why so long?");
+				ReplyToCommand(client, "[TS] Why so long?");
 			}
 			else
 			{
@@ -1164,7 +1164,7 @@ public Action:InfectedPlayerJoiner(Handle:Timer, any:client)
 		if  (SurvivorRealCount >= SurvivorLimit)
 		{
 			ChangeClientTeam(client, TEAM_INFECTED);
-			PrintHintText(client, "IBP: Placing you on the Infected team due to survivor team being full");
+			PrintHintText(client, "IBP: Placing you on the Infected team because the Survivor team is full");
 		}
 		else
 		{

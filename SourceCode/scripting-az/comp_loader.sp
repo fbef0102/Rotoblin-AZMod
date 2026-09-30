@@ -609,10 +609,10 @@ configInfo(client)
 	decl String:teamOrder[64];
 	if (teamOrderInt >= 0 && teamOrderInt < 4)
 	{
-		if (teamOrderInt == 0) Format(teamOrder, 64, "highest score goes survivor first");
-		if (teamOrderInt == 1) Format(teamOrder, 64, "highest score goes infected first");
-		if (teamOrderInt == 2) Format(teamOrder, 64, "teams never get swapped");
-		if (teamOrderInt == 3) Format(teamOrder, 64, "teams get swapped every map");
+		if (teamOrderInt == 0) Format(teamOrder, 64, "highest score plays survivor first");
+		if (teamOrderInt == 1) Format(teamOrder, 64, "highest score plays infected first");
+		if (teamOrderInt == 2) Format(teamOrder, 64, "teams never swap");
+		if (teamOrderInt == 3) Format(teamOrder, 64, "teams swap every map");
 	}
 	else Format(teamOrder, 32, "unavailable");
 	
@@ -652,8 +652,8 @@ configInfo(client)
 	Format(infoRoto, 1024, "  Health Mode:            %s\n", healthMode);
 	Format(infoRoto, 1024, "%s  Weapons Allowed:        %s\n", infoRoto, weaponsAllowed);
 	Format(infoRoto, 1024, "%s  Throwables Allowed:     %s\n", infoRoto, throwablesAllowed);
-	Format(infoRoto, 1024, "%s  Cannisters Allowed:     %s\n", infoRoto, cannistersAllowed);
-	Format(infoRoto, 1024, "%s  Melee #Available:       %i\n", infoRoto, meleeSwings);
+	Format(infoRoto, 1024, "%s  Canisters Allowed:      %s\n", infoRoto, cannistersAllowed);
+	Format(infoRoto, 1024, "%s  Melee Swings:           %i\n", infoRoto, meleeSwings);
 	Format(infoRoto, 1024, "%s  Auto Bot Slay (2v2):    %s", infoRoto, rotoblin2v2);
 
 	PrintToConsole(client, infoStart);

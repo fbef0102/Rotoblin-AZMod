@@ -4,7 +4,7 @@
 	//Every Language
 	"Language"
 	{
-		"en"			"Your Language in this server: English, translator: Harry"
+		"en"			"Server language: English (translated by Harry)"
 		"zho"			"你在這伺服器會看到的語言: 繁體中文，翻譯者: 哈利"
 	}
 	//DO NOT MODIFY THIS UNLESS YOU ARE IDIOT
@@ -189,7 +189,7 @@
 	}
 	"WarpToSurvivor"
 	{
-		"en"			"Infected Warp To Survivor"
+		"en"			"Infected Warp to Survivor"
 		"zho"			"特感轉喚至倖存者"
 	}
 	"Change_Match"
@@ -209,7 +209,7 @@
 	}
 	"Force_Player_Respectate"
 	{
-		"en"			"Force Playe Respectate"
+		"en"			"Force Player Respectate"
 		"zho"			"強制玩家重新旁觀"
 	}
 	"Stop_Jukebox"
@@ -239,7 +239,7 @@
 	}
 	"Kick_All_Spectators"
 	{
-		"en"			"Kick All Spectator"
+		"en"			"Kick All Spectators"
 		"zho"			"踢掉所有旁觀者"
 	}
 	"HunterBot_Limit"
@@ -264,12 +264,12 @@
 	}
 	"Vote_Boss_Percent"
 	{
-		"en"			"Vote For Boss Percent"
+		"en"			"Vote for Boss Percent"
 		"zho"			"投票決定Tank與Witch路程"
 	}
 	"Top_5_Skeeter"
 	{
-		"en"			"Top 5 Skeeter"
+		"en"			"Top 5 Skeeters"
 		"zho"			"前五名Skeeter"
 	}
 	"Show_Your_Skeet_Rank"
@@ -284,7 +284,7 @@
 	}
 	"Top_5_Pouncer"
 	{
-		"en"			"Top 5 Pouncer"
+		"en"			"Top 5 Pouncers"
 		"zho"			"前五名高撲者"
 	}
 	"Show_Your_Pounce_Stats"
@@ -319,17 +319,17 @@
 	}
 	"UZI_more_powerful"
 	{
-		"en"			"UZI more powerful"
+		"en"			"More Powerful Uzi"
 		"zho"			"機關改強"
 	}
 	"More_Map_barriers"
 	{
-		"en"			"More Map barriers"
+		"en"			"More Map Barriers"
 		"zho"			"更多地圖障礙物"
 	}
 	"Final_Stage_balance"
 	{
-		"en"			"Final Stage balance"
+		"en"			"Final Stage Balance"
 		"zho"			"救援關平衡"
 	}
 	"Developed_by"
@@ -354,17 +354,17 @@
 	}
 	"PermanentHealth"
 	{
-		"en"			"PermanentHealth"
+		"en"			"Permanent Health"
 		"zho"			"實血"
 	}
 	"TemporaryHealth"
 	{
-		"en"			"TemporaryHealth"
+		"en"			"Temporary Health"
 		"zho"			"虛血"
 	}
 	"Bonus_per_pill"
 	{
-		"en"			"15 Bonus per pill"
+		"en"			"15 bonus points per pill"
 		"zho"			"每顆藥丸加15分"
 	}
 	"Number_of_players_that_survived"
@@ -374,13 +374,13 @@
 	}
 	"level_score_multiplier"
 	{
-		"en"			"That level's score multiplier"
+		"en"			"The map's score multiplier"
 		"zho"			"關卡難度倍數加成"
 	}
 	///////////////l4dready_scrds.smx///////////////
 	"command cannot be used by server."
 	{
-		"en"		"command cannot be used by server."
+		"en"		"This command cannot be used by the server."
 		"zho"		"該指令無法在伺服器端上使用"
 	}
 	"ReadyPlugin_1"
@@ -413,7 +413,7 @@
 	}
 	"ReadyPlugin_6"
 	{
-		"en"		"{blue}Survivor{default} is full."
+		"en"		"The {blue}Survivor{default} team is full."
 		"zho"		"{blue}倖存者{default}隊伍已滿."
 	}
 	"ReadyPlugin_7"
@@ -423,12 +423,12 @@
 	}
 	"ReadyPlugin_8"
 	{
-		"en"		"{red}Infected{default} is full."
+		"en"		"The {red}Infected{default} team is full."
 		"zho"		"{red}特感{default}隊伍已滿."
 	}
 	"ReadyPlugin_9"
 	{
-		"en"		"Aborted going live due to player unreadying."
+		"en"		"Going live aborted: a player unreadied."
 		"zho"		"有人未準備好，回合開始被取消"
 	}
 	"ReadyPlugin_10"
@@ -440,49 +440,49 @@
 	"ReadyPlugin_11"
 	{
 		"#format"	"{1:i}"
-		"en"		"Force to start round in {green}{1}{default} second(s)."
+		"en"		"Force-starting the round in {green}{1}{default}s."
 		"zho"		"即將於 {green}{1}{default} 秒後強制開始."
 	}
 	"ReadyPlugin_12"
 	{
 		"#format"	"{1:i}"
-		"en"		"All players are ready. Going live in {green}{1}{default} second(s)."
+		"en"		"All players are ready. Going live in {green}{1}{default}s."
 		"zho"		"所有玩家已準備. 即將於 {green}{1}{default} 秒後開始."
 	}
 	"ReadyPlugin_13"
 	{
-		"en"		"Match will be live after 2 round restarts."
+		"en"		"The match will go live after 2 round restarts."
 		"zho"		"兩次回合重新之後比賽就會開始."
 	}
 	"ReadyPlugin_14"
 	{
-		"en"		"Match will be live after 1 round restart!"
+		"en"		"The match will go live after 1 round restart!"
 		"zho"		"再一次回合重新之後比賽就會開始!"
 	}
 	"ReadyPlugin_15"
 	{
-		"en"		"Welcome to TS Server!\n\n!sur=Survivor. !inf=Infected. !s=Spectator"
+		"en"		"Welcome to the TS server!\n\n!sur = Survivor, !inf = Infected, !s = Spectator"
 		"zho"		"歡迎來到TS伺服器!\n\n!sur=倖存者隊伍, !inf=特感隊伍, !s=旁觀區"
 	}
 	"ReadyPlugin_16"
 	{
-		"en"		"You are ready.\n\nWaiting for other players to start soon"
+		"en"		"You are ready.\n\nWaiting for the other players..."
 		"zho"		"你已準備.\n\n等待其他玩家準備開始."
 	}
 	"ReadyPlugin_17"
 	{
-		"en"		"You are in spectator team.\n\ntype !sur to join Survivor and !inf to join Infected"
+		"en"		"You are on the Spectator team.\n\nType !sur to join the Survivors or !inf to join the Infected"
 		"zho"		"你目前是旁觀者\n\n輸入!sur加入倖存者隊伍或是!inf加入特感隊伍"
 	}
 	"ReadyPlugin_18"
 	{
-		"en"		"You are a Dead Survivor, {red}Team Switch not allowed {default}!!"
+		"en"		"You are a dead Survivor. {red}Team switching is not allowed{default}!"
 		"zho"		"你已是死者，{red}換隊是不允許的操作{default}!!"
 	}
 	"ReadyPlugin_19"
 	{
 		"#format"	"{1:s}"
-		"en"		"Please back your {green}{1}{default} team, {red}Team Switch not allowed {default}!!"
+		"en"		"Please go back to your {green}{1}{default} team. {red}Team switching is not allowed{default}!"
 		"zho"		"請回去 {green}{1}{default} 隊伍，{red}換隊是不允許的操作{default}!!"
 	}
 	"ReadyPlugin_20"
@@ -493,13 +493,13 @@
 	"ReadyPlugin_21"
 	{
 		"#format"	"{1:i}"
-		"en"		"Map restart in {green}{1}{default} seconds."
+		"en"		"Restarting the map in {green}{1}{default} seconds."
 		"zho"		"{green}{1}{default} 秒後重新關卡."
 	}
 	"ReadyPlugin_22"
 	{
 		"#format"	"{1:i}"
-		"en"		"Get Ready!\nMap restart in: {1}"
+		"en"		"Get ready!\nMap restarts in: {1}"
 		"zho"		"準備好!\n於 {1} 秒後重新關卡"
 	}
 	"ReadyPlugin_23"
@@ -517,22 +517,22 @@
 	"ReadyPlugin_25"
 	{
 		"#format"	"{1:i}"
-		"en"		"Wait {green}{1}s{default} to rejoin {red}Infected team{default} again."
+		"en"		"Wait {green}{1}s{default} before rejoining the {red}Infected team{default}."
 		"zho"		"等待 {green}{1}秒 {default}才能加入{red}特感隊伍{default}."
 	}
 	"ReadyPlugin_26"
 	{
-		"en"		"You can rejoin {red}Infected team{default} now."
+		"en"		"You can rejoin the {red}Infected team{default} now."
 		"zho"		"你現在可以加入{red}特感隊伍{default}了."
 	}
 	"ReadyPlugin_27"
 	{
-		"en"		"{red}Team Switch is not allowed{default} during the game !!"
+		"en"		"{red}Team switching is not allowed{default} during the game!"
 		"zho"		"遊戲開始之後，{red}任何換隊是不允許的操作{default}!!"
 	}
 	"ReadyPlugin_28"
 	{
-		"en"		"Check the console for players rates."
+		"en"		"Check the console for player rates."
 		"zho"		"相關玩家rates數據請查看控制台."
 	}
 	"ReadyPlugin_29"
@@ -542,18 +542,18 @@
 	}
 	"ReadyPlugin_30"
 	{
-		"en"		"Ready plugin has been enabled"
+		"en"		"Ready plugin has been enabled."
 		"zho"		"準備插件已啟動"
 	}
 	"ReadyPlugin_31"
 	{
-		"en"		"Ready plugin has been disabled"
+		"en"		"Ready plugin has been disabled."
 		"zho"		"準備插件已關閉"
 	}
 	"ReadyPlugin_32"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{1} and {2} have been swapped team."
+		"en"		"{1} and {2} have swapped teams."
 		"zho"		"{1} and {2} 已互相交換隊伍."
 	}
 	"ReadyPlugin_33"
@@ -563,18 +563,18 @@
 	}
 	"ReadyPlugin_34"
 	{
-		"en"		"Get Ready!"
+		"en"		"Get ready!"
 		"zho"		"準備好!"
 	}
 	"ReadyPlugin_35"
 	{
-		"en"		"Round is live!\nLet We Go!"
+		"en"		"Round is live!\nLet's go!"
 		"zho"		"回合開始!\n釋放你的怒火吧!"
 	}
 	"ReadyPlugin_36"
 	{
 		"#format"	"{1:i}"
-		"en"		"Get Ready!\nLive in: {1}"
+		"en"		"Get ready!\nLive in: {1}"
 		"zho"		"準備好!\n回合開始於 {1} 秒"
 	}
 	"ReadyPlugin_37"
@@ -584,7 +584,7 @@
 	}
 	"ReplyToCommand1"
 	{
-		"en"		"switch both players to the opposite team."
+		"en"		"switches both players to the opposite team."
 		"zho"		"指定的兩位玩家互相交換隊伍."
 	}
 	"ReplyToCommand2"
@@ -594,7 +594,7 @@
 	}
 	"ReplyToCommand3"
 	{
-		"en"		"force the player to respectate(prevent infected icon stuck)."
+		"en"		"forces the player to respectate (fixes a stuck infected icon)."
 		"zho"		"強制旁觀者重新旁觀(避免卡圖標)"
 	}
 	"ReplyToCommand4"
@@ -606,18 +606,18 @@
 	"ReplyToCommand5"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} is already being respected."
+		"en"		"{1} is already being respecced."
 		"zho"		"{1} 已重新旁觀."
 	}
 	"ReplyToCommand6"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"		"{1} cannot be respecced for another {2} second(s), you must wait."
+		"en"		"{1} cannot be respecced for another {2} second(s)."
 		"zho"		"你必須等待 {2} 秒才能再度旁觀 {1}"
 	}
 	"ReplyToCommand7"
 	{
-		"en"		"swap player1's and player2's teams"
+		"en"		"swaps player1's and player2's teams."
 		"zho"		"轉換指定玩家的隊伍"
 	}
 	"PanelHide"
@@ -652,12 +652,12 @@
 	"Spectators cannot use command."
 	{
 		"#format"	"{1:s}"
-		"en"		"Spectators cannot use {green}{1}{default} command."
+		"en"		"Spectators cannot use the {green}{1}{default} command."
 		"zho"		"旁觀者不能使用 {green}{1}{default} 指令."
 	}
 	"Invalid Config."
 	{
-		"en"		"Invalid Config."
+		"en"		"Invalid config."
 		"zho"		"模式名稱不存在."
 	}
 	"command is not available."
@@ -696,12 +696,12 @@
 	}
 	"Invalid Map."
 	{
-		"en"	"Invalid Map."
+		"en"	"Invalid map."
 		"zho"	"地圖不存在"
 	}
 	"Invalid Mapname."
 	{
-		"en"	"Invalid Mapname."
+		"en"	"Invalid map name."
 		"zho"	"地圖名稱不正確"
 	}
 	"The team must agree by typing command"
@@ -712,7 +712,7 @@
 	}
 	"Map Mismatch."
 	{
-		"en"	"Map Mismatch."
+		"en"	"Map mismatch."
 		"zho"	"地圖匹配失敗"
 	}
 	"Agree"
@@ -733,7 +733,7 @@
 	"Not enough players."
 	{
 		"#format"	"{1:i}"
-		"en"	"Not enough {red}{1}{default} players."
+		"en"	"Not enough players (need {red}{1}{default})."
 		"zho"	"伺服器人數沒達到 {red}{1}{default} 位玩家."
 	}
 	"No votes"
@@ -744,13 +744,13 @@
 	"Vote fail."
 	{
 		"#format"	"{1:i},{2:i},{3:i}"
-		"en"	"{red}Vote fail.{default} At least {red}{1}%%{default} to agree.(agree: {green}{2}%%{default}, total: {green}{3}{default} votes)"
+		"en"	"{red}Vote failed.{default} Needs at least {red}{1}%%{default} to agree. (Agreed: {green}{2}%%{default}, total votes: {green}{3}{default})"
 		"zho"	"{red}投票不通過.{default} 至少要 {red}{1}%%{default} 同意(同意比: {green}{2}%%{default}, 全票: {green}{3}{default})"
 	}
 	"Vote pass."
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"	"{blue}Vote pass.{default}(agree: {green}{1}%%{default}, total: {green}{2}{default} votes)"
+		"en"	"{blue}Vote passed.{default} (Agreed: {green}{1}%%{default}, total votes: {green}{2}{default})"
 		"zho"	"{blue}投票通過.{default}(同意比: {green}{1}%%{default}, 全票: {green}{2}{default})"
 	}
 	"comp_loader1"
@@ -761,31 +761,31 @@
 	"comp_loader2"
 	{
 		"#format"	"{1:s}"
-		"en"		"has forceloaded {green}{1}{default} config."
+		"en"		"has force-loaded the {green}{1}{default} config."
 		"zho"		"強制載入 {green}{1}{default} 模式."
 	}
 	"comp_loader4"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{blue}{1}{default} starts a vote: match {green}{2}{default}."
+		"en"		"{blue}{1}{default} started a vote: match {green}{2}{default}."
 		"zho"		"{blue}{1}{default} 發起新投票: 更換 {green}{2}{default} 模式."
 	}
 	"comp_loader5"
 	{
 		"#format"	"{1:s}"
-		"en"		"Match '{1}' mode?"
+		"en"		"Load match '{1}'?"
 		"zho"		"更換 '{1}' 模式?"
 	}
 	"comp_loader6"
 	{
 		"#format"	"{1:i}"
-		"en"	"Get Ready!\nCampaign change in: {1}"
+		"en"	"Get ready!\nCampaign changes in: {1}"
 		"zho"	"準備好!\n於 {1} 秒後更換地圖"
 	}
 	"comp_loader7"
 	{
 		"#format"	"{1:s}"
-		"en"	"has forcechanged the campaign {green}{1}{default}."
+		"en"	"has force-changed the campaign to {green}{1}{default}."
 		"zho"	"強制更換地圖 {green}{1}{default}."
 	}
 	"comp_loader8"
@@ -808,12 +808,12 @@
 	"comp_loader11"
 	{
 		"#format"	"{1:i}"
-		"en"	"You must wait for {green}{1}{default} sec then start a new match!"
+		"en"	"You must wait {green}{1}{default} sec before starting a new match!"
 		"zho"	"你必須等待 {green}{1}{default} 秒才能開始新模式"
 	}
 	"comp_loader12"
 	{
-		"en"	"No configs for such mode were found."
+		"en"	"No configs were found for that mode."
 		"zho"	"找不到相匹配的模式文件"
 	}
 	"comp_loader13"
@@ -872,30 +872,30 @@
 	"l4dcompstats6"
 	{
 		"#format"	"{1:i}"
-		"en"	"{red}Witch{default} had {green}{1}{default} health remaining."
+		"en"	"The {red}Witch{default} had {green}{1}{default} health remaining."
 		"zho"	"{red}Witch{default} 還剩 {green}{1}{default} 血量."
 	}
 	"l4dcompstats7"
 	{
 		"#format"	"{1:s}"
-		"en"	"{blue}{1}{default} was killed by {green}Witch{default}."
+		"en"	"{blue}{1}{default} was killed by the {green}Witch{default}."
 		"zho"	"{blue}{1}{default} 被 {green}妹子{default} 幹掉了."
 	}
 	"l4dcompstats8"
 	{
-		"en"	"You shut down an {red}AI{default} boomer."
+		"en"	"You shut down an {red}AI{default} Boomer."
 		"zho"	"你射爆了 {red}AI{default} 肥宅."
 	}
 	"l4dcompstats9"
 	{
 		"#format"	"{1:s}"
-		"en"	"You shut down {red}{1}{default}'s boomer."
+		"en"	"You shut down {red}{1}{default}'s Boomer."
 		"zho"	"你射爆了 {red}{1}{default} 肥宅."
 	}
 	"l4dcompstats10"
 	{
 		"#format"	"{1:s}"
-		"en"	"{blue}{1}{default} shut down your boomer."
+		"en"	"{blue}{1}{default} shut down your Boomer."
 		"zho"	"{blue}{1}{default} 射爆了你的胖子"
 	}
 	"l4dcompstats11"
@@ -930,64 +930,64 @@
 	"game1"
 	{
 		"#format"	"{1:s}"
-		"en"	"{olive}{1}{default} flipped a coin!. It's {green}Heads{default}!"
+		"en"	"{olive}{1}{default} flipped a coin! It's {green}Heads{default}!"
 		"zho"	"{olive}{1}{default} 擲出了硬幣!. 結果是 {green}正面(Heads){default}!"
 	}
 	"game2"
 	{
 		"#format"	"{1:s}"
-		"en"	"{olive}{1}{default} flipped a coin!. It's {green}Tails{default}!"
+		"en"	"{olive}{1}{default} flipped a coin! It's {green}Tails{default}!"
 		"zho"	"{olive}{1}{default} 擲出了硬幣!. 結果是 {green}反面(Tails){default}!"
 	}
 	"game3"
 	{
-		"en"	"Choose Random team for you!"
+		"en"	"Picked a random team for you!"
 		"zho"	"為你隨機挑選隊伍!"
 	}
 	"game4"
 	{
 		"#format"	"{1:s},{2:s},{3:i}"
-		"en"	"BINGO! {olive}{1}{default} has guessed the right {olive}{2}{default}'s code: {lightgreen}{3}{default}. Cheer!"
+		"en"	"BINGO! {olive}{1}{default} guessed {olive}{2}{default}'s code: {lightgreen}{3}{default}. Cheers!"
 		"zho"	"BINGO! {olive}{1}{default} 猜對了 {olive}{2}{default} 的終極密碼: {lightgreen}{3}{default}. 掌聲鼓勵!"
 	}
 	"game5"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"	"{olive}{1}{default} guessed {green}{2}{default}. Code is greater than it."
+		"en"	"{olive}{1}{default} guessed {green}{2}{default}. The code is higher."
 		"zho"	"{olive}{1}{default} 猜密碼 {green}{2}{default}. 終極密碼比較大"
 	}
 	"game6"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"	"{olive}{1}{default} guessed {green}{2}{default}. Code is less than it."
+		"en"	"{olive}{1}{default} guessed {green}{2}{default}. The code is lower."
 		"zho"	"{olive}{1}{default} 猜密碼 {green}{2}{default}. 終極密碼比較小"
 	}
 	"game7"
 	{
-		"en"	"Someone has chosen a Da Vinci Code. Figure it out first!"
+		"en"	"Someone has already set a Da Vinci Code. Guess that one first!"
 		"zho"	"已有人開始遊戲, 先找出終極密碼!"
 	}
 	"game8"
 	{
-		"en"	"Play a Da Vinci Code."
+		"en"	"play a Da Vinci Code game."
 		"zho"	"來玩終極密碼."
 	}
 	"game9"
 	{
 		"#format"	"{1:i}"
-		"en"	"{default}You choose {lightgreen}{1}{default} as code."
+		"en"	"{default}You chose {lightgreen}{1}{default} as the code."
 		"zho"	"{default}You choose {lightgreen}{1}{default} as code."
 	}
 	"game10"
 	{
 		"#format"	"{1:s}"
-		"en"	"{olive}{1}{default}has chosen a {green}Da Vinci Code{default}. Anyone Wants to guess it ?"
+		"en"	"{olive}{1}{default} has set a {green}Da Vinci Code{default}. Anyone want to guess it?"
 		"zho"	"{olive}{1}{default} 已選擇了 {green}終極密碼{default}. 誰想要來猜?"
 	}
 	"game11"
 	{
 		"#format"	"{1:s},{2:i},{3:i}"
-		"en"	"{olive}{1} {default}rolled a {lightgreen}{2} {default}sided die!. It's {green}{3}{default}!"
+		"en"	"{olive}{1} {default}rolled a {lightgreen}{2}{default}-sided die! It's {green}{3}{default}!"
 		"zho"	"{olive}{1} {default}擲出了 {lightgreen}{2} {default}面骰子!. 結果是 {green}{3}{default}!"
 	}
 	"game12"
@@ -998,26 +998,26 @@
 	}
 	"game13"
 	{
-		"en"	"Play a Integer-sided dice."
+		"en"	"roll a die with that many sides."
 		"zho"	"多面骰子遊戲."
 	}
 	///////////////kills.smx///////////////
 	"kills1"
 	{
 		"#format"	"{1:i},{2:i},{3:i},{4:i},{5:i},{6:s}"
-		"en"	"{default}SI: {olive}{1}{default}[{green}headshot{default}: {olive}{2}{default}],Common: {olive}{3}{default}[{green}headshot{default}: {olive}{4}{default}],FF: {olive}{5}{default} - {olive}{6}"
+		"en"	"{default}SI: {olive}{1}{default} [{green}headshots{default}: {olive}{2}{default}], Common: {olive}{3}{default} [{green}headshots{default}: {olive}{4}{default}], FF: {olive}{5}{default} - {olive}{6}"
 		"zho"	"{default}擊殺特感: {olive}{1}{default}[{green}爆頭{default}: {olive}{2}{default}],殭屍: {olive}{3}{default}[{green}爆頭{default}: {olive}{4}{default}],友傷: {olive}{5}{default} - {olive}{6}"
 	}
 	"kills2"
 	{
 		"#format"	"{1:i},{2:i},{3:i},{4:i},{5:s}"
-		"en"	"Cap: {olive}{1}{default}[{lightgreen}pounce{default}: {olive}{2}{default},{lightgreen}tounge{default}: {olive}{3}{default},{lightgreen}boom{default}: {olive}{4}{default}] - {olive}{5}"
+		"en"	"Caps: {olive}{1}{default} [{lightgreen}pounces{default}: {olive}{2}{default}, {lightgreen}tongues{default}: {olive}{3}{default}, {lightgreen}booms{default}: {olive}{4}{default}] - {olive}{5}"
 		"zho"	"總計被控: {olive}{1}{default}[{lightgreen}被撲{default}: {olive}{2}{default},{lightgreen}被拉{default}: {olive}{3}{default},{lightgreen}被噴{default}: {olive}{4}{default}] - {olive}{5}"
 	}
 	///////////////l4d_panic_notify.smx///////////////
 	"l4d_panic_notify1"
 	{
-		"en"	"{default}started the {lightgreen}Final Rescue"
+		"en"	"{default}started the {lightgreen}finale"
 		"zho"	"{default}啟動了 {lightgreen}最後救援"
 	}
 	"l4d_panic_notify2"
@@ -1032,28 +1032,28 @@
 	}
 	"l4d_panic_notify4"
 	{
-		"en"	"{olive}crow {lightgreen}horde event"
+		"en"	"{olive}Crow {lightgreen}horde event"
 		"zho"	"{default}烏鴉 {lightgreen}屍潮事件 (南南東~)"
 	}
 	"l4d_panic_notify5"
 	{
-		"en"	"{olive}Deadth Aboard {lightgreen}horde event"
+		"en"	"{olive}Death Aboard {lightgreen}horde event"
 		"zho"	"{olive}幽靈船 {lightgreen}屍潮事件"
 	}
 	"l4d_panic_notify6"
 	{
-		"en"	"{lightgreen}Rescue Started"
+		"en"	"{lightgreen}Rescue started"
 		"zho"	"{lightgreen}救援開始"
 	}
 	///////////////l4d_pig_infected_notify.smx///////////////
 	"killed by fire"
 	{
-		"en"	"killed by fire"
+		"en"	"burned to death"
 		"zho"	"玩火自焚"
 	}
 	"killed by map"
 	{
-		"en"	"killed by map"
+		"en"	"was killed by the map"
 		"zho"	"自爆"
 	}
 	"killed himself"
@@ -1063,120 +1063,120 @@
 	}
 	"killed by toy"
 	{
-		"en"	"killed by toy"
+		"en"	"was killed by a prop"
 		"zho"	"玩車自爆"
 	}
 	"killed by boom"
 	{
-		"en"	"killed by toy"
+		"en"	"was killed by an explosion"
 		"zho"	"被炸死"
 	}
 	"killed by server"
 	{
-		"en"	"killed by server"
+		"en"	"was slain by the server"
 		"zho"	"自我了斷"
 	}
 	"One-Punch"
 	{
-		"en"	"One-Punch"
+		"en"	"a punch"
 		"zho"	"ㄧ拳超人"
 	}
 	"Rock-Stone"
 	{
-		"en"	"Rock-Stone"
+		"en"	"a rock"
 		"zho"	"泰山壓頂"
 	}
 	"Toy"
 	{
-		"en"	"Toy"
+		"en"	"a prop"
 		"zho"	"車子玩具"
 	}
 	"Alarm-Car"
 	{
-		"en"	"Alarm-Car"
+		"en"	"an alarm car"
 		"zho"	"絕命警報車"
 	}
 	"Tank is killed by something"
 	{
 		"#format"	"{1:t}"
-		"en"	"{green}Tank is {olive}{1}{default}."
+		"en"	"{green}Tank {olive}{1}{default}."
 		"zho"	"{green}Tank {olive}{1}{default}了."
 	}
 	"Player is killed by something"
 	{
 		"#format"	"{1:s},{2:t}"
-		"en"	"{red}{1}{default} is {olive}{2}{default}."
+		"en"	"{red}{1}{default} {olive}{2}{default}."
 		"zho"	"{red}{1}{default} {olive}{2}{default}了."
 	}
 	"Tank Kill Witch"
 	{
 		"#format"	"{1:t}"
-		"en"	"Tank {default}uses {olive}{1}{default} to terminate {red}Witch{default}."
+		"en"	"Tank {default}used {olive}{1}{default} to kill the {red}Witch{default}."
 		"zho"	"Tank {default}使用 {olive}{1}{default} 終結了 {red}Witch{default}."
 	}
 	"punches"
 	{
-		"en"	"punches"
+		"en"	"punched"
 		"zho"	"拍死"
 	}
 	"smashes"
 	{
-		"en"	"smashes"
+		"en"	"smashed"
 		"zho"	"砸死"
 	}
 	"plays toy to kill"
 	{
-		"en"	"plays toy to kill"
+		"en"	"used a prop to kill"
 		"zho"	"玩車殺死"
 	}
 	"plays alarm car to kill"
 	{
-		"en"	"plays alarm car to kill"
+		"en"	"used an alarm car to kill"
 		"zho"	"玩警報車殺死"
 	}
 	"Tank kill teammate"
 	{
 		"#format"	"{1:t},{2:s}"
-		"en"	"{green}Tank {olive}{1}{default} {2}teammate."
+		"en"	"{green}Tank {olive}{1}{default} their {2}teammate."
 		"zho"	"{green}Tank {olive}{1}{default} {2}隊友."
 	}
 	"l4d_pig_infected2"
 	{
-		"en"	"{red}Witch{default} killed teammate."
+		"en"	"The {red}Witch{default} killed a teammate."
 		"zho"	"{red}妹子{default} 使出 {olive}天馬流星拳 {default}打死隊友."
 	}
 	"l4d_pig_infected3"
 	{
-		"en"	"{red}Witch{default} killed AI teammate."
+		"en"	"The {red}Witch{default} killed an AI teammate."
 		"zho"	"{red}妹子{default} 使出 {olive}北斗神拳 {default}打死AI隊友."
 	}
 	"l4d_pig_infected4"
 	{
-		"en"	"{red}Witch{default} {olive}gone{default}."
+		"en"	"The {red}Witch{default} {olive}died on her own{default}."
 		"zho"	"{red}Witch{default} {olive}歸天{default}了."
 	}
 	"l4d_pig_infected5"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"	"{olive}{1}{default} kills {red}{2}{default}'s Boomer to stumble {green}Tank{default}."
+		"en"	"{olive}{1}{default} killed {red}{2}{default}'s Boomer and stumbled the {green}Tank{default}."
 		"zho"	"{olive}{1}{default} 殺死 {red}{2}{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected6"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"	"{olive}{1}{default} kills {red}AI{default} Boomer to stumble {green}Tank{default}."
+		"en"	"{olive}{1}{default} killed an {red}AI{default} Boomer and stumbled the {green}Tank{default}."
 		"zho"	"{olive}{1}{default} 殺死 {red}AI{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected7"
 	{
 		"#format"	"{1:t},{2:s}"
-		"en"	"{green}Tank {olive}{1} {red}{2}{default}'s Boomer to stumble himself."
+		"en"	"{green}Tank {olive}{1} {red}{2}{default}'s Boomer and stumbled himself."
 		"zho"	"{green}Tank {olive}{1} {red}{2}{default} 肥宅炸暈自己."
 	}
 	"l4d_pig_infected8"
 	{
 		"#format"	"{1:t}"
-		"en"	"{green}Tank {olive}{1} {red}AI{default} Boomer to stumble {default}himself."
+		"en"	"{green}Tank {olive}{1} {red}an AI{default} Boomer and stumbled {default}himself."
 		"zho"	"{green}Tank {olive}{1} {red}AI{default} 肥宅炸暈自己."
 	}
 	"l4d_pig_infected9"
@@ -1188,7 +1188,7 @@
 	"l4d_pig_infected10"
 	{
 		"#format"	"{1:t}"
-		"en"	"{green}Tank {olive}{1} {red}AI{default} Boomer"
+		"en"	"{green}Tank {olive}{1} {red}an AI{default} Boomer."
 		"zho"	"{green}Tank {olive}{1} {red}AI{default} 肥宅"
 	}
 	"l4d_pig_infected11"
@@ -1199,25 +1199,25 @@
 	}
 	"l4d_pig_infected12"
 	{
-		"en"	"{red}AI{default} Boomer exploded."
+		"en"	"An {red}AI{default} Boomer exploded."
 		"zho"	"{red}AI{default} 肥宅爆炸啦."
 	}
 	"l4d_pig_infected13"
 	{
 		"#format"	"{1:s}"
-		"en"	"{red}{1}{default}'s Boomer stumbles {green}Tank{default}."
+		"en"	"{red}{1}{default}'s Boomer stumbled the {green}Tank{default}."
 		"zho"	"{default}豬隊友 {red}{1}{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	"l4d_pig_infected14"
 	{
-		"en"	"{red}AI{default} Boomer stumbles {green}Tank{default}."
+		"en"	"An {red}AI{default} Boomer stumbled the {green}Tank{default}."
 		"zho"	"{red}AI{default} 肥宅炸暈 {green}Tank{default}."
 	}
 	///////////////l4dffannounce.smx///////////////
 	"fell from top floor."
 	{
 		"#format"	"{1:s}"
-		"en"	"{olive}{1}{default} fell from top floor."
+		"en"	"{olive}{1}{default} fell from the top floor."
 		"zho"	"{olive}{1}{default} 墬樓了..."
 	}
 	"player kill teammate"
@@ -1264,7 +1264,7 @@
 	///////////////checkpoint-rage-control.smx///////////////
 	"Survivors are in saferoom, Tank still loses rage!!!"
 	{
-		"en"	"{olive}Survivors{default} are in saferoom, {green}Tank{default} still loses rage!!!"
+		"en"	"{olive}Survivors{default} are in the saferoom, but the {green}Tank{default} still loses rage!"
 		"zho"	"{olive}倖存者{default} 處於安全區域, {green}Tank{default} 依然掉控制權!!!"
 	}
 	///////////////caster_assister.smx///////////////
@@ -1282,19 +1282,19 @@
 	}
 	"Force Panic Event!!"
 	{
-		"en"	"Force Panic Event!!"
+		"en"	"Forced panic event!"
 		"zho"	"強制刷屍潮!!"
 	}
 	///////////////l4d_NoRescueFirstTank.smx///////////////
 	"Only One Tank after Final Rescue"
 	{
-		"en"	"{green}Only One Tank {default}after {olive}Final Rescue"
+		"en"	"{green}Only one Tank {default}after the {olive}finale starts"
 		"zho"	"{olive}救援開始 {default}後只有 {green}一隻Tank!"
 	}
 	///////////////l4d_tank_attack_control.smx///////////////
 	"l4d_tank_attack_control_Rock"
 	{
-		"en"	"{default}[{green}Rock{default}] ({olive}MOUSE2{default}) one handed overhand\n({olive}E{default}) underhand\n({olive}R{default}) two handed overhand"
+		"en"	"{default}[{green}Rock{default}] ({olive}MOUSE2{default}) one-handed overhand\n({olive}E{default}) underhand\n({olive}R{default}) two-handed overhand"
 		"zho"	"{default}[{green}石頭變化{default}] ({olive}右鍵{default}) 一手沖天\n({olive}E鍵{default}) 落井下石\n({olive}R鍵{default}) 兩手遮天"
 	}
 	///////////////l4d_tank_control.smx///////////////
@@ -1306,50 +1306,50 @@
 	}
 	"force this player will become the tank"
 	{
-		"en"	"force this player will become the tank"
+		"en"	"forces this player to become the tank"
 		"zho"	"強制指定玩家下次必須當Tank"
 	}
 	"target is not in infected team"
 	{
 		"#format"	"{1:s}"
-		"en"	"{1} is not in infected team"
+		"en"	"{1} is not on the infected team"
 		"zho"	"{1} 不在特感隊伍裡"
 	}
 	"Tank Control has been clear and reset!"
 	{
-		"en"	"Tank Control has been clear and reset!"
+		"en"	"Tank control has been cleared and reset!"
 		"zho"	"已清除並且重新開始輪流當Tank"
 	}
 	"l4d_tank_control1"
 	{
-		"en"	"plugin is disabled, set convar \"tank_control_disable 1\" first!"
+		"en"	"plugin is disabled, set the convar \"tank_control_disable 1\" first!"
 		"zho"	"強制當Tank插件目前關閉，請先設定 \"tank_control_disable 1\""
 	}
 	"l4d_tank_control2"
 	{
 		"#format"	"{1:s}"
-		"en"	"{green}[IamTank]{default} Adm forces {red}{1}{default} will become the {green}tank{default}!"
+		"en"	"{green}[IamTank]{default} An admin forced {red}{1}{default} to become the {green}tank{default}!"
 		"zho"	"{green}[我是坦]{default} 管理員強制 {red}{1}{default} 當下次 {green}Tank{default}!"
 	}
 	"l4d_tank_control3"
 	{
-		"en"	"{green}[IamTank]{default} Everyone has been {green}tank{default} at once，{olive}random now{default}!"
+		"en"	"{green}[IamTank]{default} Everyone has been {green}tank{default} once, {olive}picking randomly now{default}!"
 		"zho"	"{green}[搶坦之亂]{default} 每人已當過 {green}Tank{default}，{olive}自由搶坦{default}!"
 	}
 	"l4d_tank_control4"
 	{
-		"en"	"{green}[IamTank]{default} There are no {red}Infected players {default}at this moment."
+		"en"	"{green}[IamTank]{default} There are no {red}Infected players {default}right now."
 		"zho"	"{green}[我是坦] {red}特感隊伍{default} 沒有人，無法選玩家當 {green}Tank{default}."
 	}
 	"l4d_tank_control5"
 	{
 		"#format"	"{1:s}"
-		"en"	"{green}[IamTank] {default}({olive}{1}{default}) {green}Tank Rage Meter Refilled."
+		"en"	"{green}[IamTank] {default}({olive}{1}{default}) {green}Tank rage meter refilled."
 		"zho"	"{green}[我是坦] {default}({olive}{1}{default}) {green}Tank怒氣值已填滿."
 	}
 	"l4d_tank_control6"
 	{
-		"en"	"{green}[Tank] {default}won't pass，Only {red}1{default} control left!"
+		"en"	"{green}[Tank] {default}won't pass: only {red}1{default} control left!"
 		"zho"	"{green}[我是坦] {default}不會換人，剩下 {red}1{default} 次控制權!"
 	}
 	///////////////l4d_tank_count.smx///////////////
@@ -1376,20 +1376,20 @@
 	"l4d_tank_count1"
 	{
 		"#format"	"{1:i},{2:i},{3:i},{4:i},{5:i}"
-		"en"	"Survived {green}{1}{olive}: {green}{2}{olive}.(Punch: {green}{3}{olive}, Rock: {green}{4}{olive}, Toy: {green}{5}{olive})"
+		"en"	"lasted {green}{1}{olive}m {green}{2}{olive}s (Punches: {green}{3}{olive}, Rocks: {green}{4}{olive}, Props: {green}{5}{olive})"
 		"zho"	"存活了 {green}{1}{olive}分 {green}{2}{olive}秒.(拳: {green}{3}{olive}, 石: {green}{4}{olive}, 鐵: {green}{5}{olive})"
 	}
 	///////////////l4d_tank_witch_damage_announce_spawnAnnouncer.smx///////////////
 	"Tank (player) health remaining"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"	"Tank {default}({red}{1}{default}) had {red}{2}{default} health remaining"
+		"en"	"Tank {default}({red}{1}{default}) had {red}{2}{default} health remaining."
 		"zho"	"Tank {default}({red}{1}{default}) 還剩 {red}{2}{default} 血量"
 	}
 	"Tank health remaining"
 	{
 		"#format"	"{1:i}"
-		"en"	"Tank had {red}{1}{default} health remaining"
+		"en"	"Tank had {red}{1}{default} health remaining."
 		"zho"	"Tank還剩 {red}{1}{default} 血量"
 	}
 	"Tank has spawned!"
@@ -1399,7 +1399,7 @@
 	}
 	"Tank got lost and lost control."
 	{
-		"en"	"got lost and lost control."
+		"en"	"ran out of rage and lost control."
 		"zho"	"迷路失去控制權了."
 	}
 	"Witch has spawned!"
@@ -1432,7 +1432,7 @@
 	"l4d_tank_witch_damage_announce_spawnAnnouncer2"
 	{
 		"#format"	"{1:i}"
-		"en"	"dealt {olive}{1}{default} damage to {green}Tank"
+		"en"	"dealt {olive}{1}{default} damage to the {green}Tank"
 		"zho"	"造成 {olive}{1}{default} 傷害給 {green}Tank"
 	}
 	"l4d_tank_witch_damage_announce_spawnAnnouncer3"
@@ -1444,7 +1444,7 @@
 	"l4d_tank_witch_damage_announce_spawnAnnouncer4"
 	{
 		"#format"	"{1:s}"
-		"en"	"{blue}{1}{default} {olive}draw-crowned {green}Witch{default}."
+		"en"	"{blue}{1}{default} {olive}draw-crowned {green}a Witch{default}."
 		"zho"	"{blue}{1}{default} 散彈 {olive}爆☆殺 {green}妹子{default}."
 	}	
 	"l4d_tank_witch_damage_announce_spawnAnnouncer5"
@@ -1469,7 +1469,7 @@
 	///////////////l4d_versus_despawn_health.smx///////////////
 	"l4d_versus_despawn_health1"
 	{
-		"en"	"You can't regain {red}HP{default}, Cool Down {green}20s{default} not yet!"
+		"en"	"You can't regain {red}HP{default} yet ({green}20s{default} cooldown)!"
 		"zho"	"你無法回復 {red}HP{default}，冷卻時間 {green}20{default} 秒未到!"
 	}
 	"l4d_versus_despawn_health2"
@@ -1492,7 +1492,7 @@
 	"Listen Mode1"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"	"[{green}ListenMode{default}] {olive}type {green}{2} {olive}{1} {lightgreen}Listen Mode{olive}."
+		"en"	"[{green}ListenMode{default}] {olive}Type {green}{2} {olive}to turn {1} {lightgreen}Listen Mode{olive}."
 		"zho"	"[{green}監聽插件{default}] {olive}輸入 {green}{2} {olive}{1} {lightgreen}監聽模式{olive}."
 	}
 	"Listen Mode2"
@@ -1503,20 +1503,20 @@
 	}
 	"Listen Mode3"
 	{
-		"en"	"{olive}(You can see what {green}Survivor{olive} and {green}Infected{olive} type via chat box, and what they say via mic)"
+		"en"	"{olive}(You can see what {green}Survivors{olive} and {green}Infected{olive} type in chat and hear what they say on mic)"
 		"zho"	"{olive}(你可以透過聊天視窗看到 {green}倖存者{olive}和 {green}特感{olive} 的隊伍對話，亦可透過音頻聽到隊伍談話)"
 	}
 	///////////////admin_hp.smx///////////////
 	"admin_hp"
 	{
 		"#format"	"{1:s}"
-		"en"	"Adm({lightgreen}{1}{default}) restores {olive}all survivors {green}FULL HP"
+		"en"	"Admin ({lightgreen}{1}{default}) restored {olive}all survivors {green}to full HP"
 		"zho"	"管理員({lightgreen}{1}{default}) 回復 {olive}所有倖存者 {green}滿血"
 	}
 	///////////////L4DVSAutoSpectateOnAFK.smx///////////////
 	"L4DVSAutoSpectateOnAFK1"
 	{
-		"en"	"Press M or type !sur/!inf and join the game..."
+		"en"	"Press M or type !sur/!inf to join the game..."
 		"zho"	"按M鍵或是輸入 !sur/!inf 加入隊伍..."
 	}
 	"L4DVSAutoSpectateOnAFK2"
@@ -1527,7 +1527,7 @@
 	}
 	"L4DVSAutoSpectateOnAFK3"
 	{
-		"en"	"[AFK] You will be forced to spectate as soon as a player leaves the safe room."
+		"en"	"[AFK] You will be forced to spectate as soon as a player leaves the saferoom."
 		"zho"	"[掛機插件] 偵測掛機! 一旦有人離開安全室，你會被移至旁觀."
 	}
 	"L4DVSAutoSpectateOnAFK4"
@@ -1538,7 +1538,7 @@
 	}
 	"L4DVSAutoSpectateOnAFK5"
 	{
-		"en"	"[AFK] You will be kicked as soon as a player leaves the safe room."
+		"en"	"[AFK] You will be kicked as soon as a player leaves the saferoom."
 		"zho"	"[掛機插件] 一旦有人離開安全室，你會被踢出伺服器"
 	}
 	"L4DVSAutoSpectateOnAFK6"
@@ -1565,12 +1565,12 @@
 	}
 	"lerptracker1"
 	{
-		"en"	"has been kicked for lerp too high."
+		"en"	"was kicked, lerp too high:"
 		"zho"	"lerp太高被踢出伺服器"
 	}
 	"lerptracker2"
 	{
-		"en"	"was moved to spectators for lerp"
+		"en"	"was moved to spectators for a lerp of"
 		"zho"	"lerp值不符被移至旁觀"
 	}
 	"lerptracker3"
@@ -1588,7 +1588,7 @@
 	"lerptracker5"
 	{
 		"#format"	"{1:01f}"
-		"en"	"Illegal change of the lerp midgame! Change it back to {olive}{1}"
+		"en"	"Illegal lerp change mid-game! Change it back to {olive}{1}"
 		"zho"	"比賽中途Lerp不可再修改! 請改回 {olive}{1}{default} 再回隊伍"
 	}
 	"lerptracker6"
@@ -1601,7 +1601,7 @@
 	"pounceannounce1"
 	{
 		"#format"	"{1:s},{2:s},{3:.01f},{4:i}"
-		"en"	"{green}{1}{default} pounced {olive}{2}{default} for {lightgreen}{3}{default} damage.(Max: {4})"
+		"en"	"{green}{1}{default} pounced {olive}{2}{default} for {lightgreen}{3}{default} damage (max: {4})."
 		"zho"	"{green}{1}{default} 高撲 {olive}{2}{default} 造成了 {lightgreen}{3}{default} 傷害.(最大: {4})"
 	}
 	"PounceDistanceDisplay1"
@@ -1650,13 +1650,13 @@
 	"ratemonitor3"
 	{
 		"#format"	"{1:s}"
-		"en"	"{lightgreen}{1}{default}'s netsettings set to illegal values"
+		"en"	"{lightgreen}{1}{default}'s netsettings are set to illegal values"
 		"zho"	"{lightgreen}{1}{default}的網路數據設成不合法的值"
 	}
 	"ratemonitor4"
 	{
 		"#format"	"{1:s}"
-		"en"	"{lightgreen}{1}{default}'s illegaly changed netsettings midgame"
+		"en"	"{lightgreen}{1}{default} illegally changed netsettings mid-game"
 		"zho"	"{lightgreen}{1}{default}的網路數據在遊戲中途改變"
 	}	
 	"ratemonitor5"
@@ -1673,7 +1673,7 @@
 	}	
 	"ratemonitor7"
 	{
-		"en"	"(and remove any {lightgreen}non-digital characters)"
+		"en"	"(and remove any {lightgreen}non-digit characters)"
 		"zho"	"(並且移除任何 {lightgreen}不是數字的字元)"
 	}	
 	"ratemonitor8"
@@ -1725,52 +1725,52 @@
 	}
 	"Give hp"
 	{
-		"en"	"Give hp"
+		"en"	"Give HP"
 		"zho"	"回血"
 	}
 	"All talk"
 	{
-		"en"	"All talk"
+		"en"	"All Talk"
 		"zho"	"全體語音"
 	}
 	"Turn on All talk"
 	{
-		"en"	"Turn on All talk"
+		"en"	"Turn On All Talk"
 		"zho"	"開啟全體語音"
 	}
 	"Turn off all talk"
 	{
-		"en"	"Turn off all talk"
+		"en"	"Turn Off All Talk"
 		"zho"	"關閉全體語音"
 	}
 	"Restartmap"
 	{
-		"en"	"Restartmap"
+		"en"	"Restart Map"
 		"zho"	"重新目前關卡"
 	}
 	"Change map"
 	{
-		"en"	"Change map"
+		"en"	"Change Map"
 		"zho"	"換圖"
 	}
 	"Change addon map"
 	{
-		"en"	"Change addon map"
+		"en"	"Change Addon Map"
 		"zho"	"換第三方圖"
 	}
 	"Kick player"
 	{
-		"en"	"Kick player"
+		"en"	"Kick Player"
 		"zho"	"踢出玩家"
 	}
 	"Forcespectate player"
 	{
-		"en"	"Forcespectate player"
+		"en"	"Force-Spectate Player"
 		"zho"	"強制玩家旁觀"
 	}
 	"starts a vote"
 	{
-		"en"	"starts a vote"
+		"en"	"started a vote"
 		"zho"	"發起新投票"
 	}
 	"only their team can vote"
@@ -1785,7 +1785,7 @@
 	}
 	"Plz choose addon maps"
 	{
-		"en"	"Plz choose a map"
+		"en"	"Please choose a map"
 		"zho"	"請選擇一張官方圖"
 	}
 	"No Mercy"
@@ -1826,64 +1826,64 @@
 	}
 	"votes3_1"
 	{
-		"en"	"ready plugin is Prohibited"
+		"en"	"Ready plugin vote is prohibited"
 		"zho"	"禁用ready插件"
 	}
 	"votes3_2"
 	{
-		"en"	"givehp is Prohibited"
+		"en"	"Give HP vote is prohibited"
 		"zho"	"禁用回血"
 	}
 	"votes3_3"
 	{
-		"en"	"alltalk on is Prohibited"
+		"en"	"All talk on vote is prohibited"
 		"zho"	"禁用全體語音"
 	}
 	"votes3_4"
 	{
-		"en"	"alltalk off is Prohibited"
+		"en"	"All talk off vote is prohibited"
 		"zho"	"禁用關閉全體語音"
 	}
 	"votes3_5"
 	{
-		"en"	"restart map is Prohibited"
+		"en"	"Restart map vote is prohibited"
 		"zho"	"禁用重新目前地圖"
 	}
 	"votes3_6"
 	{
-		"en"	"chane map is Prohibited"
+		"en"	"Change map vote is prohibited"
 		"zho"	"禁用換圖"
 	}
 	"votes3_7"
 	{
-		"en"	"chane custom map is Prohibited"
+		"en"	"Change custom map vote is prohibited"
 		"zho"	"禁用換第三方圖"
 	}
 	"votes3_8"
 	{
-		"en"	"kick Vote is Prohibited"
+		"en"	"Kick vote is prohibited"
 		"zho"	"禁用踢人投票"
 	}
 	"votes3_9"
 	{
-		"en"	"forcespectate player vote is Prohibited"
+		"en"	"Force-spectate vote is prohibited"
 		"zho"	"禁用強制玩家旁觀投票"
 	}
 	"votes3_10" 
 	{
 		"#format"	"{1:i}"
-		"en"	"You have been voted to be forcespectated! Wait {green}{1}s{default} to rejoin team again."
+		"en"	"You have been voted into spectators! Wait {green}{1}s{default} to rejoin a team."
 		"zho"	"你已經被投票強制旁觀! 等待 {green}{1}{default} 秒重新加入隊伍."
 	}
 	"votes3_11" 
 	{
-		"en"	"You can rejoin both team now."
+		"en"	"You can rejoin a team now."
 		"zho"	"你現在可以重新加入隊伍了"
 	}
 	"votes3_12"
 	{
 		"#format"	"{1:i}"
-		"en"	"You must wait for {red}{1}{default} sec then start a new vote!"
+		"en"	"You must wait {red}{1}{default} sec before starting a new vote!"
 		"zho"	"你必須等待 {red}{1}{default} 秒才能發起新投票"
 	}
 	"votes3_13"
@@ -1894,7 +1894,7 @@
 	"votes3_14"
 	{
 		"#format"	"{1:s}"
-		"en"	"{green}5{default} sec to change map {blue}{1}"
+		"en"	"{green}5{default} sec until the map changes to {blue}{1}"
 		"zho"	"{green}5{default} 秒後換圖 {blue}{1}"
 	}
 	"votes3_15"
@@ -1906,12 +1906,12 @@
 	"votes3_16"
 	{
 		"#format"	"{1:s}"
-		"en"	"{blue}{1}{default} has been forcespectated!"
+		"en"	"{blue}{1}{default} has been force-spectated!"
 		"zho"	"{blue}{1}{default} 被投票強制旁觀!"
 	}
 	"votes3_17"
 	{
-		"en"	"Disable"
+		"en"	"Disabled"
 		"zho"	"關閉中"
 	}
 	"votes3_18"
@@ -1921,12 +1921,12 @@
 	}
 	"votes3_19"
 	{
-		"en"	"Target has kick immue, choose again!"
+		"en"	"Target is immune to kicks, choose again!"
 		"zho"	"目標玩家免疫被踢，請重新選擇"
 	}
 	"votes3_20"
 	{
-		"en"	"{olive}%N{default} tries to kick you, but you have kick immue."
+		"en"	"{olive}%N{default} tried to kick you, but you are immune."
 		"zho"	"{olive}%N{default} 嘗試投票踢你, 但是你有免疫權限."
 	}
 	///////////////l4d_current_survivor_progress.smx//////////////
@@ -1956,13 +1956,13 @@
 	}
 	"l4d_bossvote4"
 	{
-		"en"	"{blue}[{default}BossVote{blue}]{default} Vote can only be started by a player during ready-up @ first round!"
+		"en"	"{blue}[{default}BossVote{blue}]{default} Vote can only be started by a player during ready-up in the first round!"
 		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 只能在第一回合的準備階段中的玩家發起投票"
 	}
 	"l4d_bossvote5"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"	"Change Tank: {1}%%, Witch: {2}%%"
+		"en"	"Set Tank: {1}%%, Witch: {2}%%?"
 		"zho"	"改變Boss路程，Tank: {1}%%, Witch: {2}%%"
 	}
 	"l4d_bossvote6"
@@ -1973,7 +1973,7 @@
 	"l4d_bossvote7"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"	"Adm {lightgreen}%N{default} forces to change {green}Tank: {1}%%, Witch: {2}%%. {default}Applying custom boss spawns..."
+		"en"	"Admin {lightgreen}%N{default} forced {green}Tank: {1}%%, Witch: {2}%%. {default}Applying custom boss spawns..."
 		"zho"	"管理員 {lightgreen}%N{default} 強制Boss路程為 {green}Tank: {1}%%, Witch: {2}%%. {default}正在修改Boss路程..."
 	}
 	///////////////l4d_wind.smx//////////////
@@ -1985,17 +1985,17 @@
 	"Succeed to add a bot"
 	{
 		"#format"	"{1:s}"
-		"en"	"Succeed to add a bot, Spectator type {green}{1}{default} to join"
+		"en"	"Bot added. Spectators, type {green}{1}{default} to join"
 		"zho"	"成功增加一個電腦Bot, 旁觀者輸入 {green}{1}{default} 加入倖存者取代"
 	}
 	"You are not Spectator..."
 	{
-		"en"	"You are not Spectator..."
+		"en"	"You are not a spectator..."
 		"zho"	"你不是旁觀者..."
 	}
 	"Could not teleport player after create a bot"
 	{
-		"en"	"Could not teleport player after create a bot"
+		"en"	"Could not teleport the player after creating a bot"
 		"zho"	"新增電腦Bot之後無法傳送至玩家附近"
 	}
 	///////////////SpeakingList.smx//////////////
@@ -2032,7 +2032,7 @@
 	///////////////l4d_jukebox_spawner.smx//////////////
 	"stopped jukebox playing."
 	{
-		"en"	"stopped jukebox playing."
+		"en"	"stopped the jukebox."
 		"zho"	"停止了點唱機音樂"
 	}
 	"Wait seconds to play a song again."
@@ -2044,59 +2044,59 @@
 	///////////////AntiBreach.smx//////////////
 	"You can't spawn near safe room doors."
 	{
-		"en"	"You can't spawn near safe room doors."
+		"en"	"You can't spawn near saferoom doors."
 		"zho"	"你現在不能在安全門附近復活."
 	}
 	///////////////l4d_passing_Tank_no_instant_respawn.smx//////////////
 	"Give Tank To AI"
 	{
 		"#format"	"{1:s}"
-		"en"	"{red}{1}{default} is given to AI Tank!"
+		"en"	"{red}{1}{default}'s Tank was given to the AI!"
 		"zho"	"{red}{1}{default} 轉移給AI Tank了!"
 	}
 	///////////////l4d_PillsHere.smx//////////////
 	"l4d_PillsHere1"
 	{
-		"en"	"give survivor player the pill."
+		"en"	"gives a survivor pills."
 		"zho"	"給倖存者藥丸"
 	}	
 	"l4d_PillsHere2"
 	{
 		"#format"	"{1:s}"
-		"en"	"{1} is not in survivor team."
+		"en"	"{1} is not on the survivor team."
 		"zho"	"{1} 玩家不在倖存者隊伍"
 	}
 	"l4d_PillsHere3"
 	{
 		"#format"	"{1:s}"
-		"en"	"You give {1} a pill."
+		"en"	"You gave {1} pills."
 		"zho"	"你給了 {1} 一顆藥丸."
 	}
 	"l4d_PillsHere4"
 	{
 		"#format"	"{1:s}"
-		"en"	"{1} already has pill."
+		"en"	"{1} already has pills."
 		"zho"	"{1} 已經擁有藥丸."
 	}
 	///////////////l4d_slot_vote.smx//////////////
 	"Server slots count locked!"
 	{
-		"en"		"Server slots count locked!"
+		"en"		"Server slot count locked!"
 		"zho"		"伺服器人數上限鎖住!"
 	}
 	"Server slots count unlocked!"
 	{
-		"en"		"Server slots count unlocked!"
+		"en"		"Server slot count unlocked!"
 		"zho"		"伺服器人數上限解鎖!"
 	}
 	"locked by config or admin.1"
 	{
-		"en"		"You can not change slots count. It's locked by config or admin."
+		"en"		"You cannot change the slot count. It's locked by the config or an admin."
 		"zho"		"你不能更改伺服器人數上限，權限被文件或管理員鎖住"
 	}
 	"locked by config or admin.2"
 	{
-		"en"		"You can not kick specs. It's locked by config or admin."
+		"en"		"You cannot kick spectators. It's locked by the config or an admin."
 		"zho"		"你不能踢掉旁觀，權限被文件或管理員鎖住"
 	}
 	"kicks all spectators"
@@ -2118,7 +2118,7 @@
 	}
 	"No spectators"
 	{
-		"en"		"There is no spectators."
+		"en"		"There are no spectators."
 		"zho"		"目前沒有旁觀者"
 	}
 	"Slot vote title"
@@ -2149,44 +2149,44 @@
 	}
 	"Spectator response"
 	{
-		"en"		"Spectators can not call votes."
+		"en"		"Spectators cannot call votes."
 		"zho"		"旁觀者不得發起投票"
 	}
 	"ADM IMMUNE"
 	{
 		"#format"	"{1:s}"
-		"en"		"Can not kick {olive}{1}{default}(ADM) from spectators."
+		"en"		"Cannot kick {olive}{1}{default} (admin) from spectators."
 		"zho"		"無法從旁觀者中踢掉 {olive}{1}{default}(管理員)."
 	}
 	///////////////l4d_tankhud.smx//////////////
 	"l4d_tankhud1"
 	{
 		"#format"	"{1:s}"
-		"en"		"[{green}HUD{default}]{lightgreen} Tank Hud {default}is now {olive}{1}{default}."
+		"en"		"[{green}HUD{default}]{lightgreen} Tank HUD {default}is now {olive}{1}{default}."
 		"zho"		"[{green}介面插件{default}]{lightgreen} Tank介面 {default}目前 {olive}{1}{default}."
 	}
 	"l4d_tankhud2"
 	{
-		"en"		"[{green}HUD{default}] As a {green}Tank{default}, you won't see {lightgreen}Tank Hud{default}."
+		"en"		"[{green}HUD{default}] As the {green}Tank{default}, you won't see the {lightgreen}Tank HUD{default}."
 		"zho"		"[{green}介面插件{default}] 身為一個 {green}Tank{default}, 你不會看見 {lightgreen}Tank介面{default}."
 	}
 	///////////////l4d_team_unscramble.smx//////////////
 	"Voting is not enabled until unscramble is completed"
 	{
-		"en"		"Voting is not enabled until unscramble is completed"
+		"en"		"Voting is disabled until the unscramble is complete"
 		"zho"		"隊伍載入完畢之前不准投票"
 	}
 	///////////////l4d_thirdpersonshoulderblock.smx//////////////
 	"l4d_thirdpersonshoulderblock1"
 	{
 		"#format"	"{1:s}"
-		"en"		"{lightgreen}{1}{default} spectated due to {green}c_thirdpersonshoulder{default} not valid or protected!"
+		"en"		"{lightgreen}{1}{default} was moved to spectators: {green}c_thirdpersonshoulder{default} is invalid or protected!"
 		"zho"		"{lightgreen}{1}{default} 因為 {green}c_thirdpersonshoulder{default} 指令不合法或是鎖住而旁觀!"
 	}
 	"l4d_thirdpersonshoulderblock2"
 	{
 		"#format"	"{1:s}"
-		"en"		"{lightgreen}{1}{default} spectated due to {green}c_thirdpersonshoulder{default}, set at{olive} 0{default} to play!"
+		"en"		"{lightgreen}{1}{default} was moved to spectators for {green}c_thirdpersonshoulder{default}, set it to{olive} 0{default} to play!"
 		"zho"		"{lightgreen}{1}{default} 因為 {green}c_thirdpersonshoulder{default} 指令不合法而旁觀, 請設為 {olive}0{default} 再下去玩!"
 	}
 	///////////////l4d_teamshuffle.smx//////////////
@@ -2209,7 +2209,7 @@
 	"has forced the team shuffle"
 	{
 		"#format"	"{1:t}"
-		"en"		"has forced the {1}"
+		"en"		"has forced a {1}."
 		"zho"		"強制{1}"
 	}
 	"Teams were shuffled."
@@ -2232,19 +2232,19 @@
 	"l4d_teamshuffle1"
 	{
 		"#format"	"{1:t}"
-		"en"		"{1} only allowed during ready-up"
+		"en"		"{1} is only allowed during ready-up"
 		"zho"		"{1}只允許在準備期間使用"
 	}
 	"l4d_teamshuffle2"
 	{
 		"#format"	"{1:i},{2:t}"
-		"en"		"Too soon after previous {2}. (Wait {olive}{1}{default}s)."
+		"en"		"Too soon after the previous {2} (wait {olive}{1}{default}s)."
 		"zho"		"太快再次{2}. (等待{olive}{1}{default}秒)."
 	}
 	"l4d_teamshuffle3"
 	{
 		"#format"	"{1:t}"
-		"en"		"Can't {1}, both team must be full first"
+		"en"		"Can't start a {1}, both teams must be full first"
 		"zho"		"無法{1}，雙方隊伍必須滿人"
 	}	
 	"l4d_teamshuffle4"
@@ -2305,7 +2305,7 @@
 	"l4d_Modo_mix_mm1"
 	{
 		"#format"	"{1:s}"
-		"en"		"Captains will now begin to choose players({1})."
+		"en"		"Captains will now begin to choose players ({1})."
 		"zho"		"隊長現在開始選人隊員({1})."
 	}
 	"l4d_Modo_mix_mm2"
@@ -2338,18 +2338,18 @@
 	}
 	"l4d_Modo_mix_mm7"
 	{
-		"en"		"Surprise! First Chosen Captain left the server, stopped the mix process."
+		"en"		"Surprise! The first captain left the server, the mix was stopped."
 		"zho"		"恭喜你們! 第一位隊長已離開了伺服器，停止隊長混合制"
 	}
 	"l4d_Modo_mix_mm8"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"		"First captain: {lightgreen}{1}{default} With {green}{2}{default} votes."
+		"en"		"First captain: {lightgreen}{1}{default} with {green}{2}{default} votes."
 		"zho"		"第一位隊長: {lightgreen}{1}{default} 獲得 {green}{2}{default} 選票."
 	}
 	"l4d_Modo_mix_mm9"
 	{
-		"en"		"Surprise! Second Chosen Captain left the server, stopped the mix process."
+		"en"		"Surprise! The second captain left the server, the mix was stopped."
 		"zho"		"恭喜你們! 第二位隊長已離開了伺服器，停止隊長混合制"
 	}
 	"l4d_Modo_mix_mm10"
@@ -2360,45 +2360,45 @@
 	"l4d_Modo_mix_mm11"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"		"Not enough players in server({red}{1}{default}/{green}{2}{default}), stopped the mix process."
+		"en"		"Not enough players on the server ({red}{1}{default}/{green}{2}{default}), the mix was stopped."
 		"zho"		"伺服器人數不夠({red}{1}{default}/{green}{2}{default}), 已停止隊長混合制"
 	}
 	"l4d_Modo_mix_mm12"
 	{
 		"#format"	"{1:s},{2:i}"
-		"en"		"Second captain: {lightgreen}{1}{default} With {green}{2}{default} votes."
+		"en"		"Second captain: {lightgreen}{1}{default} with {green}{2}{default} votes."
 		"zho"		"第二位隊長: {lightgreen}{1}{default} 獲得 {green}{2}{default} 選票."
 	}
 	///////////////l4d_versus_5v5_hud.smx//////////////
 	"l4d_versus_5v5_hud1"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{default}[{green}HUD{default}]{default} type {green}{2} {default}{1} {lightgreen}5v5 HUD{default}."
+		"en"		"{default}[{green}HUD{default}]{default} Type {green}{2} {default}to turn {1} the {lightgreen}5v5 HUD{default}."
 		"zho"		"{default}[{green}介面插件{default}]{default} 輸入 {green}{2} {default}{1} {lightgreen}5v5介面{default}."
 	}
 	"l4d_versus_5v5_hud2"
 	{
 		"#format"	"{1:s}"
-		"en"		"{default}[{green}HUD{default}] {lightgreen}5v5 HUD {default} is now {olive}{1}{default}."
+		"en"		"{default}[{green}HUD{default}] {lightgreen}5v5 HUD{default} is now {olive}{1}{default}."
 		"zho"		"{default}[{green}介面插件{default}] {lightgreen}5v5介面 {default}目前 {olive}{1}{default}."
 	}
 	///////////////l4d_versus_GhostWarp.smx//////////////
 	"l4d_versus_GhostWarp"
 	{
-		"en"		"teleport you as ghost infected to survivor when using M2 or command"
+		"en"		"teleports you (as a ghost) to a survivor, via M2 or this command"
 		"zho"		"使用右鍵或是指令傳送特感靈魂的你到人類位置"
 	}
 	///////////////l4d_versus_spechud.smx//////////////
 	"l4d_versus_spechud1"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{default}[{green}spechud{default}]{olive} type {green}{1} {default}{2} {lightgreen}Spectator HUD{olive}."
+		"en"		"{default}[{green}spechud{default}]{olive} Type {green}{1} {default}to turn {2} the {lightgreen}Spectator HUD{olive}."
 		"zho"		"{default}[{green}介面插件{default}]{olive} 輸入 {green}{1} {default}{2} {lightgreen}旁觀介面{olive}."
 	}
 	"l4d_versus_spechud2"
 	{
 		"#format"	"{1:s}"
-		"en"		"{default}[{green}spechud{default}]{lightgreen} Spectator HUD {default} is now {olive}{1}{default}."
+		"en"		"{default}[{green}spechud{default}]{lightgreen} Spectator HUD{default} is now {olive}{1}{default}."
 		"zho"		"{default}[{green}介面插件{default}] {lightgreen}旁觀介面 {default}目前 {olive}{1}{default}."
 	}
 	///////////////l4d2_nobackjumps.smx//////////////
@@ -2415,17 +2415,17 @@
 	}
 	"You are not survivor, dumbass!"
 	{
-		"en"		"You are not survivor, dumbass!"
+		"en"		"You are not a survivor, dumbass!"
 		"zho"		"你不是倖存者，想幹嗎!?"
 	}
 	"why you need so many hunter bots?"
 	{
-		"en"		"why you need so many hunter bots?"
+		"en"		"Why do you need so many hunter bots?"
 		"zho"		"那麼多Hunter電腦玩家!? 何必呢?"
 	}
 	"why no hunter bots?"
 	{
-		"en"		"why no hunter bots?"
+		"en"		"Why no hunter bots?"
 		"zho"		"不想要Hunter電腦玩家就滾!"
 	}
 	"Infected Bot Spawn Timer."
@@ -2435,12 +2435,12 @@
 	}
 	"why so long?"
 	{
-		"en"		"why so long?"
+		"en"		"Why so long?"
 		"zho"		"幹嗎那麼久?"
 	}
 	"Failed to set timer! minimum value is 1."
 	{
-		"en"		"Failed to set timer! minimum value is 1."
+		"en"		"Failed to set timer! The minimum value is 1."
 		"zho"		"設定時間失敗! 最小復活時間是1"
 	}
 	"The Infected Team is full."
@@ -2456,7 +2456,7 @@
 	"l4dinfectedbots1"
 	{
 		"#format"	"{1:i}"
-		"en"		"Current Hunter Bot Limit is {1}"
+		"en"		"Current Hunter Bot Limit is {1}."
 		"zho"		"目前Hunter電腦玩家數量: {1}"
 	}
 	"l4dinfectedbots2"
@@ -2468,13 +2468,13 @@
 	"l4dinfectedbots3"
 	{
 		"#format"	"{1:i}"
-		"en"		"Hunter Bot Limit is already {1}"
+		"en"		"Hunter Bot Limit is already {1}."
 		"zho"		"Hunter電腦玩家數量已經是 {1}"
 	}
 	"l4dinfectedbots4"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"		"Current Spawn Timer {1}-{2}"
+		"en"		"Current Spawn Timer: {1}-{2}"
 		"zho"		"目前電腦特感復活時間: {1}-{2}"
 	}
 	"l4dinfectedbots5"
@@ -2485,7 +2485,7 @@
 	}
 	"l4dinfectedbots6"
 	{
-		"en"		"Placing you on the Infected team due to survivor team being full"
+		"en"		"Placing you on the Infected team because the Survivor team is full"
 		"zho"		"把你換到特感隊伍，原因是倖存者隊伍已滿"
 	}
 	"l4dinfectedbots7"
@@ -2506,7 +2506,7 @@
 	}	
 	"l4dinfectedbots10"
 	{
-		"en"		"{lightgreen}Infected Bots: {green}Please wait, you will spawn as a {lightgreen}ghost {green}shortly to get by the finale glitch"
+		"en"		"{lightgreen}Infected Bots: {green}Please wait, you will spawn as a {lightgreen}ghost {green}shortly to get around the finale glitch"
 		"zho"		"{lightgreen}特感玩家: {green}請稍等, 你復活 {lightgreen}靈魂狀態 {green}太快了"
 	}	
 	"l4dinfectedbots11"
@@ -2590,13 +2590,13 @@
 	}
 	"l4dscores3"
 	{
-		"en"		"swap all listed players to team <teamnum> (1,2,or 3)"
+		"en"		"swap all listed players to team <teamnum> (1, 2, or 3)"
 		"zho"		"轉換指定的玩家們到指定的隊伍(1:旁觀 2:倖存者 3:特感)"
 	}
 	"l4dscores4"
 	{
 		"#format"	"{1:s}"
-		"en"		"Invalid team {1} specified, needs to be 1, 2, or 3"
+		"en"		"Invalid team {1} specified, must be 1, 2, or 3"
 		"zho"		"隊伍代號不正確，1:旁觀 2:倖存者 3:特感"
 	}
 	"The scores have been swapped."
@@ -2608,14 +2608,14 @@
 	"l4dscores5"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"		"{default}R{green}#{1}{default} Scores: {olive}{2}"
+		"en"		"{default}R{green}#{1}{default} Score: {olive}{2}"
 		"zho"		"{default}回合{green}#{1}{default} 分數: {olive}{2}"
 	}
 	//Round 1 Scores: {1}
 	"l4dscores6"
 	{
 		"#format"	"{1:i}"
-		"en"		"{default}R{green}#1{default} Scores: {olive}{1}"
+		"en"		"{default}R{green}#1{default} Score: {olive}{1}"
 		"zho"		"{default}回合{green}#1{default} 分數: {olive}{1}"
 	}
 	"l4dscores7"
@@ -2650,7 +2650,7 @@
 	"l4dscores12"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"	"Set Team Scres: {1}(survs) - {2}(inf)"
+		"en"	"Set team scores: {1} (surv) - {2} (inf)"
 		"zho"	"設置隊伍分數: {1}(倖存者) - {2}(特感)"
 	}
 	//////////////si_class_announce.smx//////////////
@@ -2673,7 +2673,7 @@
 	"votemanager22"
 	{
 		"#format"	"{1:.0f}"
-		"en"		"You Must wait {1} seconds between votes."
+		"en"		"You must wait {1} seconds between votes."
 		"zho"		"等待 {1} 秒才能發起投票"
 	}
 	"votemanager23"
@@ -2709,7 +2709,7 @@
 	"votemanager28"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{1} tried to start a Kick Vote against {2} but he has immunity."
+		"en"		"{1} tried to start a Kick Vote against {2} but the target is immune."
 		"zho"		"{1} 嘗試發起投票踢出 {2} 但是目標玩家免疫"
 	}
 	"votemanager29"
@@ -2720,7 +2720,7 @@
 	}
 	"votemanager210"
 	{
-		"en"		"The Server has vetoed this vote."
+		"en"		"The server has vetoed this vote."
 		"zho"		"伺服器已否決了這項投票."
 	}
 	"votemanager211"
@@ -2737,7 +2737,7 @@
 	}
 	"votemanager213"
 	{
-		"en"		"The Server has passed this vote."
+		"en"		"The server has passed this vote."
 		"zho"		"伺服器已通過了這項投票."
 	}
 	"votemanager214"
@@ -2785,17 +2785,17 @@
 	}
 	"rotoblin1"
 	{
-		"en"		"Game is not allowed to be paused in current mode."
+		"en"		"Pausing is not allowed in the current mode."
 		"zho"		"目前模式不能使用暫停"
 	}
 	"rotoblin2"
 	{
-		"en"		"Game is not allowed to be paused during ready."
+		"en"		"Pausing is not allowed during ready-up."
 		"zho"		"不能在準備期間使用暫停"
 	}
 	"rotoblin3"
 	{
-		"en"		"Game is unpausing. You dumb shit."
+		"en"		"The game is unpausing. You dumb shit."
 		"zho"		"遊戲正在解除暫停，You dumb dumb."
 	}
 	"rotoblin4"
@@ -2806,7 +2806,7 @@
 	"rotoblin4_2"
 	{
 		"#format"	"{1:s}"
-		"en"		"Game is already paused.\nUse {green}{1}{default} to mark your team as ready."
+		"en"		"The game is already paused.\nUse {green}{1}{default} to mark your team as ready."
 		"zho"		"遊戲暫停.\n輸入 {green}{1}{default} 標記隊伍已準備."
 	}
 	"rotoblin5"
@@ -2817,7 +2817,7 @@
 	"rotoblin6"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1}{default} calls a pause!"
+		"en"		"{1}{default} called a pause!"
 		"zho"		"{1}{default} 呼叫暫停!"
 	}
 	"rotoblin7"
@@ -2859,18 +2859,18 @@
 	"rotoblin14"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"The game has been paused by an admin({lightgreen}{1}{default}).\nOnly be unpaused with {green}{2}{default} by an adm."
+		"en"		"The game has been paused by an admin ({lightgreen}{1}{default}).\nOnly an admin can unpause it with {green}{2}{default}."
 		"zho" 		"管理員({lightgreen}{1}{default}) 強制暫停遊戲.\n管理員輸入 {green}{2}{default} 解除暫停"
 	}
 	"rotoblin15"
 	{
-		"en"		"Only admins can force Unpause the game."
+		"en"		"Only admins can force unpause the game."
 		"zho"		"只有管理員才能解除暫停"
 	}
 	"rotoblin16"
 	{
 		"#format"	"{1:s}"
-		"en"		"The game has been unpaused by an admin({lightgreen}{1}{default})."
+		"en"		"The game has been unpaused by an admin ({lightgreen}{1}{default})."
 		"zho"		"管理員({lightgreen}{1}{default}) 已解除暫停"
 	}
 	"rotoblin17"
@@ -2881,7 +2881,7 @@
 	}
 	"rotoblin18"
 	{
-		"en"		"Game is Live"
+		"en"		"Game is live"
 		"zho"		"遊戲繼續"
 	}
 	"rotoblin19"
@@ -2911,13 +2911,13 @@
 	}
 	"Smg"
 	{
-		"en"		"Smg"
+		"en"		"SMG"
 		"zho"		"機槍"
 	}
 	"rotoblin20"
 	{
 		"#format"	"{1:t},{2:i}"
-		"en"		"The maximum amount of {lightgreen}{1}{default} is {green}{2}{default}."
+		"en"		"The maximum number of {lightgreen}{1}{default} is {green}{2}{default}."
 		"zho"		"隊伍中已達 {lightgreen}{1}{default} 數量限制: {green}{2}{default}."
 	}
 	"rotoblin21"
@@ -2945,33 +2945,33 @@
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"
 	{
-		"en"		"{default}No Rescue First {green}Tank {default}spawn, {lightgreen}continue final rescue progress{default}!"
+		"en"		"{default}No first finale {green}Tank {default}spawn, {lightgreen}the rescue continues{default}!"
 		"zho"		"{default}沒有救援後第一隻 {green}Tank, {lightgreen}將繼續終關救援進展{default}!"
 	}
 	//////////////l4d_bash_kills.smx//////////////
 	"shove boomer and boomer dead"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{olive}{1}{default} shoves-kill {red}{2}{default}'s Boomer!"
+		"en"		"{olive}{1}{default} shove-killed {red}{2}{default}'s Boomer!"
 		"zho"		"{olive}{1}{default} 推爆了 {red}{2}{default} 肥宅!"
 	}
 	//////////////antisaferoomdooropen.smx//////////////
 	"antisaferoomdooropen1"
 	{
 		"#format"	"{1:d}"
-		"en"		"{1} second(s) left to open the saferoom door!"
+		"en"		"The saferoom door unlocks in {1} second(s)!"
 		"zho"		"剩餘 {1} 秒才能開門!"
 	}
 	"antisaferoomdooropen2"
 	{
 		"#format"	"{1:d}"
-		"en"		"{1} second(s) left to be allowed to leave start area!"
+		"en"		"You can leave the start area in {1} second(s)!"
 		"zho"		"剩餘 {1} 秒才能離開安全區域!"
 	}
 	//////////////l4d_storm.smx//////////////
 	"l4d_storm1"
 	{
-		"en"	"You Cured The Infection!!!"
+		"en"	"You cured the infection!"
 		"zho" 	"你治癒了感染!!!"
 	}
 	"l4d_storm2"
@@ -2982,7 +2982,7 @@
 	}
 	"l4d_storm3"
 	{
-		"en" 	"You Cured The Partial Infection"
+		"en" 	"You cured the partial infection"
 		"zho" 	"你治癒了局部感染！！！"
 	}
 	"l4d_storm4"
@@ -2999,7 +2999,7 @@
 	//////////////l4d_vocalize_antiflood.smx//////////////
 	"l4d_vocalize_antiflood"
 	{
-		"en"		"You Have Reached the Max Amount of Vocalize Spams"
+		"en"		"You have reached the vocalize spam limit"
 		"zho"		"你已達到角色語音上限"
 	}	
 	//////////////l4d_slowdown_control.smx//////////////
@@ -3026,7 +3026,7 @@
 	}	
 	"l4d_wind_3"
 	{
-		"en"		"There Are No Any alive player"
+		"en"		"There are no living players"
 		"zho"		"目前沒有活著的玩家"
 	}	
 	"l4d_wind_4"
@@ -3071,7 +3071,7 @@
 	}	
 	"l4d_wind_12"
 	{
-		"en"		"You teleport player %N."
+		"en"		"You teleported %N."
 		"zho"		"你傳送了 %N."
 	}	
 	"l4d_wind_13"
@@ -3101,7 +3101,7 @@
 	}	
 	"l4d_tank_stumble_door_break_1"
 	{
-		"en"	"[{olive}TS{default}] {green}Tank{default} get stumbled by door."
+		"en"	"[{olive}TS{default}] The {green}Tank{default} got stumbled by a door."
 		"zho"	"[{olive}TS{default}] {green}Tank{default} 被門夾到暈眩."
 	}
 }

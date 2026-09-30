@@ -34,7 +34,7 @@
 	}
 	"NightVision_On"
 	{
-		"en"			"Night vision On."
+		"en"			"Night Vision is On."
 		"es"			"Visión nocturna En."
 		"ru"			"Ночное виденье Включено."
 		"chi"			"启动 夜视镜."
@@ -42,7 +42,7 @@
 	}
 	"NightVision_Off"
 	{
-		"en"			"Night vision Off."
+		"en"			"Night Vision is Off."
 		"es"			"Visión nocturna Fuera."
 		"ru"			"Ночное виденье Отключено."
 		"chi"			"关闭 夜视镜."
@@ -66,7 +66,7 @@
 	}
 	"INFO"
 	{
-		"en"			"[Dark Coop] Type !silent/!laser/!night to Toggle Silencer/Laser Sight/Night Vision."
+		"en"			"[Dark Coop] Type !silent/!laser/!night to toggle Silencer/Laser Sight/Night Vision."
 		"chi"			"[黑暗战役] 输入 !silent/!laser/!night 启动 消音枪/红雷射/夜视镜."
 		"zho"			"[黑暗戰役] 輸入 !silent/!laser/!night 啟動 消音槍/紅雷射/夜視鏡."
 	}
