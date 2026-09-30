@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.2h-2026/9/30"
 
 #include <sourcemod>
 

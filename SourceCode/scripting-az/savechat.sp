@@ -6,7 +6,7 @@
 #include <geoip>
 #include <basecomm>
 
-#define PLUGIN_VERSION "2.1-2024/4/25"
+#define PLUGIN_VERSION "2.2-2026/9/30"
 
 public Plugin myinfo = 
 {

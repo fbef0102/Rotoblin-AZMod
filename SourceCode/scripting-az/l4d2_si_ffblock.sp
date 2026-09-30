@@ -48,7 +48,7 @@ public void OnPluginStart()
 	HookEvent("witch_spawn", Event_WitchSpawn, EventHookMode_Post);
 
 	if (g_bLateLoad) {
-		int iEntityMaxCount = GetEntityCount();
+		int iEntityMaxCount = GetMaxEntities();
 
 		for (int iEntity = 1; iEntity <= iEntityMaxCount; iEntity++) {
 			if (iEntity <= MaxClients) {

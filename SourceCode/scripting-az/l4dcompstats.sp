@@ -41,7 +41,7 @@ public Plugin:myinfo =
 	name = "L4D Competitive Stats",
 	author = "Griffin & Philogl, Harry Potter",
 	description = "Basic competitive stat tracking on a per map basis, 特感殺手, 清屍狂人, Skeet, 黑槍之王, 推推小王子, 抖M受",
-	version = "1.0h-2025/9/22"
+	version = "1.0h-2025/9/30"
 };
 
 #pragma semicolon 1

@@ -167,7 +167,7 @@ public Plugin myinfo =
     name = "L4D1 Tank Rock Lag Compensation",
     author = "Luckylockm, Silvers, Harry, Riverside",
     description = "Provides lag compensation for tank rock entities",
-    version = "1.14",
+    version = "1.14-2026/9/30",
     url = "https://github.com/LuckyServ/"
 };
 

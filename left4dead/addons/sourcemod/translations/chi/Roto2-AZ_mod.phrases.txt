@@ -1482,6 +1482,11 @@
 	{
 		"chi"	"管理员 {lightgreen}%N{default} 强制Boss路程为 {green}Tank: {1}%%, Witch: {2}%%. {default}正在修改Boss路程..."
 	}
+	"l4d_bossvote8"
+	{
+		"en"	"Boss vote passed after the round started, so it was discarded. {red}Bosses are unchanged."
+		"zho"	"投票失效, 回合已開始. {red}Boss路程沒有被修改"
+	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
 	{

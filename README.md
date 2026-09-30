@@ -318,7 +318,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
      * use E+Spawn Glitch twice will be kicked and banned
 * Block pumpshotgunswap quick shoot
 * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
-* Ammo pickup fix
+* Fixes incorrect ammo filling on grabbing from ammo piles
 * Prevents people from blocking players who climb on the ladder including tank.
 * Spectators stay spectator on map change.
 * Forces all players on the right team after map/campaign/match change"
@@ -609,7 +609,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Weapon Quickswitch Reloading in L4D. ([video](https://www.youtube.com/watch?v=JqhY-ubmoLo))
   * Prevents swapping to secondary weapon on primary weapon pick up when its clip is empty
   * Prevents small push effect between survior players, bots still get pushed.
-  * Auto Switch to Weapons/Pills on pick-up/given is now Off, type !secondary to turn On
+  * Auto Switch to pistols/weapons on pick-up/given is now Off, type ```!primary```, ```!secondary``` to turn On
   * Disables the Car Alarm before survivors leave the safe room.
   * Prevent filling the clip and skipping the reload animation when taking the same weapon.
   * It is legal to adjust hand's FOV in any value, while Common FOV only between 75 and 120. [Tutorial](https://steamcommunity.com/sharedfiles/filedetails/?id=158520677)
@@ -638,6 +638,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Allows gravity when survivors are staggering + allows staggering over a ledge and falling.
     * Survivor still gets stumble even in the air
   * Return pills/adrenalines thrown through shoving key if not successfully given
+  * Stopping pick-up progress on incapped survivors right after getting tank punch or tank Rock
   
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

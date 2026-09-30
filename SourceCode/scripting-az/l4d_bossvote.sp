@@ -256,9 +256,23 @@ public Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","Vote fail.", RoundToNearest(100.0*limit), RoundToNearest(100.0*percent), totalVotes);
 			CreateTimer(2.0, VoteEndDelay);
 		}
+		else if (!IsInReady() || InSecondHalfOfRound())
+		{
+			// The vote opens in ready-up but runs 20 s, so ready-up can end first.
+			// Applying it then moves the bosses mid-map: half 1's survivors keep
+			// the old spawn (often already out) and half 2 gets the voted one.
+			// Match 234, 2026-09-26: the tank spawned on leaving the saferoom in
+			// half 1, then the vote moved it to 60 for half 2. Discard instead.
+			EmitSoundToAll("ui/beep_error01.wav");
+			CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_bossvote8");
+			LogMessage("boss vote Tank: %s%%, Witch: %s%% passed after ready-up ended; discarded", tank, witch);
+			CreateTimer(2.0, VoteEndDelay);
+		}
 		else
 		{
-			CreateTimer(2.0, RewriteBossFlows);
+			// Applied now rather than on a 2 s timer, so ready-up cannot end in
+			// between and reopen the same race.
+			RewriteBossFlows(null);
 			CreateTimer(4.0, PrintMessage);
 			EmitSoundToAll("ui/menu_enter05.wav");
 			CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_bossvote6");

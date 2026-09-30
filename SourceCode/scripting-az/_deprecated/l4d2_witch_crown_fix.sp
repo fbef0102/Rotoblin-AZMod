@@ -1,3 +1,5 @@
+// deprecated, use l4d2_static_shotgun_spread
+
 #pragma semicolon 1
 
 #include <sourcemod>

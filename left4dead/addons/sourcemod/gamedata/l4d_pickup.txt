@@ -11,6 +11,14 @@
 				"return"		"int"
 				"this"			"entity"
 			}
+			
+			"CBaseCombatWeapon::SetViewModel"
+			{
+				"signature"		"CBaseCombatWeapon::SetViewModel"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
+			}
 		}
 	}
 	

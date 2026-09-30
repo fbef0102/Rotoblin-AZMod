@@ -3,7 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <l4d_weapon_stocks>
+#include <l4d2_weapon_stocks>
 #include <left4dhooks>
 
 

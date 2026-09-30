@@ -1,7 +1,7 @@
 #pragma semicolon 1
 #pragma newdecls required //強制1.7以後的新語法
 #include <sourcemod>
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.3-2026/9/30"
 
 public Plugin myinfo = 
 {

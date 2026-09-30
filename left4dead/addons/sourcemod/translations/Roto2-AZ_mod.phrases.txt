@@ -1976,6 +1976,11 @@
 		"en"	"Admin {lightgreen}%N{default} forced {green}Tank: {1}%%, Witch: {2}%%. {default}Applying custom boss spawns..."
 		"zho"	"管理員 {lightgreen}%N{default} 強制Boss路程為 {green}Tank: {1}%%, Witch: {2}%%. {default}正在修改Boss路程..."
 	}
+	"l4d_bossvote8"
+	{
+		"en"	"Boss vote passed after the round started, so it was discarded. {red}Bosses are unchanged."
+		"zho"	"投票失效, 回合已開始. {red}Boss路程沒有被修改"
+	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
 	{

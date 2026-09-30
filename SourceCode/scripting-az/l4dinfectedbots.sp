@@ -10,7 +10,7 @@
 
 #pragma semicolon 1
 
-#define PLUGIN_VERSION "1.0h-2026/1/17"
+#define PLUGIN_VERSION "1.0h-2026/9/30"
 
 native bool IsClientTankHud(int client);
 native bool IsClientSpecHud(int client);

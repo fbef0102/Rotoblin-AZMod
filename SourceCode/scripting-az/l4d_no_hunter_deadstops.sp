@@ -33,7 +33,7 @@ public Plugin myinfo =
 	name = "L4D No Hunter Deadstops",
 	author = "Spoon, Luckylock, A1m`, l4d1 port by Harry",
 	description = "Prevents deadstops but allows m2s on standing hunters",
-	version = "1.0h-2026/9/23",
+	version = "1.0h-2026/9/30",
 	url = "https://github.com/fbef0102/Rotoblin-AZMod"
 };
 

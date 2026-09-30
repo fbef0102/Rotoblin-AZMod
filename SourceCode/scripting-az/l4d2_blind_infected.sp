@@ -36,7 +36,7 @@ public Plugin myinfo =
 	name = "Blind Infected",
 	author = "CanadaRox, ProdigySim, A1m`, HarryPotter",
 	description = "Hides specified weapons from the infected team until they are (possibly) visible to one of the survivors to prevent SI scouting the map",
-	version = "1.0.6",
+	version = "1.0.6h-2026/9/30",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 

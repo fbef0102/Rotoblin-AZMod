@@ -768,7 +768,7 @@ static EnumeratePillSpawns()
 	ItemTracking curitem;
 	ItemList itemindex;
 	float origins[3], angles[3];
-	new psychonic = GetEntityCount();
+	new psychonic = GetMaxEntities();
 
 	int mylimit = 2;
 	if(g_hMIData.JumpToKey("default"))
@@ -882,7 +882,7 @@ static KillRegisteredItems()
 	//LogMessage("KillRegisteredItems()");
 
 	decl ItemList:itemindex;
-	new psychonic = GetEntityCount();
+	new psychonic = GetMaxEntities();
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
 		if(IsValidEntity(i) && IsValidEdict(i))

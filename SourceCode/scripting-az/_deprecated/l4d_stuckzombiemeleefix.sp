@@ -1,8 +1,11 @@
+// deprecated, use l4d_fix_common_shove
+// l4d_stuckzombiemeleefix's inner workings are simply kills stuck common rather than allowing Survivors to shove them properly, which l4d_fix_common_shove does.
+
 #include <sourcemod>
 #include <sdktools>
 #define DEBUG 0
 
-#define PLUGIN_VERSION "1.0.5"
+#define PLUGIN_VERSION "1.0.5-2026/9/30"
 
 public Plugin:myinfo = 
 {

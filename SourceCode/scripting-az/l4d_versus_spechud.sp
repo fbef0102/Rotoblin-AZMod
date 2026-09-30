@@ -2,7 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <l4d_weapon_stocks>
+#include <l4d2_weapon_stocks>
 #include <multicolors>
 
 #define SPECHUD_DRAW_INTERVAL   0.5
@@ -247,13 +247,13 @@ FillHeaderInfo(Handle:hSpecHud)
 GetMeleePrefix(client, String:prefix[], length) 
 {
 	new secondary = GetPlayerWeaponSlot(client, 1);
-	L4D2WeaponId secondaryWep = L4D2_GetWeaponId(secondary);
+	int secondaryWep = IdentifyWeapon(secondary);
 
 	decl String:buf[4];
 	switch (secondaryWep)
 	{
-		case L4D2WeaponId_None: buf = "N";
-		case L4D2WeaponId_Pistol: buf = (GetEntProp(secondary, Prop_Send, "m_isDualWielding") ? "DP" : "P");
+		case WEPID_NONE: buf = "N";
+		case WEPID_PISTOL: buf = (GetEntProp(secondary, Prop_Send, "m_isDualWielding") ? "DP" : "P");
 		default: buf = "?";
 	}
 
@@ -283,8 +283,8 @@ FillSurvivorInfo(Handle:hSpecHud)
 		}
 		else
 		{
-			L4D2WeaponId primaryWep = L4D2_GetWeaponId(GetPlayerWeaponSlot(client, 0));
-			if(primaryWep == L4D2WeaponId_None) FormatEx(info, sizeof(info), "None");
+			int primaryWep = IdentifyWeapon(GetPlayerWeaponSlot(client, 0));
+			if(primaryWep == WEPID_NONE) FormatEx(info, sizeof(info), "None");
 			else GetLongWeaponName(primaryWep, info, sizeof(info));
 			GetMeleePrefix(client, buffer, sizeof(buffer)); 
 			Format(info, sizeof(info), "%s/%s", info, buffer);
