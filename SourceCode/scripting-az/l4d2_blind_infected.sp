@@ -28,6 +28,9 @@ enum EntInfo
 ArrayList
 	hBlockedEntities;
 
+int
+	g_iEntListIndex[2049]; // entity index -> position in hBlockedEntities + 1, checked against the entref in OnTransmit
+
 public Plugin myinfo =
 {
 	name = "Blind Infected",
@@ -101,7 +104,7 @@ public Action RoundStartDelay_Timer(Handle hTimer)
 	EntInfo bhTemp[EntInfo];
 #endif
 	
-	int psychonic = GetEntityCount();
+	int psychonic = GetMaxEntities();
 	char sWeapClass[64];
 
 	for (int weapon = MaxClients + 1; weapon <= psychonic; weapon++) {
@@ -109,17 +112,17 @@ public Action RoundStartDelay_Timer(Handle hTimer)
 		if (weapon == INVALID_ENT_REFERENCE || !IsValidEntity(weapon)) continue;
 
 		GetEntityClassname(weapon, sWeapClass, 64);
-		if (IsWeaponClass(sWeapClass)||IsItem(sWeapClass)) {
+		if (IsWeaponClass(sWeapClass)||IsItemModel(weapon)) {
 			SDKHook(weapon, SDKHook_SetTransmit, OnTransmit);
 			
 			#if SOURCEMOD_V_MINOR > 9
 				bhTemp.iEntRef = EntIndexToEntRef(weapon);
 				bhTemp.hasBeenSeen = false;
-				hBlockedEntities.PushArray(bhTemp, sizeof(EntInfo));
+				g_iEntListIndex[weapon] = hBlockedEntities.PushArray(bhTemp, sizeof(EntInfo)) + 1;
 			#else
 				bhTemp[iEntRef] = EntIndexToEntRef(weapon);
 				bhTemp[hasBeenSeen] = false;
-				hBlockedEntities.PushArray(bhTemp[0], view_as<int>(EntInfo));
+				g_iEntListIndex[weapon] = hBlockedEntities.PushArray(bhTemp[0], view_as<int>(EntInfo)) + 1;
 			#endif
 		}
 	}
@@ -139,8 +142,9 @@ public Action OnTransmit(int entity, int client)
 	EntInfo currentEnt[EntInfo];
 #endif
 	
-	int iSize = hBlockedEntities.Length;
-	for (int i = 0 ; i < iSize; i++) {
+	// index may be stale from an earlier round, the entref check below rejects it
+	int i = g_iEntListIndex[entity] - 1;
+	if (i >= 0 && i < hBlockedEntities.Length) {
 		#if SOURCEMOD_V_MINOR > 9
 			hBlockedEntities.GetArray(i, currentEnt, sizeof(EntInfo));
 			if (entity == EntRefToEntIndex(currentEnt.iEntRef)) {
@@ -155,6 +159,14 @@ public Action OnTransmit(int entity, int client)
 	}
 	
 	return Plugin_Continue;
+}
+
+// IsItem() in l4d_lib compares model paths, so pass it the model, not the classname
+bool IsItemModel(int entity)
+{
+	char sModel[PLATFORM_MAX_PATH];
+	GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+	return IsItem(sModel);
 }
 
 // from http://code.google.com/p/srsmod/source/browse/src/scripting/srs.despawninfected.sp

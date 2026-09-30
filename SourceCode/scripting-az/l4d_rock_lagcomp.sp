@@ -148,6 +148,11 @@ Handle g_SDKCall;
 GlobalForward g_hForwardRockSkeeted;
 int g_iLastSkeetedRock = INVALID_ENT_REFERENCE;
 
+// tick_count of the usercmd each client is running, for the rewind
+int g_iCmdTickCount[MAXPLAYERS+1];
+ConVar cvarMaxUnlag;
+ConVar cvarLagPushTicks;
+
 /**
  * Block BLOCK_ENT_REF: Entity Index
  * Block BLOCK_POS_HISTORY: Array of x,y,z rock positions history where: 
@@ -219,6 +224,21 @@ public void OnPluginStart()
 
 	rockEntitiesArray = CreateArray(4);
 	HookEvent("weapon_fire", ProcessRockHitboxes);
+
+	cvarMaxUnlag = FindConVar("sv_maxunlag");
+	cvarLagPushTicks = FindConVar("sv_lagpushticks");
+}
+
+public void OnClientConnected(int client)
+{
+	g_iCmdTickCount[client] = 0;
+}
+
+// weapon_fire fires while the engine runs this usercmd, so this is its tick_count
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
+	g_iCmdTickCount[client] = tickcount;
+	return Plugin_Continue;
 }
 
 /**
@@ -388,12 +408,8 @@ Action ProcessRockHitboxes(Event event, const char[] name,
 	new Float:eyePos[3];
 	
 	// Rollback rock position
-	new String:buffer[MAX_STR_LEN];
-	GetClientInfo(client, "cl_interp", buffer, MAX_STR_LEN);
-	new Float:clientLerp = Clamp(StringToFloat(buffer), 0.0, 0.5);
-	new Float:lagTime = !IsFakeClient(client) ? GetClientLatency(client, NetFlow_Both) + clientLerp : 0.0;
-	new rollBackTick = LAG_COMP_ENABLED ? 
-	GetGameTickCount() - RoundToNearest(lagTime / GetTickInterval()) : GetGameTickCount();
+	new rollBackTick = LAG_COMP_ENABLED && !IsFakeClient(client) ? 
+	GetLagCompHistoryTick(client) : GetGameTickCount();
 	
 	GetClientEyeAngles(client, eyeAng);
 	GetClientEyePosition(client, eyePos);
@@ -437,13 +453,89 @@ Action ProcessRockHitboxes(Event event, const char[] name,
 			delta = GetVectorDotProduct(l, o_Minus_c) * GetVectorDotProduct(l, o_Minus_c) 
 			- GetVectorLength(o_Minus_c, true) + radius*radius;
 			
-			if (delta >= 0.0) {
+			// the ray only goes forward. The far intersection
+			// -(l.(o-c)) + sqrt(delta) must be >= 0, else the whole sphere is
+			// behind the shooter; and a wall between eye and rock blocks it.
+			if (delta >= 0.0 
+			&& SquareRoot(delta) - GetVectorDotProduct(l, o_Minus_c) >= 0.0 
+			&& IsRockVisible(o, c, radius, entity)) {
 				ApplyDamageOnRock(i, client, eyePos, c, event, entity);
 			}
 		}
 	}
 	
 	return Plugin_Handled;
+}
+
+/*
+ * the history tick holding the rock where this client saw it when
+ * it fired, computed like CLagCompensationManager::StartLagCompensation:
+ *   correct    = clamp(outgoing latency + m_fLerpTime, 0, sv_maxunlag)
+ *   targetTime = cmd tick_count * interval - m_fLerpTime
+ *   if |correct - (curtime - targetTime)| > 0.2: targetTime = curtime - correct
+ *   targetTime += sv_lagpushticks * interval
+ * m_fLerpTime is the lerp the engine settled on for the client (cl_interp vs
+ * cl_interp_ratio / cl_updaterate, clamped by sv_client_min/max_interp_ratio).
+ * OnGameFrame runs before the tick simulates, so history slot N holds the rock
+ * as simulated on tick N-1: the rock at targetTime lives in slot targetTick+1.
+ */
+int GetLagCompHistoryTick(int client)
+{
+	float interval = GetTickInterval();
+	float lerp = GetEntPropFloat(client, Prop_Data, "m_fLerpTime");
+
+	float correct = GetClientLatency(client, NetFlow_Outgoing) + lerp;
+	correct = Clamp(correct, 0.0, cvarMaxUnlag != null ? cvarMaxUnlag.FloatValue : 1.0);
+
+	float targetTime = g_iCmdTickCount[client] * interval - lerp;
+	if (FloatAbs(correct - (GetGameTime() - targetTime)) > 0.2) {
+		targetTime = GetGameTime() - correct;
+	}
+
+	if (cvarLagPushTicks != null) {
+		targetTime += cvarLagPushTicks.IntValue * interval;
+	}
+
+	int historyTick = RoundToNearest(targetTime / interval) + 1;
+	if (historyTick > GetGameTickCount()) {
+		historyTick = GetGameTickCount();
+	}
+	return historyTick;
+}
+
+/*
+ * true unless world geometry (MASK_SHOT, so fences and grates do
+ * not count) sits between the eye and the rock. A hit within the hitbox radius
+ * of the rock is the rock's own surface, not a wall in front of it.
+ */
+bool IsRockVisible(float eyePos[3], float c[3], float radius, int rockEntity)
+{
+	TR_TraceRayFilter(eyePos, c, MASK_SHOT, RayType_EndPoint, TraceFilter_IgnoreRock, EntRefToEntIndex(rockEntity));
+	if (!TR_DidHit()) {
+		return true;
+	}
+
+	new Float:hitPos[3];
+	TR_GetEndPosition(hitPos);
+	return GetVectorDistance(hitPos, c) <= radius;
+}
+
+bool TraceFilter_IgnoreRock(int entity, int contentsMask, int rock)
+{
+	// players, commons, witches and rocks never block the check
+	if (entity == rock || (entity > 0 && entity <= MaxClients)) {
+		return false;
+	}
+
+	if (entity > MaxClients && IsValidEntity(entity)) {
+		new String:classname[MAX_STR_LEN];
+		GetEntityClassname(entity, classname, MAX_STR_LEN);
+		if (StrEqual(classname, "infected") || StrEqual(classname, "witch") || StrEqual(classname, "tank_rock")) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /*

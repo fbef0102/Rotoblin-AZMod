@@ -13,12 +13,15 @@ public Plugin:myinfo =
 	url = "http://forums.alliedmods.net/showthread.php?p=932416"
 }
 
+new Handle:g_hCvarGunRange;
+
 public OnPluginStart()
 {
 	HookEvent("entity_shoved", Event_EntShoved);
 	AddNormalSoundHook(NormalSHook:HookSound_Callback); //my melee hook since they didnt include an event for it
 	
 	CreateConVar("l4d_stuckzombiemeleefix_version", PLUGIN_VERSION, " Version of L4D Stuck Zombie Melee Fix on this server ", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	g_hCvarGunRange = FindConVar("z_gun_range");
 }
 
 new bool:MeleeDelay[MAXPLAYERS+1];
@@ -51,7 +54,7 @@ public Action HookSound_Callback(int clients[MAXPLAYERS], int &numClients, char 
 	decl Float:clientpos[3], Float:entpos[3];
 	GetEntityAbsOrigin(entid, entpos);
 	GetClientEyePosition(entity, clientpos);
-	if (GetVectorDistance(clientpos, entpos) < 50) return Plugin_Continue; //else you could 'jedi melee' Zombies from a distance
+	if (GetVectorDistance(clientpos, entpos) > GetConVarFloat(g_hCvarGunRange)) return Plugin_Continue; //else you could 'jedi melee' Zombies from a distance (was "< 50", which skipped only the close ones)
 
 	#if DEBUG
 	PrintToChatAll("Youre meleeing and looking at Zombie id #%i", entid);

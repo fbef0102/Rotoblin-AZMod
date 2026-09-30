@@ -130,8 +130,11 @@ SF_Fix()
 					if (IsClientInGame(i) && GetClientTeam(i) == 2 && !IsFakeClient(i))
 					{
 						ChangeClientTeam(i, 3);
+						iSurvivorCount--;
+						SurFakeClient = true;
 						break;
 					}
+			if(!SurFakeClient) break; //no survivor left to kick or move, stop instead of looping forever
 		}
 		CreateTimer(DELAY_BOT_CLIENT_Check, SF_t_CheckBots);
 	}

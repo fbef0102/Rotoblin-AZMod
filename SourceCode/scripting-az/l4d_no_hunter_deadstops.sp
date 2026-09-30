@@ -66,7 +66,11 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecD
 	{
 		//PrintToChatAll("\x04Hunter %N is still pouncing!",entity);
 
-		g_fPouncingStopTime[entity] = 0.0;
+		// only start tracking a hunter not tracked yet. Resetting the
+		// stop time of a landed hunter restarted the godframe window on every
+		// blocked shove, so alternating m2s kept it unshoveable for ever.
+		if (!bIsPouncing[entity])
+			g_fPouncingStopTime[entity] = 0.0;
 		bIsPouncing[entity] = true;
 		return Plugin_Handled;
 	}

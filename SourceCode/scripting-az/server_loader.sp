@@ -12,7 +12,7 @@ public Plugin myinfo =
 	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
 
-ConVar cvarLoaderCfg;
+ConVar cvarLoaderCfg, cvarLoaderDone;
 int serverLoaderCounter = 0;
 
 bool L4D2Version;
@@ -40,6 +40,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {	
 	cvarLoaderCfg = CreateConVar("server_loader", "server_startup.cfg", "Config that gets executed on server start. (Empty=Disable)");
+	//convars outlive a plugin reload, the global counter does not, so a reload must not exec the startup config again
+	cvarLoaderDone = CreateConVar("server_loader_done", "0", "1 = startup config already executed, do not execute again on plugin reload. (Set 0 to allow it again)", FCVAR_DONTRECORD);
 	if(L4D2Version) FindConVar("sb_all_bot_game").SetInt(1);
 	else FindConVar("sb_all_bot_team").SetInt(1);
 	
@@ -48,7 +50,7 @@ public void OnPluginStart()
 
 public Action execConfig(Handle timer)
 {
-	if (serverLoaderCounter < 1)
+	if (serverLoaderCounter < 1 && !cvarLoaderDone.BoolValue)
 	{
 		static char loaderCfgString[128];
 		GetConVarString(cvarLoaderCfg, loaderCfgString, 128);
@@ -57,11 +59,13 @@ public Action execConfig(Handle timer)
 			ServerCommand("exec %s", loaderCfgString);
 			LogMessage("executed %s", loaderCfgString);
 			serverLoaderCounter++;
+			cvarLoaderDone.SetBool(true);
 		}
 		else
 		{
 			LogMessage("no config or invalid config specified, no configs were loaded.");
 			serverLoaderCounter++;
+			cvarLoaderDone.SetBool(true);
 		}
 	}
 
