@@ -481,13 +481,19 @@ public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Action:PlayerHook_OnTakeDamagePre(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
+	if (!victim || victim > MaxClients || !IsClientInGame(victim)) return;
+
+	// A hunter hit on the ground or a ladder is no longer pouncing. Timer_GroundedCheck can lag
+	// up to 0.5 s behind a missed pounce, and m_fFlags has already lost FL_ONGROUND by player_death
+	if (GetClientTeam(victim) == 3 && IsPouncing(victim) &&
+		GetEntProp(victim, Prop_Send, "m_zombieClass") == ZC_HUNTER &&
+		(IsGrounded(victim) || IsOnLadder(victim)))
+	{
+		g_bIsPouncing[victim] = false;
+	}
+
 	// Non incapped survivor victim
-	if (!victim ||
-		victim > MaxClients ||
-		!IsClientInGame(victim) ||
-		!IsSurvivor(victim) ||
-		IsIncapped(victim)
-		) return;
+	if (!IsSurvivor(victim) || IsIncapped(victim)) return;
 
 	g_iLastHealth[victim] = GetClientHealth(victim);
 }
@@ -740,7 +746,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			CreateTimer(0.2, Timer_BoomerKilledCheck, victim);
 			g_iBoomerKiller = attacker;
 		}
-		else if (zombieclass == ZC_HUNTER && IsPouncing(victim) && !IsGrounded(victim)) // g_bIsPouncing can be up to 0.5s stale after a missed pounce lands
+		else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
 		{ // Skeet!
 			if (!IsFakeClient(victim))
 			{
