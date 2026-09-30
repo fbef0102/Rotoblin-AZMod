@@ -502,7 +502,7 @@ public Action:Switch_Client(client, args)
 		if (targetTeamB != 1) ChangeClientTeam(target2, 1);
 		
 		if (targetTeamA == 1) CPrintToChatAll("{default}[{olive}TS{default}] %t", "ReadyPlugin_2",player2Name);
-		if (targetTeamB == 1) CPrintToChatAll("{default}[{olive}TS{default}] %T", "ReadyPlugin_2",player1Name);
+		if (targetTeamB == 1) CPrintToChatAll("{default}[{olive}TS{default}] %t", "ReadyPlugin_2",player1Name);
 		if (targetTeamA == 2) CreateTimer(0.1, SwitchTargetSurvivor, target2, TIMER_FLAG_NO_MAPCHANGE);
 		if (targetTeamA == 3) CreateTimer(0.1, SwitchTargetInfected, target2, TIMER_FLAG_NO_MAPCHANGE);
 		if (targetTeamB == 2) CreateTimer(0.1, SwitchTargetSurvivor, target1, TIMER_FLAG_NO_MAPCHANGE);
@@ -1070,6 +1070,9 @@ void HookOrUnhookPreThinkPost(bool bHook)
 
 checkStatus()
 {
+	//the go-live is already underway (the freeze countdown before RoundIsLive), an unready can no longer stop it
+	if(inLiveCountdown) return;
+
 	new humans, ready;
 	decl i;
 	
@@ -1196,6 +1199,9 @@ public Action:timerLiveCountCallback(Handle:timer)
 		//readyOff();
 		
 		liveTimer = INVALID_HANDLE;
+		
+		//a leftover timer from before the go-live started, nothing to do
+		if(!readyMode || inLiveCountdown) return Plugin_Stop;
 		
 		//checkStatus() returns early when a team is short, so re-check that everyone is still ready right before going live
 		if(!forcedStart && !AreAllHumansReady())
