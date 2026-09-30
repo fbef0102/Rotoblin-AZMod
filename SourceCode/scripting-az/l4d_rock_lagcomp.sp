@@ -306,6 +306,7 @@ public void OnGameFrame()
 		if( !rockEntity || EntRefToEntIndex(rockEntity) == INVALID_ENT_REFERENCE )
 		{
 			Array_RemoveRock(rockEntitiesArray, rockEntity);
+			--i; // the next rock moved into slot i, do not skip its sample
 			continue;
 		}
 		GetEntPropVector(rockEntity, Prop_Send, "m_vecOrigin", pos); 
@@ -504,13 +505,13 @@ int GetLagCompHistoryTick(int client)
 }
 
 /*
- * true unless world geometry (MASK_SHOT, so fences and grates do
- * not count) sits between the eye and the rock. A hit within the hitbox radius
- * of the rock is the rock's own surface, not a wall in front of it.
+ * true unless a wall sits between the eye and the rock. A hit within the hitbox
+ * radius of the rock is the rock's own surface, not a wall in front of it.
+ * CONTENTS_WINDOW is left out of the mask because bullets go through glass.
  */
 bool IsRockVisible(float eyePos[3], float c[3], float radius, int rockEntity)
 {
-	TR_TraceRayFilter(eyePos, c, MASK_SHOT, RayType_EndPoint, TraceFilter_IgnoreRock, EntRefToEntIndex(rockEntity));
+	TR_TraceRayFilter(eyePos, c, MASK_SHOT & ~CONTENTS_WINDOW, RayType_EndPoint, TraceFilter_RockWall, EntRefToEntIndex(rockEntity));
 	if (!TR_DidHit()) {
 		return true;
 	}
@@ -520,22 +521,33 @@ bool IsRockVisible(float eyePos[3], float c[3], float radius, int rockEntity)
 	return GetVectorDistance(hitPos, c) <= radius;
 }
 
-bool TraceFilter_IgnoreRock(int entity, int contentsMask, int rock)
+/*
+ * An allowlist of what blocks the check: the world, and drawn solid entities
+ * (props, doors, breakables, func_wall/func_rotating/func_brush). Everything
+ * else passes: players, commons, witches, rocks, weapons, ammo piles, glass and
+ * invisible entities such as env_player_blocker, which SourceMod traces would
+ * otherwise hit although bullets go through them.
+ */
+bool TraceFilter_RockWall(int entity, int contentsMask, int rock)
 {
-	// players, commons, witches and rocks never block the check
-	if (entity == rock || (entity > 0 && entity <= MaxClients)) {
+	if (entity == 0) {
+		return true;
+	}
+	if (entity == rock || entity <= MaxClients || !IsValidEntity(entity)) {
 		return false;
 	}
 
-	if (entity > MaxClients && IsValidEntity(entity)) {
-		new String:classname[MAX_STR_LEN];
-		GetEntityClassname(entity, classname, MAX_STR_LEN);
-		if (StrEqual(classname, "infected") || StrEqual(classname, "witch") || StrEqual(classname, "tank_rock")) {
-			return false;
-		}
+	new String:classname[MAX_STR_LEN];
+	GetEntityClassname(entity, classname, MAX_STR_LEN);
+	if (StrEqual(classname, "func_breakable_surf")) {
+		return false;
 	}
-
-	return true;
+	return StrContains(classname, "prop_") == 0
+		|| StrContains(classname, "func_door") == 0
+		|| StrContains(classname, "func_breakable") == 0
+		|| StrContains(classname, "func_wall") == 0
+		|| StrContains(classname, "func_rotating") == 0
+		|| StrEqual(classname, "func_brush");
 }
 
 /*
