@@ -238,7 +238,8 @@
 //強制每一關生出相同位置的tank與witch
 
 [41] l4d_ladderblock
-//禁止玩家卡樓梯block正在爬上來的特感與人類玩家(tank也包含在內)
+//禁止玩家卡樓梯block正在爬上來的特感與人類玩家
+//Tank不會被玩家頂上來
 
 [42] l4d_team_unscramble
 //強制玩家在換關/換圖後放到原本的隊伍
@@ -295,8 +296,9 @@
 [58] sceneprocessor
 //語音插件輔助
 
-[59] l4d_heardspecialsfix
+[xx] l4d_heardspecialsfix
 //多一點聽到Smoker與Boomer的語音
+//移除
 
 [60] TickrateFixes
 //解決tick高的時候存在的少數問題 (重力 + 門速)
@@ -341,8 +343,9 @@
 [72] checkpoint-rage-control
 //Tank will still lose rage while survivors are in saferoom
 
-[73] l4d_stuckzombiemeleefix
+[xx] l4d_stuckzombiemeleefix
 //處死推不了卡住的殭屍的問題
+//移除, 卡住問題已經由l4d_fix_common_shove改善
 
 [74] l4d_ai_hunter_skeet_dmg_fix
 //skeeting mechanic is completely disabled for Hunter AI, so Makes AI SI take (and do) damage like human SI.
@@ -600,7 +603,8 @@
 //倖存者玩家的身體不會再互推對方（Bot還是會）
 
 [155] l4d_pickup
-//右鍵傳藥丸+撿起手槍與武器與不會再自動切換 (輸入!secondary 開啟/關閉)
+//右鍵傳藥丸+撿起手槍與武器與不會再自動切換 (輸入!primary與!secondary 開啟/關閉)
+//正在救人時被tank拳頭或是石頭打中，將中斷救援
 
 [156] canbecomeghost
 //去除惱人的一代特色: 倖存者在安全區域時，特感會無限靈魂復活

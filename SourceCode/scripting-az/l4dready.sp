@@ -1039,6 +1039,11 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 		return Plugin_Handled;
 	}
 
+	if (damagetype & DMG_BURN || damagetype & DMG_FALL)
+	{
+		return Plugin_Handled;
+	}
+
 	return Plugin_Continue;
 }
 

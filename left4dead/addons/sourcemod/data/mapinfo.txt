@@ -124,6 +124,11 @@
 		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
+			"Too early"
+			{
+				"min"		"0"
+				"max"		"30"
+			}
 			"Ladders"
 			{
 				"min"		"38"
@@ -209,6 +214,15 @@
 	{
 		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		
+		"tank_ban_flow"
+		{
+			"Early Ladder"
+			{
+				"min"		"20"
+				"max"		"25"
+			}
+		}
 	}
 	"l4d_vs_airport03_garage"
 	{
@@ -249,7 +263,7 @@
 		{
 			"The End of the Map"
 			{
-				"min"		"75"
+				"min"		"81"
 				"max"		"100"
 			}
 		}
@@ -302,7 +316,7 @@
 			"Too early"
 			{
 				"min"		"0"
-				"max"		"34"
+				"max"		"50"
 			}
 		}
 	}
@@ -319,12 +333,12 @@
 			}
 			"One Way Drop"
 			{
-				"min"		"81"
+				"min"		"78"
 				"max"		"84"
 			}
 			"The End of the Map"
 			{
-				"min"		"89"
+				"min"		"88"
 				"max"		"100"
 			}
 		}
@@ -1560,7 +1574,7 @@
 			"Too early"
 			{
 				"min"		"0"
-				"max"		"33"
+				"max"		"46"
 			}
 		}
 	}

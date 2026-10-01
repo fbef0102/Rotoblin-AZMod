@@ -767,7 +767,8 @@ static void Unpause()
 
 	for (new client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client))
+		if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client)
+			&& GetEntityMoveType(client) == MOVETYPE_NONE )
 		{
 			SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
 			

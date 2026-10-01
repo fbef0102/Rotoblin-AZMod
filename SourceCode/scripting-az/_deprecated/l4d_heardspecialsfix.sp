@@ -1,3 +1,5 @@
+// _deprecated
+
 #pragma semicolon 1                 // Force strict semicolon mode.
 
 #include <sourcemod>

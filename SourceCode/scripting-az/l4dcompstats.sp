@@ -41,7 +41,7 @@ public Plugin:myinfo =
 	name = "L4D Competitive Stats",
 	author = "Griffin & Philogl, Harry Potter",
 	description = "Basic competitive stat tracking on a per map basis, 特感殺手, 清屍狂人, Skeet, 黑槍之王, 推推小王子, 抖M受",
-	version = "1.0h-2025/9/30"
+	version = "1.0h-2026/9/30"
 };
 
 #pragma semicolon 1
@@ -164,21 +164,27 @@ enum strOEC
     OEC_CARGLASS
 };
 
-//harry end//
+ConVar versus_shove_hunter_fov_pouncing;
+
+bool bLate;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	EngineVersion test = GetEngineVersion();
+	if( test != Engine_Left4Dead )
+	{
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1.");
+		return APLRes_SilentFailure;
+	}
+
+	bLate = late;
+	return APLRes_Success;
+}
+
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-	if (GetMaxEntities() > MAXENTITIES)
-	{
-		LogError("Plugin needs to be recompiled with a new MAXENTITIES value of %d. Current value is %d. Witch tracking is unreliable!",
-			GetMaxEntities(), MAXENTITIES);
-	}
 
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (!IsClientInGame(client)) continue;
-		SDKHook(client, SDKHook_OnTakeDamage, PlayerHook_OnTakeDamagePre);
-	}
+	versus_shove_hunter_fov_pouncing = FindConVar("versus_shove_hunter_fov_pouncing");
 
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd);
@@ -216,6 +222,16 @@ public OnPluginStart()
 	CalculateMinDPDamage(GetConVarFloat(g_hCvarMaxPounceBonusDamage));
 	
 	RegConsoleCmd("mvp", Command_Mvp);
+
+	if(bLate)
+	{
+		for (new client = 1; client <= MaxClients; client++)
+		{
+			if (!IsClientInGame(client)) continue;
+
+			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Client);
+		}
+	}
 }
 
 Action Command_Mvp(int client, int args)
@@ -228,7 +244,7 @@ Action Command_Mvp(int client, int args)
 }
 public OnClientPutInServer(client)
 {
-	SDKHook(client, SDKHook_OnTakeDamage, PlayerHook_OnTakeDamagePre);
+	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Client);
 }
 
 public OnMapStart()
@@ -417,7 +433,7 @@ public PrintMVPAndTeamStats(iclient)
 	
 	if (MVP_deadstop != 0)
 	{
-		if(GetConVarInt(FindConVar("versus_shove_hunter_fov_pouncing")) != 0)
+		if(versus_shove_hunter_fov_pouncing.IntValue != 0)
 		{
 			percent = RoundFloat((float(MVP_deadstop) / float(total)) * 100.0);
 			if(iclient == 0)
@@ -479,23 +495,25 @@ public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-public Action:PlayerHook_OnTakeDamagePre(victim, &attacker, &inflictor, &Float:damage, &damagetype)
+Action OnTakeDamage_Client(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if (!victim || victim > MaxClients || !IsClientInGame(victim)) return;
+	if (!IsClientInGame(victim)) return Plugin_Continue;
 
 	// A hunter hit on the ground or a ladder is no longer pouncing. Timer_GroundedCheck can lag
-	// up to 0.5 s behind a missed pounce, and m_fFlags has already lost FL_ONGROUND by player_death
-	if (GetClientTeam(victim) == 3 && IsPouncing(victim) &&
-		GetEntProp(victim, Prop_Send, "m_zombieClass") == ZC_HUNTER &&
-		(IsGrounded(victim) || IsOnLadder(victim)))
-	{
-		g_bIsPouncing[victim] = false;
-	}
+	// up to 0.5 s behind a missed pounce
+	//if (GetClientTeam(victim) == 3 && IsPouncing(victim) &&
+	//	GetEntProp(victim, Prop_Send, "m_zombieClass") == ZC_HUNTER &&
+	//	(IsGrounded(victim) || IsOnLadder(victim)))
+	//{
+	//	g_bIsPouncing[victim] = false;
+	//}
 
 	// Non incapped survivor victim
-	if (!IsSurvivor(victim) || IsIncapped(victim)) return;
+	if (!IsSurvivor(victim) || IsIncapped(victim)) return Plugin_Continue;
 
 	g_iLastHealth[victim] = GetClientHealth(victim);
+
+	return Plugin_Continue;
 }
 
 public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
@@ -603,9 +621,10 @@ public Event_PlayerShoved(Handle:event, const String:name[], bool:dontBroadcast)
 		}
 		g_hBoomerShoveTimer = CreateTimer(BOOMER_STAGGER_TIME, Timer_BoomerShove);
 	}
-	else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
-	{ // DEADSTOP
-
+	// DEADSTOP
+	//else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
+	else if (zombieclass == ZC_HUNTER && GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce")) 
+	{ 
 		// Groundtouch timer will do this for us, but
 		// this prevents multiple deadstops being counted incorrectly
 		g_bIsPouncing[victim] = false;
@@ -660,6 +679,9 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 
 	if (IsInfected(client))
 	{
+		SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
+		SDKUnhook(client, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
+
 		new zombieclass = GetEntProp(client, Prop_Send, "m_zombieClass");
 		if (zombieclass == ZC_TANK) return;
 
@@ -682,6 +704,11 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 				KillTimer(g_hBoomerShoveTimer);
 				g_hBoomerShoveTimer = INVALID_HANDLE;
 			}
+		}
+		else if (zombieclass == ZC_HUNTER)
+		{
+			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
+			SDKHook(client, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
 		}
 
 		g_iLastHealth[client] = GetClientHealth(client);
@@ -985,7 +1012,7 @@ public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 	if (IsClientInGame(client) && strcmp(ability_name, "ability_lunge", false) == 0)
 	{
 		g_bIsPouncing[client] = true;
-		CreateTimer(0.5, Timer_GroundedCheck, client, TIMER_REPEAT);
+		//CreateTimer(0.5, Timer_GroundedCheck, client, TIMER_REPEAT);
 	}
 	else if (IsClientInGame(client) && strcmp(ability_name, "ability_vomit", false) == 0)
 	{
@@ -993,14 +1020,17 @@ public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-public Action:Timer_GroundedCheck(Handle:timer, any:client)
+/*Action Timer_GroundedCheck(Handle timer, int client)
 {
 	if ( !IsClientInGame(client) || !IsPlayerAlive(client) || GetClientTeam(client) != 3 || GetEntProp(client, Prop_Send, "m_zombieClass") != ZC_HUNTER || IsGrounded(client) || IsOnLadder(client) )
 	{
 		g_bIsPouncing[client] = false;
-		KillTimer(timer);
+		
+		return Plugin_Stop;
 	}
-}
+
+	return Plugin_Continue;
+}*/
 
 public Event_LungePounce(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -1109,7 +1139,7 @@ public ClientValue2DSortDesc(x[], y[], const array[][], Handle:data)
 }
 
 // Jacked from skeet announce
-bool:IsGrounded(client)
+/*bool:IsGrounded(client)
 {
 	return (GetEntProp(client, Prop_Data, "m_fFlags") & FL_ONGROUND) > 0;
 }
@@ -1117,7 +1147,7 @@ bool:IsGrounded(client)
 bool IsOnLadder(int entity)
 {
     return GetEntityMoveType(entity) == MOVETYPE_LADDER;
-}
+}*/
 
 public Action:Award(Handle:timer, any:client)
 {
@@ -1391,5 +1421,42 @@ PrintToTeamConsole(teamflag, const String:format[], any:...)
 			VFormat(buffer, sizeof(buffer), format, 3);
 			PrintToConsole(i, buffer);
 		}
+	}
+}
+
+Action OnTakeDamage_Hunter(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
+	if (!IsClientInGame(victim)) return Plugin_Continue;
+	if ( GetClientTeam(victim) != 3 || GetEntProp(victim, Prop_Send, "m_zombieClass") != ZC_HUNTER) 
+	{
+		SDKUnhook(victim, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
+		return Plugin_Continue;
+	}
+
+	// try to use property "m_isAttemptingToPounce" to detect if hunter is pouncing in air
+	if ( GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce") )
+	{
+		g_bIsPouncing[victim] = true;
+	}
+	else
+	{
+		g_bIsPouncing[victim] = false;
+	}
+
+	return Plugin_Continue;
+}
+
+void OnTakeDamagePost_Hunter(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
+	if ( attacker <= 0 || attacker > MaxClients || !IsClientInGame(attacker) || GetClientTeam(attacker) != 2 || !IsValidEntity(inflictor) ) return;
+	if( GetClientTeam(victim) != 3 || GetEntProp(victim, Prop_Send, "m_zombieClass") != ZC_HUNTER) 
+	{
+		SDKUnhook(victim, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
+		return;
+	}
+
+	if ( !GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce") )
+	{
+		g_bIsPouncing[victim] = false;
 	}
 }

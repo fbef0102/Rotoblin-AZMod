@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "L4D2 SMG Reload Speed Tweaker",
 	description = "Allows cvar'd control over the reload durations for both types of SMG",
 	author = "Visor, A1m`, l4d1 port by HarryPotter",
-	version = "1.0h-2026/9/15",
+	version = "1.0h-2026/9/30",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework/"
 };
 
@@ -82,10 +82,10 @@ void OnWeaponReload(Event hEvent, const char[] eName, bool dontBroadcast)
 	float originalReloadDuration = 0.0, alteredReloadDuration = 0.0;
 
 	int weapon = GetPlayerWeaponSlot(client, 0);
-	L4D2WeaponId weaponId = L4D2_GetWeaponId(weapon);
+	int weaponId = IdentifyWeapon(weapon);
 
 	switch (weaponId) {
-		case L4D2WeaponId_Smg: {
+		case WEPID_SMG: {
 			originalReloadDuration = L4D1_SMG_ORIGINAL_RELOAD;
 			alteredReloadDuration = g_fCvarReloadSpeedUzi;
 		}
@@ -131,12 +131,12 @@ public void L4D_OnSwingStart(int client, int weapon)
 
 	char classname[64];
 	GetEntityClassname(weapon, classname, sizeof(classname));
-	L4D2WeaponId weaponId = L4D2_GetWeaponIdByWeaponName(classname);
+	int weaponId = WeaponNameToId(classname);
 
 	float originalReloadDuration = 0.0, alteredReloadDuration = 0.0;
 	
 	switch (weaponId) {
-		case L4D2WeaponId_Smg: {
+		case WEPID_SMG: {
 			originalReloadDuration = L4D1_SMG_ORIGINAL_RELOAD;
 			alteredReloadDuration = g_fCvarReloadSpeedUzi;
 		}
@@ -178,16 +178,12 @@ public void L4D_OnSwingStart(int client, int weapon)
 
 	static char classname[64];
 	GetEntityClassname(weapon, classname, sizeof(classname));
-	L4D2WeaponId weaponId = L4D2_GetWeaponIdByWeaponName(classname);
+	int weaponId = WeaponNameToId(classname);
 
 	switch (weaponId) {
-		case L4D2WeaponId_Smg: {
+		case WEPID_SMG: {
 			originalReloadDuration = L4D1_SMG_ORIGINAL_RELOAD;
 			alteredReloadDuration = g_fCvarReloadSpeedUzi;
-		}
-		case L4D2WeaponId_HuntingRifle: {
-			originalReloadDuration = L4D1_HT_ORIGINAL_RELOAD;
-			alteredReloadDuration = g_fCvarReloadSpeedHuntingRifle;
 		}
 		default: {
 			return Plugin_Continue;

@@ -50,8 +50,8 @@ public OnPluginStart()
 {
     CreateConVar("stop_trolls_version", PLUGIN_VERSION, "StopTrolls plugin version", FCVAR_REPLICATED|FCVAR_NOTIFY);
     
-    g_hFlags = CreateConVar("stop_trolls_flags", "110", "(The player who climbing the ladder) Who can push trolls when climbs on the ladder. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
-    g_hImmune = CreateConVar("stop_trolls_immune", "0", "(The player who blocking the ladder) What class is immune. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
+    g_hFlags    = CreateConVar("stop_trolls_flags", "110", "(The player who climbing the ladder) Who can push trolls when climbs on the ladder. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
+    g_hImmune   = CreateConVar("stop_trolls_immune", "32", "(The player who blocking the ladder) What class is immune. 0=Disable, 2=Smoker, 4=Boomer, 8=Hunter, 32=Tank, 64=Survivors, 110=All");
     //AutoExecConfig(true, "StopTrollss"); // If u want a cfg file uncomment it. But I don't like.
     
     HookConVarChange(g_hFlags, OnCvarChange_Flags);

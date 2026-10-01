@@ -276,12 +276,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Score Calculation(!health/!bonus) ###
 * Versus Score = ( AD + HB + PILLS ) x Alive x Map 
-   * AD = Average distance
-   * HB = Health Bonus, (PermanentHealth/2) + (TemporaryHealth/4)
-   * PILLS = 15 Health Bonus per pill
-   * Alive = Number of players that survived, this value is 1.0 if all survivors are dead
-   * Map = That level's score multiplier
-   > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
+  * AD = Average distance
+  * HB = Health Bonus, (PermanentHealth/2) + (TemporaryHealth/4)
+  * PILLS = 15 Health Bonus per pill
+  * Alive = Number of players that survived, this value is 1.0 if all survivors are dead
+  * Map = That level's score multiplier
+  > **Developer Comment:** This effectively gives you a higher reward for holding onto pills, we encourage player to search pills. And restore level's score multiplier as we consider it's unfair that short map and long map have the same maximum score
 
 - - - -
 ### Bug / Exploit Fixes ###
@@ -294,15 +294,16 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fixed a Valve Bug where you could see Shadows from Infected (Common and SI) through Walls, Floors and Ceilings.
 * Fixed no Survivor bots issue and more than 4 bots issue.
 * Fixes some survivors [health expolit](https://forums.alliedmods.net/showthread.php?t=198915)
-     * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
-     * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
-     * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
+  * Regeneration - You should have less than 30hp before hang on a ledge, when teammates help you the game give a little health bonus.
+  * Increasing of health limit - If you have a temporary health (pills) and you're hanging on a ledge look at health bar.
+  * Disappearance of the temporary health - When survivors pulled you from the ledge pills health is disappears if it was.
 * Ensures that survivors that have been incapacitated with a hittable object get their temp health (300hp) set correctly
 * Prevents calling votes while others are loading
-* Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.
+* ~~Boomer and Smoker Heard Vocalizations are restored. In the original game they are not used most likely due to clustering the constant vocalization of special infected in the area.~~
+  * Removed
 * Blocking [exploits by using engine](https://forums.alliedmods.net/showthread.php?t=182002)
-     * no fall damage bug - jump on the incapped survivor while holding USE key
-     * health boost glitch - heal yourself while under water.
+  * no fall damage bug - jump on the incapped survivor while holding USE key
+  * health boost glitch - heal yourself while under water.
 * Fixes the problem where tank-punches get a survivor stuck in the roof
 * Smash nonstaggering Zombies (stuck or no shove off)
 * Fixed the problem that versus director won't spawn Witch during Tank alive
@@ -314,27 +315,28 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Hunters don't fall off of walls after being shot.
 * AI special infected deal and take the same damage as players. This makes it possible to skeet AI Hunter.
 * Players cannot skip their deathcam by pressing space or clicking.
-* Block Infected player who use E+spawn expolit to teleport to survivor
-     * use E+Spawn Glitch twice will be kicked and banned
+* Fix exploit where ghost infected player can spawn and teleport to survivor at the same time
+  * Press E+Left click frequently at the same time
 * Block pumpshotgunswap quick shoot
 * Players that use an exploit to skip spawn timer will now have few seconds staying spectator team
 * Fixes incorrect ammo filling on grabbing from ammo piles
-* Prevents people from blocking players who climb on the ladder including tank.
+* Prevents people from blocking players who climb on the ladder.
+  * Tanks can't be knocked off a ladder top by a climbing survivor
 * Spectators stay spectator on map change.
 * Forces all players on the right team after map/campaign/match change"
 * Fixed players using bunnyhop to increase their MaxSpeed.
 * Fixed second team having different SI spawns on round start.
-     * Spawns for the first hit are announced once round starts.
+  * Spawns for the first hit are announced once round starts.
 * Blocks all button presses during stumbles
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door ([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s)).
 * Fixes an exploit where unlimited grenades could be created.
 * Mother fucker no collisions to fix a handful of silly collision bugs in l4d1
-     * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
-     * Pulled Survivors go through Common Infected. ([video](https://www.youtube.com/watch?v=Jj04A73AYk0))
-     * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
-     * Commons go through Witch (Prevent commons from pushing witch in l4d1)
-     * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
-     * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
+  * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
+  * Pulled Survivors go through Common Infected. ([video](https://www.youtube.com/watch?v=Jj04A73AYk0))
+  * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
+  * Commons go through Witch (Prevent commons from pushing witch in l4d1)
+  * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
+  * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
