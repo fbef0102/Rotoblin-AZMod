@@ -70,9 +70,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 #define GAMEDATA "rock_lagcomp"
 
-#define MAX_STR_LEN 100
+#define MAX_STR_LEN 128
 #define MAX_HISTORY_FRAMES 100
-#define ROCK_HEALTH 100
 #define CURR_GAME_TIME RoundFloat(GetGameTime() * 1000)
 
 #define ROCK_PRINT GetConVarInt(cvarRockPrint)
@@ -167,12 +166,15 @@ public Plugin myinfo =
     name = "L4D1 Tank Rock Lag Compensation",
     author = "Luckylockm, Silvers, Harry, Riverside",
     description = "Provides lag compensation for tank rock entities",
-    version = "1.14-2026/9/30",
+    version = "1.14-2026/10/1",
     url = "https://github.com/LuckyServ/"
 };
 
+ConVar z_tank_throw_health;
+
 public void OnPluginStart()
 {
+	z_tank_throw_health = FindConVar("z_tank_throw_health");
 
 	StartPrepSDKCall(SDKCall_Entity);
 		
@@ -623,7 +625,7 @@ void ApplyBulletToRock(int client, int rockIndex, int rockEntity, float damage, 
 	new Float:rockDamage = float(rockEntitiesArray.Get(rockIndex, BLOCK_DMG_DEALT));
 	rockDamage += damage / range * 100;
 	
-	if (RoundFloat(rockDamage) > ROCK_HEALTH) {
+	if (RoundFloat(rockDamage) > z_tank_throw_health.IntValue) {
 		DataPack hData = new DataPack();
 		hData.WriteCell(GetClientUserId(client));
 		hData.WriteCell(rockEntity);
@@ -634,7 +636,7 @@ void ApplyBulletToRock(int client, int rockIndex, int rockEntity, float damage, 
 	}
 	
 	if (ROCK_PRINT) {
-		PrintToChatAll("Rock health: %d\%", RoundFloat(ROCK_HEALTH - rockDamage));
+		PrintToChatAll("Rock health: %d\%", RoundFloat(z_tank_throw_health.IntValue - rockDamage));
 	}
 }
 

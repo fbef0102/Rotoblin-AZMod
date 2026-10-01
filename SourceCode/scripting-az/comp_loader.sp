@@ -3,7 +3,7 @@
 //#include <builtinvotes>
 #include <multicolors>
 
-#define PLUGIN_VERSION "2.7-2025/6/9"
+#define PLUGIN_VERSION "2.7-2026/10/1"
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -39,7 +39,6 @@ public Plugin:myinfo =
 ConVar CompLoaderEnabled			= null;
 ConVar CompLoaderAllowLoad			= null;
 ConVar CompLoaderAllowMap			= null;
-ConVar CompLoader4v4ClassicConfig			= null;
 ConVar CompLoader4v4PubConfig			= null;
 ConVar CompLoader4v4PubHubtersConfig			= null;
 ConVar CompLoader5v5Config			= null;
@@ -98,7 +97,6 @@ new Handle:g_Cvar_Limits;
 new String:PlayerCfg[128];			//Initial string after !load
 
 char cfg5v5[128];
-char cfg4v4classic[128];
 char cfg4v4Pub[128];
 char cfg4v4PubHuters[128];
 char cfg4v4[128];
@@ -140,7 +138,6 @@ public OnPluginStart()
 	CompLoaderAllowMap				= CreateConVar("comp_loader_allow_map", "1", "Allow players to use the !changemap(!cm) command.", FCVAR_NOTIFY);
 	CompLoader5v5Config				= CreateConVar("comp_loader_5v5_config", "rotoblin_hardcore_5v5.cfg", "Name of the 5v5 config. (Empty=Disable)");
 	CompLoader4v4Config				= CreateConVar("comp_loader_4v4_config", "rotoblin_hardcore_4v4.cfg", "Name of the 4v4 config. (Empty=Disable)");
-	CompLoader4v4ClassicConfig		= CreateConVar("comp_loader_4v4_classic_config", "rotoblin_hardcore_4v4_classic.cfg", "Name of the 4v4 classic config. (Empty=Disable)");
 	CompLoader4v4PubConfig			= CreateConVar("comp_loader_4v4_pub_config", "rotoblin_pub.cfg", "Name of the 4v4 pub config. (Empty=Disable)");
 	CompLoader4v4PubHubtersConfig	= CreateConVar("comp_loader_4v4_pub_hunter_config", "rotoblin_pub_hunters.cfg", "Name of the 4v4 pub hunters config. (Empty=Disable)");
 	CompLoader3v3Config				= CreateConVar("comp_loader_3v3_config", "rotoblin_hardcore_3v3.cfg", "Name of the 3v3 config. (Empty=Disable)");
@@ -175,7 +172,6 @@ public OnPluginStart()
 	GetCvars();
 	CompLoader5v5Config.AddChangeHook(ChangeVars);
 	CompLoader4v4Config.AddChangeHook(ChangeVars);
-	CompLoader4v4ClassicConfig.AddChangeHook(ChangeVars);
 	CompLoader4v4PubConfig.AddChangeHook(ChangeVars);
 	CompLoader4v4PubHubtersConfig.AddChangeHook(ChangeVars);
 	CompLoader3v3Config.AddChangeHook(ChangeVars);
@@ -329,7 +325,6 @@ void GetCvars()
 {
 	GetConVarString(CompLoader5v5Config, cfg5v5, 128);
 	GetConVarString(CompLoader4v4Config, cfg4v4, 128);
-	GetConVarString(CompLoader4v4ClassicConfig, cfg4v4classic, 128);
 	GetConVarString(CompLoader4v4PubConfig, cfg4v4Pub, 128);
 	GetConVarString(CompLoader4v4PubHubtersConfig, cfg4v4PubHuters, 128);
 	GetConVarString(CompLoader3v3Config, cfg3v3, 128);
@@ -956,8 +951,6 @@ public Action:Config_Changer(client, args)
 		Format(loadInfo, 1024, "%s| !load 5v5        | 5v5 hardcore config      | %30s|\n", loadInfo, cfg5v5);
 		if(strlen(cfg4v4) > 0) 
 		Format(loadInfo, 1024, "%s| !load 4v4        | 4v4 hardcore config      | %30s|\n", loadInfo, cfg4v4);
-		if(strlen(cfg4v4classic) > 0) 
-		Format(loadInfo, 1024, "%s| !load 4v4 classic| 4v4 classic config       | %30s|\n", loadInfo, cfg4v4classic);
 		if(strlen(cfg4v4Pub) > 0) 
 		Format(loadInfo, 1024, "%s| !load 4v4 pub    | 4v4 pub config           | %30s|\n", loadInfo, cfg4v4Pub);
 		if(strlen(cfg4v4PubHuters) > 0) 
@@ -1039,7 +1032,6 @@ public Action:Config_Changer(client, args)
 		GetCmdArgString(Admin_Cfg, sizeof(Admin_Cfg));			//getting the string value
 		
 		new AdminValueIsConfig5v5 = 0;		//is config 4v4 integer, on function start set to 0
-		new AdminValueIsConfigClassic = 0;
 		new AdminValueIsConfig4v4 = 0;		//is config 4v4 integer, on function start set to 0
 		new AdminValueIsConfig3v3 = 0;		//is config 3v3 integer, on function start set to 0
 		new AdminValueIsConfig2v2 = 0;		//is config 2v2 integer, on function start set to 0
@@ -1084,8 +1076,6 @@ public Action:Config_Changer(client, args)
 		if((StrContains(Admin_Cfg, "dc", false) != -1)) AdminValueIsConfigdc = 1;
 		if((StrContains(Admin_Cfg, "dark coop", false) != -1)) AdminValueIsConfigdc = 1;
 
-		if((StrContains(Admin_Cfg, "classic", false) != -1)) AdminValueIsConfigClassic = 1;	//if string contains hu, set value to 1
-		
 		if((StrContains(Admin_Cfg, "pub", false) != -1)) AdminValueIsConfigPub = 1;
 		
 		if((StrContains(Admin_Cfg, "hu", false) != -1)) AdminValueIsConfigHunters = 1;	//if string contains hu, set value to 1	
@@ -1197,21 +1187,6 @@ public Action:Config_Changer(client, args)
 						return Plugin_Handled;
 					}	
 				}			
-			}
-			else if(AdminValueIsConfigClassic == 1)
-			{
-				if(strlen(cfg4v4classic) > 0)
-				{
-					SetConVarInt(CompLoaderLoadActive, 0);
-					SetConVarInt(CompLoaderMapActive, 0);
-					GetConVarString(CompLoader4v4ClassicConfig, AdminLoadCommandConfigToExecuteName, 128);
-					CPrintToChatAll("[{olive}TS{default}] {lightgreen}%s{default} %t",AdminName,"comp_loader2","4v4 Classic");
-					
-					Admin_Cancel_Lite();
-					
-					CreateTimer(3.0, Timer_Admin_Load_Config, TIMER_FLAG_NO_MAPCHANGE);
-					return Plugin_Handled;
-				}
 			}
 			else if(AdminValueIsConfigPub == 1)
 			{
@@ -1522,7 +1497,6 @@ public Action:Config_Changer(client, args)
 			{
 				GetCmdArgString(PlayerCfg, sizeof(PlayerCfg));			//getting the !load arguments to PlayerCfg string
 				new ValueIsConfig5v5 = 0;		//is config 5v5 integer, on function start set to 0
-				new ValueIsConfigClassic = 0;
 				new ValueIsConfigPub = 0;
 				new ValueIsConfig4v4 = 0;		//is config 4v4 integer, on function start set to 0
 				new ValueIsConfig3v3 = 0;		//is config 3v3 integer, on function start set to 0
@@ -1568,8 +1542,6 @@ public Action:Config_Changer(client, args)
 				
 				if((StrContains(PlayerCfg, "dc", false) != -1)) ValueIsConfigdc = 1;
 				if((StrContains(PlayerCfg, "dark coop", false) != -1)) ValueIsConfigdc = 1;
-				
-				if((StrContains(PlayerCfg, "classic", false) != -1)) ValueIsConfigClassic = 1;	//if string contains hu, set value to 1
 				
 				if((StrContains(PlayerCfg, "pub", false) != -1)) ValueIsConfigPub = 1;	//if string contains hu, set value to 1
 				
@@ -1629,15 +1601,7 @@ public Action:Config_Changer(client, args)
 				{
 					if(ValueIsConfigHunters != 1)	//if config is hunters 0
 					{
-						if(ValueIsConfigClassic == 1)
-						{
-							if(strlen(cfg4v4classic) > 0)
-							{
-								PlayerCfg = "4v4 Classic";
-								bIsValidConfig = true;
-							}
-						}
-						else if(ValueIsConfigPub == 1)
+						if(ValueIsConfigPub == 1)
 						{
 							if(strlen(cfg4v4Pub) > 0)
 							{
@@ -1866,10 +1830,6 @@ public Action:Config_Changer(client, args)
 				if(StrEqual(PlayerCfg, "5v5", false))
 				{
 					GetConVarString(CompLoader5v5Config, LoadCommandConfigToExecuteName, 128);																	
-				}
-				else if(StrEqual(PlayerCfg, "4v4 Classic", false))
-				{
-					GetConVarString(CompLoader4v4ClassicConfig, LoadCommandConfigToExecuteName, 128);																		
 				}
 				else if(StrEqual(PlayerCfg, "4v4 Pub", false))
 				{

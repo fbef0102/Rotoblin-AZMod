@@ -1014,37 +1014,6 @@
 		"en"	"Caps: {olive}{1}{default} [{lightgreen}pounces{default}: {olive}{2}{default}, {lightgreen}tongues{default}: {olive}{3}{default}, {lightgreen}booms{default}: {olive}{4}{default}] - {olive}{5}"
 		"zho"	"總計被控: {olive}{1}{default}[{lightgreen}被撲{default}: {olive}{2}{default},{lightgreen}被拉{default}: {olive}{3}{default},{lightgreen}被噴{default}: {olive}{4}{default}] - {olive}{5}"
 	}
-	///////////////l4d_panic_notify.smx///////////////
-	"l4d_panic_notify1"
-	{
-		"en"	"{default}started the {lightgreen}finale"
-		"zho"	"{default}啟動了 {lightgreen}最後救援"
-	}
-	"l4d_panic_notify2"
-	{
-		"en"	"{default}triggered a {lightgreen}horde event"
-		"zho"	"{default}觸發了 {lightgreen}屍潮事件"
-	}
-	"l4d_panic_notify3"
-	{
-		"en"	"{default}triggered a {lightgreen}horde alert"
-		"zho"	"{default}觸發了 {lightgreen}警報屍潮事件"
-	}
-	"l4d_panic_notify4"
-	{
-		"en"	"{olive}Crow {lightgreen}horde event"
-		"zho"	"{default}烏鴉 {lightgreen}屍潮事件 (南南東~)"
-	}
-	"l4d_panic_notify5"
-	{
-		"en"	"{olive}Death Aboard {lightgreen}horde event"
-		"zho"	"{olive}幽靈船 {lightgreen}屍潮事件"
-	}
-	"l4d_panic_notify6"
-	{
-		"en"	"{lightgreen}Rescue started"
-		"zho"	"{lightgreen}救援開始"
-	}
 	///////////////l4d_pig_infected_notify.smx///////////////
 	"killed by fire"
 	{
@@ -3099,14 +3068,32 @@
 		"en"		"Myself"
 		"zho"		"自己"
 	}		
+	///////////////rotoblin - pause///////////////
 	"Pause_1"
 	{
 		"en"		"[{green}Pause{default}] {olive}%N {default}has fully loaded"
 		"zho"		"[{green}Pause{default}] {olive}%N {default}已加載入伺服器"
 	}	
+	///////////////l4d_tank_stumble_door.smx///////////////
 	"l4d_tank_stumble_door_break_1"
 	{
 		"en"	"[{olive}TS{default}] The {green}Tank{default} got stumbled by a door."
 		"zho"	"[{olive}TS{default}] {green}Tank{default} 被門夾到暈眩."
+	}
+	///////////////trigger_horde_notify.smx///////////////
+	"trigger_horde_notify_Horde"
+	{
+		"en"		"{olive}%N{green} triggered a horde event!"
+		"zho"		"{olive}%N{green} 觸發了屍潮事件!"
+	}
+	"trigger_horde_notify_Final Rescue Start"
+	{
+		"en"		"{green}Final Rescue has started!"
+		"zho"		"{green}最後救援開始!"
+	}
+	"trigger_horde_notify_Final Rescue"
+	{
+		"en"		"{blue}%N{olive} triggered the final rescue!"
+		"zho"		"{blue}%N{olive} 觸發了救援開關!"
 	}
 }

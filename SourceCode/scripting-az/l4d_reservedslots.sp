@@ -83,8 +83,8 @@ bool bOnPluginEnd = false;
 public void OnPluginEnd()
 {
     bOnPluginEnd = true;
-    L4dtoolzExtension.SetInt(g_iCfgMaxPlayers);
-    sv_visiblemaxplayers.SetInt(g_iCfgMaxPlayers);
+    if(L4dtoolzExtension != null) L4dtoolzExtension.SetInt(g_iCfgMaxPlayers);
+    if(sv_visiblemaxplayers != null) sv_visiblemaxplayers.SetInt(g_iCfgMaxPlayers);
 }
 
 public void OnMapStart()

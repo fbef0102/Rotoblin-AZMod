@@ -2,7 +2,7 @@
 -根據二代 Acemod、Zonemod 與 L4D1 rotoblin2 改編 
 
 作者:
-哈利 - https://steamcommunity.com/profiles/76561198026784913
+哈利 - steamcommunity.com/profiles/76561198026784913
 //台灣人
 //如果有任何問題, 於Github上回報或加steam好友傳送訊息
 
@@ -49,7 +49,7 @@
 16. Dark Wood: gamemaps.com/details/32164
 
 --------支援二代地圖--------
-* L4D2 on L4D1 Maps: https://www.gamemaps.com/details/32168
+* L4D2 on L4D1 Maps: www.gamemaps.com/details/32168
 * 地圖列表:
 1. C1 - Dead Center
 2. C2 - Dark Carnival
@@ -162,8 +162,9 @@
 [17] l4d_versus_spechud
 //Provides different HUDs for spectators
 
-[18] l4d_panic_notify 
-//誰觸發了屍潮事件(包括打車.開機關)
+[18] trigger_horde_notify 
+//Show who triggers the horde, alarm car, or final
+//誰觸發了屍潮事件(包括打車.開機關.救援開始)
 
 [19] l4d_nobhaps 
 //玩家不能連跳(連跳不會超過速度上限)
@@ -413,11 +414,13 @@
 [95] l4d2_smg_reload_tweak
 //smg reload faster with faster reload animation
 
-[96] botpopstop
-//Removes pills from bots if they try to use them and restores them when a human takes over.
+[96] l4d2_block_bot_pills
+//Prohibits the use of pills to bots
+//禁止bots使用藥丸
 
 [97] l4d_PillsHere
 //Gives pills to survivors who doesn't have pill
+//管理員指令 sm_geiyaoto 或 sm_giveto 給藥
 
 [98] all4dead
 //This mod allows administrators to influence what the AI director does without sv_cheats 1.
@@ -551,6 +554,8 @@
 
 [138] l4d_info_editor
 //Modify gamemodes.txt and weapons.txt values by config instead of conflicting Game files.
+//修改武器與msssion file的keyvalue，不需要透過原本檔案修改導致產生衝突
+//但不是所有keyvalue修改都有效
 
 [139] l4d_smoker_drag_damage_interval
 //調整Smoker舌頭拖曳的傷害與時間
@@ -751,7 +756,7 @@
 //裝上此插件之後: 蹲下的殭屍可以被推開, 還在空中的殭屍被推之後落地時震退, 落地動作時的殭屍可以被推開
 
 [202] l4d_unrestrict_panic_battlefield
-//https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_unrestrict_panic_battlefield
+//github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_unrestrict_panic_battlefield
 //Remove zombie spawning restrictions during panic events
 //官方的問題: 
 //1.開地圖機關之後，小殭屍只能生成在NAV帶有BattleField屬性的區域內，人類往前跑, 小殭屍只會在後面重生成
@@ -815,7 +820,7 @@
 //準備期間可以跳高跳遠
 
 [221] l4d_prop_touching_rules
-//https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules
+//github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules
 //Rules of props' move away, moved above props.
 //防止玩家碰到物件被移開
 //防止玩家碰到能移開物件
@@ -829,47 +834,65 @@
 //倖存者每回退7%路程, Tank有4秒時間不會失去控制權
 
 [224] l4d_return_thrown_items 
-//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_return_thrown_items
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_return_thrown_items
 //Return pills/adrenalines thrown through shoving key if not successfully given.
 //當右鍵給藥丸無法傳送到隊友身上時返回給持有者
 
 [225] l4d_fix_prop_los 
-//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_prop_los
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_prop_los
 //Fix thin/small 'prop_*' entity not blocking LOS.
 //修復小型的物件無法擋住玩家視野 (靈魂特感無法在物件後面生成, 顯示會被玩家看到)
 
 [226] l4d_lagcomp_skeet 
-//source: https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_lagcomp_skeet
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_lagcomp_skeet
 //Make hunter skeets more consistent across different pings.
 //使高ping的玩家可以更容易打爆飛行中的hunter
 
 [227] l4d2_incap_fire_fix 
-//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
 //Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
 //修復倒地的玩家按住右鍵期間開槍(手槍)沒有聲音
 
 [228] l4d_tank_stumble_door
-//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_incap_fire_fix.sp
 //Tank won't get stumbled by a door in l4d1
 //Tank不會被門夾到暈眩
 
 [229] l4d2_tank_flying_incap 
-//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_tank_flying_incap.sp
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_tank_flying_incap.sp
 //Sends Survivors flying on the incapping punch.
 //Tank依然會打飛即將倒地的玩家 (原本是原地躺地)
 
 [230] l4d2_static_shotgun_spread
 [231] l4d_pellet_spread_customizer
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_pellet_spread_customizer
 //Static shotgun spread replaces the random pellet spread.
 //將散彈槍的彈丸散步成固定彈道，移除官方過於隨機的彈道
 
 [232] l4d_hunter_phantom_fix
+//source: github.com/Volence/riverside-l4d-plugins
 //A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
 //嘗試修復殺死撲人的hunter之後．依然原地播放hunter撲人音效與噴血特效
 
+[233] l4d_witch_corner_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//Stops the witch freezing on corners at a low nb_update_frequency
+//解決因為nb_update_frequency頻率過高導致witch容易卡在門口或是角落一系列問題
+
+[234] l4d_witch_unstuck
+//source: github.com/Volence/riverside-l4d-plugins
+//Hops a startled witch past whatever she is stuck on
+//如果witch卡住嘗試移動witch一小段距離
+
+[235] l4d2_weapon_attributes
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_weapon_attributes.sp
+//Allowing tweaking of the attributes of all weapons
+//修改武器與msssion file的keyvalue，不需要透過原本檔案修改導致產生衝突
+
 --------vpk支援--------
-[01] _l4d modified talker.vpk (https://www.gamemaps.com/details/3863)
-//improves the survivor's conversation. It includes many exclusive dialogues, unused survivor's speeches and every survivor has more than 15 kinds of laughter now!
+[01] l4d1_mission_nav.vpk
+//重製所有官方地圖的nav
+//Missino file對抗模式最後一關重新寫上"VersusFinaleProgressScoreFactor"
 
 --------反作弊.反腳本.反破壞, 反屁孩--------
 [01] smac (主控制)
@@ -890,7 +913,7 @@
 
 --------分數計算--------
 對抗分數 = ( AD + HB + PILLS ) x Alive x Map  
-AD = 平均距離, 介於 0-100%
+AD = 平均距離, 介於 [0-100]%
 HB = 生命加值, Floor(實血/2) + RoundToNearest(虛血/4)
 PILLS = 藥分, 保留藥丸每顆+15
 Alive = 倖存者存活數, 如果滅團則此數值為1.0
@@ -967,8 +990,8 @@ Map = 地圖難度修改
 -!bonesaw,!trophy,!harrypotter,!twnumber1,!twno1 //隱藏的Ready頭上獎盃 (限Ready期間)
 -!load(!mode,!match)	//投票載入模式
 * cancel //取消換模式
-* 5v5, 5v5hu, 5v5nb, 5v5 classic
-* 4v4, 4v4 classic, 4v4hu, 4v4nb
+* 5v5, 5v5hu, 5v5nb
+* 4v4, 4v4hu, 4v4nb
 * 3v3, 3v3hu, 3v3nb
 * 2v2, 2v2hu, 2v2nb
 * 1v1, 1v2, 1v3, 1v4, 1v5
@@ -1000,3 +1023,4 @@ Map = 地圖難度修改
 * dv (Dead Vacation)
 * uz (Undead Zone)
 * re3 (Resident Evil 3)
+* dw (Dark Wood)

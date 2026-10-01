@@ -131,7 +131,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Hunters only
   * No Boomer
   * Hardcore
-  * [Classic](https://steamcommunity.com/groups/ibserver#announcements/detail/1688172020573940161) 
   * 4v4 Pub
   * 4v4 Pub Hunters only
 
@@ -276,7 +275,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 - - - -
 ### Score Calculation(!health/!bonus) ###
 * Versus Score = ( AD + HB + PILLS ) x Alive x Map 
-  * AD = Average distance
+  * AD = Average distance, only [0~100]%
   * HB = Health Bonus, (PermanentHealth/2) + (TemporaryHealth/4)
   * PILLS = 15 Health Bonus per pill
   * Alive = Number of players that survived, this value is 1.0 if all survivors are dead
@@ -433,7 +432,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stop tank props from fading whilst the tank is alive, remove all tank hittable prop once tank dead
     * Show tank hud for Infected team
     * Players cannot shove tanks.
-    * Passing control to AI tank will no longer be rewarded with an instant respawn
+    * Passing control to AI tank or another real player will no longer be rewarded with an instant respawn
     * Tank punches animation
       * Real Tank player: force right hook only
       * AI Tank: Random
@@ -472,6 +471,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
     * Tank won't get stumbled by a door
     * Sends Survivors flying on the incapping punch
+    * Tank rock health: 100 (vanilla: 50)
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
@@ -490,6 +490,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Survivor will startle witch if shoot boomer nearby.
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
     * Fixed a door can startle the witch, causing her to lose target
+    * Hops a startled witch past whatever she is stuck on
+    * Stops the witch freezing on corners at a low nb_update_frequency
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)

@@ -1,3 +1,6 @@
+// l4d2_weapon_attributes can control reload duration, but I still need this plugin 
+// since this plugin can fix playback rate when a survivor shoves
+
 #pragma semicolon 1
 #pragma newdecls required;
 

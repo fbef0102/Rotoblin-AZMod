@@ -3,7 +3,7 @@
 	//Every Language
 	"Language"
 	{
-		"chi"			"你在这服务器会看到的语言: 简体中文, 翻译者：Target"
+		"chi"			"你在这服务器会看到的语言: 简体中文, 翻译者：Target, Harry"
 	}
 	"Plugin_Information"
 	{
@@ -758,31 +758,6 @@
 	"kills2"
 	{
 		"chi"	"累计被控: {olive}{1}{default}[{lightgreen}被扑{default}: {olive}{2}{default},{lightgreen}被拉{default}: {olive}{3}{default},{lightgreen}被喷{default}: {olive}{4}{default}] - {olive}{5}"
-	}
-	///////////////l4d_panic_notify.smx///////////////
-	"l4d_panic_notify1"
-	{
-		"chi"	"{default}启动了 {lightgreen}最终救援。"
-	}
-	"l4d_panic_notify2"
-	{
-		"chi"	"{default}触发了 {lightgreen}尸潮事件。"
-	}
-	"l4d_panic_notify3"
-	{
-		"chi"	"{default}触发了 {lightgreen}警报尸潮事件。"
-	}
-	"l4d_panic_notify4"
-	{
-		"chi"	"{olive}乌鸦 {lightgreen}尸潮事件。"
-	}
-	"l4d_panic_notify5"
-	{
-		"chi"	"{olive}幽灵船 {lightgreen}闹鬼尸潮事件"
-	}
-	"l4d_panic_notify6"
-	{
-		"chi"	"{lightgreen}救援开始。"
 	}
 	///////////////l4d_pig_infected_notify.smx///////////////
 	"killed by fire"
@@ -2324,12 +2299,33 @@
 	{
 		"chi"		"自己"
 	}	
+	///////////////rotoblin - pause///////////////
 	"Pause_1"
 	{
 		"chi"		"[{green}Pause{default}] {olive}%N {default}已加载入服务器"
 	}	
+	///////////////l4d_tank_stumble_door.smx///////////////
 	"l4d_tank_stumble_door_break_1"
 	{
 		"chi"	"[{olive}TS{default}] {green}Tank{default} 被门夹到晕眩。"
+	}
+	///////////////trigger_horde_notify.smx///////////////
+	"trigger_horde_notify_Horde"
+	{
+		"en"		"{olive}%N{green} triggered a horde event!"
+		"zho"		"{olive}%N{green} 觸發了屍潮事件!"
+		"chi"		"{olive}%N{green} 触发了尸潮事件!"
+	}
+	"trigger_horde_notify_Final Rescue Start"
+	{
+		"en"		"{green}Final Rescue has started!"
+		"zho"		"{green}最後救援開始!"
+		"chi"		"{green}最后救援开始!"
+	}
+	"trigger_horde_notify_Final Rescue"
+	{
+		"en"		"{blue}%N{olive} triggered the final rescue!"
+		"zho"		"{blue}%N{olive} 觸發了救援開關!"
+		"chi"		"{blue}%N{olive} 触发了救援开关!"
 	}
 }

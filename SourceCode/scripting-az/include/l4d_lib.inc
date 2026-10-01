@@ -209,7 +209,7 @@ stock bool IsSpectatorAndInGame(int client)
 
 stock bool IsPlayerBussy(int client, int team)
 {
-	return !IsPlayerAlive(client) || (team == 2 ? (IsSurvivorBussy(client) || IsIncapacitated(client) || IsHandingFromLedge(client)) :
+	return !IsPlayerAlive(client) || (team == 2 ? (IsSurvivorBussy(client) || IsIncapacitated(client) || IsHangingFromLedge(client)) :
 		IsInfectedBussy(client));
 }
 
@@ -228,7 +228,7 @@ stock bool IsIncapacitated(int client)
 	return !!GetEntProp(client, Prop_Send, "m_isIncapacitated");
 }
 
-stock bool IsHandingFromLedge(int client)
+stock bool IsHangingFromLedge(int client)
 {
 	return GetEntProp(client, Prop_Send, "m_isHangingFromLedge") || GetEntProp(client, Prop_Send, "m_isFallingFromLedge");
 }
@@ -646,4 +646,16 @@ stock bool IsL4DEngineEx(bool bL4D2 = false)
 		iEngine = IsL4DEngine(bL4D2);
 
 	return view_as<bool>(iEngine);
+}
+
+stock bool InSecondHalfOfRound()
+{
+	return view_as<bool>(GameRules_GetProp("m_bInSecondHalfOfRound"));
+}
+
+stock bool IsTank(int client)
+{
+	return (IsClientInGame(client)
+		&& GetClientTeam(client) == 3
+		&& IsPlayerTank(client));
 }

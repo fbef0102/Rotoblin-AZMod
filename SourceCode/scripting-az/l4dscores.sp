@@ -23,8 +23,6 @@
 #define SCORE_SWAPMENU_PANEL_LIFETIME 10
 #define SCORE_SWAPMENU_PANEL_REFRESH 0.5
 
-#define L4D_MAXCLIENTS MaxClients
-#define L4D_MAXCLIENTS_PLUS1 (L4D_MAXCLIENTS + 1)
 #define L4D_TEAM_SURVIVORS 2
 #define L4D_TEAM_INFECTED 3
 #define L4D_TEAM_SPECTATE 1
@@ -97,11 +95,8 @@ new teamPlacementAttempts[256]; //how many times we attempt and fail to place a 
 new Round1Score,Round2Score,Round1SurAlive,Round2SurAlive;
 new Float:Round1ScorePercent,Float:Round2ScorePercent;
 new bool:Round1WipedOut,bool:Round2WipedOut;
-static bool:ClientHasDown[MAXPLAYERS + 1];
 
 static		bool:IsSecondRound,bool:RoundEnding;
-static const String:CVAR_TEMP_HEALTH_DECAY[]				= "pain_pills_decay_rate";
-static Handle:cvarTempHealthDecay							= INVALID_HANDLE;
 static Float:MapVersusDifficulty = 0.0;
 static survivor_progress;
 static String:previousmap[128];
@@ -146,6 +141,19 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("Score_GetTeamCampaignScore", Native_GetTeamCampaignScore);
 	return APLRes_Success;
 }
+
+float 
+	g_fPreventCmdSpam[MAXPLAYERS+1];
+
+ConVar 
+	cvarTempHealthDecay, 
+	survivor_limit, 
+	z_max_player_zombies,
+	vs_score_pp_health,
+	vs_score_pp_healthbuffer;
+
+int 
+	g_iMaxCompletionScore;
 
 public OnPluginStart()
 {
@@ -215,14 +223,13 @@ public OnPluginStart()
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd,EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeam);
-	HookEvent("heal_success", Event_heal_success);//治療包治療成功
-	HookEvent("player_hurt_concise", Event_HurtConcise, EventHookMode_Post);
-	HookEvent("player_bot_replace", OnBotSwap);
-	HookEvent("bot_player_replace", OnBotSwap);
-	HookEvent("player_spawn", OnPlayerSpawn);
 	
 	DebugPrintToAll("Map counter = %d", mapCounter);
-	cvarTempHealthDecay =	FindConVar(CVAR_TEMP_HEALTH_DECAY);
+	cvarTempHealthDecay 		=	FindConVar("pain_pills_decay_rate");
+	survivor_limit 				=	FindConVar("survivor_limit");
+	z_max_player_zombies 		=	FindConVar("z_max_player_zombies");
+	vs_score_pp_health 			=	FindConVar("vs_score_pp_health");
+	vs_score_pp_healthbuffer 	=	FindConVar("vs_score_pp_healthbuffer");
 	
 	strcopy(previousmap, sizeof(previousmap), "");
 	
@@ -249,7 +256,6 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 {
 	survivor_progress = 25;
 	
-	for(new i = 1; i <= MaxClients; i++) ClientHasDown[i] = false;	
 	RoundEnding = false;
 	/* sometimes round_start is invoked before OnMapStart */
 	if(!roundCounterReset)
@@ -279,7 +285,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 public Action:PrintRoundScore(Handle:timer,any:surdead)
 {
 	new surplayer = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
-	if(surdead == surplayer)//wiped out 
+	if(surdead >= surplayer)//wiped out 
 		if(IsSecondRound)
 			Round2WipedOut = true;
 		else
@@ -289,13 +295,13 @@ public Action:PrintRoundScore(Handle:timer,any:surdead)
 	if(IsSecondRound)
 	{
 		Round2Score = GetTeamRoundScore(logical_team);
-		Round2ScorePercent = CalculateScorePercent(float(Round2Score));
+		Round2ScorePercent = CalculateScorePercent(Round2Score);
 		Round2SurAlive = surplayer-surdead;
 	}
 	else
 	{
 		Round1Score = GetTeamRoundScore(logical_team);
-		Round1ScorePercent = CalculateScorePercent(float(Round1Score));
+		Round1ScorePercent = CalculateScorePercent(Round1Score);
 		Round1SurAlive = surplayer-surdead;
 	}
 		
@@ -307,54 +313,11 @@ public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 	if(RoundEnding) return;
 	RoundEnding = true;
 	
-	new surdead;
-	new surplayer = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
-	for(new i=1; i <= MaxClients; i++){
-		if(IsSurvivor(i))
-			if(!IsPlayerAlive(i)||IsIncapacitated(i)||GetEntProp(i, Prop_Send, "m_isHangingFromLedge"))
-				surdead++;
-	}
-	
-
-	if(surdead == surplayer)//not wiped out 
-	{
-		CreateTimer(4.0,PrintRoundScore,surdead);
-	}
-	else
-	{
-		surdead = 0;
-		new HealthB,tempHealthB,pillB,Ent;
-		for (new j = 1; j <= MaxClients; j++)
-		{
-			if (IsSurvivor(j))
-			{
-				HealthB = tempHealthB = pillB = 0;
-				if(IsPlayerAlive(j)){
-					if(!IsIncapacitated(j) && !GetEntProp(j, Prop_Send, "m_isHangingFromLedge"))
-					{
-						HealthB = GetHardHealth(j)/2;
-						tempHealthB = RoundToNearest(GetAccurateTempHealth(j)/4);
-					}
-					Ent = GetPlayerWeaponSlot(j, 4); if (Ent != -1) pillB += g_iPillScore;
-					Ent = GetPlayerWeaponSlot(j, 3); if (Ent != -1) pillB += g_iKitScores;
-				}
-				else
-					surdead++;
-					
-				L4DDirect_SetSurvivorHealthBonus(j,HealthB+tempHealthB+pillB,false);
-			}
-		}
-		L4DDirect_RecomputeTeamScores();//如果全部玩家死亡不會計算此行
-		CreateTimer(4.0,PrintRoundScore,surdead);
-	}
-	
-
 	new roundCounter = GetRoundCounter();
 	DebugPrintToAll("Round %d end, scores: A: %d, B: %d", roundCounter, GetTeamRoundScore(SCORE_TEAM_A), GetTeamRoundScore(SCORE_TEAM_B));	
 
 	if(roundRestarting)
 		return;
-
 	
 	/*
 	* Update Round + Campaign Scores
@@ -415,7 +378,7 @@ public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 	if(!IsFirstRound())
 	{
 		#if !SCORE_DEBUG || SCORE_CAMPAIGN_OVERRIDE
-			L4D_OnSetCampaignScores(campaignScores[SCORE_TEAM_A], campaignScores[SCORE_TEAM_B]);
+			L4D_SetCampaignScores(campaignScores[SCORE_TEAM_A], campaignScores[SCORE_TEAM_B]);
 		
 			DebugPrintToAll("Updated campaign scores, A:%d, B:%d", campaignScores[SCORE_TEAM_A], campaignScores[SCORE_TEAM_B]);
 		#endif
@@ -450,7 +413,7 @@ public Action:Command_SwapTeams(client, args)
 	CPrintToChatAll("[SM] %t","ReadyPlugin_33");
 	
 	new i;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++)
+	for(i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGameHuman(i) && GetClientTeam(i) != L4D_TEAM_SPECTATE)
 		{
@@ -699,6 +662,14 @@ public OnMapStart()
 	VoteMenuClose();
 }
 
+public void OnConfigsExecuted()
+{
+	int sur = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
+	g_iMaxCompletionScore = RoundToNearest(  (100+vs_score_pp_health.FloatValue*sur*100+g_iPillScore*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*MapVersusDifficulty );
+	
+	L4D_SetVersusMaxCompletionScore(g_iMaxCompletionScore);
+}
+
 KeyValues OpenConfig()
 {
 	// Create config if it does not exist
@@ -832,7 +803,7 @@ CalculateNextMapTeamPlacement()
 	new i;
 	
 	new team;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++) 
+	for(i = 1; i <= MaxClients; i++) 
 	{
 		if(IsClientInGameHuman(i)) 
 		{
@@ -983,7 +954,7 @@ TryTeamPlacement()
 	* Try to place people on the teams they should be on.
 	*/
 	new i;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++) 
+	for(i = 1; i <= MaxClients; i++) 
 	{
 		if(IsClientInGameHuman(i)) 
 		{
@@ -1079,7 +1050,7 @@ TryTeamPlacement()
 ClearTeamPlacement()
 {
 	new i;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++) 
+	for(i = 1; i <= MaxClients; i++) 
 	{
 		teamPlacementArray[i] = 0;
 		teamPlacementAttempts[i] = 0;
@@ -1381,10 +1352,10 @@ stock bool:ChangePlayerTeam(client, team)
 	new bot;
 	
 	for(bot = 1; 
-		bot < L4D_MAXCLIENTS_PLUS1 && (!IsClientConnected(bot) || !IsFakeClient(bot) || (GetClientTeam(bot) != L4D_TEAM_SURVIVORS));
+		bot <= MaxClients && (!IsClientConnected(bot) || !IsFakeClient(bot) || (GetClientTeam(bot) != L4D_TEAM_SURVIVORS));
 		bot++) {}
 	
-	if(bot == L4D_MAXCLIENTS_PLUS1)
+	if(bot == MaxClients+1)
 	{
 		DebugPrintToAll("Could not find a survivor bot, adding a bot ourselves");
 		
@@ -1418,7 +1389,7 @@ stock GetTeamHumanCount(team)
 	new humans = 0;
 	
 	new i;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++)
+	for(i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGameHuman(i) && GetClientTeam(i) == team)
 		{
@@ -1429,19 +1400,19 @@ stock GetTeamHumanCount(team)
 	return humans;
 }
 
-stock GetTeamMaxHumans(team)
+int GetTeamMaxHumans(int team)
 {
 	if(team == L4D_TEAM_SURVIVORS)
 	{
-		return GetConVarInt(FindConVar("survivor_limit"));
+		return survivor_limit.IntValue;
 	}
 	else if(team == L4D_TEAM_INFECTED)
 	{
-		return GetConVarInt(FindConVar("z_max_player_zombies"));
+		return z_max_player_zombies.IntValue;
 	}
 	else if(team == L4D_TEAM_SPECTATE)
 	{
-		return L4D_MAXCLIENTS;
+		return MaxClients;
 	}
 	
 	return -1;
@@ -1468,36 +1439,23 @@ public Action:Command_Changelevel(args)
 	return Plugin_Continue;
 }
 
-public Action:Command_Health(client, args)//打這指令的自己才會看到
+Action Command_Health(int client, int args)//打這指令的自己才會看到
 {
-	if(RoundEnding)
-		return;
+	if(client == 0 || RoundEnding)
+		return Plugin_Handled;
+
+	if(g_fPreventCmdSpam[client] > GetEngineTime())
+		return Plugin_Handled;
+
 	PrintGetNowScores(client);
+	g_fPreventCmdSpam[client] = GetEngineTime() + 0.5;
+
+	return Plugin_Handled;
 }
 
-public Action:Event_HurtConcise(Handle:event, const String:name[], bool:dontBroadcast)
+int GetHardHealth(int client)
 {
-	if(IsInReady()) return;
-	
-	new attacker = GetEventInt(event, "attackerentid");
-	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(attacker ==0 && IsClientConnected(victim) && IsClientInGame(victim) && GetClientTeam(victim) == 2)
-	{
-		if(GetEntProp(victim, Prop_Send, "m_isHangingFromLedge"))
-			 return;
-		if(IsIncapacitated(victim)) 
-			ClientHasDown[victim] = true;
-	}
-}
-
-static GetHardHealth(client)
-{
-	if(GetEntProp(client, Prop_Send, "m_isHangingFromLedge"))
-		return 0;
-	else if(ClientHasDown[client]==true)
-		return 0;
-	else
-		return GetEntProp(client, Prop_Send, "m_iHealth");
+	return GetEntProp(client, Prop_Send, "m_iHealth");
 }
 static Float:GetAccurateTempHealth(client)
 {
@@ -1509,39 +1467,42 @@ static Float:GetAccurateTempHealth(client)
 }
 PrintGetNowScores(client,roundend = false)
 {
-	new Scores,P,N,HB=0,round,PILLS=0;
-	new Float:MD;
-	new HealthB,tempHealthB,pillB,Ent;
-	if(!roundend){
-		for (new j = 1; j <= MaxClients; j++)
+	int iScores,AD,N,HB=0,round,PILLS=0;
+	float MD, fScores;
+	int HealthB,tempHealthB,pillB,Ent;
+	if(!roundend)
+	{
+		for (int j = 1; j <= MaxClients; j++)
 		{
-			if (IsClientConnected(j) && IsClientInGame(j)&& GetClientTeam(j) == L4D_TEAM_SURVIVORS)
+			if (IsClientInGame(j)&& GetClientTeam(j) == L4D_TEAM_SURVIVORS)
 			{
 				HealthB = tempHealthB = pillB = 0;
-				if(IsPlayerAlive(j)){
+				if(IsPlayerAlive(j))
+				{
 					if(!IsIncapacitated(j) && !GetEntProp(j, Prop_Send, "m_isHangingFromLedge"))
 					{
-						HealthB = GetHardHealth(j)/2;
-						tempHealthB = RoundToNearest(GetAccurateTempHealth(j)/4);
+						HealthB = RoundToNearest( GetHardHealth(j) * vs_score_pp_health.FloatValue );
+						tempHealthB = RoundToNearest(GetAccurateTempHealth(j) * vs_score_pp_healthbuffer.FloatValue);
 					}
 					Ent = GetPlayerWeaponSlot(j, 4);if (Ent != -1) pillB += g_iPillScore;
 					Ent = GetPlayerWeaponSlot(j, 3);if (Ent != -1) pillB += g_iKitScores;
 				}
-				#if SCORE_DEBUG
-					CPrintToChatAll("%N Pill: %d, Real HB: %d, Fake HB: %d",j,pillB,HealthB,tempHealthB);
-				#endif
+				//CPrintToChatAll("%N Pill: %d, Real HB: %d, Fake HB: %d",j,pillB,HealthB,tempHealthB);
 				HB+=HealthB+tempHealthB;
 				PILLS+=pillB;
 			}
 		}
-		P = L4D_GetTeamScore(6, false);
+		AD = L4D_GetTeamScore(6, false);
 		MD = MapVersusDifficulty;
 		N = GetNumberSurvived();
-		Scores = RoundToNearest((P+HB+PILLS)*N*MD);//L4D1 對抗分數計算方式 (平均距離+生命加值+藥分)*存活數*地圖難度,(P+HB)*N*MD
+		fScores = (AD+HB+PILLS)*N*MD; //L4D1 對抗分數計算方式 (平均距離+生命加值+藥分)*存活數*地圖難度,(P+HB)*N*MD
+		iScores = RoundToNearest(fScores);
 		//生命加值計算:floor(實血/4)+floor(虛血/2)
 	}
+
 	round = IsSecondRound ? 2 : 1;
-	new surplayer = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
+	int surplayer = GetTeamMaxHumans(L4D_TEAM_SURVIVORS); 
+	float ScorePercent = CalculateScorePercent(iScores);
 	if(round == 1)
 	{
 		if(client)
@@ -1553,7 +1514,7 @@ PrintGetNowScores(client,roundend = false)
 					CPrintToChat(client,"%T \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",client,round,Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
 			}
 			else{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,Scores,CalculateScorePercent((P+HB+PILLS)*N*MD),"AD",client,P,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
 			}
 		}
 		else
@@ -1566,7 +1527,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,Scores,CalculateScorePercent((P+HB+PILLS)*N*MD),"AD",P,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
 			}				
 		}
 	}
@@ -1587,7 +1548,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,Scores,CalculateScorePercent((P+HB+PILLS)*N*MD),"AD",client,P,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
 			}				
 		}
 		else
@@ -1605,20 +1566,19 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,Scores,CalculateScorePercent((P+HB+PILLS)*N*MD),"AD",P,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
 			}	
 		}			
 	}
 }
 
-Float:CalculateScorePercent(Float:score, Float:maxbonus = -1.0)
+float CalculateScorePercent(int score)
 {
-	if(maxbonus == -1.0)
+	if(g_iMaxCompletionScore == -1)
 	{
-		new sur = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
-		maxbonus = (100+50*sur+g_iPillScore*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*MapVersusDifficulty ;
+		return 0.0;
 	}
-	return (score / maxbonus) * 100;
+	return ( float(score) / g_iMaxCompletionScore) * 100;
 }
 
 public GetNumberSurvived()
@@ -1804,7 +1764,7 @@ public Action:Command_SwapMenu(client, args)
 		if(GetTeamHumanCount(team) > 0)
 		{
 			DrawPanelText(panel, teamNames[j]);
-			for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++) 
+			for(i = 1; i <= MaxClients; i++) 
 			{
 				if(IsClientInGameHuman(i) && GetClientTeam(i) == team) 
 				{					
@@ -1846,7 +1806,7 @@ public Action:Command_SwapMenu(client, args)
 		new teamCount = GetTeamHumanCount(team);
 		
 		new numPlayers = 0;
-		for(new j = 1; j < L4D_MAXCLIENTS_PLUS1; j++)
+		for(new j = 1; j <= MaxClients; j++)
 		{
 			if(IsClientInGameHuman(j) && GetClientTeam(j) == team)
 			{
@@ -1967,7 +1927,7 @@ public Action:Timer_DisplaySwapMenu(Handle:timer, any:client)
 
 public Action:Command_PrintPlacement(client, args)
 {
-	for(new i = 1; i < L4D_MAXCLIENTS_PLUS1; i++)
+	for(new i = 1; i <- MaxClients; i++)
 	{
 		if(teamPlacementArray[i])
 		{
@@ -1999,7 +1959,7 @@ public Action:Command_SwapNext(client, args)
 	new i;
 	
 	new team;
-	for(i = 1; i < L4D_MAXCLIENTS_PLUS1; i++) 
+	for(i = 1; i <= MaxClients; i++) 
 	{
 		if(IsClientInGameHuman(i)) 
 		{
@@ -2311,32 +2271,37 @@ GetRoundCounter(bool:increment_counter=false, bool:reset_counter=false)
 }
 
 
-public Action:L4D_OnRecalculateVersusScore(client)//對抗模式只要人類隊伍有真人玩家還活著一直都在算health bouns部分
+public Action L4D_OnRecalculateVersusScore(int client)//對抗模式只要人類隊伍有真人玩家還活著一直都在算health bouns部分
 {
 	if(RoundEnding) return Plugin_Continue;
 	
-	new surdead;
-	for(new i=1; i <= MaxClients; i++){
+	int surdead;
+	for(int i=1; i <= MaxClients; i++)
+	{
 		if(IsSurvivor(i))
 			if(!IsPlayerAlive(i)||IsIncapacitated(i)||GetEntProp(i, Prop_Send, "m_isHangingFromLedge"))
 				surdead++;
 	}
-	if(surdead == GetTeamMaxHumans(L4D_TEAM_SURVIVORS))//wiped out 
+
+	if(surdead >= GetTeamMaxHumans(L4D_TEAM_SURVIVORS))//wiped out 
 	{
 		return Plugin_Continue;
 	}
-	new HealthB, tempHealthB, pillB, Ent;
-	
-	for (new j = 1; j <= MaxClients; j++)
+
+	// 有時候玩家因為插件給予血量不會觸發此涵式
+	// 所以要loop所有玩家
+	int HealthB, tempHealthB, pillB, Ent;
+	for (int j = 1; j <= MaxClients; j++)
 	{
 		if (IsSurvivor(j))
 		{
 			HealthB = tempHealthB = pillB = 0;
-			if(IsPlayerAlive(j)){
+			if(IsPlayerAlive(j))
+			{
 				if(!IsIncapacitated(j) && !GetEntProp(j, Prop_Send, "m_isHangingFromLedge"))
 				{
-					HealthB = GetHardHealth(j)/2;
-					tempHealthB = RoundToNearest(GetAccurateTempHealth(j)/4);
+					HealthB = RoundToNearest( GetHardHealth(j) * vs_score_pp_health.FloatValue );
+					tempHealthB = RoundToNearest(GetAccurateTempHealth(j) * vs_score_pp_healthbuffer.FloatValue);
 				}
 				Ent = GetPlayerWeaponSlot(j, 4); if (Ent != -1) pillB += g_iPillScore;
 				Ent = GetPlayerWeaponSlot(j, 3); if (Ent != -1) pillB += g_iKitScores;
@@ -2344,63 +2309,52 @@ public Action:L4D_OnRecalculateVersusScore(client)//對抗模式只要人類隊�
 			L4DDirect_SetSurvivorHealthBonus(j,HealthB+tempHealthB+pillB,false);
 		}
 	}
+
 	L4DDirect_RecomputeTeamScores();///如果全部玩家死亡不會計算此行
 
 	return Plugin_Handled;
 }
 
-public Event_heal_success(Handle:event, const String:name[], bool:dontBroadcast)
+public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
 {
-	if(IsInReady()) return;
-	
-	new subject = GetClientOfUserId(GetEventInt(event, "subject"));//被治療的那位
-	if (subject<=0||!IsClientAndInGame(subject)) { return; } //just in case
-	
-	ClientHasDown[subject] = false;
-}
-
-public Action:OnBotSwap(Handle:event, const String:name[], bool:dontBroadcast) 
-{
-	if(IsInReady()) return Plugin_Continue;
-	
-	new bot = GetClientOfUserId(GetEventInt(event, "bot"));
-	new player = GetClientOfUserId(GetEventInt(event, "player"));
-	if (IsClientIndex(bot) && IsClientIndex(player)) 
+	if(countSurvivors)
 	{
-		if (StrEqual(name, "player_bot_replace")) 
+		int surdead = 0;
+		int HealthB,tempHealthB,pillB,Ent;
+		for (int j = 1; j <= MaxClients; j++)
 		{
-			ClientHasDown[bot] = ClientHasDown[player];
-			ClientHasDown[player] = false;
-			
+			if (IsSurvivor(j))
+			{
+				HealthB = tempHealthB = pillB = 0;
+				if(IsPlayerAlive(j))
+				{
+					if(!IsIncapacitated(j) && !GetEntProp(j, Prop_Send, "m_isHangingFromLedge"))
+					{
+						HealthB = RoundToNearest( GetHardHealth(j) * vs_score_pp_health.FloatValue );
+						tempHealthB = RoundToNearest(GetAccurateTempHealth(j) * vs_score_pp_healthbuffer.FloatValue);
+					}
+					Ent = GetPlayerWeaponSlot(j, 4); if (Ent != -1) pillB += g_iPillScore;
+					Ent = GetPlayerWeaponSlot(j, 3); if (Ent != -1) pillB += g_iKitScores;
+				}
+				else
+					surdead++;
+					
+				L4DDirect_SetSurvivorHealthBonus(j,HealthB+tempHealthB+pillB,false);
+			}
 		}
-		else 
-		{
-			ClientHasDown[player] = ClientHasDown[bot];
-			ClientHasDown[bot] = false;
-		}
+		CreateTimer(4.0, PrintRoundScore, surdead);
 	}
+	else
+	{
+		CreateTimer(4.0, PrintRoundScore, GetTeamMaxHumans(L4D_TEAM_SURVIVORS));
+	}
+
 	return Plugin_Continue;
 }
 
-public Action:OnPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+float CalculateHBPercent(int HB)
 {
-	if(IsInReady()) return;
-	
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(IsClientIndex(client)&&IsClientConnected(client)&&IsClientInGame(client)&&GetClientTeam(client)==2)
-	{
-		ClientHasDown[client] = false;
-	}
-}
-
-bool:IsClientIndex(client)
-{
-	return (client > 0 && client <= MaxClients);
-}
-
-Float:CalculateHBPercent(HB)
-{
-	new maxbonus = GetTeamMaxHumans(L4D_TEAM_SURVIVORS) * 50;
+	int maxbonus = RoundToNearest( GetTeamMaxHumans(L4D_TEAM_SURVIVORS) * 100 * vs_score_pp_health.FloatValue );
 	return (float(HB) / maxbonus ) * 100;
 }
 
@@ -2412,9 +2366,9 @@ Float:CalculatePillsPercent(Pills)
 
 CheckSurvivorProgress()
 {
-	new P = L4D_GetTeamScore(6, false);
+	new AD = L4D_GetTeamScore(6, false);
 	
-	if(P>=survivor_progress)
+	if(AD>=survivor_progress)
 	{
 		new Handle:PANEL = CreatePanel();
 		

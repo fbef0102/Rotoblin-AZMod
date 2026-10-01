@@ -41,10 +41,6 @@
 		{
 			"name" "4v4 No Boomer"
 		}
-		"rotoblin_hardcore_4v4_classic"
-		{
-			"name" "4v4 Classic"
-		}
 		"rotoblin_pub"
 		{
 			"name" "4v4 Pub"

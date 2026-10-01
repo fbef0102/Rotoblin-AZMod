@@ -338,7 +338,7 @@ MRESReturn ChooseVictimPost(int client, Handle hReturn)
 			if(g_bCvarTarget_Pinned && IsPlayerPinned(i) ) //ignore player pinned by hunter&smoker
 				continue;
 	
-			if(g_bCvarTarget_Hanging && IsHandingFromLedge(i))  //ignore player handingFromLedge
+			if(g_bCvarTarget_Hanging && IsHangingFromLedge(i))  //ignore player handingFromLedge
 				continue;	
 
 			if(g_bCvarTarget_Incap && IsIncapacitated(i))  //ignore player incapped
@@ -408,7 +408,7 @@ bool IsPlayerPinned(int client)
 	return false;
 }
 
- bool IsHandingFromLedge(int client)
+bool IsHangingFromLedge(int client)
 {
 	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isHangingFromLedge") || GetEntProp(client, Prop_Send, "m_isFallingFromLedge"));
 }

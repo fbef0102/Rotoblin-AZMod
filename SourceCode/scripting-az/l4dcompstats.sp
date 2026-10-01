@@ -41,7 +41,7 @@ public Plugin:myinfo =
 	name = "L4D Competitive Stats",
 	author = "Griffin & Philogl, Harry Potter",
 	description = "Basic competitive stat tracking on a per map basis, 特感殺手, 清屍狂人, Skeet, 黑槍之王, 推推小王子, 抖M受",
-	version = "1.0h-2026/9/30"
+	version = "1.0h-2026/10/1"
 };
 
 #pragma semicolon 1
@@ -116,19 +116,8 @@ enum STATS
 	STATS_MAX
 }
 
-// Cvar related
-//new				g_iMaxPlayerZombies							= 4;
-new				g_iSurvivorLimit							= 4;
-new				g_iMinDPDamage								= 10;
-new				g_iWitchHealth								= 1000;	// Default
-//new		Handle:	g_hCvarMaxPlayerZombies						= INVALID_HANDLE;
-new		Handle:	g_hCvarSurvivorLimit						= INVALID_HANDLE;
-new		Handle:	g_hCvarMaxPounceBonusDamage					= INVALID_HANDLE;
-new		Handle:	g_hCvarWitchHealth							= INVALID_HANDLE;
-
 // Global state
 new		bool:	g_bShouldAnnounceWitchDamage				= false;
-new		bool:	g_bHasRoundEnded							= false;
 new		Handle:	g_hBoomerShoveTimer							= INVALID_HANDLE;
 
 // Player/Entity state
@@ -152,8 +141,6 @@ new				g_iDamageDealt[MAXPLAYERS + 1][MAXPLAYERS + 1];			// Victim - Attacker
 new				g_iShotsDealt[MAXPLAYERS + 1][MAXPLAYERS + 1];			// Victim - Attacker, count # of shots (not pellets)
 new 	bool:	isroundreallyend;
 
-//harry
-native IsInReady();
 // trie values: OnEntityCreated classname
 enum strOEC
 {
@@ -163,8 +150,6 @@ enum strOEC
     OEC_CARALARM,
     OEC_CARGLASS
 };
-
-ConVar versus_shove_hunter_fov_pouncing;
 
 bool bLate;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -180,11 +165,21 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+ConVar g_hCvarSurvivorLimit,
+	g_hCvarMaxPounceBonusDamage,
+	g_hCvarWitchHealth,
+	versus_shove_hunter_fov_pouncing;
+int g_iSurvivorLimit, g_iMinDPDamage, g_iWitchHealth, 
+	g_iCvar_versus_shove_hunter_fov_pouncing;
+
+
+bool	
+	g_bHasRoundEnded,
+	g_bGameStarted;
+
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
-
-	versus_shove_hunter_fov_pouncing = FindConVar("versus_shove_hunter_fov_pouncing");
 
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd);
@@ -206,20 +201,17 @@ public OnPluginStart()
 	// Boomer tracking
 	HookEvent("player_now_it", Event_PlayerBoomed);
 
-	//g_hCvarMaxPlayerZombies = FindConVar("z_max_player_zombies");
 	g_hCvarSurvivorLimit = FindConVar("survivor_limit");
 	g_hCvarMaxPounceBonusDamage = FindConVar("z_hunter_max_pounce_bonus_damage");
 	g_hCvarWitchHealth = FindConVar("z_witch_health");
+	versus_shove_hunter_fov_pouncing = FindConVar("versus_shove_hunter_fov_pouncing");
 
-	//HookConVarChange(g_hCvarMaxPlayerZombies, Cvar_MaxPlayerZombies);
-	HookConVarChange(g_hCvarSurvivorLimit, Cvar_SurvivorLimit);
-	HookConVarChange(g_hCvarMaxPounceBonusDamage, Cvar_MaxPounceBonusDamage);
-	HookConVarChange(g_hCvarWitchHealth, Cvar_WitchHealth);
+	GetOfficialCvars();
+	g_hCvarSurvivorLimit.AddChangeHook(ConVarChanged_OfficialCvars);
+	g_hCvarMaxPounceBonusDamage.AddChangeHook(ConVarChanged_OfficialCvars);
+	g_hCvarWitchHealth.AddChangeHook(ConVarChanged_OfficialCvars);
+	versus_shove_hunter_fov_pouncing.AddChangeHook(ConVarChanged_OfficialCvars);
 
-	//g_iMaxPlayerZombies = GetConVarInt(g_hCvarMaxPlayerZombies);
-	g_iSurvivorLimit = GetConVarInt(g_hCvarSurvivorLimit);
-	g_iWitchHealth = GetConVarInt(g_hCvarWitchHealth);
-	CalculateMinDPDamage(GetConVarFloat(g_hCvarMaxPounceBonusDamage));
 	
 	RegConsoleCmd("mvp", Command_Mvp);
 
@@ -232,6 +224,21 @@ public OnPluginStart()
 			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Client);
 		}
 	}
+}
+
+// Cvars-------------------------------
+
+void ConVarChanged_OfficialCvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetOfficialCvars();
+}
+
+void GetOfficialCvars()
+{
+	g_iSurvivorLimit = g_hCvarSurvivorLimit.IntValue;
+	g_iWitchHealth = g_hCvarWitchHealth.IntValue;
+	g_iMinDPDamage = RoundToFloor((g_hCvarMaxPounceBonusDamage.FloatValue + 1.0) * MIN_DP_RATIO);
+	g_iCvar_versus_shove_hunter_fov_pouncing = versus_shove_hunter_fov_pouncing.IntValue;
 }
 
 Action Command_Mvp(int client, int args)
@@ -256,6 +263,7 @@ public OnMapStart()
 	PrecacheSound("weapons/hegrenade/explode4.wav", true);
 	PrecacheSound("weapons/hegrenade/explode5.wav", true);
 	g_bHasRoundEnded = false;
+	g_bGameStarted = false;
 	ClearMapStats();
 	isroundreallyend = false;
 }
@@ -433,7 +441,7 @@ public PrintMVPAndTeamStats(iclient)
 	
 	if (MVP_deadstop != 0)
 	{
-		if(versus_shove_hunter_fov_pouncing.IntValue != 0)
+		if(g_iCvar_versus_shove_hunter_fov_pouncing != 0)
 		{
 			percent = RoundFloat((float(MVP_deadstop) / float(total)) * 100.0);
 			if(iclient == 0)
@@ -450,22 +458,6 @@ public Action:Timer_StatsCooldown(Handle:timer, any:client)
 	return Plugin_Stop;
 }
 
-public Cvar_SurvivorLimit(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	g_iSurvivorLimit = StringToInt(newValue);
-}
-
-public Cvar_MaxPounceBonusDamage(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	CalculateMinDPDamage(StringToFloat(newValue));
-}
-
-CalculateMinDPDamage(Float:bonus_pounce_damage)
-{
-	// Max pounce damage = bonus pounce damage + 1
-	g_iMinDPDamage = RoundToFloor((bonus_pounce_damage + 1.0) * MIN_DP_RATIO);
-}
-
 public Cvar_WitchHealth(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	g_iWitchHealth = StringToInt(newValue);
@@ -475,6 +467,8 @@ public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	isroundreallyend = false;
 	g_bHasRoundEnded = false;
+	g_bGameStarted = false;
+
 	ClearMapStats();
 }
 
@@ -518,7 +512,7 @@ Action OnTakeDamage_Client(int victim, int &attacker, int &inflictor, float &dam
 
 public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded||IsInReady()) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if (victim == 0 ||
@@ -593,7 +587,8 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_PlayerShoved(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
+
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (victim == 0 ||
 		!IsClientInGame(victim) ||
@@ -632,7 +627,7 @@ public Event_PlayerShoved(Handle:event, const String:name[], bool:dontBroadcast)
 		g_bHasLandedPounce[attacker] = false;
 		
 		
-		if(GetConVarInt(FindConVar("versus_shove_hunter_fov_pouncing")) != 0)
+		if(g_iCvar_versus_shove_hunter_fov_pouncing != 0)
 		{
 			new Handle:pack;
 			CreateDataTimer(0.2, Timer_DeadstopCheck, pack);
@@ -717,7 +712,8 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
+	
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if (victim == 0 ||
@@ -911,7 +907,7 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 
 public Event_InfectedDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	// NOTE: Has some interesting stats like headshots, if it was a minigun kill or from explosion (might use in future)
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 
@@ -963,7 +959,7 @@ public Event_PlayerIncapacitated(Handle:event, const String:name[], bool:dontBro
 
 public Event_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 
 	if (attacker == 0 ||								// Killed by world?
@@ -979,7 +975,7 @@ public Event_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 
 	new killer = GetClientOfUserId(GetEventInt(event, "userid"));
 
@@ -997,14 +993,14 @@ public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	g_bShouldAnnounceWitchDamage = true;
 }
 
 // Pounce tracking, from skeet announce
 public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded) return;
+	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	decl String:ability_name[64];
 
@@ -1459,4 +1455,14 @@ void OnTakeDamagePost_Hunter(int victim, int attacker, int inflictor, float dama
 	{
 		g_bIsPouncing[victim] = false;
 	}
+}
+
+public void OnRoundIsLive()
+{
+	g_bGameStarted = true;
+}
+
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
+{
+	g_bGameStarted = true;
 }

@@ -3,13 +3,19 @@
 	"DynamicLight_Toggle"
 	{
 		"en"			"Toggle the dynamic light by double tapping your flashlight key (F)."
+		"zho"			"雙擊手電筒按鍵 (F) 切換動態光源."
+		"chi"			"双击手电筒按键 (F) 切换动态光源."
 	}
 	"DynamicLight_TurnedOn"
 	{
 		"en"			"Dynamic Light On. Double tap your flashlight key (F) to toggle."
+		"zho"			"動態光源開啟. 雙擊手電筒按鍵 (F) 切換."
+		"chi"			"动态光源开启. 双击手电筒按键 (F) 切换."
 	}
 	"DynamicLight_TurnedOff"
 	{
 		"en"			"Dynamic Light Off. Double tap your flashlight key (F) to toggle."
+		"zho"			"動態光源關閉. 雙擊手電筒按鍵 (F) 切換."
+		"chi"			"动态光源关闭. 双击手电筒按键 (F) 切换."
 	}
 }
