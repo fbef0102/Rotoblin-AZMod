@@ -1,4 +1,4 @@
-"MatchModes"
+"comp_loader_mode"
 {
 
 // You can delete any section. Or add your own, for example:

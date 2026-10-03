@@ -332,8 +332,9 @@
 //Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread
 //移除, 方法已過時, 使用l4d2_static_shotgun_spread
 
-[69] l4d2_witch_restore
+[xx] l4d2_witch_restore
 //沒被嚇到的Witch is restored at the same spot if she gets killed by a Tank
+//移除, 現在tank可以穿透witch不會擋住路線
 
 [70] l4d_bw_rock_hit
 //Stops rocks from passing through soon-to-be-dead Survivors
@@ -1023,4 +1024,3 @@ Map = 地圖難度修改
 * dv (Dead Vacation)
 * uz (Undead Zone)
 * re3 (Resident Evil 3)
-* dw (Dark Wood)

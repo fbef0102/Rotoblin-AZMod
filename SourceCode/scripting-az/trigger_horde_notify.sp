@@ -179,7 +179,7 @@ void PrintToTeam(int team, const char[] text, any ...)
 			if (bTrans)
 				SetGlobalTransTarget(i);
 
-			VFormat(sTemp, sizeof(sTemp), text, 4);
+			VFormat(sTemp, sizeof(sTemp), text, 3);
 
 			CPrintToChat(i, sTemp);
 		}

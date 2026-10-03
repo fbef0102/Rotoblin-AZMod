@@ -22,7 +22,7 @@
 #define READY_DEBUG 0
 #define READY_DEBUG_LOG 0
 
-#define READY_VERSION "8.6.4-2029/1/30"
+#define READY_VERSION "8.6.4-2026/10/2"
 #define READY_LIVE_COUNTDOWN 2
 #define READY_UNREADY_HINT_PERIOD 5.0
 #define READY_LIST_PANEL_LIFETIME 2
@@ -30,9 +30,6 @@
 #define READY_RESTART_MAP_DELAY 1
 #define PreventSpecBlockInfectedTeamIcon_DELAY 5.0
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
-
-#define READY_VERSION_REQUIRED_SOURCEMOD "1.10"
-#define READY_VERSION_REQUIRED_SOURCEMOD_NONDEV 1 //1 dont allow -dev version, 0 ignore -dev version
 
 #define L4D_TEAM_SURVIVORS 2
 #define L4D_TEAM_INFECTED 3
@@ -134,18 +131,11 @@ static 			Handle:cvarSpectatePenalty					= INVALID_HANDLE;
 static			g_iRespecCooldownTime						= 60;
 static			g_iLastRespecced[MAXPLAYERS + 1];
 //stuff from rotoblin report status
-static	const			MAX_CONVAR_NAME_LENGTH							= 64;
-static	const			CVAR_ARRAY_BLOCK								= 2;
-static	const			FIRST_CVAR_IN_ARRAY								= 0;
-static			Handle:	g_aConVarArray									= INVALID_HANDLE;
-static			bool:	g_bIsArraySetup									= false;
 
-static	const	Float:	CACHE_RESULT_TIME								= 5.0;
-static			bool:	g_bIsResultCached								= false;
-static			String:	g_sResultCache[REPORT_STATUS_MAX_MSG_LENGTH]	= "";
 static 			bool:hasdirectorStart = false;
 
-new bool:InSecondHalfOfRound;
+bool bInSecondHalfOfRound;
+
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 
 native GetTankPercent();
@@ -166,16 +156,13 @@ native void MaterialHack_CheckClients(); //From l4d_texture_manager_block, check
 
 new String:HostName[256];
 new change;
-new Handle:g_hDirectorNoDeathCheck = INVALID_HANDLE;
-new Handle:g_hCvarGameMode = INVALID_HANDLE;
-new String:CurrentGameMode[32];
 new bool:blockSecretSpam[MAXPLAYERS + 1];
 #define SECRET_EGG_SOUND "ui/pickup_misc42.wav"
 new TimeCount;
 new Float:g_fButtonTime[MAXPLAYERS + 1];
 new g_fPlayerMouse[MAXPLAYERS + 1][2];
 new bool:hasleftsaferoom;
-static Handle:arrayclientswitchteam;
+ArrayList arrayclientswitchteam;
 bool hiddenPanel[MAXPLAYERS+1];
 int g_iRoundStart,g_iPlayerSpawn ;
 //timer
@@ -196,7 +183,7 @@ public Plugin:myinfo =
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	EngineVersion test = GetEngineVersion();
 	
@@ -223,12 +210,26 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	return APLRes_Success;
 }
 
-ConVar sv_cheats, sb_stop;
+ConVar sv_cheats,
+	director_no_bosses,
+	god,
+	sb_stop,
+	survivor_limit,
+	z_max_player_zombies,
+	sv_infinite_ammo,
+	director_no_death_check,
+	sv_maxplayers,
+	director_no_specials,
+	versus_force_start_time,
+	director_ready_duration,
+	director_no_mobs,
+	z_common_limit,
+	z_mega_mob_size,
+	sb_all_bot_team,
+	director_force_tank;
 
 public OnPluginStart()
 {
-	sv_cheats = FindConVar("sv_cheats");
-	sb_stop = FindConVar("sb_stop");
 	LoadTranslations("common.phrases");
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	
@@ -329,9 +330,6 @@ public OnPluginStart()
 	HookEvent("vote_started", eventVoteStarted);
 	HookEvent("vote_passed", eventVotePassed);
 	HookEvent("vote_ended", eventVoteEnded);
-
-	new Handle:NoBosses = FindConVar("director_no_bosses");
-	HookConVarChange(NoBosses, ConVarChange_DirectorNoBosses);
 	#endif
 	
 	CreateConVar("l4d_ready_version", READY_VERSION, "Version of the ready up plugin.", FCVAR_SPONLY | FCVAR_NOTIFY);
@@ -350,13 +348,13 @@ public OnPluginStart()
 	//new way of readying up?
 	cvarReadyUpStyle = CreateConVar("l4d_ready_up_style", "0", "0 = old style, 1 = infected can move during rup, players can move after rup", FCVAR_SPONLY | FCVAR_NOTIFY);
 	//added to be able to set the !spectate !inf penalty
-	cvarSpectatePenalty = CreateConVar("l4d_ready_spectate_penalty", "8", "Time in seconds an infected player can't rejoin the infected team.", FCVAR_SPONLY | FCVAR_NOTIFY);
-	HookConVarChange(cvarSpectatePenalty, ConVarChange_cvarSpectatePenalty);
-	g_hDirectorNoDeathCheck = FindConVar("director_no_death_check");
-	g_iCvarGameTimeBlock = g_hGameTimeBlock.IntValue;
+	cvarSpectatePenalty = CreateConVar("l4d_ready_spectate_penalty", "10", "Time in seconds an infected player can't rejoin the infected team.", FCVAR_SPONLY | FCVAR_NOTIFY);
 	
 	CheckSpectatePenalty();
+	g_iCvarGameTimeBlock = g_hGameTimeBlock.IntValue;
+
 	
+	HookConVarChange(cvarSpectatePenalty, ConVarChange_cvarSpectatePenalty);
 	g_hGameTimeBlock.AddChangeHook(ConVarChanged_GameTimeBlock);
 	HookConVarChange(cvarEnforceReady, ConVarChange_ReadyEnabled);
 	HookConVarChange(cvarReadyCompetition, ConVarChange_ReadyCompetition);
@@ -376,29 +374,31 @@ public OnPluginStart()
 	#endif
 	#endif
 	
-	AddCommandListener(Version_Command, "l4d_ready_version");
-	
-	AddConVarToReport(cvarReadyHalves);
-	AddConVarToReport(cvarReadyServerCfg);
-	AddConVarToReport(cvarReadyUpStyle);
-	AddConVarToReport(cvarReadyLeagueNotice);
-	AddConVarToReport(cvarReadyLiveCountdown);
-	AddConVarToReport(cvarReadySpectatorRUP);
-	AddConVarToReport(cvarReadyRestartRound);
-	AddConVarToReport(cvarReadyCommonLimit);
-	AddConVarToReport(cvarReadyMegaMobSize);
-	AddConVarToReport(cvarReadyAllBotTeam);
-	AddConVarToReport(cvarSpectatePenalty);
-	
-	g_hCvarGameMode = FindConVar("mp_gamemode");
-	GetConVarString(g_hCvarGameMode, CurrentGameMode, sizeof(CurrentGameMode));
-	HookConVarChange(g_hCvarGameMode,		ConVarChanged_GameMode);
-	
 	RegConsoleCmd("sm_bonesaw", Secret_Cmd, "secret ready up");
 	RegConsoleCmd("sm_trophy", Secret_Cmd, "secret ready up");
 	RegConsoleCmd("sm_harrypotter", Secret_Cmd, "secret ready up");
 	
-	arrayclientswitchteam = CreateArray(ByteCountToCells(STEAMID_SIZE));
+	arrayclientswitchteam = new ArrayList(ByteCountToCells(STEAMID_SIZE));
+
+	sv_cheats = FindConVar("sv_cheats");
+	god = FindConVar("god");
+	sb_stop = FindConVar("sb_stop");
+	survivor_limit = FindConVar("survivor_limit");
+	z_max_player_zombies = FindConVar("z_max_player_zombies");
+	sv_infinite_ammo = FindConVar("sv_infinite_ammo");
+
+	director_no_bosses = FindConVar("director_no_bosses");
+	director_no_death_check = FindConVar("director_no_death_check");
+	sv_maxplayers = FindConVar("sv_maxplayers");
+	director_no_specials = FindConVar("director_no_specials");
+	versus_force_start_time = FindConVar("versus_force_start_time");
+	director_ready_duration = FindConVar("director_ready_duration");
+	director_no_mobs = FindConVar("director_no_mobs");
+	z_common_limit = FindConVar("z_common_limit");
+	z_mega_mob_size = FindConVar("z_mega_mob_size");
+	sb_all_bot_team = FindConVar("sb_all_bot_team");
+	director_force_tank = FindConVar("director_force_tank");
+
 }
 
 public Action:eventplayer_death(Handle:event, const String:name[], bool:dontBroadcast)
@@ -550,11 +550,11 @@ stock GetTeamMaxHumans(team)
 {
 	if(team == 2)
 	{
-		return GetConVarInt(FindConVar("survivor_limit"));
+		return survivor_limit.IntValue;
 	}
 	else if(team == 3)
 	{
-		return GetConVarInt(FindConVar("z_max_player_zombies"));
+		return z_max_player_zombies.IntValue;
 	}
 	
 	return -1;
@@ -603,7 +603,7 @@ public Action:Join_Infected(client, args)	//on !infected
 {	
 	if (client == 0) return Plugin_Handled;
 	
-	if(StrEqual(CurrentGameMode,"coop", true))
+	if(L4D_IsCoopMode())
 		return Plugin_Handled;
 		
 	new maxInfectedSlots = GetTeamMaxHumans(3);
@@ -624,127 +624,6 @@ public Action:Join_Infected(client, args)	//on !infected
 		ChangeClientTeam(client, 3);	//ServerCommand("sm_swapto %N 3",client);	//swapping the client to the infected team if he is spectator or survivor
 	}
 	return Plugin_Handled;
-}
-
-/**
- * On report status client command.
- *
- * @param client		Client id that performed the command.
- * @param command		The command performed.
- * @param args			Number of arguments.
- * @return				Plugin_Handled to stop command from being performed, 
- *						Plugin_Continue to allow the command to pass.
- */
-public Action:Version_Command(client, const String:command[], argc)
-{
-	if (client == 0) return Plugin_Continue; // Server already have a cvar named this, return continue
-
-	if (g_bIsResultCached) // If we have a cached result
-	{
-		PrintToConsole(client, g_sResultCache); // Print cached result
-		return Plugin_Handled; // Handled
-	}
-
-	decl String:result[REPORT_STATUS_MAX_MSG_LENGTH];
-
-	Format(result, sizeof(result), "version: %s\n", READY_VERSION);
-	//Format(result, sizeof(result), "%supdated: %s%s\n", result, (IsPluginUpdated() ? "yes" : "no"));
-	Format(result, sizeof(result), "%senabled: %s\n", result, (cvarEnforceReady.BoolValue ? "yes" : "no"));
-	Format(result, sizeof(result), "%slisting %i cvars:", result, (GetArraySize(g_aConVarArray) / CVAR_ARRAY_BLOCK));
-
-	decl String:name[MAX_CONVAR_NAME_LENGTH];
-	decl String:value[MAX_CONVAR_NAME_LENGTH];
-	decl String:defaultValue[MAX_CONVAR_NAME_LENGTH];
-	decl Handle:cvar;
-
-	for (new i = FIRST_CVAR_IN_ARRAY; i < GetArraySize(g_aConVarArray); i += CVAR_ARRAY_BLOCK)
-	{
-		GetArrayString(g_aConVarArray, i, name, MAX_CONVAR_NAME_LENGTH);
-		cvar = FindConVar(name);
-		if (cvar == INVALID_HANDLE) continue;
-		GetConVarString(cvar, value, MAX_CONVAR_NAME_LENGTH);
-
-		GetArrayString(g_aConVarArray, i + 1, defaultValue, MAX_CONVAR_NAME_LENGTH);
-		Format(defaultValue, MAX_CONVAR_NAME_LENGTH, "( def. \"%s\" )", defaultValue);
-
-		Format(result, sizeof(result), "%s\n \"%s\" = \"%s\" %s", result, name, value, defaultValue);
-	}
-
-	PrintToConsole(client, result);
-
-	// Cache result to prevent clients spamming this command to lag the server
-	g_sResultCache = result;
-	g_bIsResultCached = true;
-	CreateTimer(CACHE_RESULT_TIME, _RS_Cache_Timer);
-
-	return Plugin_Handled;
-}
-
-/**
- * Called when the cached timer interval has elapsed.
- * 
- * @param timer			Handle to the timer object.
- * @noreturn
- */
-public Action:_RS_Cache_Timer(Handle:timer)
-{
-	g_bIsResultCached = false;
-}
-
-/**
- * Adds convar to the report status array.
- * 
- * @param convar		Handle to convar.
- * @noreturn
- */
-stock AddConVarToReport(Handle:convar)
-{
-	SetupConVarArray(); // Setup array if needed
-
-	/*
-	 * Get name of convar
-	 */
-	decl String:name[MAX_CONVAR_NAME_LENGTH];
-	GetConVarName(convar, name, MAX_CONVAR_NAME_LENGTH);
-
-	if (FindStringInArray(g_aConVarArray, name) != -1) return; // Already in array
-
-	/*
-	 * Get default value of convar
-	 */
-	decl String:value[MAX_CONVAR_NAME_LENGTH], String:defaultvalue[MAX_CONVAR_NAME_LENGTH];
-	GetConVarString(convar, value, MAX_CONVAR_NAME_LENGTH);
-
-	new flags = GetConVarFlags(convar);
-	if (flags & FCVAR_NOTIFY)
-	{
-		SetConVarFlags(convar, flags ^ FCVAR_NOTIFY);
-	}
-
-	ResetConVar(convar);
-	GetConVarString(convar, defaultvalue, MAX_CONVAR_NAME_LENGTH);
-	SetConVarString(convar, value);
-	SetConVarFlags(convar, flags);
-
-	/*
-	 * Push to array
-	 */
-	PushArrayString(g_aConVarArray, name);
-	PushArrayString(g_aConVarArray, defaultvalue);
-}
-
-/**
- * Adds convar to the report status array.
- * 
- * @param convar		Handle to convar.
- * @noreturn
- */
-static SetupConVarArray()
-{
-	if (g_bIsArraySetup) return;
-	g_aConVarArray = CreateArray(MAX_CONVAR_NAME_LENGTH);
-
-	g_bIsArraySetup = true;
 }
 
 /**
@@ -872,7 +751,6 @@ public Action:ratesCooldownTimer(Handle:timer, any:client)	//ZACK
 	return Plugin_Stop;
 }
 
-ConVar sv_maxplayers;
 public OnAllPluginsLoaded()
 {	
 	sv_maxplayers = FindConVar("sv_maxplayers");
@@ -909,12 +787,11 @@ public OnMapStart()
 	PrefetchSound(SECRET_EGG_SOUND);
 	PrecacheSound(SECRET_EGG_SOUND,true);
 	
-	GetConVarString(g_hCvarGameMode, CurrentGameMode, sizeof(CurrentGameMode));
 	MapCountdownTimer = INVALID_HANDLE;
 	isMapRestartPending = false;
-	//LogMessage("this is OnMapStart and InSecondHalfOfRound is false");
+	//LogMessage("this is OnMapStart and bInSecondHalfOfRound is false");
 	//每一關地圖載入後都會進入OnMapStart()
-	InSecondHalfOfRound = false;
+	bInSecondHalfOfRound = false;
 		
 	DebugPrintToAll("Event map started.");
 	//----
@@ -1003,7 +880,6 @@ public void OnClientPutInServer(int client)
 	if(cvarEnforceReady.BoolValue == true && hasdirectorStart == false)
 	{
 		SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
-		SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 	}
 
 	if(readyMode) 
@@ -1026,27 +902,6 @@ void OnPreThinkPost(int client)
 	}
 }
 
-Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
-{
-	if (GetClientTeam(victim) != L4D_TEAM_SURVIVOR
-		|| !IsPlayerAlive(victim))
-	{
-		return Plugin_Continue;
-	}
-
-	if (attacker > 0 && attacker <= MaxClients)
-	{
-		return Plugin_Handled;
-	}
-
-	if (damagetype & DMG_BURN || damagetype & DMG_FALL)
-	{
-		return Plugin_Handled;
-	}
-
-	return Plugin_Continue;
-}
-
 void HookOrUnhookPreThinkPost(bool bHook)
 {
 	for (new client = 1; client <= MaxClients; client++)
@@ -1060,15 +915,10 @@ void HookOrUnhookPreThinkPost(bool bHook)
 				SDKUnhook(client, SDKHook_PreThinkPost, OnPreThinkPost);
 				SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
 			}
-
-			SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 		}
 		else
 		{
 			if(!IsFakeClient(client)) SDKUnhook(client, SDKHook_PreThinkPost, OnPreThinkPost);
-
-			SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 		}
 	}
 }
@@ -1238,9 +1088,9 @@ public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 	ResetTimer();
 	ResetVariable();
 
-	//LogMessage("this is PD_ev_RoundEnd , InSecondHalfOfRound is true");
-	if(!InSecondHalfOfRound)//第一回合結束
-		InSecondHalfOfRound = true;
+	//LogMessage("this is PD_ev_RoundEnd , bInSecondHalfOfRound is true");
+	if(!bInSecondHalfOfRound)//第一回合結束
+		bInSecondHalfOfRound = true;
 		
 	#if READY_DEBUG
 	DebugPrintToAll("[DEBUG] Event round has ended");
@@ -1336,7 +1186,12 @@ Action PluginStart(Handle timer)
 	{
 		InitiateReadyUp();
 		pauseBetweenHalves = 0;
-		SetConVarInt(g_hDirectorNoDeathCheck, 1);
+
+		director_no_death_check.SetBool(true);
+		sv_infinite_ammo.SetBool(true, .notify = false);
+		god.SetBool(true, .notify = false);
+		sb_stop.SetBool(true, .notify = false);
+
 		HookOrUnhookPreThinkPost(true);
 	}
 	else
@@ -1645,12 +1500,6 @@ public Action:eventVoteEnded(Handle:event, const String:name[], bool:dontBroadca
 public ConVarChanged_GameTimeBlock(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	g_iCvarGameTimeBlock = g_hGameTimeBlock.IntValue;
-}
-
-public ConVarChange_DirectorNoBosses(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	DebugPrintToAll("director_no_bosses changed from %s to %s", oldValue, newValue);
-	
 }
 
 public Action:SendVoteRestartPassed(client, args)
@@ -2281,7 +2130,7 @@ DrawReadyPanelList()
 		}
 		case 1:
 		{
-			Format(Notice, 64, "● Slots: %d/%d - %s round", RealplayerinSV(), sv_maxplayers.IntValue, (InSecondHalfOfRound)? "2nd": "1st");
+			Format(Notice, 64, "● Slots: %d/%d - %s round", RealplayerinSV(), sv_maxplayers.IntValue, (bInSecondHalfOfRound)? "2nd": "1st");
 		}
 		case 2:
 		{
@@ -2504,28 +2353,27 @@ directorStop()
 	DebugPrintToAll("[DEBUG] Director stopped.");
 	#endif		
 	//doing director_stop on the server sets the below variables like so
-	SetConVarInt(FindConVar("director_no_bosses"), 1);
+	director_no_bosses.SetInt(1);
 	if(GetConVarBool(cvarReadyUpStyle))
 	{
-		SetConVarInt(FindConVar("director_no_specials"), 0);
-		SetConVarInt(FindConVar("versus_force_start_time"), 86400); //24hours : D
+		director_no_specials.SetInt(0);
+		versus_force_start_time.SetInt(86400); //24hours : D
 	}
 	else
 	{
-		SetConVarInt(FindConVar("director_no_specials"), 1);
-		SetConVarInt(FindConVar("versus_force_start_time"), 90);	//default
+		director_no_specials.SetInt(1);
+		versus_force_start_time.SetInt(90);	//default
 	}
-	SetConVarInt(FindConVar("director_no_mobs"), 1);
-	SetConVarInt(FindConVar("director_ready_duration"), 0);
-	SetConVarInt(FindConVar("z_common_limit"), 0);
-	SetConVarInt(FindConVar("z_mega_mob_size"), 1); //why not 0? only Valve knows
-	//SetConVarInt(FindConVar("z_health"), 0);											//doest spawn zombies but doesnt stop director
+	director_no_mobs.SetInt(1);
+	director_ready_duration.SetInt(0);
+	z_common_limit.SetInt(0);
+	z_mega_mob_size.SetInt(1); //why not 0? only Valve knows									//doest spawn zombies but doesnt stop director
 	
 	//empty teams of survivors dont cycle the round
-	SetConVarInt(FindConVar("sb_all_bot_team"), 1);
+	sb_all_bot_team.SetInt(1);
 	
 	//dont accidentally spawn tanks in ready mode
-	ResetConVar(FindConVar("director_force_tank"));
+	director_force_tank.RestoreDefault();
 
 	//kill all common
 	int common = MaxClients + 1;
@@ -2540,21 +2388,22 @@ directorStop()
 directorStart()
 {
 	hasdirectorStart = true;
-	SetConVarInt(g_hDirectorNoDeathCheck, 0);
+	director_no_death_check.SetBool(false);
+
 	HookOrUnhookPreThinkPost(false);
 	//getting values from the convars
 	new ready_z_common_limit = GetConVarInt(cvarReadyCommonLimit);
 	new ready_z_mega_mob_size = GetConVarInt(cvarReadyMegaMobSize);
 	new ready_sb_all_bot_team = GetConVarInt(cvarReadyAllBotTeam);
-	ResetConVar(FindConVar("director_no_bosses"));
-	ResetConVar(FindConVar("director_no_specials"));
-	ResetConVar(FindConVar("director_no_mobs"));
-	ResetConVar(FindConVar("director_ready_duration"));
+	director_no_bosses.RestoreDefault();
+	director_no_specials.RestoreDefault();
+	director_no_mobs.RestoreDefault();
+	director_ready_duration.RestoreDefault();
 	//support for ?v? cfgs - only reset these cvars if the round isn't being restarted, or there isn't a ?v? cfg
 	//if(!GetConVarBool(cvarReadyRestartRound) || !GetConVarBool(cvarReadyServerCfg))
-	SetConVarInt(FindConVar("z_common_limit"), ready_z_common_limit);
-	SetConVarInt(FindConVar("z_mega_mob_size"), ready_z_mega_mob_size);
-	SetConVarInt(FindConVar("sb_all_bot_team"), ready_sb_all_bot_team);		
+	z_common_limit.SetInt(ready_z_common_limit);
+	z_mega_mob_size.SetInt(ready_z_mega_mob_size);
+	sb_all_bot_team.SetInt(ready_sb_all_bot_team);		
 }
 
 //freeze everyone until they ready up
@@ -3004,8 +2853,12 @@ RoundIsLive()
 		}
 	}
 
+	director_no_death_check.SetBool(false);
+	sv_infinite_ammo.SetBool(false, .notify = false);
+	god.SetBool(false, .notify = false);
 	if(sv_cheats.BoolValue == false) sb_stop.IntValue = SB_STOP_CONVAR;
-	SetConVarInt(g_hDirectorNoDeathCheck, 0);
+	else sb_stop.SetBool(false, .notify = false);
+
 	UnfreezeAllPlayers();
 	readyOff();
 	CPrintToChatAll("{default}[{olive}TS{default}] {blue}%t{default}: {green}%d%%","Survivor_Current", GetSurCurrent());
@@ -3398,7 +3251,6 @@ InitiateLiveCountdown()
 		SetTeamFrozen(true);
 		PrintHintTextToAll("%t","ReadyPlugin_34");
 		inLiveCountdown = true;
-		if(sv_cheats.BoolValue == false) sb_stop.IntValue = 1;
 		readyDelay = READY_LIVE_COUNTDOWN;
 		readyCountdownTimer = CreateTimer(1.0, ReadyCountdownDelay_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -3434,11 +3286,6 @@ SetTeamFrozen(bool:freezeStatus)
 			ToggleFreezePlayer(client, freezeStatus);
 		}
 	}
-}
-
-public ConVarChanged_GameMode(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	GetConVarString(g_hCvarGameMode, CurrentGameMode, sizeof(CurrentGameMode));
 }
 
 public OnConfigsExecuted()

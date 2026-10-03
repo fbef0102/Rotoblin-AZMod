@@ -14,7 +14,7 @@ public Plugin myinfo =
 	name = "Addon Map Common Sound Fix",
 	author = "Harry Potter",
 	description = "In some custom maps, fix the wrong .wav sound coming from common infected when been shot or burning (usually happen in custom maps)",
-	version = "1.2",
+	version = "1.3-2026/10/3",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -73,6 +73,7 @@ stock const char sFix_Bullets_Sound[][] =
 };*/
 
 float g_fCommonShotTime[MAXENTITY + 1];
+bool g_bCommonBeenShot[MAXENTITY + 1];
 
 bool g_bLate;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -114,31 +115,34 @@ public void OnPluginStart()
     AddNormalSoundHook(SI_OnSoundEmitted_Fix);
 }
 
-public Action SI_OnSoundEmitted(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH],int &entity, int &channel, float &volume, int &level, int &pitch, int &flags,char soundEntry[PLATFORM_MAX_PATH], int &seed)
+#if DEBUG
+Action SI_OnSoundEmitted(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH],int &entity, int &channel, float &volume, int &level, int &pitch, int &flags,char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
-    PrintToChatAll("Sound:%s - numClients %d, entity %d", sample, numClients, entity);
+    if(entity > MaxClients)
+    {
+        PrintToChatAll("Sound:%s - numClients %d, entity %d, tick: %d", sample, numClients, entity, GetGameTickCount());
+    }
 
     return Plugin_Continue;
 }
 
-
-public Action SoundHookA(char sample[PLATFORM_MAX_PATH], int &entity, float &volume, int &level, int &pitch, float pos[3], int &flags, float &delay)
+Action SoundHookA(char sample[PLATFORM_MAX_PATH], int &entity, float &volume, int &level, int &pitch, float pos[3], int &flags, float &delay)
 {
 	PrintToChatAll("\x05A_Sample: \x01%s", sample);
 	PrintToChatAll("\x0A_Sent: \x01%d \x05vol: \x01%.2f \x05lvl: \x01%d \x05pch: \x01%d \x05flg: \x01%d", entity, volume, level, pitch, flags);
 
 	return Plugin_Continue;
 }
+#endif
 
-public Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH],int &entity, int &channel, float &volume, int &level, int &pitch, int &flags,char soundEntry[PLATFORM_MAX_PATH], int &seed)
+Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH],int &entity, int &channel, float &volume, int &level, int &pitch, int &flags,char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
     if (numClients >= 1 && entity> MaxClients && IsValidEntity(entity)){
 
-        if(IsCommonInfected(entity))
+        if(IsCommonInfected(entity) && g_bCommonBeenShot[entity])
         {
-            /*if(strncmp(sample, "ambient/weather/", 16, false) == 0 ||
-               strncmp(sample, "physics/wood/", 13, false) == 0)*/
-            if( strncmp(sample, "npc/infected/", 13, false) != 0)
+            if( strncmp(sample, "npc/infected/gore/bullets/", 26, false) != 0
+                && strncmp(sample, "npc/infected/action/been_shot/", 30, false) != 0)
             {
                 //PrintToChatAll("zombie been shot sound or zombie bullet bug sound: %s", sample);
 
@@ -194,9 +198,42 @@ public void OnEntityCreated(int entity, const char[] classname)
         case 'i':
         {
             if (strcmp(classname, "infected") == 0)
+            {
                 g_fCommonShotTime[entity] = 0.0;
+                g_bCommonBeenShot[entity] = false;
+                RequestFrame(OnNextFrame_Common, EntIndexToEntRef(entity));
+            }
         }
     }
+}
+
+void OnNextFrame_Common(int entityRef)
+{
+	int common = EntRefToEntIndex(entityRef);
+
+	if (common == INVALID_ENT_REFERENCE)
+		return;
+
+	SDKHook(common, SDKHook_OnTakeDamage, OnTakeDamage_Common);
+	SDKHook(common, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Common);
+}
+
+Action OnTakeDamage_Common(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
+    if(damagetype & DMG_BULLET == 0) return Plugin_Continue;
+
+    //PrintToChatAll("OnTakeDamage_Common - ci: %d, tick: %d", victim, GetGameTickCount());
+
+    g_bCommonBeenShot[victim] = true;
+
+    return Plugin_Continue;
+}
+
+void OnTakeDamagePost_Common(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
+    //PrintToChatAll("OnTakeDamagePost_Common - ci: %d, tick: %d", victim, GetGameTickCount());
+
+    g_bCommonBeenShot[victim] = false;
 }
 
 bool IsCommonInfected(int entity)

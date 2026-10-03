@@ -126,8 +126,8 @@ public void OnEntityCreated(int entity, const char[] classname)
 		}
 		case 'e':
 		{
-			if (StrEqual(classname, "env_physics_blocker") 
-				|| StrEqual(classname, "env_player_blocker"))
+			if (//StrEqual(classname, "env_physics_blocker") // does not exist in l4d1
+				StrEqual(classname, "env_player_blocker"))
 				ge_bInvalidTrace[entity] = true;
 		}
 	}

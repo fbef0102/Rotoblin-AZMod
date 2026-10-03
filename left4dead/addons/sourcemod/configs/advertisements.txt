@@ -46,7 +46,7 @@
     }
 	"7"
     {
-        "chat"			"{lightgreen}!load: 5v5、classic、Hunters、Witch Party、Dark Coop"
+        "chat"			"{lightgreen}!load: 5v5, Hunters, Witch Party, Dark Coop"
     }
 	"8"
     {

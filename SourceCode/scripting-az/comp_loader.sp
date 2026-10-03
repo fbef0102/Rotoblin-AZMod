@@ -3,7 +3,7 @@
 //#include <builtinvotes>
 #include <multicolors>
 
-#define PLUGIN_VERSION "2.7-2026/10/1"
+#define PLUGIN_VERSION "2.7-2026/10/2"
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -85,7 +85,6 @@ static g_votedelay;
 #define VOTEDELAY_TIME 60
 ConVar g_hCvarPlayerLimit;
 //new Handle:g_hVote;
-#define MATCHMODES_PATH		"configs/matchmodes.txt"
 new String:g_sCfg[32];
 Menu g_hMatchVote = null;
 new Handle:g_hModesKV = null;
@@ -123,6 +122,10 @@ char cfg3v5hunters[128];
 char cfg4v5hunters[128];
 char cfgwitchparty[128];
 char cfgdarkcoop[128];
+
+#define MATCHMODES_PATH			"configs/comp_loader_mode.txt"
+#define CONFIG_FILE		        "configs/comp_loader_cm.cfg"
+
 StringMap g_smMapName_ShortToFull;
 StringMap g_smMapName_FullToCode;
 StringMap g_smMapName_FullToRequest;
@@ -213,107 +216,12 @@ public OnPluginStart()
 	
 	decl String:sBuffer[128];
 	GetGameFolderName(sBuffer, sizeof(sBuffer));
-	g_hModesKV = CreateKeyValues("MatchModes");
+	g_hModesKV = CreateKeyValues("comp_loader_mode");
 	BuildPath(Path_SM, sBuffer, sizeof(sBuffer), MATCHMODES_PATH);
 	if (!FileToKeyValues(g_hModesKV, sBuffer))
 	{
-		SetFailState("Couldn't load matchmodes.txt!");
-	}	
-
-
-	g_smMapName_ShortToFull = new StringMap();
-	g_smMapName_ShortToFull.SetString("nm", "No Mercy")
-	g_smMapName_ShortToFull.SetString("nomercy", "No Mercy")
-	g_smMapName_ShortToFull.SetString("dt", "Death Toll")
-	g_smMapName_ShortToFull.SetString("deathtoll", "Death Toll")
-	g_smMapName_ShortToFull.SetString("bh", "Blood Harvest")
-	g_smMapName_ShortToFull.SetString("bloodharvest", "Blood Harvest")
-	g_smMapName_ShortToFull.SetString("da", "Dead Air")
-	g_smMapName_ShortToFull.SetString("deadair", "Dead Air")
-	g_smMapName_ShortToFull.SetString("sa", "The Sacrifice")
-	g_smMapName_ShortToFull.SetString("ts", "The Sacrifice")
-	g_smMapName_ShortToFull.SetString("thesacrifice", "The Sacrifice")
-	g_smMapName_ShortToFull.SetString("cc", "Crash Course")
-	g_smMapName_ShortToFull.SetString("crashcourse", "Crash Course")
-	g_smMapName_ShortToFull.SetString("c17", "City 17")
-	g_smMapName_ShortToFull.SetString("city17", "City 17")
-	g_smMapName_ShortToFull.SetString("sb", "Suicide Blitz")
-	g_smMapName_ShortToFull.SetString("suicideblitz", "Suicide Blitz")
-	g_smMapName_ShortToFull.SetString("ihm", "I Hate Mountain")
-	g_smMapName_ShortToFull.SetString("ihatemountain", "I Hate Mountain")
-	g_smMapName_ShortToFull.SetString("dfb", "Dead Flag Blues")
-	g_smMapName_ShortToFull.SetString("deadflagblues", "Dead Flag Blues")
-	g_smMapName_ShortToFull.SetString("dbd", "Dead Before Dawn")
-	g_smMapName_ShortToFull.SetString("deadbeforedawn", "Dead Before Dawn")
-	g_smMapName_ShortToFull.SetString("aotd", "The Arena of the Dead")
-	g_smMapName_ShortToFull.SetString("thearenaofthedead", "The Arena of the Dead")
-	g_smMapName_ShortToFull.SetString("dab", "Death Aboard")
-	g_smMapName_ShortToFull.SetString("deathaboard", "Death Aboard")
-	g_smMapName_ShortToFull.SetString("149", "One 4 Nine")
-	g_smMapName_ShortToFull.SetString("one4nine", "One 4 Nine")
-	g_smMapName_ShortToFull.SetString("db", "Dark Blood")
-	g_smMapName_ShortToFull.SetString("darkblood", "Dark Blood")
-	g_smMapName_ShortToFull.SetString("bha", "Blood Harvest APOCALYPSE")
-	g_smMapName_ShortToFull.SetString("bloodharvestapocalypse", "Blood Harvest APOCALYPSE")
-	g_smMapName_ShortToFull.SetString("p84", "Precinct 84")
-	g_smMapName_ShortToFull.SetString("precinct84", "Precinct 84")
-	g_smMapName_ShortToFull.SetString("cotd", "City Of The Dead")
-	g_smMapName_ShortToFull.SetString("cityofthedead", "City Of The Dead")
-	g_smMapName_ShortToFull.SetString("dv", "Dead Vacation")
-	g_smMapName_ShortToFull.SetString("deadvacation", "Dead Vacation")
-	g_smMapName_ShortToFull.SetString("uz", "Undead Zone")
-	g_smMapName_ShortToFull.SetString("undeadzone", "Undead Zone")
-	g_smMapName_ShortToFull.SetString("re3", "Resident Evil 3")
-	g_smMapName_ShortToFull.SetString("dw", "Dark Wood")
-
-
-	g_smMapName_FullToCode = new StringMap();
-	g_smMapName_FullToCode.SetString("No Mercy", "l4d_vs_hospital01_apartment")
-	g_smMapName_FullToCode.SetString("Death Toll", "l4d_vs_smalltown01_caves")
-	g_smMapName_FullToCode.SetString("Blood Harvest", "l4d_vs_farm01_hilltop")
-	g_smMapName_FullToCode.SetString("Dead Air", "l4d_vs_airport01_greenhouse")
-	g_smMapName_FullToCode.SetString("The Sacrifice", "l4d_river01_docks")
-	g_smMapName_FullToCode.SetString("Crash Course", "l4d_garage01_alleys")
-	g_smMapName_FullToCode.SetString("City 17", "l4d_vs_city17_01")
-	g_smMapName_FullToCode.SetString("Suicide Blitz", "l4d_vs_stadium1_apartment")
-	g_smMapName_FullToCode.SetString("I Hate Mountain", "l4d_ihm01_forest")
-	g_smMapName_FullToCode.SetString("Dead Flag Blues", "l4d_vs_deadflagblues01_city")
-	g_smMapName_FullToCode.SetString("Dead Before Dawn", "l4d_dbd_citylights")
-	g_smMapName_FullToCode.SetString("The Arena of the Dead", "l4d_jsarena01_town")
-	g_smMapName_FullToCode.SetString("Death Aboard", "l4d_deathaboard01_prison")
-	g_smMapName_FullToCode.SetString("One 4 Nine", "l4d_149_1")
-	g_smMapName_FullToCode.SetString("Dark Blood", "l4d_darkblood01_tanker")
-	g_smMapName_FullToCode.SetString("Blood Harvest APOCALYPSE", "rombu01")
-	g_smMapName_FullToCode.SetString("Precinct 84", "l4d_noprecinct01_crash")
-	g_smMapName_FullToCode.SetString("City Of The Dead", "cotd01_apartments_redux")
-	g_smMapName_FullToCode.SetString("Dead Vacation", "hotel01_market_two")
-	g_smMapName_FullToCode.SetString("Undead Zone", "uz_crash")
-	g_smMapName_FullToCode.SetString("Resident Evil 3", "re3short_m1")
-	g_smMapName_FullToCode.SetString("Dark Wood", "dw1_woods")
-
-	g_smMapName_FullToRequest = new StringMap();
-	g_smMapName_FullToRequest.SetString("No Mercy", "NM")
-	g_smMapName_FullToRequest.SetString("Death Toll", "DT")
-	g_smMapName_FullToRequest.SetString("Blood Harvest", "BH")
-	g_smMapName_FullToRequest.SetString("Dead Air", "DA")
-	g_smMapName_FullToRequest.SetString("The Sacrifice", "TS")
-	g_smMapName_FullToRequest.SetString("Crash Course", "CC")
-	g_smMapName_FullToRequest.SetString("City 17", "C17")
-	g_smMapName_FullToRequest.SetString("Suicide Blitz", "SB")
-	g_smMapName_FullToRequest.SetString("I Hate Mountain", "IHM")
-	g_smMapName_FullToRequest.SetString("Dead Flag Blues", "DFB")
-	g_smMapName_FullToRequest.SetString("Dead Before Dawn", "DBD")
-	g_smMapName_FullToRequest.SetString("The Arena of the Dead", "AOTD")
-	g_smMapName_FullToRequest.SetString("Death Aboard", "DAB")
-	g_smMapName_FullToRequest.SetString("One 4 Nine", "149")
-	g_smMapName_FullToRequest.SetString("Dark Blood", "DB")
-	g_smMapName_FullToRequest.SetString("Blood Harvest APOCALYPSE", "BHA")
-	g_smMapName_FullToRequest.SetString("Precinct 84", "P84")
-	g_smMapName_FullToRequest.SetString("City Of The Dead", "COTD")
-	g_smMapName_FullToRequest.SetString("Dead Vacation", "DV")
-	g_smMapName_FullToRequest.SetString("Undead Zone", "UZ")
-	g_smMapName_FullToRequest.SetString("Resident Evil 3", "RE3")
-	g_smMapName_FullToRequest.SetString("Dark Wood", "DW")
+		SetFailState("Couldn't load %s!", MATCHMODES_PATH);
+	}
 }
 
 public void ChangeVars(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -2305,6 +2213,8 @@ public Action:Reload_Config(client, args) //implement, get value of l4d_ready_se
 
 public OnMapStart()
 {
+	LoadData();
+
 	g_votedelay = 15;
 	CreateTimer(1.0, Timer_VoteDelay, _, TIMER_REPEAT| TIMER_FLAG_NO_MAPCHANGE); 
 	MapCountdownTimer = null;
@@ -2341,6 +2251,69 @@ public OnMapStart()
 public void OnMapEnd()
 {
 	Admin_Cancel_Lite();
+}
+
+
+void LoadData()
+{
+	delete g_smMapName_ShortToFull 
+	g_smMapName_ShortToFull = new StringMap();
+
+	delete g_smMapName_FullToCode 
+	g_smMapName_FullToCode = new StringMap();
+	
+	delete g_smMapName_FullToRequest 
+	g_smMapName_FullToRequest = new StringMap();
+
+	char sPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sPath, sizeof(sPath), CONFIG_FILE);
+
+	if( !FileExists(sPath) )
+	{
+		SetFailState("File Not Found: %s", sPath);
+		return;
+	}
+
+	// Load config
+	KeyValues hFile = new KeyValues("comp_loader");
+	if( !hFile.ImportFromFile(sPath) )
+	{
+		SetFailState("File Format Not Correct: %s", sPath);
+		delete hFile;
+		return;
+	}
+
+	if(hFile.GotoFirstSubKey())
+	{
+		do 
+		{
+			static char sFullMapName[64], sShortName01[64], sShortName02[64], sShortName03[64], sMapCode[64], sRequest[64];
+			hFile.GetSectionName(sFullMapName, sizeof(sFullMapName));
+			hFile.GetString("short_01", sShortName01, sizeof(sShortName01), "");
+			hFile.GetString("short_02", sShortName02, sizeof(sShortName02), "");
+			hFile.GetString("short_03", sShortName03, sizeof(sShortName03), "");
+			hFile.GetString("MapCode", sMapCode, sizeof(sMapCode), "");
+			hFile.GetString("Request", sRequest, sizeof(sRequest), "");
+			if(strlen(sShortName01) <= 0 || strlen(sMapCode) <= 0 || strlen(sRequest) <= 0 )
+			{
+				LogError("%s: Map Name not set in block \"%s\"", sPath, sFullMapName);
+				continue;
+			}
+
+			g_smMapName_ShortToFull.SetString(sShortName01, sFullMapName);
+			if(strlen(sShortName02) > 0) g_smMapName_ShortToFull.SetString(sShortName02, sFullMapName);
+			if(strlen(sShortName03) > 0) g_smMapName_ShortToFull.SetString(sShortName03, sFullMapName);
+			g_smMapName_FullToCode.SetString(sFullMapName, sMapCode, true);
+			g_smMapName_FullToRequest.SetString(sFullMapName, sRequest, true);
+
+		} while (hFile.GotoNextKey());
+	}
+	else
+	{
+		SetFailState("File Format Not Correct: %s", sPath);
+	}
+
+	delete hFile;
 }
 
 CheckMapName()

@@ -254,17 +254,17 @@ PluginInitialization()
 	if (GameMode == GAMEMODE_COOP)
 	{
 		BuildPath(Path_SM, FMC_FileSettings, 128, "data/sm_l4dco_mapchanger.txt");
-		PrintToServer("[FMC] Discovered coop gamemode. Link to sm_l4dco_mapchanger.");
+		//PrintToServer("[FMC] Discovered coop gamemode. Link to sm_l4dco_mapchanger.");
 	}
 	else if (GameMode == GAMEMODE_VERSUS)
 	{
 		BuildPath(Path_SM, FMC_FileSettings, 128, "data/sm_l4dvs_mapchanger.txt");
-		PrintToServer("[FMC] Discovered versus gamemode. Link to sm_l4dvs_mapchanger.");
+		//PrintToServer("[FMC] Discovered versus gamemode. Link to sm_l4dvs_mapchanger.");
 	}
 	else if (GameMode == GAMEMODE_SURVIVAL)
 	{
 		SetConVarInt(Allowed, 0);
-		PrintToServer("[FMC] Discovered survival gamemode. Plugin stop activity. Wait for coop or versus.");
+		//PrintToServer("[FMC] Discovered survival gamemode. Plugin stop activity. Wait for coop or versus.");
 		return;
 	}
 	else

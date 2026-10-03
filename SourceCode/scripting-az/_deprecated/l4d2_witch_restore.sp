@@ -1,3 +1,5 @@
+// deprecated, use l4d_collision_adjustments, witch now won't block tank's way
+
 #include <sourcemod>
 #include <left4dhooks>
 #include <sdktools>
@@ -29,7 +31,7 @@ bool g_bCvarEnable;
 
 public OnPluginStart()
 {
-	g_hCvarEnable 		= CreateConVar( "l4d2_witch_restore_enable",        "0",   "0=Plugin off, 1=Plugin on.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarEnable 		= CreateConVar( "l4d2_witch_restore_enable",        "1",   "0=Plugin off, 1=Plugin on.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	GetCvars();
 	g_hCvarEnable.AddChangeHook(ConVarChanged_Cvars);
 

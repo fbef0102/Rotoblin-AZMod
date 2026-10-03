@@ -222,7 +222,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * [Undead Zone](https://www.gamemaps.com/details/31513)
 * [City Of The Dead](https://www.gamemaps.com/details/34809)
 * [Resident Evil 3 - Short](https://www.gamemaps.com/details/34693)
-* [Dark Wood](https://www.gamemaps.com/details/32164)
+* ~~[Dark Wood](https://www.gamemaps.com/details/32164)~~: Removed, each level distance is too long
+* ~~[Day Break](https://www.gamemaps.com/details/32743)~~: Removed, too many players crash the game
 
 - - - -
 ### Weapon Adjustments ###

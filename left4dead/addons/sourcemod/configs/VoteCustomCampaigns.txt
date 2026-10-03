@@ -120,4 +120,9 @@
 		"mapinfo"		"dw1_woods"
 		"mapname"		"陰暗森林 Dark Wood"
 	}	
+	"25"
+	{
+		"mapinfo"		"l4d_daybreak01_hotel"
+		"mapname"		"破曉 Day Break"
+	}
 }

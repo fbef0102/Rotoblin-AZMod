@@ -98,6 +98,10 @@
 		{
 			"cmd" "sm_rcon changelevel dw1_woods"
 		}
+		"Day Break"
+		{
+			"cmd" "sm_rcon changelevel l4d_daybreak01_hotel"
+		}
 		"L4D2C1"
 		{
 			"cmd" "sm_rcon changelevel c1m1_hotel"
