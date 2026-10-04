@@ -165,6 +165,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
+#define FLAG_TEAM_NONE                (0 << 0) // 0 | 0000
+#define FLAG_TEAM_SURVIVOR            (1 << 0) // 1 | 0001
+#define FLAG_TEAM_INFECTED            (1 << 1) // 2 | 0010
+#define FLAG_TEAM_SPECTATOR           (1 << 2) // 4 | 0100
+
 ConVar g_hCvarSurvivorLimit,
 	g_hCvarMaxPounceBonusDamage,
 	g_hCvarWitchHealth,
@@ -824,26 +829,31 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 					assister = assisters[i][0];
 					if( assister <= 0 || assister > MaxClients || !IsClientInGame(assister)) continue;
 
-					CPrintToChat(assister, "{default}[{olive}TS{default}]{olive} %N {default}teamskeeted{red} %N{default} for{green} %d {default}damage in{green} %d {default}shot%s.",attacker, victim, damage, shots, plural);
+					CPrintToChat(assister, "[{olive}TS{default}]{olive} %N {default}teamskeeted{red} %N{default} for{green} %d {default}damage in{green} %d {default}shot%s.",attacker, victim, damage, shots, plural);
 					CPrintToChat(assister, "{blue}{default}|| Assisted by: %s.", assister_string);
 				}
 				// Print to victim
-				CPrintToChat(victim, "{default}[{olive}TS{default}] You were teamskeeted by{blue} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", attacker, damage, shots, plural);
+				CPrintToChat(victim, "[{olive}TS{default}] You were teamskeeted by{blue} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", attacker, damage, shots, plural);
 				CPrintToChat(victim, "{blue}{default}|| Assisted by: %s.", assister_string);
 
 				
 				// Finally print to attacker
-				CPrintToChat(attacker, "{default}[{olive}TS{default}] You teamskeeted{red} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", victim, damage, shots, plural);
+				CPrintToChat(attacker, "[{olive}TS{default}] You teamskeeted{red} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", victim, damage, shots, plural);
 				CPrintToChat(attacker, "{blue}{default}|| Assisted by: %s.", assister_string);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] {olive}%N{default} teamskeeted{red} %N{default} for{green} %d{default} damage in{green} %d{default} shot%s.", attacker, victim, damage, shots, plural);
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "{blue}{default}|| Assisted by: %s.", assister_string);
 
 				g_iMapStats[attacker][TeamSkeets]++;
 			}
 			else
 			{
 				g_iMapStats[attacker][FullSkeets]++;
-				CPrintToChat(victim, "{default}[{olive}TS{default}] You were skeeted by{blue} %N{default} in{green} %d {default}shot%s.", attacker, shots, plural);
+				CPrintToChat(victim, "[{olive}TS{default}] You were skeeted by{blue} %N{default} in{green} %d {default}shot%s.", attacker, shots, plural);
 				
-				CPrintToChat(attacker, "{default}[{olive}TS{default}] You skeeted{red} %N{default} in{green} %d {default}shot%s.", victim, shots, plural);
+				CPrintToChat(attacker, "[{olive}TS{default}] You skeeted{red} %N{default} in{green} %d {default}shot%s.", victim, shots, plural);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] {olive}%N{default} skeeted{red} %N{default} in{green} %d {default}shot%s.", attacker, victim, shots, plural);
 			}
 		}
 	}
@@ -865,6 +875,8 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 			if (IsFakeClient(client))
 			{
 				CPrintToChat(g_iBoomerShover, "{default}[{olive}TS{default}] %T","l4dcompstats8",g_iBoomerShover);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_01", g_iBoomerShover);
 			}
 			else
 			{
@@ -875,6 +887,8 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 				CPrintToChat(g_iBoomerShover, "{default}[{olive}TS{default}] %T","l4dcompstats9",g_iBoomerShover, curname);
 				CPrintToChat(client, "{default}[{olive}TS{default}] %T","l4dcompstats10",client, g_iBoomerShovername);
 				CreateTimer(0.1, Award, client, TIMER_FLAG_NO_MAPCHANGE);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_02", g_iBoomerShover, client);
 			}
 		}
 		g_iMapStats[g_iBoomerShover][BoomerShutdowns]++;
@@ -886,6 +900,8 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 			if (IsFakeClient(client))
 			{
 				CPrintToChat(g_iBoomerKiller, "{default}[{olive}TS{default}] %T","l4dcompstats8",g_iBoomerKiller);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_01", g_iBoomerShover);
 			}
 			else
 			{
@@ -897,6 +913,8 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 				CPrintToChat(g_iBoomerKiller, "{default}[{olive}TS{default}] %T","l4dcompstats9",g_iBoomerKiller, curname);
 				CPrintToChat(client, "{default}[{olive}TS{default}] %T","l4dcompstats10",client, g_iBoomerKillername);
 				CreateTimer(0.1, Award, client, TIMER_FLAG_NO_MAPCHANGE);
+
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_02", g_iBoomerShover, client);
 			}
 		}
 		g_iMapStats[g_iBoomerKiller][BoomerShutdowns]++;
@@ -1465,4 +1483,38 @@ public void OnRoundIsLive()
 public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
 {
 	g_bGameStarted = true;
+}
+
+void PrintToTeam(int teamflag, const char[] text, any ...)
+{
+	bool bTrans = StrContains(text, "%t") != -1;
+
+	char sTemp[256];
+	for (int i = 1; i <= MaxClients; i++){
+
+		if (IsClientInGame(i) && (teamflag & GetTeamFlag(GetClientTeam(i))) && !IsFakeClient(i)){
+
+			if (bTrans)
+				SetGlobalTransTarget(i);
+
+			VFormat(sTemp, sizeof(sTemp), text, 3);
+
+			CPrintToChat(i, sTemp);
+		}
+	}
+}
+
+int GetTeamFlag(int team)
+{
+    switch (team)
+    {
+        case TEAM_SURVIVOR:
+            return FLAG_TEAM_SURVIVOR;
+        case TEAM_INFECTED:
+            return FLAG_TEAM_INFECTED;
+        case TEAM_SPECTATOR:
+            return FLAG_TEAM_SPECTATOR;
+        default:
+            return FLAG_TEAM_NONE;
+    }
 }

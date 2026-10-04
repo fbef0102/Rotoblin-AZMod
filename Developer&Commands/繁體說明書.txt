@@ -890,6 +890,16 @@
 //Allowing tweaking of the attributes of all weapons
 //修改武器與msssion file的keyvalue，不需要透過原本檔案修改導致產生衝突
 
+[236] l4d2_skill_detect
+//source: github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d2_skill_detect
+//Detects and reports skeets, crowns, levels, highpounces, etc.
+//顯示人類與特感各種花式技巧 (譬如推開特感、速救隊友、一槍爆頭、近戰砍死、高撲傷害等等)
+
+[237] l4d_witch_collisions
+//source: github.com/jensewe
+//Commons can go through Witches without pushing them away
+//小殭屍不會推擠witch, witch不會擋住小殭屍, 小殭屍會直接穿透witch
+
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk
 //重製所有官方地圖的nav

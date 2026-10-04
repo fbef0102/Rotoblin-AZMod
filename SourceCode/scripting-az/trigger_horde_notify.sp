@@ -46,13 +46,11 @@ bool g_bFinalMap, g_bRescueStart;
 #define TEAM_SPECTATOR                1
 #define TEAM_SURVIVOR                 2
 #define TEAM_INFECTED                 3
-#define TEAM_HOLDOUT                  4
 
 #define FLAG_TEAM_NONE                (0 << 0) // 0 | 0000
 #define FLAG_TEAM_SURVIVOR            (1 << 0) // 1 | 0001
 #define FLAG_TEAM_INFECTED            (1 << 1) // 2 | 0010
 #define FLAG_TEAM_SPECTATOR           (1 << 2) // 4 | 0100
-#define FLAG_TEAM_HOLDOUT             (1 << 3) // 8 | 1000
 
 public void OnPluginStart()
 {
@@ -167,14 +165,14 @@ bool IsValidEntityIndex(int entity)
     return (MaxClients+1 <= entity <= GetMaxEntities());
 }
 
-void PrintToTeam(int team, const char[] text, any ...)
+void PrintToTeam(int teamflag, const char[] text, any ...)
 {
 	bool bTrans = StrContains(text, "%t") != -1;
 
 	char sTemp[256];
 	for (int i = 1; i <= MaxClients; i++){
 
-		if (IsClientInGame(i) && team | GetTeamFlag(GetClientTeam(i)) && !IsFakeClient(i)){
+		if (IsClientInGame(i) && (teamflag & GetTeamFlag(GetClientTeam(i))) && !IsFakeClient(i)){
 
 			if (bTrans)
 				SetGlobalTransTarget(i);
@@ -196,8 +194,6 @@ int GetTeamFlag(int team)
             return FLAG_TEAM_INFECTED;
         case TEAM_SPECTATOR:
             return FLAG_TEAM_SPECTATOR;
-        case TEAM_HOLDOUT:
-            return FLAG_TEAM_HOLDOUT;
         default:
             return FLAG_TEAM_NONE;
     }

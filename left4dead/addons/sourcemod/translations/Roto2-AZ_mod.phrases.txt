@@ -837,7 +837,7 @@
 	"You don't have to be mad..."
 	{
 		"en"	"You don't have to be mad..."
-		"zho"	"你不必生氣...哈哈哈~"
+		"zho"	"你不必生氣..."
 	}
 	"l4dcompstats1"
 	{
@@ -915,6 +915,18 @@
 		"#format"	"{1:i}"
 		"en"	"You had {green}{1}{default} health remaining!"
 		"zho"	"你還剩 {red}{1}{default} 血量!"
+	}
+	"l4dcompstats_all_01"
+	{
+		"#format"	"{1:N}"
+		"en"	"{olive}{1}{default} shut down {red}AI{default} Boomer."
+		"zho"	"{olive}{1}{default} 射爆了 {red}AI{default} 肥宅."
+	}
+	"l4dcompstats_all_02"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"	"{olive}{1}{default} shut down {red}{2}{default}'s Boomer."
+		"zho"	"{olive}{1}{default} 射爆了 {red}{2}{default} 肥宅."
 	}
 	///////////////games.smx///////////////
 	"You must spec first"

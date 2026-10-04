@@ -635,7 +635,7 @@
 	}
 	"You don't have to be mad..."
 	{
-		"chi"	"你不必生气（傻逼）"
+		"chi"	"你不必生气"
 	}
 	"l4dcompstats1"
 	{
@@ -688,6 +688,14 @@
 	"l4dcompstats13"
 	{
 		"chi"	"你还剩 {green}{1}{default} 血量!"
+	}
+	"l4dcompstats_all_01"
+	{
+		"chi"	"{olive}{1}{default} 射爆了 {red}AI{default} 肥宅."
+	}
+	"l4dcompstats_all_02"
+	{
+		"chi"	"{olive}{1}{default} 射爆了 {red}{2}{default} 肥宅."
 	}
 	///////////////games.smx///////////////
 	"You must spec first"

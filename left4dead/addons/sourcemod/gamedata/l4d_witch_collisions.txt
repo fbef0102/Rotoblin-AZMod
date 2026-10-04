@@ -1,0 +1,68 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"l4d_witch_collisions::Infected::UpdateNeighbors"
+			{
+				"signature"		"Infected::UpdateNeighbors"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
+			}
+
+			"l4d_witch_collisions::MyInfectedPointer"
+			{
+				"offset"		"MyInfectedPointer"
+				"hooktype"		"entity"
+				"return"		"int"
+				"this"			"entity"
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"MyInfectedPointer"
+			{
+				"linux"			"73"
+				"windows"		"72"
+			}
+		}
+
+		"Signatures"
+		{
+			"Infected::UpdateNeighbors"
+			{
+				"library"		"server"
+				"linux"			"@_ZN8Infected15UpdateNeighborsEv"
+				"windows"		"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x1C\x83\x78\x30\x00\x53"
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"MyInfectedPointer"
+			{
+				"linux"			"83"
+				"windows"		"82"
+			}
+		}
+
+		"Signatures"
+		{
+			"Infected::UpdateNeighbors"
+			{
+				"library"		"server"
+				"linux"			"@_ZN8Infected15UpdateNeighborsEv"
+				"windows"		"\x55\x8B\xEC\xA1\x2A\x2A\x2A\x2A\x83\xEC\x1C\x83\x78\x30\x00\x53\x56\x57\x8B\xF1\x0F\x84"
+			}
+		}
+	}
+}
