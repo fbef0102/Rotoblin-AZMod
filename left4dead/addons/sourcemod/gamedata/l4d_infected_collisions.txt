@@ -1,0 +1,112 @@
+"Games"
+{
+	"#default"
+	{
+		"Functions"
+		{
+			"l4d_infected_collisions::ZombieBotCollisionTraceFilter::ShouldHitEntity"
+			{
+				"signature"		"ZombieBotCollisionTraceFilter::ShouldHitEntity"
+				"callconv"		"thiscall"
+				"return"		"bool"
+				"this"			"address"
+				"arguments"
+				{
+					"entity"
+					{
+						"type"	"int"
+					}
+					"contentsMask"
+					{
+						"type"	"int"
+					}
+				}
+			}
+
+			// bool NextBotGroundLocomotion::DetectCollision( trace_t *pTrace, int &recursionLimit, const Vector &from, const Vector &to, const Vector &vecMins, const Vector &vecMaxs )
+			"l4d_infected_collisions::ZombieBotLocomotion::DetectCollision"
+			{
+				"signature"		"ZombieBotLocomotion::DetectCollision"
+				"callconv"		"thiscall"
+				"return"		"bool"
+				"this"			"address"
+				"arguments"
+				{
+					"pTrace"
+					{
+						"type"	"objectptr"
+					}
+					"recursionLimit"
+					{
+						"type"	"int"
+					}
+					"from"
+					{
+						"type"	"vectorptr"
+					}
+					"to"
+					{
+						"type"	"vectorptr"
+					}
+					"vecMins"
+					{
+						"type"	"vectorptr"
+					}
+					"vecMaxs"
+					{
+						"type"	"vectorptr"
+					}
+				}
+			}
+		}
+		
+		"Offsets"
+		{
+			"IHandleEntity::GetRefEHandle"
+			{
+				"linux"			"3"
+				"windows"		"2"
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Signatures"
+		{
+			"ZombieBotCollisionTraceFilter::ShouldHitEntity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN29ZombieBotCollisionTraceFilter15ShouldHitEntityEP13IHandleEntityi"
+				"windows"		"\x8B\x44\x24\x08\x56\x8B\x74\x24\x08\x50\x56\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x11\x8B\x42\x0C\x56\xFF\xD0\x84\xC0\x75\x2A\x85\xF6\x74\x2A\x8B\x16\x8B\x82\x40\x01\x00\x00\x8B\xCE\xFF\xD0\x84\xC0\x74\x2A\x8B\x16\x8B\x82\xF8\x04\x00\x00\x8B\xCE\xFF\xD0\x84\xC0\x75\x2A\x8B\x16"
+			}
+
+			"ZombieBotLocomotion::DetectCollision"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19ZombieBotLocomotion15DetectCollisionEP10CGameTraceRiRK6VectorS5_S5_S5_"
+				"windows"		"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x74\x53\x56\x8B\xF1\x57"
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"ZombieBotCollisionTraceFilter::ShouldHitEntity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN29ZombieBotCollisionTraceFilter15ShouldHitEntityEP13IHandleEntityi"
+				"windows"		"\x55\x8B\xEC\x8B\x45\x0C\x56\x8B\x75\x08\x50\x56\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x11\x8B\x42\x0C\x56\xFF\xD0\x84\xC0\x75\x2A\x85\xF6\x74\x2A\x8B\x16\x8B\x82\x68\x01\x00\x00\x8B\xCE\xFF\xD0\x84\xC0\x74\x2A\x8B\x16\x8B\x82\x54\x05\x00\x00\x8B\xCE\xFF\xD0\x84\xC0\x75\x2A\x8B\xCE"
+			}
+
+			"ZombieBotLocomotion::DetectCollision"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19ZombieBotLocomotion15DetectCollisionEP10CGameTraceRiRK6VectorS5_S5_S5_"
+				"windows"		"\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x88\x00\x00\x00\x56\x8B\xF1\x57"
+			}
+		}
+	}
+}

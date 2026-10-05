@@ -49,7 +49,6 @@ int
 	g_iQueuedPunch[MAXPLAYERS + 1];
 
 bool 
-	g_bBrokenPlayer[MAXPLAYERS+1],
 	g_bQueuedCommandThrow[MAXPLAYERS+1];
 
 public OnPluginStart()
@@ -81,22 +80,6 @@ void GetCvars()
 public void OnClientConnected(int client)
 {
 	g_bQueuedCommandThrow[client] = false;
-}
-
-public void OnClientPostAdminCheck(int client)
-{
-	g_bBrokenPlayer[client] = false;
-	
-	static char cmpSteamId[32];
-	GetClientAuthId(client, AuthId_SteamID64, cmpSteamId, sizeof(cmpSteamId));
-	if (StrEqual(cmpSteamId, "76561198020896967") //for JJ,小文 who has problem with keyboard
-		|| StrEqual(cmpSteamId, "76561198308064273")) 
-		g_bBrokenPlayer[client] = true;
-}
-
-public void OnClientDisconnect(int client)
-{
-	g_bBrokenPlayer[client] = false;
 }
 
 Action Cmd_sm_underhand(int client, int args)
@@ -154,21 +137,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		if(buttons & IN_ATTACK2)
 		{
-			if(g_bBrokenPlayer[client]) return Plugin_Continue;
-
 			g_iQueuedThrow[client] = OneOverhand;
 		}
 		else if (buttons & IN_USE)
 		{
-			if(g_bBrokenPlayer[client]) return Plugin_Continue;
-
 			g_iQueuedThrow[client] = Underhand;
 			buttons |= IN_ATTACK2;
 		}
 		else if (buttons & IN_RELOAD)
 		{
-			if(g_bBrokenPlayer[client]) return Plugin_Continue;
-			
 			g_iQueuedThrow[client] = TwoOverhand;
 			buttons |= IN_ATTACK2;
 		}

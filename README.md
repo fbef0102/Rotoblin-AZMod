@@ -334,16 +334,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
   * Pulled Survivors go through Common Infected. ([video](https://www.youtube.com/watch?v=Jj04A73AYk0))
   * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
-  * Commons go through Witch (Prevent commons from pushing witch in l4d1)
   * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
   * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
+  * Commons can go through Witches without pushing them away
+  * Common infected and witch can phase through pulled or pounced survivors
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
 * Remove restricted time between panic events (90s)
 * Prevent forced sliding when landing at head of enemies.
 * Dissolves the witch, common, survivor or special infected when killed.
-	* Only works in some certain maps that have water
+	* Only works in some certain maps that have water area
 	* Dead bodies splash with water impact, which causes client fps drop and client crash
 * Tricky fix for surfaces with wrong attributes on linux dedicated servers. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_linux_surface)
   * e.g. You won't slide on ice surfaces.
@@ -358,7 +359,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * In some custom maps, fix the wrong .wav sound coming from common infected when been shot
   * Prevents director or map overrides of z_common_limit. Kill common if overflow.
   * It always takes 5 scratches from an infected player to kill a common infected
-  * Prevent common infected from pushing witch away when witch not startled yet
   * Despawn infected commons who is too far behind the survivors.
   * Reduce the possibility that commons jiggle around when close to each other. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_nextbot_collision)
 	  * A well-known issue happens when setting ```nb_update_frequency``` to low value. 
@@ -492,7 +492,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
     * Fixed a door can startle the witch, causing her to lose target
     * Hops a startled witch past whatever she is stuck on
-    * Stops the witch freezing on corners at a low nb_update_frequency
+    * Stops the witch freezing on corners at a low nb_update_frequency. Credit: [Volence](https://github.com/Volence/riverside-l4d-plugins)
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -606,7 +606,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Removes pills from bots if they try to use them and restores them when a human takes over.
   * AI Bots less retarded Convars
   * Blocks the stupid griefers who spam vocalize commands throughout after round is live.
-  * show who triggers the horde event like start final rescue, shoot alarm car, etc.
   * show panel message "The Survivors have made it 25%/50%/75% of the way!"
   * Enlarge car alarm distance
   * Survivors bleed out Temp Health every **4.0s** (vanilla: **3.7s**)
@@ -644,7 +643,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Survivor still gets stumble even in the air
   * Return pills/adrenalines thrown through shoving key if not successfully given
   * Stopping pick-up progress on incapped survivors right after getting tank punch or tank Rock
-  
+  * Enable skill report to chat
+
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud
   * Allows spectators to control their own specspeed and move vertically.

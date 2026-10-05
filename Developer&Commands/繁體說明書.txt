@@ -900,6 +900,12 @@
 //Commons can go through Witches without pushing them away
 //小殭屍不會推擠witch, witch不會擋住小殭屍, 小殭屍會直接穿透witch
 
+[239] l4d_infected_collisions
+//source: github.com/jensewe
+//Common infected and witch can phase through pulled or pounced survivors
+//小殭屍與witch可以穿透走過去smoker拉走的倖存者, 跑向另外被噴的倖存者
+//小殭屍與witch可以穿透走過去hunter撲中的倖存者, 跑向另外被噴的倖存者
+
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk
 //重製所有官方地圖的nav
