@@ -72,6 +72,21 @@
 
 	"left4dead"
 	{
+		"Offsets"
+		{
+			"INextBotComponent::GetBot"
+			{
+				"linux"			"39"
+				"windows"		"38"
+			}
+
+			"INextBot::GetEntity"
+			{
+				"linux"			"40"
+				"windows"		"39"
+			}
+		}
+
 		"Signatures"
 		{
 			"ZombieBotCollisionTraceFilter::ShouldHitEntity"
@@ -92,6 +107,21 @@
 
 	"left4dead2"
 	{
+		"Offsets"
+		{
+			"INextBotComponent::GetBot"
+			{
+				"linux"			"44"
+				"windows"		"43"
+			}
+
+			"INextBot::GetEntity"
+			{
+				"linux"			"45"
+				"windows"		"44"
+			}
+		}
+		
 		"Signatures"
 		{
 			"ZombieBotCollisionTraceFilter::ShouldHitEntity"

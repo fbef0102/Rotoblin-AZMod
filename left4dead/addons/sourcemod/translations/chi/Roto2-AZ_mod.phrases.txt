@@ -903,11 +903,15 @@
 	}
 	"Tank Punch survivor fly away and die"
 	{
-		"chi"	"坦克 {default}一拳再见本垒打 {olive}{1}{default}."
+		"chi"	"{green}坦克{default} 一拳再见本垒打 {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
-		"chi"	"{lightgreen}士可杀不可辱{default}."
+		"chi"	"{olive}{1}{default}: {lightgreen}士可杀不可辱{default}."
+	}
+	"Burned to death"
+	{
+		"chi"	"{olive}{1}{default} 被火烧死"
 	}
 	"l4dffannounce1"
 	{

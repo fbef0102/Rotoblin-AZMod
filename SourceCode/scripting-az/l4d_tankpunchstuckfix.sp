@@ -1,3 +1,8 @@
+/**
+ * use sv_lagcompensationforcerestore to fix stuck instead of using a repeated timer to check.
+ * https://github.com/SirPlease/L4D2-Competitive-Rework/pull/727
+ */
+
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -6,6 +11,23 @@
 #include <left4dhooks>
 #include <multicolors>
 #include <l4d_lib>
+
+
+public Plugin myinfo = 
+{
+    name =          "Tank Punch Ceiling Stuck Fix",
+    author =        "Tabun, Visor, HarryPotter",
+    description =   "Fixes the problem where tank-punches get a survivor stuck in the roof.",
+    version =       "2.0-2026/10/6",
+    url =           "https://github.com/SirPlease/L4D2-Competitive-Rework"
+}
+
+/*bool g_bLateLoad;
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_bLateLoad = late;
+	return APLRes_Success;
+}
 
 #define DEBUG_MODE              0
 
@@ -20,43 +42,14 @@
 #define TIMER_CHECKPUNCH        0.025   // interval for checking 'flight' of punched survivors
 #define TIME_CHECK_UNTIL        0.5     // try this long to find a stuck-position, then assume it's OK
 
-enum eTankWeapon
-{
-    TANKWEAPON
-}
+float      g_fPlayerPunch          [MAXPLAYERS + 1];                           // when was the last tank punch on this player?
+bool       g_bPlayerFlight         [MAXPLAYERS + 1];                           // is a player in (potentially stuckable) punched flight?
+float      g_fPlayerStuck          [MAXPLAYERS + 1];                           // when did the (potential) 'stuckness' occur?
+float      g_fPlayerLocation       [MAXPLAYERS + 1][3];                        // where was the survivor last during the flight?
 
-new     bool:       g_bLateLoad                                 = false;
-
-new     Float:      g_fPlayerPunch          [MAXPLAYERS + 1];                           // when was the last tank punch on this player?
-new     bool:       g_bPlayerFlight         [MAXPLAYERS + 1];                           // is a player in (potentially stuckable) punched flight?
-new     Float:      g_fPlayerStuck          [MAXPLAYERS + 1];                           // when did the (potential) 'stuckness' occur?
-new     Float:      g_fPlayerLocation       [MAXPLAYERS + 1][3];                        // where was the survivor last during the flight?
-
-new     Handle:     g_hCvarDeStuckTime                          = INVALID_HANDLE;       // convar: how long to wait and de-stuckify a punched player
-new modelnum[MAXPLAYERS + 1];
-static bool:TankPounchClient[MAXPLAYERS + 1];
-
-public Plugin:myinfo = 
-{
-    name =          "Tank Punch Ceiling Stuck Fix",
-    author =        "Tabun, Visor, HarryPotter",
-    description =   "Fixes the problem where tank-punches get a survivor stuck in the roof,L4D1 windows signature by Harry",
-    version =       "0.5-2024/1/2",
-    url =           "nope"
-}
-
-public APLRes:AskPluginLoad2( Handle:plugin, bool:late, String:error[], errMax)
-{
-	CreateNative("IsTankPounchClient", Native_IsTankPounchClient);
-	g_bLateLoad = late;
-	return APLRes_Success;
-}
-
-public Native_IsTankPounchClient(Handle:plugin, numParams)
-{
-   new num1 = GetNativeCell(1);
-   return TankPounchClient[num1];
-}
+ConVar     g_hCvarDeStuckTime;       // convar: how long to wait and de-stuckify a punched player
+int modelnum[MAXPLAYERS + 1];
+bool TankPounchClient[MAXPLAYERS + 1];*/
 
 ConVar sv_lagcompensationforcerestore;
 
@@ -66,7 +59,7 @@ public OnPluginStart()
 
     sv_lagcompensationforcerestore = FindConVar("sv_lagcompensationforcerestore");
 
-    if (g_bLateLoad) {
+    /*if (g_bLateLoad) {
         for (new i = 1; i < MaxClients+1; i++) {
             if (IsClientInGame(i)) {
                 SDKHook(i, SDKHook_OnTakeDamage, OnTakeDamage);
@@ -81,14 +74,10 @@ public OnPluginStart()
     HookEvent("round_start", RoundStart_Event, EventHookMode_PostNoCopy);
     HookEvent("player_bot_replace", OnBotSwap);
     HookEvent("bot_player_replace", OnBotSwap);
-    HookEvent("player_spawn", OnPlayerSpawn);
+    HookEvent("player_spawn", OnPlayerSpawn);*/
 }
 
-
-/* --------------------------------------
- *      General hooks / events
- * -------------------------------------- */
-
+/*
 public OnClientPutInServer(client)
 {
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
@@ -108,10 +97,6 @@ public Action: RoundStart_Event (Handle:event, const String:name[], bool:dontBro
     }
 }
 
-
-/* --------------------------------------
- *     GOT MY EYES ON YOU, PUNCH
- * -------------------------------------- */
 
 Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
@@ -217,13 +202,13 @@ Action Timer_CheckPunch(Handle hTimer, int userid)
                         g_bPlayerFlight[client] = false;
                         g_fPlayerStuck[client] = 0.0;
 
-                        /*
-                        CTerrorPlayer_WarpToValidPositionIfStuck(client);
-                        decl String:clientName[128];
-                        GetClientName(client,clientName,128);
-                        CPrintToChatAll("%t","l4d_tankpunchstuckfix", clientName);
-                        }
-                        */
+                        
+                        //CTerrorPlayer_WarpToValidPositionIfStuck(client);
+                        //decl String:clientName[128];
+                        //GetClientName(client,clientName,128);
+                        //CPrintToChatAll("%t","l4d_tankpunchstuckfix", clientName);
+                        //
+                        
                         return Plugin_Stop;
                     }
                 }
@@ -264,9 +249,6 @@ Action Timer_CheckPunch(Handle hTimer, int userid)
     return Plugin_Continue;
 }
 
-/* --------------------------------------
- *     Shared function(s)
- * -------------------------------------- */
 
 stock bool:IsclientAndInGame(index)
 {
@@ -342,12 +324,12 @@ bool IsTankWeapon(int entity)
 	if (entity >= MaxClients + 1 && IsValidEntity(entity)) {
 		char eName[32];
 		GetEntityClassname(entity, eName, sizeof(eName));
-		return (strcmp("weapon_tank_claw", eName) == 0/* || strcmp("tank_rock", eName) == 0*/);
+		return (strcmp("weapon_tank_claw", eName) == 0);
 	}
 
 	return false;
 }
-
+*/
 public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int player)
 {
 	sv_lagcompensationforcerestore.BoolValue = false;
@@ -355,5 +337,6 @@ public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int player)
 
 public void L4D_TankClaw_DoSwing_Post(int tank, int claw)
 {
-	sv_lagcompensationforcerestore.BoolValue = true;
+	if (!sv_lagcompensationforcerestore.BoolValue)
+		sv_lagcompensationforcerestore.BoolValue = true;
 }

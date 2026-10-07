@@ -4,26 +4,33 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <multicolors>
+#include <left4dhooks>
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = "L4D FF Announce Plugin",
 	author = "Frustian",
-	description = "Adds Friendly Fire Announcements + pig survivor notify",
-	version = "1.8",
+	description = "Adds Friendly Fire Announcements + weak survivor notify",
+	version = "1.9-2026/10/7",
 	url = "https://steamcommunity.com/profiles/76561198026784913/"
 }
-//cvar handles
-ConVar FFenabled;
-ConVar AnnounceType
-//Various global variables
-new DamageCache[MAXPLAYERS+1][MAXPLAYERS+1]; //Used to temporarily store Friendly Fire Damage between teammates
-Handle FFTimer[MAXPLAYERS+1]; //Used to be able to disable the FF timer when they do more FF //Stores whether players are in a state of friendly firing teammates
-static bool:ClientHasDown[MAXPLAYERS + 1];
-static bool:ClientGrabLedge[MAXPLAYERS + 1];
-native bool:IsTankPounchClient(client);//From l4d_tankpunchstuckfix
 
 native IsInReady();
+
+ConVar FFenabled;
+ConVar AnnounceType
+
+int DamageCache[MAXPLAYERS+1][MAXPLAYERS+1]; //Used to temporarily store Friendly Fire Damage between teammates
+Handle FFTimer[MAXPLAYERS+1], //Used to be able to disable the FF timer when they do more FF //Stores whether players are in a state of friendly firing teammates
+	g_hTankPunchFlying[MAXPLAYERS + 1],
+	g_hJumpRegisterTimer[MAXPLAYERS + 1];
+
+bool 
+	ClientHasDown[MAXPLAYERS + 1],
+	ClientGrabLedge[MAXPLAYERS + 1],
+	g_bTrySuicideJump[MAXPLAYERS + 1];
+
+
 public OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
@@ -39,6 +46,8 @@ public OnPluginStart()
 	HookEvent("bot_player_replace", OnBotSwap);
 	HookEvent("player_spawn", OnPlayerSpawn);
 	HookEvent("player_incapacitated_start", Event_IncapacitatedStart);
+	HookEvent("player_incapacitated", 		Event_Incapacitated); 
+	HookEvent("player_jump", player_jump);	
 
 	HookEvent("round_end",				Event_RoundEnd,		EventHookMode_PostNoCopy); //trigger twice in versus mode, one when all survivors wipe out or make it to saferom, one when first round ends (second round_start begins).
 	HookEvent("map_transition", 		Event_RoundEnd,		EventHookMode_PostNoCopy); //all survivors make it to saferoom, and server is about to change next level in coop mode (does not trigger round_end) 
@@ -52,103 +61,113 @@ public void OnMapEnd()
 	ResetTimer();
 }
 
+public void OnClientDisconnect(int client)
+{
+	delete g_hTankPunchFlying[client];
+	delete g_hJumpRegisterTimer[client];
+}
+
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
 {
 	ResetTimer();
 }
 
-public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	for(new i = 1; i <= MaxClients; i++) 
 	{
-		ClientHasDown[i] = false;	
+		ClientHasDown[i] = false;
 		ClientGrabLedge[i] = false;	
 	}
 }
 
-public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	if(IsInReady()) return;
 
-	int victimid = GetEventInt(event, "userid");
-	new victim = GetClientOfUserId(victimid);
-	if ( victim == 0 || !IsClientConnected(victim)||!IsClientInGame(victim)) return;
-	
-	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	
-	decl String:weapon[15];
-	GetEventString(event, "weapon", weapon, sizeof(weapon));
-	
-	decl String:victimName[128];
-	GetClientName(victim,victimName,128);
-	//CPrintToChatAll("attacker: %d - victim: %d - weapon: %s",attacker,victim,weapon);
-	if(attacker == 0 && !IsWitch(GetEventInt(event, "attackerentid")) && GetClientTeam(victim) == 2 && !ClientHasDown[victim]) //倒地不算了
-	{
-		if(ClientGrabLedge[victim])//掛邊
-		{
-			for (new i = 1; i <= MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
-					CPrintToChat(i,"{default}[{olive}TS{default}] %T","fell from top floor.",i,victimName);
-		}
-		else if (StrEqual(weapon,"infected")) //普通感染者抓死
-			return;
-		else
-			CreateTimer(1.0, Timer_CheckPunch, victimid);
-	}	
-	
-	if (attacker == 0 ||!IsClientConnected(attacker) || !IsClientInGame(attacker) ) return;
-	decl String:attackerName[128];
-	GetClientName(attacker,attackerName,128);
-	if(GetClientTeam(attacker) == 2 ) //人類 kill
-	{
-		if(GetClientTeam(victim) == 2 && victim != attacker)//友傷
-		{
-			for (new i = 1; i <= MaxClients; i++)
-				if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
-					CPrintToChat(i,"{default}[{olive}TS{default}] %T","player kill teammate",i,attackerName, victimName);
-		}
-	}	
-}
-
-Action Timer_CheckPunch(Handle hTimer, int client)
-{
-	client = GetClientOfUserId(client);
-	if(!client ||!IsClientInGame(client)) return Plugin_Continue;
-	
-	decl String:clientName[128];
-	GetClientName(client,clientName,128);
-	if(IsTankPounchClient(client))
-		CPrintToChatAll("{green}[TS] %t","Tank Punch survivor fly away and die",clientName);
-	else if(!IsFakeClient(client))
-		CPrintToChatAll("{green}[TS] {olive}%N{default} : %t",client,"Survivor suicides");
-
-	return Plugin_Continue;
-	
-}
-
-public Action:Event_HurtConcise(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	if(IsInReady()) return;
-	
-	int attacker = GetEventInt(event, "attackerentid");
-	int victimid = GetEventInt(event, "userid");
+	int victimid = event.GetInt("userid");
 	int victim = GetClientOfUserId(victimid);
-	if(attacker ==0 && IsClientConnected(victim) && IsClientInGame(victim) && GetClientTeam(victim) == 2)
+	if ( victim == 0 || !IsClientInGame(victim)) return;
+	
+	int attacker = GetClientOfUserId(event.GetInt("attacker"));
+	
+	static char weapon[15];
+	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	int damagetype = event.GetInt("type");
+	
+	static char victimName[128];
+	GetClientName(victim,victimName,128);
+	//CPrintToChatAll("attacker: %d - victim: %d - weapon: %s, damagetype: %d",attacker,victim,weapon,damagetype);
+	if(attacker == 0 && GetClientTeam(victim) == 2)
 	{
-		if(GetEntProp(victim, Prop_Send, "m_isHangingFromLedge"))
+		if (StrEqual(weapon,"infected") || StrEqual(weapon,"witch"))
 		{
 			return;
 		}
 
-		if(IsIncapacitated(victim)) 
+		if(damagetype & DMG_BURN)
 		{
-			CreateTimer(0.1, COLD_DOWN, victimid);
+			CPrintToChatAll("[{olive}TS{default}] %t", "Burned to death", victim);
 		}
-	}
+		else if(damagetype & DMG_FALL)
+		{
+			if(ClientGrabLedge[victim])//掛邊
+			{
+				for (new i = 1; i <= MaxClients; i++)
+					if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
+						CPrintToChat(i,"[{olive}TS{default}] %T","fell from top floor.",i,victimName);
+
+				return;
+			}
+
+			if(g_hTankPunchFlying[victim] != null) //被tank擊飛
+			{
+				CPrintToChatAll("[{olive}TS{default}] %t","Tank Punch survivor fly away and die", victimName);
+
+				return;
+			}
+
+			// 自己按住空白鍵跳樓
+			if(g_bTrySuicideJump[victim])
+			{
+				CPrintToChatAll("[{olive}TS{default}] %t", "Survivor suicides", victim);
+			}
+		}
+		else if(damagetype & DMG_CRUSH)
+		{
+			//被tank擊飛時倒地, 然後墬樓
+			if(ClientHasDown[victim] && StrEqual(weapon,"trigger_hurt") && g_hTankPunchFlying[victim] != null)
+			{
+				CPrintToChatAll("[{olive}TS{default}] %t","Tank Punch survivor fly away and die", victimName);
+			}
+		}
+	}	
 	
-	if (!GetConVarInt(FFenabled) || attacker > MaxClients || attacker < 1 || !IsClientConnected(attacker) || !IsClientInGame(attacker) || IsFakeClient(attacker) || GetClientTeam(attacker) != 2 || !IsClientInGame(victim) || !IsClientConnected(victim) || GetClientTeam(victim) != 2)
-		return;  //if director_ready_duration is 0, it usually means that the game is in a ready up state like downtown1's ready up mod.  This allows me to disable the FF messages in ready up.
-	new damage = GetEventInt(event, "dmg_health");
+	if(attacker > 0 && IsClientInGame(attacker) && GetClientTeam(attacker) == 2 && GetClientTeam(victim) == 2 && victim != attacker) //人類 kill
+	{
+		static char attackerName[128];
+		GetClientName(attacker,attackerName,128);
+
+		for (int i = 1; i <= MaxClients; i++)
+			if (IsClientInGame(i) && !IsFakeClient(i) && (GetClientTeam(i) == 1 || GetClientTeam(i) == 2))
+				CPrintToChat(i,"[{olive}TS{default}] %T","player kill teammate",i,attackerName, victimName);
+	}	
+}
+
+void Event_HurtConcise(Event event, const char[] name, bool dontBroadcast)
+{
+	if(IsInReady()) return;
+	
+	int attacker = event.GetInt("attackerentid");
+	int victim = GetClientOfUserId(event.GetInt("userid"));
+	
+	if (!victim || !IsClientInGame(victim) || GetClientTeam(victim) != 2) return;
+
+	if (!GetConVarInt(FFenabled) || attacker > MaxClients || attacker < 1 || !IsClientInGame(attacker) || IsFakeClient(attacker) || GetClientTeam(attacker) != 2)
+		return;
+
+	int damage = event.GetInt("dmg_health");
+	
 	if (FFTimer[attacker] != null)  //If the player is already friendly firing teammates, resets the announce timer and adds to the damage
 	{
 		DamageCache[attacker][victim] += damage;
@@ -170,7 +189,7 @@ public Action:Event_HurtConcise(Handle:event, const String:name[], bool:dontBroa
 	}
 }
 
-public void Event_IncapacitatedStart(Event event, const char[] name, bool dontBroadcast) 
+void Event_IncapacitatedStart(Event event, const char[] name, bool dontBroadcast) 
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	int attacker = GetClientOfUserId(event.GetInt("attacker"));
@@ -208,14 +227,22 @@ public void Event_IncapacitatedStart(Event event, const char[] name, bool dontBr
 	}
 }
 
-Action COLD_DOWN(Handle timer, int victim)
+void Event_Incapacitated(Event event, const char[] name, bool dontBroadcast) 
 {
-	victim = GetClientOfUserId(victim);
-	if(!victim || !IsClientInGame(victim)) return Plugin_Continue;
+	CreateTimer(0.1, Timer_Incapacitated, event.GetInt("userid"));
+}
 
-	if(IsPlayerAlive(victim) && IsIncapacitated(victim)) 
+Action Timer_Incapacitated(Handle timer, int client)
+{
+	client = GetClientOfUserId(client);
+	if(!client || !IsClientInGame(client) || GetClientTeam(client) != 2 || !IsPlayerAlive(client)
+		|| !L4D_IsPlayerIncapacitated(client))
+		return Plugin_Continue;
+
+	if(!L4D_IsPlayerHangingFromLedge(client))
 	{
-		ClientHasDown[victim] = true;
+		ClientGrabLedge[client] = false;
+		ClientHasDown[client] = true;
 	}
 
 	return Plugin_Continue;
@@ -223,10 +250,10 @@ Action COLD_DOWN(Handle timer, int victim)
 
 Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not friendly fire recently, and announces all FF they did
 {
-	decl String:victim[128];
-	decl String:attacker[128];
+	static char victim[128];
+	static char attacker[128];
 
-	if (IsClientInGame(attackerc) && IsClientConnected(attackerc) && !IsFakeClient(attackerc))
+	if (IsClientInGame(attackerc) && !IsFakeClient(attackerc))
 		GetClientName(attackerc, attacker, sizeof(attacker));
 	else
 		attacker = "Disconnected Player";
@@ -234,30 +261,30 @@ Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not 
 	{
 		if (DamageCache[attackerc][i] != 0 && attackerc != i)
 		{
-			if (IsClientInGame(i) && IsClientConnected(i))
+			if (IsClientInGame(i))
 			{
 				GetClientName(i, victim, sizeof(victim));
 				switch(GetConVarInt(AnnounceType))
 				{
 					case 1:
 					{
-						if (IsClientInGame(attackerc) && IsClientConnected(attackerc) && !IsFakeClient(attackerc))
+						if (IsClientInGame(attackerc) && !IsFakeClient(attackerc))
 							CPrintToChat(attackerc, "[{olive}TS{default}] %T","l4dffannounce1",attackerc,DamageCache[attackerc][i],victim);
-						if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i))
+						if (IsClientInGame(i) && !IsFakeClient(i))
 							CPrintToChat(i, "[{olive}TS{default}] %T","l4dffannounce2",i,attacker,DamageCache[attackerc][i]);
 					}
 					case 2:
 					{
-						if (IsClientInGame(attackerc) && IsClientConnected(attackerc) && !IsFakeClient(attackerc))
+						if (IsClientInGame(attackerc) && !IsFakeClient(attackerc))
 							PrintHintText(attackerc, "%T","l4dffannounce13",attackerc,DamageCache[attackerc][i],victim);
-						if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i))
+						if (IsClientInGame(i)&& !IsFakeClient(i))
 							PrintHintText(i, "%T","l4dffannounce14",i,attacker,DamageCache[attackerc][i]);
 					}
 					case 3:
 					{
-						if (IsClientInGame(attackerc) && IsClientConnected(attackerc) && !IsFakeClient(attackerc))
+						if (IsClientInGame(attackerc) && !IsFakeClient(attackerc))
 							PrintCenterText(attackerc, "%T","l4dffannounce13",attackerc,DamageCache[attackerc][i],victim);
-						if (IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i))
+						if (IsClientInGame(i) && !IsFakeClient(i))
 							PrintCenterText(i, "%T","l4dffannounce14",i,attacker,DamageCache[attackerc][i]);
 					}
 				}
@@ -270,29 +297,32 @@ Action AnnounceFF(Handle:timer, int attackerc) //Called if the attacker did not 
 	return Plugin_Continue;
 }
 
-public Event_ledge_grab(Handle:event, const String:name[], bool:dontBroadcast)
+public Event_ledge_grab(Event event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	new client = GetClientOfUserId(event.GetInt("userid"));
+
+	g_bTrySuicideJump[client] = false;
 	ClientGrabLedge[client] = true;
+	ClientHasDown[client] = false;
 }
 
-public Event_revive_success(Handle:event, const String:name[], bool:dontBroadcast)
+public Event_revive_success(Event event, const char[] name, bool dontBroadcast)
 {
 	if(IsInReady()) return;
 	
-	new subject = GetClientOfUserId(GetEventInt(event, "subject"));//被救的那位
-	if (subject<=0||!IsClientAndInGame(subject)) { return; } //just in case
+	new subject = GetClientOfUserId(event.GetInt("subject"));//被救的那位
+	if (subject<=0||!IsClientInGame(subject)) { return; } //just in case
 	
 	ClientGrabLedge[subject] = false;
 	ClientHasDown[subject] = false;
 }
 
-public Action:OnBotSwap(Handle:event, const String:name[], bool:dontBroadcast) 
+public Action:OnBotSwap(Event event, const char[] name, bool dontBroadcast) 
 {
 	if(IsInReady()) return Plugin_Continue;
 	
-	new bot = GetClientOfUserId(GetEventInt(event, "bot"));
-	new player = GetClientOfUserId(GetEventInt(event, "player"));
+	new bot = GetClientOfUserId(event.GetInt("bot"));
+	new player = GetClientOfUserId(event.GetInt("player"));
 	if (IsClientIndex(bot) && IsClientIndex(player)) 
 	{
 		if (StrEqual(name, "player_bot_replace")) 
@@ -314,49 +344,41 @@ public Action:OnBotSwap(Handle:event, const String:name[], bool:dontBroadcast)
 	return Plugin_Continue;
 }
 
-public Action:OnPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if(IsInReady()) return;
 	
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(IsClientIndex(client)&&IsClientInGame(client)&&GetClientTeam(client)==2)
+	new client = GetClientOfUserId(event.GetInt("userid"));
+	if(client&&IsClientInGame(client)&&GetClientTeam(client)==2)
 	{
+		g_bTrySuicideJump[client] = false;
 		ClientGrabLedge[client] = false;
 		ClientHasDown[client] = false;
 	}
 }
 
-bool:IsClientIndex(client)
+void player_jump(Event event, const char[] name, bool dontBroadcast) 
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));	
+
+	g_bTrySuicideJump[client] = true;
+
+	delete g_hJumpRegisterTimer[client];
+	g_hJumpRegisterTimer[client] = CreateTimer(0.25, RegisterJumpDelay, client);
+}
+
+Action RegisterJumpDelay(Handle timer, any victim)
+{
+	g_hJumpRegisterTimer[victim] = null;
+	return Plugin_Continue;
+}
+
+bool IsClientIndex(client)
 {
 	return (client > 0 && client <= MaxClients);
 }
 
-stock IsIncapacitated(client)
-{
-	return GetEntProp(client, Prop_Send, "m_isIncapacitated");
-}
-
-stock IsClientAndInGame(client)
-{
-	if (0 < client && client <= MaxClients)
-	{	
-		return IsClientInGame(client);
-	}
-	return false;
-}
-
-bool IsWitch(int entity)
-{
-    if (entity > 0 && IsValidEntity(entity) && IsValidEdict(entity))
-    {
-        static char strClassName[64];
-        GetEdictClassname(entity, strClassName, sizeof(strClassName));
-        return strcmp(strClassName, "witch", false) == 0;
-    }
-    return false;
-}
-
-stock float GetTempHealth(int client)
+float GetTempHealth(int client)
 {
 	static float fCvarDecayRate = -1.0;
 
@@ -373,5 +395,59 @@ void ResetTimer()
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		delete FFTimer[i];
+		delete g_hTankPunchFlying[i];
+		delete g_hJumpRegisterTimer[i];
 	}
+}
+
+public void L4D_TankClaw_OnPlayerHit_Post(int tank, int claw, int victim)
+{
+	delete g_hTankPunchFlying[victim];
+	g_hTankPunchFlying[victim] = CreateTimer(0.5, Timer_CheckIfSurvivorFlying, victim, TIMER_REPEAT);
+}
+
+Action Timer_CheckIfSurvivorFlying(Handle tiemr, int client)
+{
+	if(!IsClientInGame(client) || GetClientTeam(client) != 2 || !IsPlayerAlive(client)
+		|| GetEntityFlags(client) & FL_ONGROUND)
+	{
+		g_hTankPunchFlying[client] = null;
+
+		return Plugin_Stop;
+	}
+
+	return Plugin_Continue;
+}
+
+public void OnPlayerRunCmdPost(int client, int buttons, int impulse, const float vel[3], const float angles[3], int weapon, int subtype, int cmdnum, int tickcount, int seed, const int mouse[2])
+{
+	if (!IsClientInGame(client)) return;
+
+	if (IsFakeClient(client)) return;
+
+	if (!IsPlayerAlive(client)) return;
+
+	if (GetClientTeam(client) != 2) return;
+
+	if (GetEntityFlags(client) & FL_ONGROUND == 0) return;
+	
+	if (g_hJumpRegisterTimer[client] == null && !(GetClientButtons(client) & IN_JUMP) )
+	{
+		g_bTrySuicideJump[client] = false;
+	}
+}
+
+public void L4D_OnPouncedOnSurvivor_Post(int victim, int attacker)
+{
+	g_bTrySuicideJump[victim] = false;
+}
+
+public void L4D_OnGrabWithTongue_Post(int victim, int attacker)
+{
+	g_bTrySuicideJump[victim] = false;
+}
+
+public void L4D2_OnStagger_Post(int client, int source)
+{
+	g_bTrySuicideJump[client] = false;
 }

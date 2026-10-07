@@ -1210,13 +1210,20 @@
 	"Tank Punch survivor fly away and die"
 	{
 		"#format"	"{1:s}"
-		"en"	"Tank{default}: Hasta la vista, baby {olive}{1}{default}."
-		"zho"	"Tank{default} 一拳再見全壘打 {olive}{1}{default}."
+		"en"	"{green}Tank{default}: Hasta la vista, baby {olive}{1}{default}."
+		"zho"	"{green}Tank{default} 一拳再見全壘打 {olive}{1}{default}."
 	}
 	"Survivor suicides"
 	{
-		"en"	"{lightgreen}I give up my life{default}."
-		"zho"	"{lightgreen}士可殺不可辱{default}."
+		"#format"	"{1:N}"
+		"en"	"{olive}{1}{default}: {lightgreen}I give up my life{default}."
+		"zho"	"{olive}{1}{default}: {lightgreen}士可殺不可辱{default}."
+	}
+	"Burned to death"
+	{
+		"#format"	"{1:N}"
+		"en"	"{olive}{1}{default} burned to death."
+		"zho"	"{olive}{1}{default} 被火燒死"
 	}
 	"l4dffannounce1"
 	{

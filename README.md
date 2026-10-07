@@ -337,7 +337,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
   * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
   * Commons can go through Witches without pushing them away
-  * Common infected and witch can phase through pulled or pounced survivors
+  * Common infected can phase through pulled or pounced survivors, while witches can't
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
