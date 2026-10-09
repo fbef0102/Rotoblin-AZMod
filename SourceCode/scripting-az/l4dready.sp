@@ -140,8 +140,6 @@ bool bInSecondHalfOfRound;
 
 native GetTankPercent();
 native GetWitchPercent();
-native GetSurCurrent();
-native PrintBossPercents();
 native ChoseTankPrintWhoBecome();
 native OpenSpectatorsListenMode();
 native GiveSurAllPills();
@@ -2169,7 +2167,6 @@ DrawReadyPanelList()
 #endif
 	
 	decl String:spawn[80];
-	//new SurCurrent = GetSurCurrent();
 	new iTankPercent = GetTankPercent();
 	new iWitchPercent = GetWitchPercent();
 	if (iTankPercent)
@@ -2861,11 +2858,9 @@ RoundIsLive()
 
 	UnfreezeAllPlayers();
 	readyOff();
-	CPrintToChatAll("{default}[{olive}TS{default}] {blue}%t{default}: {green}%d%%","Survivor_Current", GetSurCurrent());
 	GiveSurAllPills();
 	Keep_SI_Starting();
 	antibaiter_clear();
-	PrintBossPercents();
 	ChoseTankPrintWhoBecome();
 	CreateTimer(1.5, timerLiveMessageCallback, _, _);
 

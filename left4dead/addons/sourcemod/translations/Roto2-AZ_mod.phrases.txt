@@ -1929,23 +1929,23 @@
 	{
 		"#format"	"{1:s}"
 		"en"	"{blue}[{default}BossVote{blue}]{default} Usage: {green}{1}{olive} <tank> <witch>"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 使用方式: {green}{1}{olive} <Tank> <Witch>"
+		"zho"	"{blue}[{default}Boss改路程{blue}]{default} 使用方式: {green}{1}{olive} <Tank> <Witch>"
 	}
 	"l4d_bossvote2"
 	{
 		"#format"	"{1:s}"
 		"en"	"{blue}[{default}BossVote{blue}]{default} Example: {green}{1}{default} 70 50"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 譬如: 聊天視窗輸入{green}{1}{default} 70 50"
+		"zho"	"{blue}[{default}Boss改路程{blue}]{default} 譬如: 聊天視窗輸入{green}{1}{default} 70 50"
 	}
 	"l4d_bossvote3"
 	{
 		"en"	"{blue}[{default}BossVote{blue}]{default} Your setting will be {olive}Tank: 70%%, {default}and {olive}Witch: 50%%"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 遊戲設定將會是 {olive}Tank: 70%% {default}和 {olive}Witch: 50%%"
+		"zho"	"{blue}[{default}Boss改路程{blue}]{default} 遊戲設定將會是 {olive}Tank: 70%% {default}和 {olive}Witch: 50%%"
 	}
 	"l4d_bossvote4"
 	{
 		"en"	"{blue}[{default}BossVote{blue}]{default} Vote can only be started by a player during ready-up in the first round!"
-		"zho"	"{blue}[{default}Boss改路程插件{blue}]{default} 只能在第一回合的準備階段中的玩家發起投票"
+		"zho"	"{blue}[{default}Boss改路程{blue}]{default} 只能在第一回合的準備階段中的玩家發起投票"
 	}
 	"l4d_bossvote5"
 	{
@@ -1968,6 +1968,11 @@
 	{
 		"en"	"Boss vote passed after the round started, so it was discarded. {red}Bosses are unchanged."
 		"zho"	"投票失效, 回合已開始. {red}Boss路程沒有被修改"
+	}
+	"l4d_bossvote9"
+	{
+		"en"	"{blue}[{default}BossVote{blue}]{default} Bosses can only be forced in the first half."
+		"zho"	"{blue}[{default}Boss改路程{blue}]{default} 只能在第一回合修改Boss路程"
 	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
@@ -3115,4 +3120,17 @@
 		"en"		"{blue}%N{olive} triggered the final rescue!"
 		"zho"		"{blue}%N{olive} 觸發了救援開關!"
 	}
+	///////////////l4d_boss_percent.smx///////////////
+	"Tank_spawn_distance"
+	{
+		"#format"		"{1:d}"
+		"en"			"<{olive}Boss{default}> Tank Spawn in {green}{1}%%{default} distance"
+		"zho"			"<{olive}Boss{default}> Tank 將於 {green}{1}%%{default} 後生成"
+	}
+	"Witch_spawn_distance"
+	{
+		"#format"		"{1:d}"
+		"en"			"<{olive}Boss{default}> Witch Spawn in {green}{1}%%{default} distance"
+		"zho"			"<{olive}Boss{default}> Witch 將於 {green}{1}%%{default} 後生成"
+	}	
 }

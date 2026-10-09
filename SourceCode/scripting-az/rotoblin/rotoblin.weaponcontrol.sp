@@ -85,7 +85,6 @@ static	const			ARRAY_WEAPON_BLOCK				= 4; /* How many indexes a single weapon ta
 
 static					g_iDebugChannel					= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]			= "WeaponControl";
-static bool:InSecondHalfOfRound;
 
 // **********************************************
 //                   Forwards
@@ -131,18 +130,11 @@ public _WC_OnPluginEnabled()
 	HookEvent("round_start", _WC_RoundStart_Event, EventHookMode_PostNoCopy);
 	HookEvent("round_end", _WC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	HookPublicEvent(EVENT_ONMAPEND, _WC_OnMapEnd);
-	HookPublicEvent(EVENT_ONMAPSTART, _WC_OnMapStart);
 
 	UpdateWeaponStyle();
 	HookConVarChange(g_hWeaponStyle_Cvar, _WC_WeaponStyle_CvarChange);
 	DebugPrintToAllEx("Module is now loaded");
 }
-
-public _WC_OnMapStart()
-{
-	InSecondHalfOfRound = false;
-}
-
 /**
  * Plugin is now disabled.
  *
@@ -153,7 +145,6 @@ public _WC_OnPluginDisabled()
 	UnhookEvent("round_start", _WC_RoundStart_Event, EventHookMode_PostNoCopy);
 	UnhookEvent("round_end", _WC_RoundEnd_Event, EventHookMode_PostNoCopy);
 	UnhookPublicEvent(EVENT_ONMAPEND, _WC_OnMapEnd);
-	UnhookPublicEvent(EVENT_ONMAPSTART, _WC_OnMapStart);
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _WC_OnEntityCreated);
 
 	UnhookConVarChange(g_hWeaponStyle_Cvar, _WC_WeaponStyle_CvarChange);
@@ -211,7 +202,7 @@ public _WC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcas
 
 public Action:_WC_t_RoundStartDelay(Handle:timer)
 {
-	if(InSecondHalfOfRound && GetArraySize(g_hWeaponsArray) > 0) // If weapons array is not empty
+	if(InSecondHalfOfRound() && GetArraySize(g_hWeaponsArray) > 0) // If weapons array is not empty
 	{
 		RestoreAllTier2(); // Restore all tier 2 weapons from array
 	}
@@ -239,7 +230,6 @@ public Action:_WC_t_RoundStartDelay(Handle:timer)
  */
 public _WC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	InSecondHalfOfRound = true;
 	DebugPrintToAllEx("Round end");
 	UnhookPublicEvent(EVENT_ONENTITYCREATED, _WC_OnEntityCreated); // Unhook OnEntityCreated to avoid processing while the game "resets" all entities and capture our restoring of tier 2 weapons
 /*

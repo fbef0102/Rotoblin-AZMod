@@ -1471,8 +1471,11 @@
 	}
 	"l4d_bossvote8"
 	{
-		"en"	"Boss vote passed after the round started, so it was discarded. {red}Bosses are unchanged."
-		"zho"	"投票失效, 回合已開始. {red}Boss路程沒有被修改"
+		"chi"	"投票失效, 回合已开始. {red}Boss路程没有被修改"
+	}
+	"l4d_bossvote9"
+	{
+		"chi"	"{blue}[{default}Boss改路程{blue}]{default} 只能在第一回合修改Boss路程"
 	}
 	///////////////l4d_wind.smx//////////////
 	"Failed to add a bot"
@@ -2324,20 +2327,23 @@
 	///////////////trigger_horde_notify.smx///////////////
 	"trigger_horde_notify_Horde"
 	{
-		"en"		"{olive}%N{green} triggered a horde event!"
-		"zho"		"{olive}%N{green} 觸發了屍潮事件!"
 		"chi"		"{olive}%N{green} 触发了尸潮事件!"
 	}
 	"trigger_horde_notify_Final Rescue Start"
 	{
-		"en"		"{green}Final Rescue has started!"
-		"zho"		"{green}最後救援開始!"
 		"chi"		"{green}最后救援开始!"
 	}
 	"trigger_horde_notify_Final Rescue"
 	{
-		"en"		"{blue}%N{olive} triggered the final rescue!"
-		"zho"		"{blue}%N{olive} 觸發了救援開關!"
 		"chi"		"{blue}%N{olive} 触发了救援开关!"
 	}
+	///////////////l4d_boss_percent.smx///////////////
+	"Tank_spawn_distance"
+	{
+		"chi"			"<{olive}Boss{default}> Tank 将于 {green}{1}%%{default} 后生成"
+	}
+	"Witch_spawn_distance"
+	{
+		"chi"			"<{olive}Boss{default}> Witch 将于 {green}{1}%%{default} 后生成"
+	}	
 }

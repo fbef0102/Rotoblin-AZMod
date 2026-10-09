@@ -65,8 +65,8 @@ public Plugin myinfo =
 	name = "L4D Witch Unstuck",
 	author = "Riverside",
 	description = "Hops a startled witch past whatever she is stuck on",
-	version = "2.4.0",
-	url = ""
+	version = "2.4.1",
+	url = "https://github.com/Volence/riverside-l4d-plugins"
 };
 
 ConVar g_cvNudge, g_cvNudgeAfter, g_cvMaxNudges, g_cvMode, g_cvTime, g_cvProgress, g_cvStill, g_cvHop, g_cvGain, g_cvMinDist, g_cvMaxMoves, g_cvLog, g_cvGravity;
@@ -84,6 +84,7 @@ int g_nudges[2048];
 float g_lastPos[2048][3];
 float g_frozenFor[2048];    // seconds she has stood still while chasing
 bool g_hopping[2048];
+int g_hops;                 // how many g_hopping[] are true, so OnGameFrame can skip its scan
 bool g_stuck[2048];         // inside a logged stuck episode
 float g_stuckAt[2048];
 float g_lastReport[MAXPLAYERS + 1];
@@ -135,6 +136,7 @@ public void Ev_RoundStart(Event e, const char[] n, bool nb)
 void ResetAll()
 {
 	for (int i = 0; i < sizeof(g_ref); i++) { g_ref[i] = INVALID_ENT_REFERENCE; g_hopping[i] = false; g_stuck[i] = false; }
+	g_hops = 0;
 }
 
 public void Ev_Harasser(Event e, const char[] n, bool nb)
@@ -154,7 +156,7 @@ public void Ev_Harasser(Event e, const char[] n, bool nb)
 	g_nudges[witch] = 0;
 	g_frozenFor[witch] = 0.0;
 	GetEntPropVector(witch, Prop_Send, "m_vecOrigin", g_lastPos[witch]);
-	g_hopping[witch] = false;
+	SetHopping(witch, false);
 	g_stuck[witch] = false;
 }
 
@@ -689,25 +691,32 @@ void Launch(int witch, const float from[3], const float to[3], float rise)
 	g_hopTo[witch] = to;
 	g_hopFlight[witch] = flight;
 	g_hopStart[witch] = GetGameTime();
-	g_hopping[witch] = true;
+	SetHopping(witch, true);
+}
+
+void SetHopping(int witch, bool on)
+{
+	if (g_hopping[witch] != on) g_hops += on ? 1 : -1;
+	g_hopping[witch] = on;
 }
 
 // The engine's own movement overrides any velocity a plugin gives her, so the
 // arc is flown by hand: one small move per tick, which clients interpolate.
 public void OnGameFrame()
 {
+	if (g_hops <= 0) return;
 	float now = GetGameTime();
 	float g = g_cvGravity.FloatValue;
 	float zero[3];
 	for (int w = MaxClients + 1; w < sizeof(g_ref); w++)
 	{
 		if (!g_hopping[w]) continue;
-		if (g_ref[w] == INVALID_ENT_REFERENCE || EntRefToEntIndex(g_ref[w]) != w) { g_hopping[w] = false; continue; }
+		if (g_ref[w] == INVALID_ENT_REFERENCE || EntRefToEntIndex(g_ref[w]) != w) { SetHopping(w, false); continue; }
 		float t = now - g_hopStart[w];
 		if (t >= g_hopFlight[w])
 		{
 			TeleportEntity(w, g_hopTo[w], NULL_VECTOR, zero);
-			g_hopping[w] = false;
+			SetHopping(w, false);
 			g_bestAt[w] = now;
 			g_anchor[w] = g_hopTo[w];
 			continue;

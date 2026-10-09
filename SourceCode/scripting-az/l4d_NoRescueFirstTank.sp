@@ -202,12 +202,6 @@ stock int IsTankInGame(int exclude = 0)
 	return 0;
 }
 
-stock bool InSecondHalfOfRound()
-{
-	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
-}
-
-
 stock void ClearVec()
 {
 	for (new index; index < 3; index++){

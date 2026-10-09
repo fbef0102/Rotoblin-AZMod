@@ -7,15 +7,14 @@
 #define MAX(%0,%1) (((%0) > (%1)) ? (%0) : (%1))
 
 new Handle:g_hVsBossBuffer;
-new SurCurrent = 0;
-native Is_Ready_Plugin_On();
+int g_iSurCurrent = 0;
 
 public Plugin:myinfo =
 {
     name = "L4D1 Survivor Progress",
     author = "CanadaRox, Visor, L4D1 port by harry",
     description = "Print survivor progress in flow percents ",
-    version = "2.3",
+    version = "2.3h-2026/10/10",
     url = "https://github.com/Attano/ProMod"
 };
 
@@ -30,10 +29,12 @@ public Native_SurCurrentFloat(Handle:plugin, numParams) {
 	return _:GetBossProximity();
 }
 public Native_SurCurrent(Handle:plugin, numParams) {
-	SurCurrent = RoundToNearest(GetBossProximity() * 100.0);
-	return SurCurrent;
+	g_iSurCurrent = RoundToNearest(GetBossProximity() * 100.0);
+	return g_iSurCurrent;
 }
 
+bool 
+	g_bRoundStarted;
 
 public OnPluginStart()
 {
@@ -43,30 +44,46 @@ public OnPluginStart()
 	RegConsoleCmd("sm_cur", CurrentCmd);
 	RegConsoleCmd("sm_current", CurrentCmd);
 	HookEvent("round_start", RoundStartEvent, EventHookMode_PostNoCopy);
-	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 }
 public RoundStartEvent(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	g_bRoundStarted = false;
 	CreateTimer(5.0, SaveSurCurrent);
 }
 
 public Action:SaveSurCurrent(Handle:timer)
 {
-	SurCurrent = RoundToNearest(GetBossProximity() * 100.0);
-}
-
-public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
-{
-	if(!Is_Ready_Plugin_On())
-		CPrintToChatAll("{default}[{olive}TS{default}] %t","l4d_current_survivor_progress", SurCurrent);
+	g_iSurCurrent = RoundToNearest(GetBossProximity() * 100.0);
 }
 
 public Action:CurrentCmd(client, args)
 {
-	SurCurrent = RoundToNearest(GetBossProximity() * 100.0);
-	SurCurrent = SurCurrent>=100 ? 100 : SurCurrent;
-	CPrintToChat(client, "{default}[{olive}TS{default}] %T","l4d_current_survivor_progress",client, SurCurrent);
+	g_iSurCurrent = RoundToNearest(GetBossProximity() * 100.0);
+	g_iSurCurrent = g_iSurCurrent>=100 ? 100 : g_iSurCurrent;
 	
+	if (!client) // riverside: server console / rcon
+	{
+		ReplyToCommand(client, "[TS] Current: %d%%", g_iSurCurrent);
+		return Plugin_Handled;
+	}
+
+	CPrintToChat(client, "{default}[{olive}TS{default}] %T","l4d_current_survivor_progress",client, g_iSurCurrent);
+}
+
+public void OnRoundIsLive() 
+{
+	if(g_bRoundStarted) return;
+	g_bRoundStarted = true;
+
+	CPrintToChatAll("{default}[{olive}TS{default}] {blue}%t{default}: {green}%d%%","Survivor_Current", g_iSurCurrent);
+}
+
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
+{
+	if(g_bRoundStarted) return;
+	g_bRoundStarted = true;
+
+	CPrintToChatAll("{default}[{olive}TS{default}] {blue}%t{default}: {green}%d%%","Survivor_Current", g_iSurCurrent);
 }
 
 stock Float:GetBossProximity()
@@ -74,7 +91,6 @@ stock Float:GetBossProximity()
 	new Float:proximity = GetMaxSurvivorCompletion() + (GetConVarFloat(g_hVsBossBuffer) / L4D2Direct_GetMapMaxFlowDistance());
 	return proximity;
 }
-
 
 float GetMaxSurvivorCompletion()
 {

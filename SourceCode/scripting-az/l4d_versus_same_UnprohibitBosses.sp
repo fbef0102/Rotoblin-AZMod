@@ -10,7 +10,16 @@
 #include <left4dhooks>
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.7"
+#define PLUGIN_VERSION "1.8-2026/10/10"
+
+public Plugin myinfo = 
+{
+	name = "l4d_versus_same_UnprohibitBosses",
+	author = "Harry Potter",
+	description = "Force Enable bosses spawning on all maps, and same spawn positions for both team",
+	version = PLUGIN_VERSION,
+	url = "http://steamcommunity.com/profiles/76561198026784913"
+}
 
 #define INTRO		0
 #define REGULAR	1
@@ -26,10 +35,13 @@ static 	Float:fWitchData_agnel[3],Float:fWitchData_origin[3];
 static	bool:Tank_firstround_spawn,bool:Witch_firstround_spawn;
 float g_fWitchFlow, g_fTankFlow;
 int g_iRoundStart, g_iPlayerSpawn;
-ConVar WITCHPARTY, sv_cheats;
-ConVar g_hCvarWitchAvoidTank, g_hCvarBossDisable;
 ConVar survivor_limit;
 int survivor_limit_value;
+ConVar WITCHPARTY, sv_cheats;
+ConVar g_hCvarWitchAvoidTank, g_hCvarBossDisable;
+float g_fCvarWitchAvoidTank;
+bool g_bCvarBossDisable;
+
 bool g_bFinalStarted;
 
 static KeyValues g_hMIData = null;
@@ -59,20 +71,13 @@ public Native_SaveWitchPercent(Handle:plugin, numParams) {
 	g_fWitchFlow = num1;
 }
 
-public Plugin:myinfo = 
-{
-	name = "l4d_versus_same_UnprohibitBosses",
-	author = "Harry Potter",
-	description = "Force Enable bosses spawning on all maps, and same spawn positions for both team",
-	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/profiles/76561198026784913"
-}
-
 public void OnPluginStart()
 {
+	LoadTranslations("Roto2-AZ_mod.phrases");
+
 	survivor_limit = FindConVar("survivor_limit");
 	survivor_limit_value = survivor_limit.IntValue;
-	survivor_limit.AddChangeHook(ConVarChanged);
+	survivor_limit.AddChangeHook(ConVarChanged_OffiicalCvars);
 
 	//強制每一關生出tank與witch
 	g_hCvarVsBossChance[INTRO][TANK] = FindConVar("versus_tank_chance_intro");
@@ -106,9 +111,13 @@ public void OnPluginStart()
 	HookEvent("round_start", 	Event_RoundStart, 	EventHookMode_PostNoCopy);
 	HookEvent("round_end",		Event_RoundEnd,		EventHookMode_PostNoCopy);
 	HookEvent("witch_spawn", TS_ev_WitchSpawn);
+	
+	g_hCvarWitchAvoidTank 		= CreateConVar("l4d_boss_avoid_tank_spawn", 		"0", 	"Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
+	g_hCvarBossDisable 			= CreateConVar("l4d_boss_1_survivor_disable", 		"1", 	"If 1, Disable Tank/Witch Spawn when survivor limit is 1.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
-	g_hCvarWitchAvoidTank = CreateConVar("l4d_boss_avoid_tank_spawn", "0", "Minimum flow amount witches should avoid tank spawns by, by half the value given on either side of the tank spawn (Def: 20)", FCVAR_NOTIFY, true, 0.0, true, 100.0);
-	g_hCvarBossDisable = CreateConVar("sm_1_survivor_boss_disable", "1", "If 1, Disable Tank/Witch Spawn when survivor limit is 1.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	GetCvars();
+	g_hCvarWitchAvoidTank.AddChangeHook(ConVarChanged_Cvars);
+	g_hCvarBossDisable.AddChangeHook(ConVarChanged_Cvars);
 
 	hValidTankFlows = new ArrayList(2);
 	hValidWitchFlows = new ArrayList(2);
@@ -116,9 +125,20 @@ public void OnPluginStart()
 	MI_KV_Load();
 }
 
-public void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
+void ConVarChanged_OffiicalCvars(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	survivor_limit_value = survivor_limit.IntValue;
+}
+
+void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
+{
+	GetCvars();
+}
+
+void GetCvars()
+{
+	g_fCvarWitchAvoidTank = g_hCvarWitchAvoidTank.FloatValue;
+	g_bCvarBossDisable = g_hCvarBossDisable.BoolValue;
 }
 
 public void OnPluginEnd()
@@ -229,7 +249,7 @@ public Action:COLD_DOWN(Handle:timer)
 		iCvarMinFlow = L4D_GetMapValueInt("versus_boss_flow_min", iCvarMinFlow);
 		iCvarMaxFlow = L4D_GetMapValueInt("versus_boss_flow_max", iCvarMaxFlow);
 
-		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
+		if( !(g_bCvarBossDisable && survivor_limit_value == 1) )
 		{
 			if (g_bTankMapOff == false)
 			{
@@ -291,7 +311,7 @@ public Action:COLD_DOWN(Handle:timer)
 			L4D2Direct_SetVSTankToSpawnThisRound(1, false);	
 		}
 
-		if( !(g_hCvarBossDisable.BoolValue && survivor_limit_value == 1) )
+		if( !(g_bCvarBossDisable && survivor_limit_value == 1) )
 		{
 			if (g_bWitchMapOff == false && !IsWitchProhibit())
 			{
@@ -488,11 +508,6 @@ static ClearVec()
 	}
 }
 
-bool:InSecondHalfOfRound()
-{
-	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
-}
-
 void ResetPlugin()
 {
 	g_iRoundStart = 0;
@@ -599,7 +614,7 @@ int GetRandomIntervalNum(ArrayList aList) {
 }
 
 bool GetTankAvoidInterval(int interval[2]) {
-	if (g_hCvarWitchAvoidTank.FloatValue == 0.0) {
+	if (g_fCvarWitchAvoidTank == 0.0) {
 		return false;
 	}
 	
@@ -608,8 +623,8 @@ bool GetTankAvoidInterval(int interval[2]) {
 		return false;
 	}
 	
-	interval[0] = RoundToFloor((flow * 100) - (g_hCvarWitchAvoidTank.FloatValue / 2));
-	interval[1] = RoundToCeil((flow * 100) + (g_hCvarWitchAvoidTank.FloatValue / 2));
+	interval[0] = RoundToFloor((flow * 100) - (g_fCvarWitchAvoidTank / 2));
+	interval[1] = RoundToCeil((flow * 100) + (g_fCvarWitchAvoidTank / 2));
 	
 	return true;
 }

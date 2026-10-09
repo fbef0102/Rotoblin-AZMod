@@ -148,6 +148,13 @@ public Action CMD_ForceBoss(int client, int args)
 			return Plugin_Handled;
 		}*/
 
+		// riverside: RewriteBossFlows does nothing in the second half, so do not announce a change that will not happen
+		if (InSecondHalfOfRound())
+		{
+			CPrintToChat(client, "%T","l4d_bossvote9",client);
+			return Plugin_Handled;
+		}
+
 		char SteamId[35];
 		GetClientAuthId(client, AuthId_Steam2,SteamId, sizeof(SteamId));
 		CPrintToChatAll("[{olive}TS{default}] %t", "l4d_bossvote7", client, tank, witch);

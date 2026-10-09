@@ -18,8 +18,8 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#include <sourcemod>
 #include <multicolors>
+#include <sourcemod>
 #include <left4dhooks>
 
 #define CALL_OPCODE 0xE8
@@ -55,7 +55,7 @@ public Plugin myinfo =
 	name		= "Checkpoint Rage Control",
 	author		= "ProdigySim, Visor, l4d1 by Harry",
 	description = "Enable tank to lose rage while survivors are in saferoom",
-	version		= "0.3.1",
+	version		= "0.3.2h-2026/10/10",
 	url			= "https://github.com/Attano/L4D2-Competitive-Framework"
 
 }
@@ -64,8 +64,8 @@ public void OnPluginStart()
 {
 	LoadTranslations("Roto2-AZ_mod.phrases");
 	
-	g_cvarAllMaps = CreateConVar("crc_global", 	"1", "Remove saferoom frustration preservation mechanic on all maps by default");
-	g_cvarDebug	  = CreateConVar("crc_debug", 	"0", "Whether or not to debug. 0:disable, 1:enable, 2:onlychat, 3:onlyconsole", FCVAR_NONE, true, 0.0, true, 3.0);
+	g_cvarAllMaps = CreateConVar("crc_global", "1", "Remove saferoom frustration preservation mechanic on all maps by default");
+	g_cvarDebug	  = CreateConVar("crc_debug", "0", "Whether or not to debug. 0:disable, 1:enable, 2:onlychat, 3:onlyconsole", FCVAR_NONE, true, 0.0, true, 3.0);
 
 	LoadGameData();
 	RegServerCmd("saferoom_frustration_tickdown", SetSaferoomFrustrationTickdown);
@@ -103,16 +103,25 @@ public void OnMapStart()
 		Unpatch();
 }
 
+public void OnMapEnd()
+{
+	if (!g_bIsHooked)
+		return;
+
+	UnHookAll();
+}
+
 public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float vecAng[3])
 {
 	if (g_bIsHooked)
 		return;
 
-	HookEvent("player_entered_start_area", Event_EnteredStartArea);
+	HookEvent("player_entered_start_area",		Event_EnteredStartArea);
+	HookEvent("player_entered_checkpoint",		Event_EnteredCheckpoint);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
 
-	DebugPrint("{blue}Prepared hooks{default} from L4D_OnSpawnTank_Post [player_entered_start_area, player_death, player_team]");
+	DebugPrint("{blue}Prepared hooks{default} from L4D_OnSpawnTank_Post");
 	g_bIsHooked = true;
 }
 
@@ -149,6 +158,34 @@ void Event_EnteredStartArea(Event hEvent, const char[] sName, bool dontBroadcast
 	UnHookAll();
 }
 
+void Event_EnteredCheckpoint(Event hEvent, const char[] name, bool dontBroadcast)
+{
+	if (!g_bIsHooked)
+		return;
+		
+	int client = GetClientOfUserId(hEvent.GetInt("userid"));
+	if (!IsValidClientIndex(client) || !IsClientInGame(client) || IsFakeClient(client) || L4D_GetClientTeam(client) != L4DTeam_Survivor)
+		return;
+
+	int door = hEvent.GetInt("door");
+
+	if( door != L4D_GetCheckpointFirst() ) return;
+
+	if (g_bPlayerJoin[client])
+	{
+		DebugPrint("{red}Client{default} (%N) is marked as joining, skip {red}Unhook{default}", client);
+		return;
+	}
+
+	if (g_cvarAllMaps.BoolValue)
+		CPrintToChatAll("%t","Survivors are in saferoom, Tank still loses rage!!!");
+	//else
+	//	CPrintToChatAll("KeepFrustration");
+
+	DebugPrint("{red}Unhook{default} from Event_EnteredCheckpoint (%N)", client);
+	UnHookAll();
+}
+
 void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(hEvent.GetInt("userid"));
@@ -159,7 +196,7 @@ void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 	UnHookAll();
 }
 
-public void Event_PlayerTeam(Event hEvent, const char[] sEventName, bool bDontBroadcast)
+void Event_PlayerTeam(Event hEvent, const char[] sEventName, bool bDontBroadcast)
 {
 	if (!g_bIsHooked)
 		return;
@@ -213,8 +250,11 @@ void LoadGameData()
  */
 void UnHookAll()
 {
-	UnhookEvent("player_entered_start_area", Event_EnteredStartArea);
+	UnhookEvent("player_entered_start_area",		Event_EnteredStartArea);
+	UnhookEvent("player_entered_checkpoint",		Event_EnteredCheckpoint);
 	UnhookEvent("player_death", Event_PlayerDeath);
+	UnhookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
+	
 	g_bIsHooked = false;
 }
 
