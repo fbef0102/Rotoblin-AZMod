@@ -33,40 +33,29 @@
 //       Private
 // --------------------
 
-static	const	String:	PAUSABLE_CVAR[]				= "sv_pausable";
-
-//static	const	String:	PLUGIN_PAUSE_COMMAND[]		= "fpause";
-//static	const	String:	PLUGIN_UNPAUSE_COMMAND[]= "funpause";
-static	const	String:	PLUGIN_FORCEPAUSE_COMMAND[]	= "forcepause";
+static	const	String:	PLUGIN_FORCEPAUSE_COMMAND[]		= "forcepause";
 static	const	String:	PLUGIN_FORCEUNPAUSE_COMMAND[]	= "forceunpause";
-static	const	String:	PLUGIN_ready_COMMAND[]		= "!ready";
-static	const	String:	PAUSE_COMMAND[]				= "!pause";
-static	const	String:	SETPAUSE_COMMAND[]			= "setpause";
-static	const	String:	UNPAUSE_COMMAND[]			= "unpause";
-
-//static	const	Float:	RESET_PAUSE_REQUESTS_TIME	= 30.0;
+static	const	String:	PLUGIN_ready_COMMAND[]			= "!ready";
 
 static			Handle:	g_hPauseEnable_Cvar			= INVALID_HANDLE;
 static			bool:	g_bIsPauseEnable			= true;
 
-static			Handle: g_hPausable					= INVALID_HANDLE;
+ConVar sv_pausable, sv_noclipduringpause;
 static			bool:	g_bIsPaused					= false;
 static			bool:	g_bIsUnpausing				= false;
 static			bool:	g_bWasForced				= false;
-static			bool:	g_bIsPausable				= false;
-static			bool:	g_bIsUnpausable				= false;
 new Handle:pauseDelayCvar;
 new pauseDelay;
 new Handle:deferredPauseTimer;
 bool hiddenPanel[MAXPLAYERS+1];
 char g_sAdminName[64];
 
-enum L4D2Team
+enum 
 {
-	L4D2Team_None = 0,
-	L4D2Team_Spectator,
-	L4D2Team_Survivor,
-	L4D2Team_Infected
+	L4D1Team_None = 0,
+	L4D1Team_Spectator,
+	L4D1Team_Survivor,
+	L4D1Team_Infected
 }
 
 new Handle:menuPanel;
@@ -75,15 +64,11 @@ new bool:teamReady[4];
 native IsInReady();
 new TimeCount;
 
-// **********************************************
-//                   Forwards
-// **********************************************
 
-/**
- * Plugin is loading.
- *
- * @noreturn
- */
+bool 
+	RoundEnd,
+	listened;
+
 public _Pause_OnPluginStart()
 {
 	HookPublicEvent(EVENT_ONPLUGINENABLE, _P_OnPluginEnabled);
@@ -106,24 +91,18 @@ public _P_OnPluginEnabled()
 	HookPublicEvent(EVENT_ONMAPEND, _P_OnMapEnd);
 	HookPublicEvent(EVENT_ONCLIENTDISCONNECT_POST, _P_OnClientDisconnect);
 
-	g_hPausable = FindConVar(PAUSABLE_CVAR);
+	sv_pausable = FindConVar("sv_pausable");
+	sv_noclipduringpause = FindConVar("sv_noclipduringpause");
 	
-	g_bIsUnpausable = false;
-	g_bIsPausable = false;
 	g_bIsPaused = false;
 	g_bIsUnpausing = false;
 	g_bWasForced = false;
-
-	SetConVarBool(g_hPausable, false); // Disable pausing
 
 	g_bIsPauseEnable = GetConVarBool(g_hPauseEnable_Cvar);
 	HookConVarChange(g_hPauseEnable_Cvar, _P_PauseEnable_CvarChange);
 
 	AddCommandListenerEx(_P_RotoblinForcePause_Command, PLUGIN_FORCEPAUSE_COMMAND);
 	AddCommandListenerEx(_P_RotoblinForceUnPause_Command, PLUGIN_FORCEUNPAUSE_COMMAND);
-	AddCommandListener(_P_RotoblinPause_Command, PAUSE_COMMAND);
-	AddCommandListener(_P_Setpause_Command, SETPAUSE_COMMAND);
-	AddCommandListener(_P_RotoblinUnpause_Command, UNPAUSE_COMMAND);
 	//AddCommandListener(_P_Say_Command, "say");
 	//AddCommandListener(_P_SayTeam_Command, "say_team");
 	
@@ -143,7 +122,6 @@ public _P_OnPluginEnabled()
 	HookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 
 	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
-	HookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
 }
 
 /**
@@ -155,19 +133,12 @@ public _P_OnPluginDisabled()
 {
 	RemoveCommandListenerEx(_P_RotoblinForcePause_Command, PLUGIN_FORCEPAUSE_COMMAND);
 	RemoveCommandListenerEx(_P_RotoblinForceUnPause_Command, PLUGIN_FORCEUNPAUSE_COMMAND);
-	RemoveCommandListener(_P_RotoblinPause_Command, PAUSE_COMMAND);
-	RemoveCommandListener(_P_Setpause_Command, SETPAUSE_COMMAND);
-	RemoveCommandListener(_P_RotoblinUnpause_Command, UNPAUSE_COMMAND);
 	//RemoveCommandListener(_P_Say_Command, "say");
 	//RemoveCommandListener(_P_SayTeam_Command, "say_team");
 	
 	g_bIsPaused = false;
 	g_bIsUnpausing = false;
 	g_bWasForced = false;
-	g_bIsPausable = false;
-	g_bIsUnpausable = false;
-
-	g_hPausable = INVALID_HANDLE;
 
 	UnhookConVarChange(g_hPauseEnable_Cvar, _P_PauseEnable_CvarChange);
 
@@ -178,7 +149,6 @@ public _P_OnPluginDisabled()
 	UnhookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 
 	UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
-	UnhookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
 }
 
 public void _P_OnClientPutInServer(int client)
@@ -198,18 +168,17 @@ public _P_OnClientDisconnect(client)
 	hiddenPanel[client] = false;
 }
 
-public _PC_RoundStart_Event(Handle:event, const String:name[], bool:dontBroadcast)
+void _PC_RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 {
-	TimeCount = 0;
+    RoundEnd = false;
+    TimeCount = 0;
 }
 
-public _PC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
+void _PC_RoundEnd_Event(Event event, const char[] name, bool dontBroadcast)
 {
-	if (deferredPauseTimer != INVALID_HANDLE)
-	{
-		CloseHandle(deferredPauseTimer);
-		deferredPauseTimer = INVALID_HANDLE;
-	}
+    delete deferredPauseTimer;
+    RoundEnd = true;
+    Unpause(false);
 }
 
 /**
@@ -219,11 +188,13 @@ public _PC_RoundEnd_Event(Handle:event, const String:name[], bool:dontBroadcast)
  */
 public _P_OnMapEnd()
 {
+	delete deferredPauseTimer;
+	RoundEnd = true;
+	Unpause(false);
+
 	g_bIsPaused = false;
 	g_bIsUnpausing = false;
 	g_bWasForced = false;
-	g_bIsPausable = false;
-	g_bIsUnpausable = false;
 }
 
 /**
@@ -239,153 +210,6 @@ public _P_PauseEnable_CvarChange(Handle:convar, const String:oldValue[], const S
 	g_bIsPauseEnable = GetConVarBool(g_hPauseEnable_Cvar);
 }
 
-/**
- * On client use say command.
- *
- * @param client		Client id that performed the command.
- * @param command		The command performed.
- * @param args			Number of arguments.
- * @return				Plugin_Handled to stop command from being performed, 
- *						Plugin_Continue to allow the command to pass.
- */
-/*public Action _P_Say_Command(int client, char[] command, int args)
-{
-	if(client == SERVER_INDEX) 
-	{
-		return Plugin_Handled;
-	}
-
-	if (!g_bIsPaused) return Plugin_Continue;
-
-	decl String:buffer[128];
-	GetCmdArg(1, buffer, sizeof(buffer));
-	if (IsSayCommandPrivate(buffer)) return Plugin_Continue; // If its a private chat trigger, return continue
-
-	decl String:sayWord[MAX_NAME_LENGTH];
-	GetCmdArg(1, sayWord, sizeof(sayWord));
-	
-	if(StrEqual(sayWord, "!R", true))
-	{
-		FakeClientCommand(client, "say /r");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/R", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "!Ready", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/Ready", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "!NR", true))
-	{
-		FakeClientCommand(client, "say /unready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/NR", true))
-	{
-		FakeClientCommand(client, "say /unready");
-		return Plugin_Handled;
-	}
-
-	if(BaseComm_IsClientGagged(client)) return Plugin_Continue;
-	
-	new team = GetClientTeam(client);
-	if(team == 1)
-		CPrintToChatAll("(Spec) {lightgreen}%N{default} : %s", client, buffer);
-	else if(team == 2)
-		CPrintToChatAll("(Sur) {lightgreen}%N{default} : %s", client, buffer);
-	else if(team == 3)
-		CPrintToChatAll("(Inf) {lightgreen}%N{default} : %s", client, buffer);
-		
-	return Plugin_Handled;
-}*/
-
-/**
- * On client use say team command
- *
- * @param client		Client id that performed the command.
- * @param command		The command performed.
- * @param args			Number of arguments.
- * @return				Plugin_Handled to stop command from being performed, 
- *						Plugin_Continue to allow the command to pass.
- */
-/*public Action _P_SayTeam_Command(int client, char[] command, int args)
-{
-	if(client == SERVER_INDEX) 
-	{
-		return Plugin_Handled;
-	}
-
-	if (!g_bIsPaused) return Plugin_Continue;
-
-	decl String:buffer[128];
-	GetCmdArg(1, buffer, sizeof(buffer));
-	if (IsSayCommandPrivate(buffer)) return Plugin_Continue; // If its a private chat trigger, return continue
-
-
-	new teamIndex = GetClientTeam(client);
-	decl String:teamName[16];
-	GetTeamNameEx(teamIndex, false, teamName, sizeof(teamName));
-
-	
-	decl String:sayWord[MAX_NAME_LENGTH];
-	GetCmdArg(1, sayWord, sizeof(sayWord));
-	
-	if(StrEqual(sayWord, "!R", true))
-	{
-		FakeClientCommand(client, "say /r");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/R", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "!Ready", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/Ready", true))
-	{
-		FakeClientCommand(client, "say /ready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "!NR", true))
-	{
-		FakeClientCommand(client, "say /unready");
-		return Plugin_Handled;
-	}
-	else if(StrEqual(sayWord, "/NR", true))
-	{
-		FakeClientCommand(client, "say /unready");
-		return Plugin_Handled;
-	}
-	
-	if(BaseComm_IsClientGagged(client)) return Plugin_Continue;
-
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) != teamIndex) continue;
-		if(teamIndex == 1)
-			CPrintToChat(i, "{default}(%s) {default}%N{default} : %s", teamName, client, buffer);
-		else if(teamIndex == 2)
-			CPrintToChat(i, "{default}(%s) {blue}%N{default} : %s", teamName, client, buffer);
-		else if(teamIndex == 3)
-			CPrintToChat(i, "{default}(%s) {red}%N{default} : %s", teamName, client, buffer);
-	}
-		
-	return Plugin_Handled;
-
-}*/
 
 void Event_PlayerSay(Event hEvent, const char[] sEventName, bool bDontBroadcast)
 {
@@ -413,6 +237,9 @@ public Action:Pause_Cmd(client, args)
 		return Plugin_Handled;
 	}
 
+	if (RoundEnd)
+		return Plugin_Handled;
+
 	if(!g_bIsPauseEnable)
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin1",client);
@@ -424,6 +251,7 @@ public Action:Pause_Cmd(client, args)
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin2",client);
 		return Plugin_Handled;
 	}
+
 	if(g_bIsUnpausing) 
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin3",client);
@@ -575,26 +403,9 @@ public Action:Unready_Cmd(client, args)
 	return Plugin_Handled;
 }
 
-public Action:_P_RotoblinPause_Command(client, const String:command[], args)
+Action Unpause_Callback(int client, char[] command, int argc)
 {
-	return Plugin_Handled;
-}
-
-public Action:_P_Setpause_Command(client, const String:command[], args)
-{
-	if (!g_bIsPausable) return Plugin_Handled;
-
-	g_bIsPausable = false;
-	return Plugin_Continue;
-}
-
-public Action:_P_RotoblinUnpause_Command(client, const String:command[], args)
-{
-	if (!g_bIsUnpausable) return Plugin_Handled;
-	
-	g_bIsUnpausable = false;
-	
-	return Plugin_Continue;
+	return (g_bIsPaused) ? Plugin_Handled : Plugin_Continue;
 }
 
 /**
@@ -616,6 +427,7 @@ public Action:_P_RotoblinForcePause_Command(client, const String:command[], args
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin13", client);
 		return Plugin_Handled;
 	}
+
 	else if (!g_bIsPaused) // Is not paused
 	{
 		g_bWasForced = true; // Pause was forced so only allow admins to unpause
@@ -629,6 +441,7 @@ public Action:_P_RotoblinForcePause_Command(client, const String:command[], args
 public Action:_P_RotoblinForceUnPause_Command(client, const String:command[], args)
 {
 	if (client == SERVER_INDEX || !g_bIsPauseEnable) return Plugin_Handled;
+
 	new flags = GetUserFlagBits(client);
 	if (!(flags & ADMFLAG_ROOT || flags & ADMFLAG_GENERIC))
 	{
@@ -684,13 +497,6 @@ public Action:_P_Unpause_Timer(Handle:timer, any:client)
 //                 Private API
 // **********************************************
 
-/**
- * Pauses the game.
- *
- * @param client		Client that will be selected to pause the game, if not provided
- *							a random client will be used.
- * @noreturn
- */
 static void Pause()
 {
 	g_bIsPaused = true;
@@ -701,38 +507,55 @@ static void Pause()
 		teamReady[team] = false;
 	}
 	
-	g_bIsPausable = true; // Allow the next setpause command to go through
-	
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client))
-		{
-			SetConVarBool(g_hPausable, true);
-			FakeClientCommand(client, SETPAUSE_COMMAND);
-			SetConVarBool(g_hPausable, false);
-			break;
-		}
-	}
+	ToggleCommandListeners(true);
 
-	//Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
-	for (new client = 1; client <= MaxClients; client++)
+	CreateTimer(1.0, MenuRefresh_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+
+	bool pauseProcessed = false;
+	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (!IsClientInGame(client) || IsFakeClient(client)) continue;
 
+		hiddenPanel[client] = false;
+
+		int team = GetClientTeam(client);
+		
+		if (team == L4D1Team_Infected && IsPlayerGhost(client))
+		{
+			SetEntProp(client, Prop_Send, "m_hasVisibleThreats", 1);
+			int buttons = GetClientButtons(client);
+			if (buttons & IN_ATTACK)
+			{
+				buttons &= ~IN_ATTACK;
+				SetClientButtons(client, buttons);
+				CPrintToChat(client, "%T", "PausePreventSpawn", client);
+			}
+		}
+
 		SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
 
-		hiddenPanel[client] = false;
+		if (!pauseProcessed)
+		{
+			sv_pausable.BoolValue = true;
+			FakeClientCommand(client, "pause");
+			sv_pausable.BoolValue = false;
+			pauseProcessed = true;
+		}
+
+		if (team == L4D1Team_Spectator)
+		{
+			sv_noclipduringpause.ReplicateToClient(client, "1");
+		}
 		
-		if(GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client) && !IsplayerHangingFromLedge(client) && IsPlayerAttackedBySmoker(client))
+		//Freeze player who is pulled by smoker when game pauses. (Fixed player teleport when game unpauses)
+		if(GetClientTeam(client) == L4D1Team_Survivor && IsPlayerAlive(client) && !IsplayerHangingFromLedge(client) && IsPlayerAttackedBySmoker(client))
 		{
 			ToggleFreezePlayer(client, true);
 		}
 	}
-	
-	CreateTimer(1.0, MenuRefresh_Timer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public Action:MenuRefresh_Timer(Handle:timer)
+static Action MenuRefresh_Timer(Handle timer)
 {
 	if (g_bIsPaused)
 	{
@@ -744,44 +567,47 @@ public Action:MenuRefresh_Timer(Handle:timer)
 	return Plugin_Stop;
 }
 
-/**
- * Unpauses the game.
- *
- * @param client		Client that will be selected to unpause the game, if not provided
- *							a random client will be used.
- * @noreturn
- */
-static void Unpause()
+static void Unpause(bool real = true)
 {
-	g_bIsUnpausable = true; // Allow the next unpause command to go through
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client))
-		{
-			SetConVarBool(g_hPausable, true);
-			FakeClientCommand(client, "unpause");
-			SetConVarBool(g_hPausable, false);
-			break;
-		}
-	}
-
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client)
-			&& GetEntityMoveType(client) == MOVETYPE_NONE )
-		{
-			SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
-			
-			ToggleFreezePlayer(client, false);
-		}
-	}
-	
-	g_bIsUnpausing = false;
 	g_bIsPaused = false;
+	g_bIsUnpausing = false;
 	g_bWasForced = false;
+
+	ToggleCommandListeners(false);
+
+	if (real)
+	{
+		bool unpauseProcessed = false;
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (!IsClientInGame(client) || IsFakeClient(client)) continue;
+		
+			SetEntPropFloat(client, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
+
+			if(!unpauseProcessed)
+			{
+				sv_pausable.BoolValue = true;
+				FakeClientCommand(client, "unpause");
+				sv_pausable.BoolValue = false;
+				unpauseProcessed = true;
+			}
+			
+			int team = GetClientTeam(client);
+			if (team == L4D1Team_Spectator)
+			{
+				sv_noclipduringpause.ReplicateToClient(client, "0");
+			}
+
+			if (team == L4D1Team_Survivor && IsPlayerAlive(client)
+				&& GetEntityMoveType(client) == MOVETYPE_NONE )
+			{
+				ToggleFreezePlayer(client, false);
+			}
+		}
+	}
 }
 
-UpdatePanel()
+static void UpdatePanel()
 {
 	if (menuPanel != INVALID_HANDLE)
 	{
@@ -816,13 +642,13 @@ UpdatePanel()
 		Format(Notice, 64, "%s%d:%s%d", (TimeCount/60 < 10) ? "0" : "",TimeCount/60, (TimeCount%60 < 10) ? "0" : "", TimeCount%60);
 		DrawPanelText(menuPanel, Notice);
 		
-		DrawPanelText(menuPanel, GetTeamHumanCount(L4D2Team_Survivor) ? 
-		(teamReady[L4D2Team_Survivor] ? 
+		DrawPanelText(menuPanel, GetTeamHumanCount(L4D1Team_Survivor) ? 
+		(teamReady[L4D1Team_Survivor] ? 
 		"->1. ★Survivors" : "->1. ☆Survivors") 
 		: "->1. Survivors [No One]");
 		
-		DrawPanelText(menuPanel, GetTeamHumanCount(L4D2Team_Infected) ? 
-		(teamReady[L4D2Team_Infected] ? 
+		DrawPanelText(menuPanel, GetTeamHumanCount(L4D1Team_Infected) ? 
+		(teamReady[L4D1Team_Infected] ? 
 		"->2. ★Infected" : "->2. ☆Infected") : 
 		"->2. Infected [No One]");
 	}
@@ -849,26 +675,26 @@ public DummyHandler(Handle:menu, MenuAction:action, param1, param2) { }
 
 bool:CheckFullReady()//雙方隊伍都ready 或是 發生有一邊隊伍根本沒人的情況下 
 {
-	return (teamReady[L4D2Team_Survivor] || GetTeamHumanCount(L4D2Team_Survivor) == 0)
-		&& (teamReady[L4D2Team_Infected] || GetTeamHumanCount(L4D2Team_Infected) == 0);
+	return (teamReady[L4D1Team_Survivor] || GetTeamHumanCount(L4D1Team_Survivor) == 0)
+		&& (teamReady[L4D1Team_Infected] || GetTeamHumanCount(L4D1Team_Infected) == 0);
 }
 
-stock GetTeamHumanCount(L4D2Team:team)
+static int GetTeamHumanCount(int team)
 {
-	new humans = 0;
+    int humans = 0;
 	
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client) && !IsFakeClient(client) && L4D2Team:GetClientTeam(client) == team)
-		{
-			humans++;
-		}
-	}
+    for (int client = 1; client <= MaxClients; client++)
+    {
+        if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == team)
+        {
+            humans++;
+        }
+    }
 	
-	return humans;
+    return humans;
 }
 
-stock IsPlayer(client)
+static IsPlayer(client)
 {
 	new team = GetClientTeam(client);
 	return (client && (team == 2 || team == 3));
@@ -879,16 +705,11 @@ public Native_IsPauseing(Handle:plugin, numParams)
 	return (g_bWasForced||g_bIsPaused||g_bIsUnpausing);
 }
 
-public Native_IsPauseEnable(Handle:plugin, numParams)
+static void AttemptPause()
 {
-	return g_bIsPausable;
-}
-
-AttemptPause()
-{
-	if (deferredPauseTimer == INVALID_HANDLE)
+	if (deferredPauseTimer == null)
 	{
-		if (CanPause())
+		if (IsSurvivorReviving() == false)
 		{
 			Pause();
 		}
@@ -902,9 +723,9 @@ AttemptPause()
 
 public Action:DeferredPause_Timer(Handle:timer)
 {
-	if (CanPause())
+	if (IsSurvivorReviving() == false)
 	{
-		deferredPauseTimer = INVALID_HANDLE;
+		deferredPauseTimer = null;
 		PrintToChatAll("%t","Paused!");
 		Pause();
 		return Plugin_Stop;
@@ -912,37 +733,22 @@ public Action:DeferredPause_Timer(Handle:timer)
 	return Plugin_Continue;
 }
 
-bool IsPlayerIncap(client)
+static bool IsSurvivorReviving()
 {
-	return view_as<bool>(GetEntProp(client, Prop_Send, "m_isIncapacitated"));
+    for (int client = 1; client <= MaxClients; client++)
+    {
+        if (IsClientInGame(client) && GetClientTeam(client) == L4D1Team_Survivor && IsPlayerAlive(client))
+        {
+            if (GetEntProp(client, Prop_Send, "m_reviveTarget") > 0)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
-bool:CanPause()
-{
-	for (new client = 1; client <= MaxClients; client++)
-	{
-		if(IsClientInGame(client) && IsPlayerAlive(client) && GetClientTeam(client) == 2)
-		{
-			if (IsPlayerIncap(client))
-			{
-				if (GetEntProp(client, Prop_Send, "m_reviveOwner") > 0)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (GetEntProp(client, Prop_Send, "m_reviveTarget") > 0)
-				{
-					return false;
-				}
-			}
-		}
-	}
-	return true;
-}
-
-bool IsplayerHangingFromLedge(int client)
+static bool IsplayerHangingFromLedge(int client)
 {
 	if(GetEntProp(client, Prop_Send, "m_isHangingFromLedge"))
 		return true;
@@ -950,7 +756,7 @@ bool IsplayerHangingFromLedge(int client)
 	return false;
 }
 
-bool IsPlayerAttackedBySmoker(int client)
+static bool IsPlayerAttackedBySmoker(int client)
 {
 	int attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if (attacker > 0)
@@ -998,4 +804,32 @@ public Action Show_Cmd(int client, int args)
 	}
 
 	return Plugin_Continue;
+}
+
+static void ToggleCommandListeners(bool enable)
+{
+    if (enable && !listened)
+    {
+        AddCommandListener(Unpause_Callback, "unpause");
+
+        HookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
+
+        listened = true;
+    }
+    else if (!enable && listened)
+    {
+        RemoveCommandListener(Unpause_Callback, "unpause");
+
+        UnhookEvent("player_say", Event_PlayerSay, EventHookMode_Post);
+
+        listened = false;
+    }
+}
+
+static void SetClientButtons(int client, int buttons)
+{
+    if (IsClientInGame(client))
+    {
+        SetEntProp(client, Prop_Data, "m_nButtons", buttons);
+    }
 }

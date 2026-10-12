@@ -2194,6 +2194,10 @@
 	{
 		"chi"		"[{olive}Pause{default}] 暂停界面已 {red}开启{default}"
 	}
+	"PausePreventSpawn"
+	{
+		"chi"	"[{olive}Pause{default}] 暂停期间，不会从灵魂状态{red}复活"
+	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"
 	{

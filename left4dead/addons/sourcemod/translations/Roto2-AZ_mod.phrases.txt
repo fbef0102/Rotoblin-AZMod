@@ -2940,6 +2940,11 @@
 		"en"		"[{olive}Pause{default}] Panel is now {blue}on{default}"
 		"zho"		"[{olive}Pause{default}] 暫停介面已 {red}開啟{default}"
 	}
+	"PausePreventSpawn"
+	{
+		"en"	"[{olive}Pause{default}] Your {red}Spawn {default}has been prevented because of the Pause"
+		"zho"	"[{olive}Pause{default}] 暫停期間，不會從靈魂狀態{red}復活"
+	}
 	//////////////l4d_NoRescueFirstTank.smx//////////////
 	"l4d_NoRescueFirstTank"
 	{
