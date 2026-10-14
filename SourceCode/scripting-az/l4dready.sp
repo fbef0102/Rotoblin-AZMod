@@ -1299,7 +1299,7 @@ public Action:checksurvivorspawn(Handle:timer,any:client)
 	}
 }
 
-public Action:L4D_OnSpawnTank(const Float:vector[3], const Float:qangle[3])
+/*public Action:L4D_OnSpawnTank(const Float:vector[3], const Float:qangle[3])
 {
 	//PrintToChatAll("OnSpawnTank(vector[%f,%f,%f], qangle[%f,%f,%f]", vector[0], vector[1], vector[2], qangle[0], qangle[1], qangle[2]);
 		
@@ -1326,7 +1326,7 @@ public Action:L4D_OnSpawnWitch(const Float:vector[3], const Float:qangle[3])
 	{
 		return Plugin_Continue;
 	}
-}
+}*/
 
 
 //When a player replaces a bot (i.e. player joins survivors team)

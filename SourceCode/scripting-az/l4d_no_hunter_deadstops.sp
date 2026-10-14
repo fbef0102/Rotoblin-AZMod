@@ -7,6 +7,15 @@
 //一代還有一種跳法是兔子跳: 平地飛到地面後按一下空白鍵
 //有時候兔子跳成功時不會觸發"玩家碰到地面"，有時候會 (最麻煩的點在這，導致有時候玩家可以推到兔子跳的Hunter)
 
+public Plugin myinfo = 
+{
+	name = "L4D No Hunter Deadstops",
+	author = "Spoon, Luckylock, A1m`, l4d1 port by Harry",
+	description = "Prevents deadstops but allows m2s on standing hunters + Try to fix a BHopping Hunter getting deadstopped and failing to land.",
+	version = "1.1h-2026/10/14",
+	url = "https://github.com/fbef0102/Rotoblin-AZMod"
+};
+
 ConVar hCvarFlags;
 ConVar hCvarFlags2;
 int g_iCvarcontrolvalue;
@@ -17,7 +26,9 @@ int g_iCvarcontrolvalue2;
 #define TEAM_SURVIVOR 2
 #define TEAM_INFECTED 3
 
-bool bIsPouncing[MAXPLAYERS + 1]; // whether hunter player is currently pouncing/lunging
+bool 
+	bIsPouncing[MAXPLAYERS + 1], // whether hunter player is currently pouncing/lunging
+	bIsBHopping[MAXPLAYERS + 1]; // whether hunter player is doing bhop
 
 float 
 	g_fPouncingStartTime[MAXPLAYERS + 1],  // Pouncing stop time 
@@ -27,15 +38,6 @@ ConVar
 	cvarHunterGroundM2Godframes;
 
 bool PluginDisable = false;
-
-public Plugin myinfo = 
-{
-	name = "L4D No Hunter Deadstops",
-	author = "Spoon, Luckylock, A1m`, l4d1 port by Harry",
-	description = "Prevents deadstops but allows m2s on standing hunters",
-	version = "1.0h-2026/9/30",
-	url = "https://github.com/fbef0102/Rotoblin-AZMod"
-};
 
 public void OnPluginStart()
 {
@@ -66,12 +68,6 @@ public Action L4D2_OnEntityShoved(int client, int entity, int weapon, float vecD
 	{
 		//PrintToChatAll("\x04Hunter %N is still pouncing!",entity);
 
-		// only start tracking a hunter not tracked yet. Resetting the
-		// stop time of a landed hunter restarted the godframe window on every
-		// blocked shove, so alternating m2s kept it unshoveable for ever.
-		if (!bIsPouncing[entity])
-			g_fPouncingStopTime[entity] = 0.0;
-		bIsPouncing[entity] = true;
 		return Plugin_Handled;
 	}
 	
@@ -183,6 +179,7 @@ void Event_RoundStart(Event hEvent, const char[] name, bool dontBroadcast)
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		bIsPouncing[i] = false;
+		bIsBHopping[i] = false;
 	}
 }
 
@@ -196,6 +193,7 @@ void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 		return;
 
 	bIsPouncing[victim] = false;
+	bIsBHopping[victim] = false;
 }
 
 // hunters pouncing / tracking
@@ -215,11 +213,11 @@ void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 		|| GetClientTeam(client) != TEAM_INFECTED)
 			return;
 
-
 		// Hunter pounce
 		g_fPouncingStopTime[client] = 0.0;
 		g_fPouncingStartTime[client] = GetEngineTime();
 		bIsPouncing[client] = true;
+		bIsBHopping[client] = false;
 	}
 }
 
@@ -227,21 +225,7 @@ void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	bIsPouncing[client] = false;
-}
-
-void Event_PlayerJump(Event event, const char[] name, bool dontBroadcast) 
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	if(!client || !IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerAlive(client)) return;
-
-	//PrintToChatAll("%d - %d", client, L4D1_GetMainActivity(client));
-	if(L4D1_GetMainActivity(client) == L4D1_ACT_TERROR_HUNTER_POUNCE_IDLE)
-	{
-		// Hunter bhop pounce
-		g_fPouncingStopTime[client] = 0.0;
-		g_fPouncingStartTime[client] = GetEngineTime();
-		bIsPouncing[client] = true;
-	}
+	bIsBHopping[client] = false;
 }
 
 public void OnGameFrame()
@@ -257,19 +241,27 @@ public void OnGameFrame()
 				{
 					if ( GetEntityFlags(client) & FL_ONGROUND)
 					{
-						//PrintToChatAll("Hunter %N on grounded  (buffer = %f s)", client, cvarHunterGroundM2Godframes.FloatValue);
+						//PrintToChatAll("Hunter %N on grounded", client);
 
 						g_fPouncingStopTime[client] = fNow;    
+						//if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
 					}
-					else if ( GetEntityMoveType(client) & MOVETYPE_LADDER) 
+					else if ( GetEntityMoveType(client) == MOVETYPE_LADDER ) 
 					{
-						//PrintToChatAll("Hunter %N on ladder (buffer = %f s)", client, cvarHunterGroundM2Godframes.FloatValue);
+						//PrintToChatAll("Hunter %N on ladder");
+
 						g_fPouncingStopTime[client] = fNow;    
+						//if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
 					}
 				} 
 				else if (fNow - g_fPouncingStopTime[client] > cvarHunterGroundM2Godframes.FloatValue) 
 				{
-					//PrintToChatAll("\x05%N Not pouncing anymore.", client);
+					//PrintToChatAll("\x05%N Not pouncing anymore. (god frame time out)", client);
+					bIsPouncing[client] = false;
+				}
+				else if (fNow - g_fPouncingStopTime[client] > 0.25 && GetClientButtons(client) & IN_DUCK == 0) 
+				{
+					//PrintToChatAll("\x05%N Not pouncing anymore. (release crouch key)", client);
 					bIsPouncing[client] = false;
 				}
 			}
@@ -295,4 +287,53 @@ bool IsPlayingPounceAnimation(int hunter)
 	}
 
 	return false;
+}
+
+void Event_PlayerJump(Event event, const char[] name, bool dontBroadcast) 
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(!IsHunter(client) || !bIsPouncing[client]) return;
+
+	if(GetEngineTime() - g_fPouncingStartTime[client] < 0.04 ) return;
+
+	CreateTimer(0.1, Timer_PlayerJump, GetClientUserId(client));
+}
+
+Action Timer_PlayerJump(Handle timer, int client)
+{
+	client = GetClientOfUserId(client);
+	if(!IsHunter(client) || !bIsPouncing[client]) return Plugin_Continue;
+
+	int activity = L4D1_GetMainActivity(client);
+	//PrintToChatAll("Timer_PlayerJump- activity: %d", activity);
+
+	// Hunter bhop pounce
+	if(activity == L4D1_ACT_TERROR_HUNTER_LUNGE) //1235
+	{
+		//PrintToChatAll("%N - Hunter bhop pounce detect, isAttemptingToPounce: %d", client, GetEntProp(client, Prop_Send, "m_isAttemptingToPounce"));
+
+		// Fix issue where sometimes Hunter bunnyhops fail to land on survivors because m_isAttemptingToPounce is set to 0
+		if(GetEntProp(client, Prop_Send, "m_isAttemptingToPounce") == 0)
+		{
+			SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 1);
+		}
+
+		// Fix issue where survivors can deadstop a BHopping Hunter
+		// Because the Hunter briefly touches the ground when pressing jump, bIsPouncing is set to false in OnGameFrame()
+		g_fPouncingStopTime[client] = 0.0;
+		bIsPouncing[client] = true;
+		bIsBHopping[client] = true;
+	}
+	else
+	{
+		if(GetEntProp(client, Prop_Send, "m_isAttemptingToPounce") == 1)
+		{
+			SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
+		}
+
+		//PrintToChatAll("Hunter %N jumps", client);
+		g_fPouncingStopTime[client] = GetEngineTime();
+	}
+
+	return Plugin_Continue;
 }

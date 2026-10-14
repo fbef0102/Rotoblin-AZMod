@@ -2350,4 +2350,21 @@
 	{
 		"chi"			"<{olive}Boss{default}> Witch 将于 {green}{1}%%{default} 后生成"
 	}	
+	///////////////l4d_tank_rush.smx///////////////
+	"l4d_tank_rush_Tag"
+	{
+		"chi"		"{red}[{default}禁止TankRush{red}]"
+	}
+	"l4d_tank_rush_freeze"
+	{
+		"chi"		"{red}Tank {default}已生成。{olive}冻结 {default}平均距离分数！"
+	}
+	"l4d_tank_rush_unfreeze"
+	{
+		"chi"		"{red}Tank {default}已死亡。{olive}解除冻结 {default}平均距离分数！"
+	}
+	"l4d_tank_rush_saferoom"
+	{
+		"chi"		"{red}幸存者 {default}已到达终点安全室。{olive}解除冻结 {default}平均距离分数！"
+	}
 }

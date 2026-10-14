@@ -3138,4 +3138,25 @@
 		"en"			"<{olive}Boss{default}> Witch Spawn in {green}{1}%%{default} distance"
 		"zho"			"<{olive}Boss{default}> Witch 將於 {green}{1}%%{default} 後生成"
 	}	
+	///////////////l4d_tank_rush.smx///////////////
+	"l4d_tank_rush_Tag"
+	{
+		"en"		"{red}[{default}NoTankRush{red}]"
+		"zho"		"{red}[{default}禁止TankRush{red}]"
+	}
+	"l4d_tank_rush_freeze"
+	{
+		"en"		"{red}Tank {default}has spawned. {olive}Freezing {default}distance points!"
+		"zho"		"{red}Tank {default}已生成。{olive}凍結 {default}平均距離分數！"
+	}
+	"l4d_tank_rush_unfreeze"
+	{
+		"en"		"{red}Tank {default}is dead. {olive}Unfreezing {default}distance points!"
+		"zho"		"{red}Tank {default}已死亡。{olive}解除凍結 {default}平均距離分數！"
+	}
+	"l4d_tank_rush_saferoom"
+	{
+		"en"		"{red}Survivors {default}made it to the saferoom. {olive}Unfreezing {default}distance points!"
+		"zho"		"{red}倖存者 {default}已到達終點安全室。{olive}解除凍結 {default}平均距離分數！"
+	}
 }

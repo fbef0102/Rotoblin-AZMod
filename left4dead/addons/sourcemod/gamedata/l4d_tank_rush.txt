@@ -1,0 +1,78 @@
+// Credit: Malevolence 
+
+"Games"
+{
+	"left4dead"
+	{
+		"Addresses"
+		{
+			// Linux: ForEachTerrorPlayer<CalcAndSetVersusMaxFlowDistance>.
+			// Windows: the store helper that functor calls (one caller).
+			"CalcAndSetVersusMaxFlowDistance"
+			{
+				"linux"
+				{
+					"signature"	"ForEachTerrorPlayer<CalcAndSetVersusMaxFlowDistance>"
+				}
+				"windows"
+				{
+					"signature"	"CalcAndSetVersusMaxFlowDistance_StoreMax"
+				}
+			}
+		}
+		"Offsets"
+		{
+			// Linux server.so md5 9ad66748..., function at 0x2d1a90:
+			//   2d1b59  fucomi %st(1),%st         current flow vs stored furthest flow
+			//   2d1b60  76 20  jbe 2d1b82          not past it: keep the stored value
+			//   2d1b6c  d9 95 74 2b 00 00          fsts 0x2b74(%ebp), the store it skips
+			//
+			// Windows server.dll md5 8f67a2ce..., helper at 0x10267c20 (ecx = player, arg = flow):
+			//   10267c20  d9 81 60 2b 00 00        fld [ecx+0x2b60]       stored furthest flow
+			//   10267c2a  d8 d1 / df e0            fcom; fnstsw            current flow vs stored
+			//   10267c33  75 21                    jne 10267c56            not past it: keep the stored value
+			//   10267c42  d9 99 60 2b 00 00        fstp [ecx+0x2b60], the store it skips
+			//
+			// jbe/jne -> jmp (EB) always keeps the stored value.
+			"keep_stored_jbe"
+			{
+				"linux"		"208"
+				"windows"	"19"
+			}
+			"keep_stored_opcode"	// original jump opcode at the site
+			{
+				"linux"		"118"	// 0x76 jbe
+				"windows"	"117"	// 0x75 jne
+			}
+			"keep_stored_rel8"
+			{
+				"linux"		"32"	// 0x20
+				"windows"	"33"	// 0x21
+			}
+			"keep_stored_store_at"	// bytes from the site to the skipped store
+			{
+				"linux"		"12"
+				"windows"	"15"
+			}
+			"keep_stored_member"	// CTerrorPlayer furthest-flow member
+			{
+				"linux"		"11124"	// 0x2b74
+				"windows"	"11104"	// 0x2b60
+			}
+		}
+		"Signatures"
+		{
+			"ForEachTerrorPlayer<CalcAndSetVersusMaxFlowDistance>"
+			{
+				"library"	"server"
+				"linux"		"@_Z19ForEachTerrorPlayerI31CalcAndSetVersusMaxFlowDistanceEbRT_"
+			}
+			// The jump opcode is wildcarded so a site left patched still matches.
+			"CalcAndSetVersusMaxFlowDistance_StoreMax"
+			{
+				"library"	"server"
+				"windows"	"\xD9\x81\x60\x2B\x00\x00\xD9\x44\x24\x04\xD8\xD1\xDF\xE0\xDD\xD9\xF6\xC4\x41\x2A\x21\xD9\xEE"
+			}
+		}
+	}
+}

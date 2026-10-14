@@ -416,8 +416,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 		* The value of ```z_gun_swing_duration``` isn't respected internally, but a constant ```1.0``` instead.
 	* Fixed Tank/Witch not spawning consistently for both sides.
 	* Prevent ghost infected players from spawning inside checkpoint area
-  * Allows gravity when infected players are staggering + allows staggering over a ledge and falling.
-    * Infected still gets stumble even in the air
+  * ~~Allows gravity when infected players are staggering + allows staggering over a ledge and falling.~~
+    * ~~Infected still gets stumble even in the air~~
+  * Instantly slay and kick SI bots that were previously controlled by human players.
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -473,6 +474,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Tank won't get stumbled by a door
     * Sends Survivors flying on the incapping punch
     * Tank rock health: 100 (vanilla: 50)
+    * Stops distance points accumulating whilst the tank is alive,
+      * Unfreezes distance if a Survivor makes it to the end saferoom and close door while the Tank is still up.
+      * Unfreeze distance if the Tank goes AI
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
@@ -644,6 +648,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Return pills/adrenalines thrown through shoving key if not successfully given
   * Stopping pick-up progress on incapped survivors right after getting tank punch or tank Rock
   * Enable skill report to chat
+  * Blocks ledge hangs over drops that would not hurt
 
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

@@ -1,3 +1,5 @@
+// deprecated, this plugin requires l4d_stagger_gravity to work properly.
+
 #pragma semicolon 1
 #pragma newdecls required
 

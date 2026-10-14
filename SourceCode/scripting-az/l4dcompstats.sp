@@ -41,7 +41,7 @@ public Plugin:myinfo =
 	name = "L4D Competitive Stats",
 	author = "Griffin & Philogl, Harry Potter",
 	description = "Basic competitive stat tracking on a per map basis, 特感殺手, 清屍狂人, Skeet, 黑槍之王, 推推小王子, 抖M受",
-	version = "1.0h-2026/10/1"
+	version = "1.1h-2026/10/14"
 };
 
 #pragma semicolon 1
@@ -71,7 +71,6 @@ public Plugin:myinfo =
 #define IsSpectator(%0) (GetClientTeam(%0) == TEAM_SPECTATOR)
 #define IsSurvivor(%0) (GetClientTeam(%0) == TEAM_SURVIVOR)
 #define IsInfected(%0) (GetClientTeam(%0) == TEAM_INFECTED)
-#define IsPouncing(%0) (g_bIsPouncing[%0])
 #define IsIncapped(%0) (GetEntProp(%0, Prop_Send, "m_isIncapacitated") > 0)
 #define IsBoomed(%0) ((GetEntPropFloat(%0, Prop_Send, "m_vomitStart") + 20.1) > GetGameTime())
 //harry
@@ -129,7 +128,7 @@ new				g_iLastHealth[MAXPLAYERS + 1];
 new		bool:	g_bHasBoomLanded;
 new		bool:	g_bStatsCooldown[MAXPLAYERS + 1];					// Prevent spam of stats command (potential DoS vector I think)
 new		bool:	g_bHasLandedPounce[MAXPLAYERS + 1];					// Used to determine if a deadstop was 'pierced'
-new		bool:	g_bIsPouncing[MAXPLAYERS + 1];
+float 	g_fSkeetHunterPouncing_Trace[MAXPLAYERS + 1][MAXPLAYERS + 1];	// Time when the hunter was still pouncing (in traceattack) -- used to detect if survivor tried to skeet a hunter
 new		bool:	g_bShotCounted[MAXPLAYERS + 1][MAXPLAYERS +1];		// Victim - Attacker, used by playerhurt and weaponfired
 
 // Map Stats, array for each player for easy trie storage
@@ -226,7 +225,7 @@ public OnPluginStart()
 		{
 			if (!IsClientInGame(client)) continue;
 
-			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Client);
+			SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive_Inf);
 		}
 	}
 }
@@ -256,7 +255,7 @@ Action Command_Mvp(int client, int args)
 }
 public OnClientPutInServer(client)
 {
-	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Client);
+	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive_Inf);
 }
 
 public OnMapStart()
@@ -494,18 +493,9 @@ public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-Action OnTakeDamage_Client(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+Action OnTakeDamageAlive_Inf(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
 	if (!IsClientInGame(victim)) return Plugin_Continue;
-
-	// A hunter hit on the ground or a ladder is no longer pouncing. Timer_GroundedCheck can lag
-	// up to 0.5 s behind a missed pounce
-	//if (GetClientTeam(victim) == 3 && IsPouncing(victim) &&
-	//	GetEntProp(victim, Prop_Send, "m_zombieClass") == ZC_HUNTER &&
-	//	(IsGrounded(victim) || IsOnLadder(victim)))
-	//{
-	//	g_bIsPouncing[victim] = false;
-	//}
 
 	// Non incapped survivor victim
 	if (!IsSurvivor(victim) || IsIncapped(victim)) return Plugin_Continue;
@@ -517,7 +507,6 @@ Action OnTakeDamage_Client(int victim, int &attacker, int &inflictor, float &dam
 
 public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if (victim == 0 ||
@@ -554,6 +543,8 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 		// FF (don't log incapped damage, doesn't matter)
 		if (IsSurvivor(victim))
 		{
+			if (g_bHasRoundEnded || !g_bGameStarted) return;
+
 			g_iMapStats[attacker][FF] += damage;
 		}
 		// Hot survivor on infected action, baby
@@ -583,7 +574,7 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 			{ /* Boomer Shit Here */ }
 		}
 	}
-	if (IsInfected(attacker) && IsSurvivor(victim) && !IsIncapped(victim))
+	else if (IsInfected(attacker) && IsSurvivor(victim) && !IsIncapped(victim))
 	{
 		g_iMapStats[victim][SIDamageTaken] += damage;
 		g_iMapStats[attacker][DamageDealtAsSI] += damage;
@@ -592,8 +583,6 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_PlayerShoved(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
-
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (victim == 0 ||
 		!IsClientInGame(victim) ||
@@ -622,12 +611,15 @@ public Event_PlayerShoved(Handle:event, const String:name[], bool:dontBroadcast)
 		g_hBoomerShoveTimer = CreateTimer(BOOMER_STAGGER_TIME, Timer_BoomerShove);
 	}
 	// DEADSTOP
-	//else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
 	else if (zombieclass == ZC_HUNTER && GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce")) 
 	{ 
 		// Groundtouch timer will do this for us, but
 		// this prevents multiple deadstops being counted incorrectly
-		g_bIsPouncing[victim] = false;
+		for(int i = 1; i <= MaxClients; i++)
+		{
+			g_fSkeetHunterPouncing_Trace[i][victim] = 0.0;
+		}
+
 		// Delayed check to see if the pounce actually landed due to bug where player_shoved gets fired but pounce lands anyways
 		g_bHasLandedPounce[attacker] = false;
 		
@@ -679,8 +671,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 
 	if (IsInfected(client))
 	{
-		SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
-		SDKUnhook(client, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
+		SDKUnhook(client, SDKHook_TraceAttackPost, TraceAttackPost_Hunter);
 
 		new zombieclass = GetEntProp(client, Prop_Send, "m_zombieClass");
 		if (zombieclass == ZC_TANK) return;
@@ -707,8 +698,8 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 		}
 		else if (zombieclass == ZC_HUNTER)
 		{
-			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
-			SDKHook(client, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
+			if(IsFakeClient(client)) ClearDamage(client);
+			SDKHook(client, SDKHook_TraceAttackPost, TraceAttackPost_Hunter);
 		}
 
 		g_iLastHealth[client] = GetClientHealth(client);
@@ -717,8 +708,6 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
-	
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if (victim == 0 ||
@@ -774,7 +763,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 			CreateTimer(0.2, Timer_BoomerKilledCheck, victim);
 			g_iBoomerKiller = attacker;
 		}
-		else if (zombieclass == ZC_HUNTER && IsPouncing(victim))
+		else if (zombieclass == ZC_HUNTER && ( GetEngineTime() - g_fSkeetHunterPouncing_Trace[attacker][victim] ) < 0.01)
 		{ // Skeet!
 			if (!IsFakeClient(victim))
 			{
@@ -926,6 +915,7 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 public Event_InfectedDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (g_bHasRoundEnded || !g_bGameStarted) return;
+
 	// NOTE: Has some interesting stats like headshots, if it was a minigun kill or from explosion (might use in future)
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 
@@ -977,7 +967,6 @@ public Event_PlayerIncapacitated(Handle:event, const String:name[], bool:dontBro
 
 public Event_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 
 	if (attacker == 0 ||								// Killed by world?
@@ -993,8 +982,6 @@ public Event_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
-
 	new killer = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if (killer == 0 ||				// Killed by world?
@@ -1011,21 +998,18 @@ public Event_WitchKilled(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	g_bShouldAnnounceWitchDamage = true;
 }
 
 // Pounce tracking, from skeet announce
 public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (g_bHasRoundEnded || !g_bGameStarted) return;
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	decl String:ability_name[64];
 
 	GetEventString(event, "ability", ability_name, sizeof(ability_name));
 	if (IsClientInGame(client) && strcmp(ability_name, "ability_lunge", false) == 0)
 	{
-		g_bIsPouncing[client] = true;
 		//CreateTimer(0.5, Timer_GroundedCheck, client, TIMER_REPEAT);
 	}
 	else if (IsClientInGame(client) && strcmp(ability_name, "ability_vomit", false) == 0)
@@ -1038,7 +1022,10 @@ public Event_AbilityUse(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if ( !IsClientInGame(client) || !IsPlayerAlive(client) || GetClientTeam(client) != 3 || GetEntProp(client, Prop_Send, "m_zombieClass") != ZC_HUNTER || IsGrounded(client) || IsOnLadder(client) )
 	{
-		g_bIsPouncing[client] = false;
+		for(int i = 1; i <= MaxClients; i++)
+		{
+			g_bIsSkeetPouncingHunter[i][client] = false;
+		}
 		
 		return Plugin_Stop;
 	}
@@ -1050,7 +1037,10 @@ public Event_LungePounce(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new attacker = GetClientOfUserId(GetEventInt(event, "userid"));
 	new victim = GetClientOfUserId(GetEventInt(event, "victim"));
-	g_bIsPouncing[attacker] = false;
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		g_fSkeetHunterPouncing_Trace[i][attacker] = 0.0;
+	}
 	g_bHasLandedPounce[attacker] = true;
 
 	// Don't count pounce stats for pounces on incapped survivors
@@ -1113,17 +1103,8 @@ ClearMapStats()
 	g_iAccumulatedWitchDamage = 0;
 }
 
-/*
-ClearPlayerStatsAndState(client)
-{
-	for (new i = 0; i < STATS_MAX; i++) g_iMapStats[client][i] = 0;
-	g_iWitchDamage[client] = 0;
-	ClearDamage(client);
-}
-*/
-
 // Clear g_iDamageDealt, g_iShotsDealt, and g_iLastHealth for given client
-ClearDamage(client)
+void ClearDamage(int client)
 {
 	g_iLastHealth[client] = 0;
 	for (new i = 1; i <= MaxClients; i++)
@@ -1438,40 +1419,49 @@ PrintToTeamConsole(teamflag, const String:format[], any:...)
 	}
 }
 
-Action OnTakeDamage_Hunter(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+void TraceAttackPost_Hunter(int victim, int attacker, int inflictor, float damage, int damagetype, int ammotype, int hitbox, int hitgroup)
 {
-	if (!IsClientInGame(victim)) return Plugin_Continue;
+	if ( attacker <= 0 || attacker > MaxClients || !IsClientInGame(attacker) || GetClientTeam(attacker) != 2 ) return;
 	if ( GetClientTeam(victim) != 3 || GetEntProp(victim, Prop_Send, "m_zombieClass") != ZC_HUNTER) 
 	{
-		SDKUnhook(victim, SDKHook_OnTakeDamage, OnTakeDamage_Hunter);
-		return Plugin_Continue;
-	}
-
-	// try to use property "m_isAttemptingToPounce" to detect if hunter is pouncing in air
-	if ( GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce") )
-	{
-		g_bIsPouncing[victim] = true;
-	}
-	else
-	{
-		g_bIsPouncing[victim] = false;
-	}
-
-	return Plugin_Continue;
-}
-
-void OnTakeDamagePost_Hunter(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, float damageForce[3], float damagePosition[3], int damagecustom)
-{
-	if ( attacker <= 0 || attacker > MaxClients || !IsClientInGame(attacker) || GetClientTeam(attacker) != 2 || !IsValidEntity(inflictor) ) return;
-	if( GetClientTeam(victim) != 3 || GetEntProp(victim, Prop_Send, "m_zombieClass") != ZC_HUNTER) 
-	{
-		SDKUnhook(victim, SDKHook_OnTakeDamagePost, OnTakeDamagePost_Hunter);
+		SDKUnhook(victim, SDKHook_TraceAttackPost, TraceAttackPost_Hunter);
 		return;
 	}
 
-	if ( !GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce") )
+	// try to use property "m_isAttemptingToPounce" to detect if hunter is pouncing in air
+	// m_isAttemptingToPounce will be 0 on human-controlled hunter when total dmg over "z_pounce_damage_interrupt"
+	if ( GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce") )
 	{
-		g_bIsPouncing[victim] = false;
+		g_fSkeetHunterPouncing_Trace[attacker][victim] = GetEngineTime();
+	}
+	else
+	{
+		g_fSkeetHunterPouncing_Trace[attacker][victim] = 0.0;
+	}
+}
+
+bool isCulling = false;
+public Action L4D_OnEnterGhostStatePre(int client)
+{
+	static int s_iOffs_m_bPZAbortedControl = -1;
+	if (s_iOffs_m_bPZAbortedControl == -1)
+	{
+		s_iOffs_m_bPZAbortedControl = FindSendPropInfo("CTerrorPlayer", "m_lookatPlayer") + 4;
+	}
+
+	isCulling = GetEntData(client, s_iOffs_m_bPZAbortedControl, 1) != 0;
+	
+	return Plugin_Continue;
+}
+
+
+public void L4D_OnEnterGhostState(int client)
+{
+	if(IsFakeClient(client)) return;
+	
+	if(!isCulling)
+	{
+		ClearDamage(client);
 	}
 }
 
@@ -1517,4 +1507,12 @@ int GetTeamFlag(int team)
         default:
             return FLAG_TEAM_NONE;
     }
+}
+
+
+// API from l4d_lagcomp_skeet.smx
+
+public void L4D_OnLagCompPounce(int hunter, int attacker, int pouncing)
+{
+	g_fSkeetHunterPouncing_Trace[attacker][hunter] = pouncing ? GetEngineTime() : 0.0;
 }

@@ -8,7 +8,7 @@ public Plugin myinfo =
 	name = "[L4D1/L4D2] Collision Adjustments",
 	author = "Sir, Harry Potter",
 	description = "No collisions to fix a handful of silly collision bugs in l4d",
-	version = "1.2h-2026/10/5",
+	version = "1.2h-2026/10/5-riverside2",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -47,6 +47,10 @@ ConVar g_hCvarRockFix, g_hCvarPullThrough, g_hCvarRockThroughIncap, g_hCvarHunte
 	g_hCvarClientPushPipeBombFix;
 bool g_bCvarRockFix,g_bCvarPullThrough,g_bCvarRockThroughIncap, g_bCvarHunterThroughInacp, g_bCvarSIThroughWitch,
 	g_bCvarClientPushPipeBombFix;
+// riverside2: a hunter aimed at an incap still lands on him, only incaps he is not aimed at are passed through
+ConVar g_hCvarHunterIncapAim;
+float g_fCvarHunterIncapAimCos;
+int g_iPounceAimTarget[MAXPLAYERS+1];
 bool g_bPulled[MAXPLAYERS + 1] = {false, ...};
 float g_fPouncingStartTime[MAXPLAYERS+1];
 
@@ -78,6 +82,7 @@ public void OnPluginStart()
 	g_hCvarPullThrough 				= CreateConVar("l4d_collision_adjustments_smoker_common", 	"1", "If 1, Pulled Survivors can go through Common Infected", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarRockThroughIncap 		= CreateConVar("l4d_collision_adjustments_tankrock_incap", 	"1", "If 1, Rocks can go through Incapacitated Survivors? (Won't go through new incaps caused by the Rock)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarHunterThroughInacp 		= CreateConVar("l4d_collision_adjustments_hunter_incap", 	"1", "If 1, Hunter can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarHunterIncapAim 			= CreateConVar("l4d_collision_adjustments_hunter_incap_aim", "60", "(riverside) With hunter_incap 1, a pounce still lands on the incap closest to the hunter's crosshair at pounce start if he is within this many degrees of it. 0 = always pass through incaps", FCVAR_NOTIFY, true, 0.0, true, 180.0);
 	g_hCvarSIThroughWitch 			= CreateConVar("l4d_collision_adjustments_si_witch", 		"1", "If 1, Special infected and Tank can go through witch (Prevent stuck and stagger)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarClientPushPipeBombFix 	= CreateConVar("l4d_collision_adjustments_client_pipebomb", "1", "If 1, Fix the bug where survivor and special infected can push pipebomb projectiles", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	AutoExecConfig(true,            "l4d_collision_adjustments");
@@ -87,6 +92,7 @@ public void OnPluginStart()
 	g_hCvarPullThrough.AddChangeHook(ConVarChanged);
 	g_hCvarRockThroughIncap.AddChangeHook(ConVarChanged);
 	g_hCvarHunterThroughInacp.AddChangeHook(ConVarChanged);
+	g_hCvarHunterIncapAim.AddChangeHook(ConVarChanged);
 	g_hCvarSIThroughWitch.AddChangeHook(ConVarChanged);
 	g_hCvarClientPushPipeBombFix.AddChangeHook(ConVarChanged);
 	
@@ -131,19 +137,32 @@ void GetCvars()
 	g_bCvarPullThrough = g_hCvarPullThrough.BoolValue;
 	g_bCvarRockThroughIncap = g_hCvarRockThroughIncap.BoolValue;
 	g_bCvarHunterThroughInacp = g_hCvarHunterThroughInacp.BoolValue;
+	g_fCvarHunterIncapAimCos = g_hCvarHunterIncapAim.FloatValue > 0.0 ? Cosine(DegToRad(g_hCvarHunterIncapAim.FloatValue)) : 2.0;
 	g_bCvarSIThroughWitch = g_hCvarSIThroughWitch.BoolValue;
 	g_bCvarClientPushPipeBombFix = g_hCvarClientPushPipeBombFix.BoolValue;
 }
 
 public Action CH_PassFilter(int ent1, int ent2, bool &result)
 {
+	// riverside1: every rule below needs two clients, or a non-client whose g_iEntityType is known.
+	// Bail out before any native when neither holds (most commons, props and world traces).
+	bool bClient1 = (ent1 > 0 && ent1 <= MaxClients);
+	bool bClient2 = (ent2 > 0 && ent2 <= MaxClients);
+	if (!(bClient1 && bClient2)
+		&& (bClient1 || ent1 < 0 || ent1 > MAXENTITIES || g_iEntityType[ent1] == EEntity_Unknown)
+		&& (bClient2 || ent2 < 0 || ent2 > MAXENTITIES || g_iEntityType[ent2] == EEntity_Unknown))
+	{
+		return Plugin_Continue;
+	}
+
 	if ( ent1 > 0 && ent1 <= MaxClients && IsClientInGame(ent1) && IsPlayerAlive(ent1) )
 	{
 		int team1 = GetClientTeam(ent1);
 		if(ent2 > 0 && ent2 <= MaxClients && IsClientInGame(ent2) && IsPlayerAlive(ent2))
 		{
 			if( g_bCvarHunterThroughInacp && team1 == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent1)
-				&& GetClientTeam(ent2) == L4D_TEAM_INF && GetZombieClass(ent2) == ZC_HUNTER && IsStartToPounce(ent2))
+				&& GetClientTeam(ent2) == L4D_TEAM_INF && GetZombieClass(ent2) == ZC_HUNTER && IsStartToPounce(ent2)
+				&& g_iPounceAimTarget[ent2] != ent1)
 			{
 				result = false;
 				return Plugin_Handled;
@@ -186,7 +205,8 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		if( ent1 > 0 && ent1 <= MaxClients && IsClientInGame(ent1) && IsPlayerAlive(ent1) )
 		{
 			if( g_bCvarHunterThroughInacp && team2 == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent2)
-				&& GetClientTeam(ent1) == L4D_TEAM_INF && GetZombieClass(ent1) == ZC_HUNTER && IsStartToPounce(ent1) )
+				&& GetClientTeam(ent1) == L4D_TEAM_INF && GetZombieClass(ent1) == ZC_HUNTER && IsStartToPounce(ent1)
+				&& g_iPounceAimTarget[ent1] != ent2 )
 			{
 				result = false;
 				return Plugin_Handled;
@@ -311,6 +331,7 @@ void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 
 		// Hunter pounce
 		g_fPouncingStartTime[client] = GetEngineTime();
+		g_iPounceAimTarget[client] = FindPounceAimTarget(client);
 	}
 }
 
@@ -332,6 +353,7 @@ void event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 	{
 		g_bPulled[i] = false;
 		g_fPouncingStartTime[i] = 0.0;
+		g_iPounceAimTarget[i] = 0;
 	}
 }
 
@@ -361,6 +383,47 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 }
 
 // ----------------------------
+
+// riverside2: the survivor closest to the hunter's crosshair when the pounce starts, if that is an incap
+// within the aim cone; 0 otherwise. Standing survivors count too, so aiming at a survivor who stands next
+// to an incap still passes through the incap (the original anti suck-in behaviour).
+int FindPounceAimTarget(int hunter)
+{
+	if (g_fCvarHunterIncapAimCos > 1.0)
+		return 0;
+
+	float vEye[3], vAng[3], vAim[3];
+	GetClientEyePosition(hunter, vEye);
+	GetClientEyeAngles(hunter, vAng);
+	GetAngleVectors(vAng, vAim, NULL_VECTOR, NULL_VECTOR);
+
+	int best;
+	float bestDot = g_fCvarHunterIncapAimCos;
+	float vMins[3], vMaxs[3], vTo[3];
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || GetClientTeam(i) != L4D_TEAM_SUR || !IsPlayerAlive(i))
+			continue;
+
+		// aim at the middle of the survivor's hull, which is low for an incap
+		GetClientAbsOrigin(i, vTo);
+		GetClientMins(i, vMins);
+		GetClientMaxs(i, vMaxs);
+		vTo[2] += (vMins[2] + vMaxs[2]) * 0.5;
+		SubtractVectors(vTo, vEye, vTo);
+		if (NormalizeVector(vTo, vTo) <= 0.0)
+			continue;
+
+		float dot = GetVectorDotProduct(vAim, vTo);
+		if (dot > bestDot)
+		{
+			bestDot = dot;
+			best = i;
+		}
+	}
+
+	return (best && L4D_IsPlayerIncapacitated(best)) ? best : 0;
+}
 
 bool IsClientIndex(int client)
 {

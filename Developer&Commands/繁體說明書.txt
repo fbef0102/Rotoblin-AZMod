@@ -772,14 +772,17 @@
 [204] l4d_boomer_alarm_witch
 //如果打死Boomer時，Witch在旁觀則會驚擾
 
-[205] l4d_stagger_gravity
+[xx] l4d_stagger_gravity
 //就算在空中或跳起來依然被震直到時間結束
+//已棄用, 無人喜歡這項功能
 
-[206] l4d_fix_long_stagger
+[xx] l4d_fix_long_stagger
 //Boomer與Tank能夠設置硬直時間
+//已棄用, 需搭配l4d_stagger_gravity
 
-[207] l4d_queued_stagger
+[xx] l4d_queued_stagger
 //特感在空中被推後真正落地的時間點 (API)
+//已棄用, 需搭配l4d_stagger_gravity 
 
 [208] l4d2_shove_fix
 //小殭屍被推同一個方向或不同方向時能重置被推的動畫
@@ -905,6 +908,16 @@
 //Common infected and witch can phase through pulled or pounced survivors
 //小殭屍可以穿透走過去smoker拉走的倖存者, 跑向另外被噴的倖存者
 //witch不受影響, 被擋住會轉移目標
+
+[240] l4d_ledge_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//Blocks ledge hangs over drops that would not hurt
+//防止倖存者莫名其妙掛邊在低處地方
+
+[241] l4d_tank_rush
+//source: github.com/Volence/riverside-l4d-plugins, github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d_tank_rush.sp
+//Stops distance points accumulating whilst the tank is alive, with the option of unfreezing distance on reaching the Saferoom
+//Tank存活期間凍結距離分數, Tank變成AI或是倖存者到安全室時解除凍結
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

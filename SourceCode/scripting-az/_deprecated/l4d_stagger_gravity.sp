@@ -1,3 +1,11 @@
+// deprecated, no one likes floating in the air when getting stumbled.
+
+/**
+ * This plugin requires
+ * 1. l4d_fix_long_stagger
+ * 2. l4d_queued_stagger
+ */
+
 #define PLUGIN_VERSION 		"1.3h-2024/10/9"
 #define DEBUG 		0
 
@@ -72,7 +80,6 @@ public void OnPluginStart()
 
 	g_hCvarAllow = CreateConVar(		"l4d_stagger_gravity_enable",		"1",			"0=Plugin off, 1=Plugin on.", CVAR_FLAGS );
 	CreateConVar(						"l4d_stagger_gravity_version",		PLUGIN_VERSION,	"Stagger Animation - Gravity Allowed plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	AutoExecConfig(true,				"l4d_stagger_gravity");
 
 	g_hCvarAllow.AddChangeHook(ConVarChanged_Allow);
 

@@ -69,6 +69,8 @@ public void OnPluginStart()
 
 	LoadGameData();
 	RegServerCmd("saferoom_frustration_tickdown", SetSaferoomFrustrationTickdown);
+
+	HookEvent("tank_spawn",			Event_TankSpawn);
 }
 
 Action SetSaferoomFrustrationTickdown(int args)
@@ -111,7 +113,22 @@ public void OnMapEnd()
 	UnHookAll();
 }
 
-public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float vecAng[3])
+void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	if (g_bIsHooked)
+		return;
+
+	HookEvent("player_entered_start_area",		Event_EnteredStartArea);
+	HookEvent("player_entered_checkpoint",		Event_EnteredCheckpoint);
+	HookEvent("player_death", Event_PlayerDeath);
+	HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
+
+	DebugPrint("{blue}Prepared hooks{default} from Event_TankSpawn");
+	g_bIsHooked = true;
+}
+
+// Not fire in l4d1 linux, wait for left4dhooks fix
+/*public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float vecAng[3])
 {
 	if (g_bIsHooked)
 		return;
@@ -123,6 +140,15 @@ public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float 
 
 	DebugPrint("{blue}Prepared hooks{default} from L4D_OnSpawnTank_Post");
 	g_bIsHooked = true;
+}*/
+
+public void OnClientDisconnect(int client)
+{
+	if (!IsTank(client))
+		return;
+
+	DebugPrint("{red}Unhook{default} from OnClientDisconnect (%N)", client);
+	UnHookAll();
 }
 
 public void L4D2_OnEndVersusModeRound_Post()
@@ -189,7 +215,7 @@ void Event_EnteredCheckpoint(Event hEvent, const char[] name, bool dontBroadcast
 void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(hEvent.GetInt("userid"));
-	if (!IsValidClientIndex(client) || !IsClientInGame(client) || !IsTank(client))
+	if (!IsValidClientIndex(client) || !IsTank(client))
 		return;
 
 	DebugPrint("{red}Unhook{default} from Event_PlayerDeath (%N)", client);
@@ -347,7 +373,7 @@ bool IsValidClientIndex(int client)
  */
 bool IsTank(int client)
 {
-	return (L4D_GetClientTeam(client) == L4DTeam_Infected && L4D2_GetPlayerZombieClass(client) == L4D2ZombieClass_Tank);
+	return (IsClientInGame(client) && L4D_GetClientTeam(client) == L4DTeam_Infected && L4D1_GetPlayerZombieClass(client) == L4D1ZombieClass_Tank);
 }
 
 /**

@@ -152,7 +152,7 @@ void NextFrame_ReplaceTank(any data)
 
 	//PrintToChatAll("L4D_OnReplaceTank - tank: %d, newtank: %d", tank, newtank);
 	delete hTankTimer;
-	hTankTimer = CreateTimer(0.3, timerTank, GetClientUserId(tank), TIMER_REPEAT)
+	hTankTimer = CreateTimer(0.3, timerTank, GetClientUserId(newtank), TIMER_REPEAT)
 	bHaveHadFlowOrStaticTank = true;
 }
 
