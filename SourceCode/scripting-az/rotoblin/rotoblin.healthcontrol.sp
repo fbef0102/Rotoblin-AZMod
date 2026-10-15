@@ -58,7 +58,8 @@ static			bool:	g_bIsFinale						= false;
 static			bool:	g_bHaveRunRoundStart			= false;
 
 static HEALTH_STYLE: g_iHealthStyle					= REPLACE_ALL_KITS; // How we replace kits
-static			Handle:	g_hHealthStyle_Cvar			= INVALID_HANDLE;
+static ConVar	g_hHealthStyle_Cvar, 
+				g_hCvarPillFlowVisualize;
 
 static					g_iDebugChannel					= 0;
 static	const	String:	DEBUG_CHANNEL_NAME[]		= "HealthControl";
@@ -71,15 +72,17 @@ int g_iFinalPills[16];
 int g_iSaferoomKits[4];
 
 // Item lists for tracking/decoding/etc
-enum ItemList {
+enum /*ItemList*/ 
+{
 	IL_None = -1,
 	IL_PainPills = 0,
-	IL_Max
+
+	ItemList_Size
 };
 
 // Names for cvars, kv, descriptions
 // [ItemIndex][shortname=0,fullname=1,spawnname=2]
-enum ItemNames {	
+enum /*ItemNames*/ {	
 	IN_shortname,	
 	IN_longname, 	
 	IN_officialname, 	
@@ -87,7 +90,7 @@ enum ItemNames {
 	IN_Max
 };
 
-static const String:g_sItemNames[view_as<int>(IL_Max)][view_as<int>(IN_Max)][] =
+static const String:g_sItemNames[ItemList_Size][IN_Max][] =
 {
 	{ "pills", "pain pills", "pain_pills", "painpills" },
 };
@@ -104,43 +107,47 @@ enum struct ItemTracking {
 }
 
 // ADT Array Handle for actual item spawns
-ArrayList g_hItemSpawns[view_as<int>(IL_Max)];
+ArrayList g_hItemSpawns[ItemList_Size];
+
+#define PF_KEEP        0
+#define PF_CULL_WINDOW 1
+#define PF_CULL_SEP    2
+#define PF_CULL_LIMIT  3
+#define PF_NO_FLOW     -1   // no nav/flow data: always kept, excluded from spacing
+
+static const char PF_GLOW_KEEP[12] = "255 255 255";   // white
+static const char PF_GLOW_CULL[4][12] = {
+    "0 0 0",          // PF_KEEP (unused)
+    "255 0 0",        // PF_CULL_WINDOW: red
+    "255 165 0",      // PF_CULL_SEP: orange
+    "0 255 255"       // PF_CULL_LIMIT: cyan
+};
 
 // **********************************************
 //                   Forwards
 // **********************************************
-
-/**
- * Plugin is starting.
- *
- * @noreturn
- */
 
 public _HealthControl_OnPluginStart()
 {
 	HookPublicEvent(EVENT_ONPLUGINENABLE, _HC_OnPluginEnable);
 	HookPublicEvent(EVENT_ONPLUGINDISABLE, _HC_OnPluginDisable);
 
-	decl String:buffer[10];
-	IntToString(view_as<int>(g_iHealthStyle), buffer, sizeof(buffer)); // Get default value for replacement style
 	g_hHealthStyle_Cvar = CreateConVarEx("health_style", 
-		buffer, 
+		"1", 
 		"medkits and pills configuration. 0=Don't replace any medkits, 1=Replace all medkits with pills, 2=Replace all medkits with pills except the finale medkits, 3=Replace the finale kits with pills and remove all other pills/kits, 4=Replace all medkits with pills, only remove saferoom kits (use data/mapinfo to control pill limit)", 
 		FCVAR_NOTIFY);
-
-	if (g_hHealthStyle_Cvar == INVALID_HANDLE) 
-	{
-		ThrowError("Unable to create health style cvar!");
-	}
-	
 	AddConVarToReport(g_hHealthStyle_Cvar); // Add to report status module
 	UpdateHealthStyle();
 
 	g_iDebugChannel = DebugAddChannel(DEBUG_CHANNEL_NAME);
 	DebugPrintToAllEx("Module is now setup");
 
+	// Pill flow window. Per-map override keys in mapinfo.txt (map section):
+	// "pillflow_min", "pillflow_max", "pillflow_separation" (floats, same meaning as the cvars).
+	g_hCvarPillFlowVisualize = CreateConVarEx("pills_flow_visualize", "0", "Debug: 1 = don't remove pills, glow instead: white = kept, red = outside flow window, orange = too close to previous pill, cyan = over the pills limit. 2 = remove as normal, then glow the surviving pills white.", _, true, 0.0, true, 2.0);
+
 	// Create item spawns array;
-	for (new i = 0; i < view_as<int>(IL_Max); i++)
+	for (new i = 0; i < ItemList_Size; i++)
 	{
 		g_hItemSpawns[i] = new ArrayList(sizeof(ItemTracking)); 
 	}
@@ -201,9 +208,11 @@ public _HC_OnPluginDisable()
 
 public _HC_OnMapStart()
 {
+	PrecacheModel("materials/vgui/icon_arrow_down.vmt", true);
+
 	g_bIsRound1Over = false;
 
-	for (new i = 0; i < view_as<int>(IL_Max); i++)
+	for (new i = 0; i < ItemList_Size; i++)
 	{
 		delete g_hItemSpawns[i];
 		g_hItemSpawns[i] = new ArrayList(sizeof(ItemTracking)); 
@@ -291,7 +300,7 @@ static Action:TimerStart(Handle:timer)
 		if(!g_bIsRound1Over)
 		{
 			// Round1
-			EnumAndElimPillSpawns();
+			EnumAndElimSpawns();
 		}
 		else
 		{
@@ -440,7 +449,7 @@ static UpdateStartingHealthItems()
 
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
-			if(!IsValidEntity(entity) || !IsValidEdict(entity))
+			if(!IsValidEntity(entity))
 				continue;	
 			
 			if(IsInSafeRoom(entity))
@@ -491,7 +500,7 @@ static UpdateStartingHealthItems()
 
 		while ((entity = FindEntityByClassnameEx(entity, FIRST_AID_KIT_CLASSNAME)) != -1)
 		{
-			if(!IsValidEntity(entity) || !IsValidEdict(entity))
+			if(!IsValidEntity(entity))
 				continue;
 
 			if(IsInSafeRoom(entity))
@@ -519,7 +528,7 @@ static RemoveAllPills()
 	new entity = -1;
 	while ((entity = FindEntityByClassnameEx(entity, PAIN_PILLS_CLASSNAME)) != -1)
 	{	
-		if(!IsValidEntity(entity) || !IsValidEdict(entity))
+		if(!IsValidEntity(entity))
 			continue;
 		
 		if(SafelyRemoveEdict(entity))
@@ -755,53 +764,62 @@ void ResetPlugin()
 	g_iPlayerSpawn = 0;
 }
 
-void EnumAndElimPillSpawns()
+void EnumAndElimSpawns()
 {
-	EnumeratePillSpawns();
-	RemoveToLimits();
+	EnumerateSpawns();
+	if(ApplyPillFlowFilter() == false)
+	{
+		RemoveToLimits();
+	}
 }
 
-static EnumeratePillSpawns()
+static EnumerateSpawns()
 {
-	//LogMessage("EnumeratePillSpawns()");
+	//LogMessage("EnumerateSpawns()");
+
+    /*
+        Start every enumeration from a clean slate.
+        Without this, configs running savespawns 0 stack round-2 entries on round-1 leftovers
+        and mapspecific 0 leaks spawns across maps (OnMapStart only clears when mapspecific != 0)
+    */
+    for (int i = 0; i < ItemList_Size; i++) {
+        g_hItemSpawns[i].Clear();
+    }
 
 	ItemTracking curitem;
-	ItemList itemindex;
+	int itemindex;
 	float origins[3], angles[3];
 	new psychonic = GetMaxEntities();
 
-	int mylimit = 2;
+	int iCustomPill_limit = 2;
 	if(g_hMIData.JumpToKey("default"))
 	{
-		mylimit = KvGetNum(g_hMIData, "pill_limit", mylimit);
+		iCustomPill_limit = g_hMIData.GetNum("pill_limit", iCustomPill_limit);
 
 		g_hMIData.GoBack();
 	}
 
 	if (g_hMIData.JumpToKey(g_sCurMap)) 
 	{
-		mylimit = KvGetNum(g_hMIData, "pill_limit", mylimit);
+		iCustomPill_limit = g_hMIData.GetNum("pill_limit", iCustomPill_limit);
 	}
-	KvRewind(g_hMIData);
+	g_hMIData.Rewind();
 
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
-		if(IsValidEntity(i) && IsValidEdict(i))
+		if(IsValidEntity(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
-			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
+			if(itemindex == IL_PainPills /* && !IsEntityInSaferoom(i) */ )
 			{
 				//if(IsInCabinet(i)) continue;
 				if(IsInFinalArea(i)) continue;
 
-				if(mylimit == 0)
+				if(iCustomPill_limit == 0)
 				{
 					//LogMessage("[IT] Killing spawn");
 
-					if(!AcceptEntityInput(i, "kill"))
-					{
-						LogError("[IT] Error killing instance of item %s", g_sItemNames[itemindex][IN_longname]);
-					}
+					RemoveEntity(i);
 				}
 				else 
 				{
@@ -847,7 +865,7 @@ static RemoveToLimits()
 		KvRewind(g_hMIData);
 	}
 
-	for(new itemidx = 0; itemidx < view_as<int>(IL_Max); itemidx++)
+	for(new itemidx = 0; itemidx < ItemList_Size; itemidx++)
 	{
 		if (curlimit > 0)
 		{
@@ -860,8 +878,9 @@ static RemoveToLimits()
 				//LogMessage("[IT] Killing randomly chosen %s #%d", g_sItemNames[itemidx][IN_longname], killidx);
 
 				g_hItemSpawns[itemidx].GetArray(killidx, curitem);
-				if(IsValidEntity(curitem.IT_entity) && IsValidEdict(curitem.IT_entity) && !AcceptEntityInput(curitem.IT_entity, "kill"))
+				if(IsValidEntity(curitem.IT_entity))
 				{
+					RemoveEntity(curitem.IT_entity);
 					LogError("[IT] Error killing instance of item %s", g_sItemNames[itemidx][IN_longname]);
 				}
 				g_hItemSpawns[itemidx].Erase(killidx);
@@ -875,29 +894,31 @@ static GenerateStoredPillSpawns()
 {
 	KillRegisteredItems();
 	SpawnItems();
+
+    // Repaint glows on the respawned entities.
+    if (g_hCvarPillFlowVisualize.IntValue > 0) {
+        ApplyPillFlowFilter();
+    }
 }
 
 static KillRegisteredItems()
 {
 	//LogMessage("KillRegisteredItems()");
 
-	decl ItemList:itemindex;
+	int itemindex;
 	new psychonic = GetMaxEntities();
 	for(new i = MaxClients + 1; i <= psychonic; i++)
 	{
-		if(IsValidEntity(i) && IsValidEdict(i))
+		if(IsValidEntity(i))
 		{
 			itemindex = GetItemIndexFromEntity(i);
-			if(itemindex == ItemList:IL_PainPills /* && !IsEntityInSaferoom(i) */ )
+			if(itemindex == IL_PainPills /* && !IsEntityInSaferoom(i) */ )
 			{
 				//if(IsInCabinet(i)) continue;
 				if(IsInFinalArea(i)) continue;
 
 				// Kill items we're tracking;
-				if(!AcceptEntityInput(i, "kill"))
-				{
-					LogError("[IT] Error killing instance of item %s", g_sItemNames[itemindex][IN_longname]);
-				}
+				RemoveEntity(i);
 			}
 		}
 	}
@@ -911,7 +932,7 @@ static SpawnItems()
 	new itement;
 	decl String:sModelname[PLATFORM_MAX_PATH];
 	int wepid;
-	for(new itemidx = 0; itemidx < view_as<int>(IL_Max); itemidx++)
+	for(new itemidx = 0; itemidx < ItemList_Size; itemidx++)
 	{
 		Format(sModelname, sizeof(sModelname), "models/w_models/weapons/w_eq_%s.mdl", g_sItemNames[itemidx][IN_modelname]);
 		arrsize = g_hItemSpawns[itemidx].Length;
@@ -927,7 +948,7 @@ static SpawnItems()
 			angles[1]=curitem.IT_angles1;
 			angles[2]=curitem.IT_angles2;
 
-			wepid = GetWeaponIDFromItemList(ItemList:itemidx);
+			wepid = GetWeaponIDFromItemList(itemidx);
 			
 			//LogMessage("[IT] Spawning an instance of item %s (%d, wepid %d), number %d, at %.02f %.02f %.02f", g_sItemNames[itemidx][IN_officialname], itemidx, wepid, idx, origins[0], origins[1], origins[2]);
 			
@@ -938,11 +959,19 @@ static SpawnItems()
 			TeleportEntity(itement, origins, angles, NULL_VECTOR);
 			DispatchSpawn(itement);
 			SetEntityMoveType(itement,MOVETYPE_NONE);
+
+            /*
+                Keep the stored entry pointing at the live entity so passes that
+                run after the respawn (e.g. the pill flow filter) address the
+                round-2 entity, not the killed round-1 one.
+            */
+            curitem.IT_entity = itement;
+            g_hItemSpawns[itemidx].SetArray(idx, curitem, sizeof(curitem));
 		}
 	}
 }
 
-static ItemList GetItemIndexFromEntity(entity)
+static int GetItemIndexFromEntity(int entity)
 {
 	static char classname[128];
 	GetEdictClassname(entity, classname, sizeof(classname));
@@ -952,15 +981,15 @@ static ItemList GetItemIndexFromEntity(entity)
 		return IL_PainPills;
 	}
 	
-	return ItemList:IL_None;
+	return IL_None;
 }
 
-stock GetURandomIntRange(min, max)
+static int GetURandomIntRange(int min, int max)
 {
 	return (GetURandomInt() % (max-min+1)) + min;
 }
 
-static int GetWeaponIDFromItemList(ItemList:id)
+static int GetWeaponIDFromItemList(int id)
 {
 	switch(id)
 	{
@@ -1004,4 +1033,311 @@ bool IsInSafeRoom(int kit)
 	}
 
 	return false;
+}
+
+// Returns true when the filter is active (= it owns the pills limit this round).
+static bool ApplyPillFlowFilter()
+{
+	int iCustomPill_limit = 2;
+	float fFlowMin = 0.0, fFlowMax = 1.0, fSep = 0.0;
+	bool pillflow_finale = false;
+	if(g_hMIData.JumpToKey("default"))
+	{
+		iCustomPill_limit = g_hMIData.GetNum("pill_limit", iCustomPill_limit);
+		fFlowMin = g_hMIData.GetFloat("pillflow_min", fFlowMin);
+		fFlowMax = g_hMIData.GetFloat("pillflow_max", fFlowMax);
+		fSep = g_hMIData.GetFloat("pillflow_separation", fSep);
+		pillflow_finale = view_as<bool>(g_hMIData.GetNum("pillflow_finale", pillflow_finale));
+
+		g_hMIData.GoBack();
+	}
+
+	if (g_hMIData.JumpToKey(g_sCurMap)) 
+	{
+		iCustomPill_limit = g_hMIData.GetNum("pill_limit", iCustomPill_limit);
+		fFlowMin = g_hMIData.GetFloat("pillflow_min", fFlowMin);
+		fFlowMax = g_hMIData.GetFloat("pillflow_max", fFlowMax);
+		fSep = g_hMIData.GetFloat("pillflow_separation", fSep);
+		pillflow_finale = view_as<bool>(g_hMIData.GetNum("pillflow_finale", pillflow_finale));
+	}
+
+	g_hMIData.Rewind();
+
+    if (fFlowMin <= 0.0 && fFlowMax >= 1.0 && fSep <= 0.0) {
+        return false;
+    }
+
+    if (fFlowMax < fFlowMin) {
+        LogError("[%s] pillflow_max (%.2f) < pillflow_min (%.2f); pill flow filter disabled.", "rotoblin.healthcontrol", fFlowMax, fFlowMin);
+        return false;
+    }
+
+    if (!pillflow_finale && g_bIsFinale) {
+        if (IsDebugEnabled()) {
+            LogMessage("[%s] Finale map, pill flow filter skipped.", "rotoblin.healthcontrol");
+        }
+        return false;
+    }
+
+    float fMaxFlowDist = L4D2Direct_GetMapMaxFlowDistance();
+    if (fMaxFlowDist <= 0.0) {
+        return false;
+    }
+
+    ArrayList hSpawns = g_hItemSpawns[IL_PainPills];
+    int iCount = hSpawns.Length;
+    if (!iCount) {
+        return true;
+    }
+
+    int iVisualize = g_hCvarPillFlowVisualize.IntValue;
+    bool bVisualize = (iVisualize == 1);   // mode 1 glows instead of removing; mode 2 removes and glows survivors
+    ItemTracking curitem;
+    float fOrigins[3];
+
+    // Resolve each stored pill spawn to a flow fraction and apply the window.
+    float[] fPct = new float[iCount];
+    int[] iReason = new int[iCount];
+
+    for (int i = 0; i < iCount; i++) {
+        hSpawns.GetArray(i, curitem, sizeof(curitem));
+        GetSpawnOrigins(fOrigins, curitem);
+
+        Address pNav = L4D_GetNearestNavArea(fOrigins, 120.0, true, false, false, 2);
+        if (pNav == Address_Null) {
+            pNav = L4D2Direct_GetTerrorNavArea(fOrigins);
+        }
+
+        float fFlow = (pNav != Address_Null) ? L4D2Direct_GetTerrorNavAreaFlow(pNav) : -1.0;
+        if (fFlow < 0.0) {
+            fPct[i] = -1.0;
+            iReason[i] = PF_NO_FLOW;
+            continue;
+        }
+
+        fPct[i] = fFlow / fMaxFlowDist;
+        if (fPct[i] > 1.0) {
+            fPct[i] = 1.0;
+        }
+
+        if (fPct[i] < fFlowMin || fPct[i] > fFlowMax) {
+            iReason[i] = PF_CULL_WINDOW;
+        }
+    }
+
+    // Index order sorted by ascending flow (spacing passes walk the map start->end).
+    int[] iOrder = new int[iCount];
+    for (int i = 0; i < iCount; i++) {
+        iOrder[i] = i;
+    }
+    for (int i = 1; i < iCount; i++) {
+        int tmp = iOrder[i];
+        int j = i - 1;
+        while (j >= 0 && fPct[iOrder[j]] > fPct[tmp]) {
+            iOrder[j + 1] = iOrder[j];
+            j--;
+        }
+        iOrder[j + 1] = tmp;
+    }
+
+    // Minimum flow separation; of a too-close cluster the earliest spawn wins.
+    if (fSep > 0.0) {
+        float fLastKept = -1.0;
+        for (int k = 0; k < iCount; k++) {
+            int i = iOrder[k];
+            if (iReason[i] != PF_KEEP) {
+                continue;
+            }
+            if (fLastKept >= 0.0 && fPct[i] - fLastKept < fSep) {
+                iReason[i] = PF_CULL_SEP;
+            } else {
+                fLastKept = fPct[i];
+            }
+        }
+    }
+
+    /*
+        Enforce the pills limit here, evenly spaced by flow.
+        Spawns without flow data can't be spaced, so they occupy limit slots off the top.
+    */
+    if (iCustomPill_limit >= 0) {
+        int iKept = 0, iNoFlow = 0;
+        for (int i = 0; i < iCount; i++) {
+            if (iReason[i] == PF_KEEP) {
+                iKept++;
+            } else if (iReason[i] == PF_NO_FLOW) {
+                iNoFlow++;
+            }
+        }
+
+        int iSlots = iCustomPill_limit - iNoFlow;
+        if (iSlots < 0) {
+            /*
+                More flowless spawns than the limit alone allows: remove the extra.
+                No flow data means there is nothing to space them by, so array order decides
+            */
+            int iExcess = -iSlots;
+            for (int i = iCount - 1; i >= 0 && iExcess > 0; i--) {
+                if (iReason[i] == PF_NO_FLOW) {
+                    iReason[i] = PF_CULL_LIMIT;
+                    iExcess--;
+                }
+            }
+            iSlots = 0;
+        }
+
+        if (iSlots < iKept) {
+            bool[] bSelected = new bool[iCount];
+            for (int slot = 0; slot < iSlots; slot++) {
+                // Ideal flow for this slot
+                float fWant = fFlowMin + (fFlowMax - fFlowMin) * (float(slot) + 0.5) / float(iSlots);
+
+                int best = -1;
+                float fBestDist = 0.0;
+                for (int i = 0; i < iCount; i++) {
+                    if (iReason[i] != PF_KEEP || bSelected[i]) {
+                        continue;
+                    }
+                    float d = fPct[i] - fWant;
+                    if (d < 0.0) {
+                        d = -d;
+                    }
+                    if (best == -1 || d < fBestDist) {
+                        best = i;
+                        fBestDist = d;
+                    }
+                }
+                if (best != -1) {
+                    bSelected[best] = true;
+                }
+            }
+
+            for (int i = 0; i < iCount; i++) {
+                if (iReason[i] == PF_KEEP && !bSelected[i]) {
+                    iReason[i] = PF_CULL_LIMIT;
+                }
+            }
+        }
+    }
+
+    // Apply: kill+erase culled spawns (descending so indices stay valid), or
+    // just glow everything in visualize mode.
+    int iRemoved[4] = {0, ...};   // indexed by PF_CULL_* reason
+
+    for (int i = iCount - 1; i >= 0; i--) {
+        hSpawns.GetArray(i, curitem, sizeof(curitem));
+
+        if (iReason[i] <= PF_KEEP) {
+            if (IsDebugEnabled()) {
+                LogMessage("[%s] Pill spawn %d flow=%.1f%% KEPT%s", "rotoblin.healthcontrol", curitem.IT_entity,
+                    fPct[i] * 100.0, iReason[i] == PF_NO_FLOW ? " (no flow data)" : "");
+            }
+            if (iVisualize > 0) {
+                //L4D2_SetEntityGlow(curitem.IT_entity, L4D2Glow_Constant, 0, 0, PF_GLOW_KEEP, false);
+                CreateGlowAndSprite(curitem.IT_entity, PF_GLOW_KEEP);
+            }
+            continue;
+        }
+
+        if (IsDebugEnabled()) {
+            static const char sReasons[4][] = {"", "outside window", "separation", "limit spacing"};
+            LogMessage("[%s] Pill spawn %d flow=%.1f%% %s (%s)", "rotoblin.healthcontrol", curitem.IT_entity,
+                fPct[i] * 100.0, bVisualize ? "WOULD REMOVE" : "REMOVED", sReasons[iReason[i]]);
+        }
+        iRemoved[iReason[i]]++;
+
+        if (bVisualize) {
+            //L4D2_SetEntityGlow(curitem.IT_entity, L4D2Glow_Constant, 0, 0, PF_GLOW_CULL[iReason[i]], false);
+			CreateGlowAndSprite(curitem.IT_entity, PF_GLOW_CULL[iReason[i]]);
+	    } else {
+            if (IsValidEntity(curitem.IT_entity)) {
+                RemoveEntity(curitem.IT_entity);
+            }
+            hSpawns.Erase(i);
+        }
+    }
+
+    if (IsDebugEnabled()) {
+        LogMessage("[%s] Pill flow window %.0f%%-%.0f%% sep %.1f%%: %d kept, %d %s (window), %d (separation), %d (limit spacing).%s",
+            "rotoblin.healthcontrol", fFlowMin * 100.0, fFlowMax * 100.0, fSep * 100.0,
+            iCount - iRemoved[PF_CULL_WINDOW] - iRemoved[PF_CULL_SEP] - iRemoved[PF_CULL_LIMIT],
+            iRemoved[PF_CULL_WINDOW], bVisualize ? "flagged" : "removed",
+            iRemoved[PF_CULL_SEP], iRemoved[PF_CULL_LIMIT],
+            bVisualize ? " (visualize: nothing deleted; white = kept, red = window, orange = separation, cyan = limit)" : "");
+    }
+
+    return true;
+}
+
+static void CreateGlowAndSprite(int pill, const char[] sColor)
+{
+    int glow = CreateEntityByName("prop_glowing_object");
+    if( CheckIfEntitySafe(glow) )
+	{
+		static char sModelName[64];
+		GetEntPropString(pill, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
+    
+		DispatchKeyValue(glow, "model", sModelName);
+		DispatchKeyValue(glow, "disableshadows", "1");
+		DispatchKeyValue(glow, "targetname", "rotoblin.healthcontrol");
+		
+		DispatchKeyValue(glow, "StartGlowing", "1");
+		DispatchKeyValue(glow, "GlowForTeam", "-1");
+
+		/* GlowForTeam =  -1:ALL  , 0:NONE , 1:SPECTATOR  , 2:SURVIVOR , 3:INFECTED */
+		
+		float vPos[3], vAng[3];
+		GetEntPropVector(pill, Prop_Send, "m_vecOrigin", vPos);
+		GetEntPropVector(pill, Prop_Send, "m_angRotation", vAng);
+		TeleportEntity(glow, vPos, vAng, NULL_VECTOR);
+		DispatchSpawn(glow);
+		SetEntityRenderFx(glow, RENDERFX_FADE_FAST);
+		SetEntProp(glow, Prop_Send, "m_CollisionGroup", 0);
+		SetEntProp(glow, Prop_Send, "m_nSolidType", 0);
+		SetVariantString("!activator");
+		AcceptEntityInput(glow, "SetParent", pill); 
+	}
+
+	int sprite       = CreateEntityByName("env_sprite");
+	if( CheckIfEntitySafe(sprite) )
+	{
+		DispatchKeyValue(sprite, "spawnflags", "1");
+
+		DispatchKeyValue(sprite, "model", "materials/vgui/icon_arrow_down.vmt");
+		DispatchKeyValue(sprite, "rendercolor", sColor);
+		DispatchKeyValue(sprite, "renderamt", "255"); // If renderamt goes before rendercolor, it doesn't render
+		DispatchKeyValueFloat(sprite, "scale", 1.0);
+		DispatchKeyValue(sprite, "fademindist", "-1");
+
+		DispatchSpawn(sprite);
+		ActivateEntity(sprite);
+
+		float vSpritePos[3];
+		GetEntPropVector(pill, Prop_Send, "m_vecOrigin", vSpritePos);
+
+		vSpritePos[2] += 30.0;
+		TeleportEntity(sprite, vSpritePos, NULL_VECTOR, NULL_VECTOR);
+
+		AcceptEntityInput(sprite, "ShowSprite");
+	}
+}
+
+#define ENTITY_SAFE_LIMIT 2000
+static bool CheckIfEntitySafe(int entity)
+{
+	if(entity == -1) return false;
+
+	if(	entity > ENTITY_SAFE_LIMIT)
+	{
+		AcceptEntityInput(entity, "Kill");
+		return false;
+	}
+	return true;
+}
+
+static void GetSpawnOrigins(float buf[3], const ItemTracking spawn)
+{
+    buf[0] = spawn.IT_origins;
+    buf[1] = spawn.IT_origins1;
+    buf[2] = spawn.IT_origins2;
 }

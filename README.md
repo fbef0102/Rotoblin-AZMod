@@ -187,15 +187,21 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * **General:**
   * Remove restricted invisible wall Infected couldn't go through
   * Remove miniguns and machine guns
-  * Extra Pills
-    * Limit 2 pill in cabinets, but the pill is not fixed spawn
-    * Final rescue area: 4 pills
-    * On the road: Spawn varying numbers of pills depending on the route length of the map
-    * Remove pill spawns in bad locations or excessive density in a location 
   * Cleaned up the Maps from Junk Props that you could get stuck on, allowing for smoother movement.
   * Added Many obstacles and barriers (Based on [Roto2](https://github.com/raziEiL/rotoblin2/tree/master/left4dead/addons/stripper/maps)、[L4D2 TLS](https://github.com/jacob404/Official-Vscripts-Decompiled/tree/master/update)、[Zonemod](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/master/cfg/stripper/zonemod))
   * Make distance score correspond to final rescue event progress
+  * Remove weapons/items spawns in bad locations or excessive density in a location 
   
+* **Pills**
+  * Limit 2 pill in cabinets, but the pill is not fixed spawn
+  * Final rescue area: 4 pills
+  * On the road: Spawn varying numbers of pills depending on the route length of the map, see [data/mapinfo.txt](/left4dead/addons/sourcemod/data/mapinfo.txt)
+  * Spawning Logic
+    * Method: Flow-based instead of random
+    * Pills Spawn: 20% ~ 80%
+    * Map distance between pill spawns: 4%
+    * Finales: Exempted
+
 * **Nav Remake:**
   * No Mercy Map 1~5
   * Crash Course Map 1~2
@@ -231,10 +237,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Still Spread: 0.32 -> 0.22
   * Moveing Spread: 3.0 -> 2.0
   * Ammo: 480->800
-  * Damage Drop-off: 0.84 -> 0.78
-  * Reload Time: 2.23s -> 1.9s
-  * Magazine Quick Reload: 1.43s
-  * Damage: 20 -> 24
+  * Damage Drop-off: 0.84 Unchanged
+  * Reload Time: 2.23s -> 1.8s
+  * Magazine Quick Reload: 1.40s
+  * Damage: 20 -> 22
+  * Range: 2500 Unchanged
   * Limit: 3
   * FF Protect Range: 30
   * FF Protect Interval: 0.3 second
@@ -383,6 +390,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
         - *2*: **Bill**
         - *3*: **Zoey**
         - *4*: **Louis**
+      * Buttons: RELOAD
       * Buttons: MOUSE2
         - Disabled by default, ```sm_warpm2``` to enable it individually
     * No gunfire slowdown and shove slowdown
@@ -477,6 +485,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops distance points accumulating whilst the tank is alive,
       * Unfreezes distance if a Survivor makes it to the end saferoom and close door while the Tank is still up.
       * Unfreeze distance if the Tank goes AI
+    * Prevents Tank spawns from being blocked when the Special Infected team is full (official cvar `z_max_player_zombies` +1 slots)
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
@@ -496,7 +505,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
     * Fixed a door can startle the witch, causing her to lose target
     * Hops a startled witch past whatever she is stuck on
-    * Stops the witch freezing on corners at a low nb_update_frequency. Credit: [Volence](https://github.com/Volence/riverside-l4d-plugins)
+    * Stops the witch freezing on corners at a low `nb_update_frequency`. Credit: [Volence](https://github.com/Volence/riverside-l4d-plugins)
+    * Map fire no longer burns the witch
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -643,12 +653,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     > **Developer Comment:** Don't even think using god frames to prevent yourself from Witch dmg or hittable car dmg.
   * Fixed the problem that survivor bots always take the lead and won't wait behind the lead human player in versus mode
   * Fixed slowdown which caused by common infected is overridden by other damage.
-  * Allows gravity when survivors are staggering + allows staggering over a ledge and falling.
-    * Survivor still gets stumble even in the air
+  * ~~Allows gravity when survivors are staggering + allows staggering over a ledge and falling.~~
+    * ~~Survivor still gets stumble even in the air~~
   * Return pills/adrenalines thrown through shoving key if not successfully given
   * Stopping pick-up progress on incapped survivors right after getting tank punch or tank Rock
   * Enable skill report to chat
   * Blocks ledge hangs over drops that would not hurt
+  * Stops survivors dying to "fell too far" from short drops after a tank punch, fall damage is taken from the speed gravity could give.
+  * Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
 
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

@@ -244,14 +244,14 @@ public void OnGameFrame()
 						//PrintToChatAll("Hunter %N on grounded", client);
 
 						g_fPouncingStopTime[client] = fNow;    
-						//if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
+						if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
 					}
 					else if ( GetEntityMoveType(client) == MOVETYPE_LADDER ) 
 					{
 						//PrintToChatAll("Hunter %N on ladder");
 
 						g_fPouncingStopTime[client] = fNow;    
-						//if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
+						if(bIsBHopping[client]) SetEntProp(client, Prop_Send, "m_isAttemptingToPounce", 0);
 					}
 				} 
 				else if (fNow - g_fPouncingStopTime[client] > cvarHunterGroundM2Godframes.FloatValue) 

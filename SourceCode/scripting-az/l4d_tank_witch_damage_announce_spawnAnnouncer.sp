@@ -41,7 +41,7 @@ public Plugin:myinfo =
 
 static		Handle:g_hTankHealth, Handle:g_hVsBonusHealth, Handle:g_hDifficulty, Handle:g_hGameMode, bool:g_bCvarSkipBots, g_iCvarHealth[BOSSES],
 			g_iDamage[MAXPLAYERS+1][MAXPLAYERS+1][BOSSES], g_iWitchIndex[MAXPLAYERS+1], g_iTotalDamage[MAXPLAYERS+1][BOSSES],
-			bool:bTempBlock, g_iLastKnownTank, bool:g_bTankInGame, Handle:g_hTrine, g_iCvarFlags, g_iCvarPrivateFlags,
+			bool:g_bRoundEnd, g_iLastKnownTank, bool:g_bTankInGame, Handle:g_hTrine, g_iCvarFlags, g_iCvarPrivateFlags,
 			bool:g_bNoHrCrown[MAXPLAYERS+1], g_iWitchCount, bool:g_bCvarRunAway, g_iWitchRef[MAXPLAYERS+1];
 new control_time;
 new                     g_iLastTankHealth           = 0;                // Used to award the killing blow the exact right amount of damage
@@ -136,7 +136,7 @@ public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	g_bIsTankAlive = false;
 	g_iLastTankHealth = 0;
 	g_TankOtherDamage = 0;
-	bTempBlock = false;
+	g_bRoundEnd = false;
 	g_bTankInGame = false;
 	g_iLastKnownTank = 0;
 	g_iWitchCount = 0;
@@ -162,9 +162,9 @@ public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroad
 public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	control_time = 1;
-	if (bTempBlock || !g_iCvarFlags) return;
+	if (g_bRoundEnd || !g_iCvarFlags) return;
 
-	bTempBlock = true;
+	g_bRoundEnd = true;
 	g_bTankInGame = false;
 
 	decl String:sName[32];
@@ -282,7 +282,7 @@ public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 
 public Action:PD_ev_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (bTempBlock || !(g_iCvarFlags & (1 << _:TANK))||!g_bIsTankAlive) return;
+	if (g_bRoundEnd || !(g_iCvarFlags & (1 << _:TANK))||!g_bIsTankAlive) return;
 	
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
@@ -353,10 +353,33 @@ CloneStats(client,previoustankclient)
 	g_iLastKnownTank = 0;
 }
 
+public void OnClientDisconnect(int client)
+{
+	if (!IsTank(client))
+		return;
+
+	if (!g_bRoundEnd && g_bTankInGame && g_iCvarFlags & (1 << _:TANK))
+	{
+		if (g_iTotalDamage[client][TANK])
+		{
+			if(g_bIsTankAlive){
+				PrintDamage(client, 1);
+				g_bIsTankAlive = false;
+				g_TankOtherDamage = 0;
+				g_bTankInGame = false;
+			}
+		}
+		else
+		{
+			CreateTimer(1.5, PD_t_FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
+		}
+	}
+}
+
 public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	decl client;
-	if (!bTempBlock && g_bTankInGame && g_iCvarFlags & (1 << _:TANK) && IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
+	if (!g_bRoundEnd && g_bTankInGame && g_iCvarFlags & (1 << _:TANK) && IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
 	{
 		if (g_iTotalDamage[client][TANK])
 		{
@@ -403,7 +426,7 @@ IsTankInGame(exclude = 0)
 
 public Action:PD_ev_PlayerBotReplace(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (bTempBlock || g_bCvarSurvLimit==1 || !(g_iCvarFlags & (1 << _:TANK))) return;
+	if (g_bRoundEnd || g_bCvarSurvLimit==1 || !(g_iCvarFlags & (1 << _:TANK))) return;
 
 	// tank leave?
 	new bot = GetClientOfUserId(GetEventInt(event, "bot"));
@@ -421,7 +444,7 @@ public Action:PD_ev_PlayerBotReplace(Handle:event, const String:name[], bool:don
 
 public Action:PD_ev_TankFrustrated(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (bTempBlock || !(g_iCvarFlags & (1 << _:TANK))) return;
+	if (g_bRoundEnd || !(g_iCvarFlags & (1 << _:TANK))) return;
 
 	#if debug
 		LogMessage("TankFrustrated fired (pass time %f sec)", TANK_PASS_TIME);
@@ -497,7 +520,7 @@ public Action:PD_t_EnumThisWitch(Handle:timer, any:entity)
 
 public Action:PD_ev_InfectedHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if (bTempBlock || !(g_iCvarFlags & (1 << _:WITCH))) return;
+	if (g_bRoundEnd || !(g_iCvarFlags & (1 << _:WITCH))) return;
 
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 

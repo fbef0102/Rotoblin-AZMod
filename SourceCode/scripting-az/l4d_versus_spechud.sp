@@ -4,6 +4,7 @@
 #include <sdktools>
 #include <l4d2_weapon_stocks>
 #include <multicolors>
+#include <l4d_lib>
 
 #define SPECHUD_DRAW_INTERVAL   0.5
 #define CLAMP(%0,%1,%2) (((%0) > (%2)) ? (%2) : (((%0) < (%1)) ? (%1) : (%0)))
@@ -144,6 +145,11 @@ public OnClientPutInServer(client)
 
 public OnClientDisconnect(Client)
 {
+	if (IsTank(Client))
+	{
+		CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
+	}
+	
 	if (IsFakeClient(Client))
 		return;
 		
@@ -553,26 +559,6 @@ GetRealClientCount()
 	return clients;
 }
 
-bool:InSecondHalfOfRound()
-{
-	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
-}
-
-bool:IsSpectator(client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 1;
-}
-
-bool:IsSurvivor(client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 2;
-}
-
-bool:IsInfected(client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 3;
-}
-
 bool:IsInfectedGhost(client) 
 {
 	return bool:GetEntProp(client, Prop_Send, "m_isGhost");
@@ -597,11 +583,6 @@ FindTank()
 GetTankFrustration(tank)
 {
 	return (100 - GetEntProp(tank, Prop_Send, "m_frustration"));
-}
-
-bool:IsIncapacitated(client)
-{
-	return bool:GetEntProp(client, Prop_Send, "m_isIncapacitated");
 }
 
 bool:IsSurvivorHanging(client)
@@ -661,18 +642,10 @@ public Action:FindAnyTank(Handle:timer, any:client)
 IsTankInGame(exclude = 0)
 {
 	for (new i = 1; i <= MaxClients; i++)
-		if (exclude != i && IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerTank(i) && IsInfectedAlive(i) && !IsIncapacitated(i))
+		if (exclude != i && IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerTank(i) && IsPlayerAlive(i) && !IsIncapacitated(i))
 			return i;
 
 	return 0;
-}
-stock bool:IsPlayerTank(tank_index)
-{
-	return GetEntProp(tank_index, Prop_Send, "m_zombieClass") == 5;
-}
-stock bool:IsInfectedAlive(client)
-{
-	return GetEntProp(client, Prop_Send, "m_iHealth") > 1;
 }
 
 /* Stocks */

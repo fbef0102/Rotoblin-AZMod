@@ -88,7 +88,10 @@ void Event_PlayerDeath(Event hEvent, const char[] name, bool dontBroadcast)
 	int client = GetClientOfUserId(userid);
 	if (!client || !IsClientInGame(client) || !IsFakeClient(client) || GetClientTeam(client) != TEAM_INFECTED) return;
 
-	CreateTimer(0.5, Timer_KickInfectedBot, userid);
+	int iZombieClassType = GetEntProp(client, Prop_Send, "m_zombieClass");
+	
+	if(iZombieClassType == ZC_TANK) CreateTimer(5.0, Timer_KickInfectedBot, userid);
+	else CreateTimer(1.0, Timer_KickInfectedBot, userid);
 }
 
  //When a spawned Infected Player disconnects, changes team or becomes Tank the SI will instantly get killed unless it has someone capped.

@@ -26,10 +26,11 @@ enum eSurvFlow
 
 enum
 {
-	eAllowCommand	= (1 << 0),
-	eAllowButton	= (1 << 1),
+	eAllowCommand		= (1 << 0),
+	eAllowButtonM2		= (1 << 1),
+	eAllowButtonReload	= (1 << 2),
 
-	eAllowAll		= (1 << 0)|(1 << 1)
+	eAllowAll			= (1 << 3) - 1
 };
 
 int
@@ -51,7 +52,8 @@ int
 
 bool
 	g_bCvarGhostWarpFlagAllowCommand,
-	g_bCvarGhostWarpFlagAllowButton;
+	g_bCvarGhostWarpFlagAllowM2,
+	g_bCvarGhostWarpFlagAllowReload;
 
 float 
 	g_fCvarGhostWarpDelay;
@@ -99,8 +101,8 @@ public void OnPluginStart()
 
 	g_hCvarGhostWarpFlag = CreateConVar( \
 		"l4d_ghost_warp_flag", \
-		"3", \
-		"Enable|Disable ghost warp. 0 - disable, 1 - enable warp via command 'sm_warpto', 2 - enable warp via button 'IN_ATTACK2', 3 - enable all.", \
+		"5", \
+		"Enable|Disable ghost warp. 0 - disable, 1 - enable warp via command 'sm_warpto', 2 - enable warp via button 'IN_ATTACK2', 4 - enable warp via button 'IN_Reload', 7 - enable all.", \
 		_, true, 0.0, true, float(eAllowAll)
 	);
 
@@ -148,7 +150,8 @@ void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVa
 void GetCvars()
 {
 	g_bCvarGhostWarpFlagAllowCommand = (g_hCvarGhostWarpFlag.IntValue & eAllowCommand) > 0;
-	g_bCvarGhostWarpFlagAllowButton = (g_hCvarGhostWarpFlag.IntValue & eAllowButton) > 0;
+	g_bCvarGhostWarpFlagAllowM2 = (g_hCvarGhostWarpFlag.IntValue & eAllowButtonM2) > 0;
+	g_bCvarGhostWarpFlagAllowReload = (g_hCvarGhostWarpFlag.IntValue & eAllowButtonReload) > 0;
 
 	g_fCvarGhostWarpDelay = g_hCvarGhostWarpDelay.FloatValue;
 	g_iCvarSurvivorLimit = g_hCvarSurvivorLimit.IntValue;
@@ -309,7 +312,7 @@ void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	g_bEnableGhostM2Warp[client] = g_bCvarGhostWarpFlagAllowButton;
+	g_bEnableGhostM2Warp[client] = g_bCvarGhostWarpFlagAllowM2;
 }
 
 void Event_RoundStart(Event hEvent, const char[] sEventName, bool bDontBroadcast)
@@ -335,8 +338,6 @@ public void L4D_OnEnterGhostState(int iClient)
 
 	g_iLastTargetSurvivor[iClient] = 0;
 	g_fGhostWarpDelay[iClient] = 0.0;
-	
-	if (!g_bEnableGhostM2Warp[iClient] ) return;
 
 	SDKUnhook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 	SDKHook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
@@ -344,20 +345,6 @@ public void L4D_OnEnterGhostState(int iClient)
 
 void Hook_OnPostThinkPost(int iClient)
 {
-	int iPressButtons = GetEntProp(iClient, Prop_Data, "m_afButtonPressed");
-
-	// Key 'IN_RELOAD' was used in plugin 'confoglcompmod', do we need it?
-	if (!(iPressButtons & IN_ATTACK2)/* && !(iPressButtons & IN_RELOAD)*/) {
-		return;
-	}
-
-	// For some reason, the game resets button 'IN_ATTACK2' for infected ghosts at some point.
-	// So we need spam protection.
-	if (g_fGhostWarpDelay[iClient] >= GetGameTime()) {
-		//PrintToChat(iClient, "%s You can't use this command that often, wait another \x04%.01f\x01 sec.", PLUGIN_TAG_COLOR, g_fGhostWarpDelay[iClient] - GetGameTime());
-		return;
-	}
-
 	if (GetClientTeam(iClient) != L4D_TEAM_INFECTED
 		|| GetEntProp(iClient, Prop_Send, "m_isGhost", 1) < 1
 		|| !IsPlayerAlive(iClient)
@@ -368,10 +355,22 @@ void Hook_OnPostThinkPost(int iClient)
 		return;
 	}
 
-	// We didn't find any survivors, is the round over?
-	if (!WarpToNextSurvivor(iClient)) {
-		//SDKUnhook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
-		g_iLastTargetSurvivor[iClient] = 0;
+	int iPressButtons = GetEntProp(iClient, Prop_Data, "m_afButtonPressed");
+
+	if( (g_bEnableGhostM2Warp[iClient] && iPressButtons & IN_ATTACK2) || (g_bCvarGhostWarpFlagAllowReload && iPressButtons & IN_RELOAD) )
+	{
+		// For some reason, the game resets button 'IN_ATTACK2' for infected ghosts at some point.
+		// So we need spam protection.
+		if (g_fGhostWarpDelay[iClient] >= GetGameTime()) {
+			//PrintToChat(iClient, "%s You can't use this command that often, wait another \x04%.01f\x01 sec.", PLUGIN_TAG_COLOR, g_fGhostWarpDelay[iClient] - GetGameTime());
+			return;
+		}
+
+		// We didn't find any survivors, is the round over?
+		if (!WarpToNextSurvivor(iClient)) {
+			//SDKUnhook(iClient, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
+			g_iLastTargetSurvivor[iClient] = 0;
+		}
 	}
 }
 

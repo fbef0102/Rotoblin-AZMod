@@ -144,6 +144,9 @@ void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 
 public void OnClientDisconnect(int client)
 {
+	if (!g_bIsHooked)
+		return;
+		
 	if (!IsTank(client))
 		return;
 

@@ -162,19 +162,29 @@ public Action:CountTimer(Handle:hTimer,any:client)
 
 }
 
+public void OnClientDisconnect(int client)
+{
+	if (!IsTank(client))
+		return;
+
+	g_isTank[client] = false;
+	if(g_bIsTankAlive) CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
 public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	decl client;
 	if (g_bIsTankAlive && IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
 	{
-		CreateTimer(1.5, FindAnyTank, client, TIMER_FLAG_NO_MAPCHANGE);
+		g_isTank[client] = false;
+		CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
-public Action:FindAnyTank(Handle:timer, any:client)
+public Action:FindAnyTank(Handle:timer)
 {
-	if(!IsTankInGame()){
-		g_isTank[client] = false;
+	if(!IsTankInGame())
+	{
 		CreateTimer(1.0, PrintTankStats, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }

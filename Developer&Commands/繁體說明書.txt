@@ -21,14 +21,20 @@
 --------地圖修改--------
 * 所有VS地圖均已解除屋頂限制
 * 移除地圖上的固定機槍
-* 地圖藥丸
-	-醫療箱限制兩顆藥丸但不一定會出現
-	-救援區域: 四顆
-	-路上: 根據路程長短生成不同數量的藥丸
 * 清除或穿透一些小型物件，使玩家能移動順暢
 * 在地圖上新增許多障礙物、武器、梯子 //參考一代rotoblin2、二代L4D2-The Last Stand、二代L4D2-Comp-Stripper-Rework
 * 最終關卡路程符合救援進度
-* 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資，
+* 在地圖上不起眼、卡圖、非倖存者必經之路、太過資源密集的地方移除一些物資與武器
+
+--------額外藥丸數量--------
+* 醫療箱限制兩顆藥丸但不一定會出現
+* 救援區域: 四顆
+* 路上: 根據路程長短生成不同數量的藥丸，每個地圖限制的藥丸數量可以查看文件 data/mapinfo.txt
+* 生成邏輯
+    * 方式: 採地圖路程追蹤而非隨機生成
+    * 生成範圍: 20% ~ 80% (倖存者真實路程)
+    * 每顆藥丸至少間格的距離地圖路程: 4%
+    * 最後一關: 不受此影響
 
 --------支援的三方圖--------
 1. City 17: gamemaps.com/details/27815
@@ -918,6 +924,31 @@
 //source: github.com/Volence/riverside-l4d-plugins, github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d_tank_rush.sp
 //Stops distance points accumulating whilst the tank is alive, with the option of unfreezing distance on reaching the Saferoom
 //Tank存活期間凍結距離分數, Tank變成AI或是倖存者到安全室時解除凍結
+
+[242] l4d_fix_tank_jointeam
+//source: github.com/jensewe
+//Prevents Tank spawns from being blocked when the Special Infected team is full (z_max_player_zombies +1 slots)
+//Tank生成不會受到特感隊伍限制 (z_max_player_zombies +1 位置已滿)
+
+[243] l4d_witch_fire_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//map fire no longer burns the witch.
+//Witch不會再被地圖上的火焰燃燒, 失去目標
+
+[243] l4d_fling_fall_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//Fall damage from the speed gravity could give, not from flings redirected into the ground
+//Example: 1. Stops survivors dying to "fell too far" from short drops after a tank punch
+//2. The survivor's fall speed was suddenly accelerated to infinity after step on witch's head or common infected's head
+//防止倖存者莫名其妙墬落直接死亡
+//譬如: 1. 被Tank拍飛一小段距離, 但加速墬落死亡
+//2. 踩到witch或是小殭屍的頭, 之後加速墬落死亡
+
+[244] l4d2_fix_rocket_pull
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_fix_rocket_pull.sp
+//Fix smoker pull launching survivor up
+//Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
+//修復被拉的玩家被震時有機率飛到天空上
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

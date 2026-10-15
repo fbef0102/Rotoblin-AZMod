@@ -222,6 +222,17 @@ public void TankSpawn(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
+public void OnClientDisconnect(int client)
+{
+	if(!g_bWaterSlowDownMap) 
+		return;
+
+	if (!IsInfected(client) || !IsTank(client))
+		return;
+
+	CreateTimer(0.1, Timer_CheckTank);
+}
+
 public void TankDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	if(!g_bWaterSlowDownMap) return;
@@ -232,7 +243,7 @@ public void TankDeath(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public Action Timer_CheckTank(Handle timer)
+Action Timer_CheckTank(Handle timer)
 {
 	int tankclient = FindTankClient();
 	if (!tankclient || !IsPlayerAlive(tankclient)) {

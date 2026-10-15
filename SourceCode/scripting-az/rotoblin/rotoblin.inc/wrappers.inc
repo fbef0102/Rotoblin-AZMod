@@ -63,7 +63,7 @@ static	const	String:	TEAMNAME_INFECTED[]		= "Infected";
  * @param max			Maximum floating point value that the convar can have if hasMax is true.
  * @return				A handle to the newly created convar. If the convar already exists, a handle to it will still be returned.
  */
-stock Handle:CreateConVarEx(const String:name[], const String:defaultValue[], const String:description[]="", flags=0, bool:hasMin=false, Float:min=0.0, bool:hasMax=false, Float:max=0.0)
+stock ConVar CreateConVarEx(const String:name[], const String:defaultValue[], const String:description[]="", flags=0, bool:hasMin=false, Float:min=0.0, bool:hasMax=false, Float:max=0.0)
 {
 	decl String:buffer[256];
 	FormatEx(buffer, sizeof(buffer), "%s_%s", PLUGIN_CVAR_PREFIX, name);

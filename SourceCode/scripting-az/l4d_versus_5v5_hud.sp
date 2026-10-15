@@ -4,6 +4,7 @@
 #include <sdktools>
 #include <left4dhooks>
 #include <multicolors>
+#include <l4d_lib>
 
 #define HUD_5V5_DRAW_INTERVAL   1.0
 #define CLAMP(%0,%1,%2) (((%0) > (%2)) ? (%2) : (((%0) < (%1)) ? (%1) : (%0)))
@@ -90,6 +91,11 @@ public OnClientPutInServer(client)
 
 public OnClientDisconnect(Client)
 {
+	if (IsTank(Client))
+	{
+		CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
+	}
+	
 	if (IsFakeClient(Client))
 		return;
 		
@@ -111,7 +117,7 @@ public Event_player_left_checkpoint(Handle:event, const String:name[], bool:dont
 {
 	if(IsInReady()||g_bLeftStartRoom) return;
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(IsSurvivor(client))
+	if(client && IsClientInGame(client) && IsSurvivor(client))
 	{
 		decl String:Info[50];
 		g_bLeftStartRoom = true;
@@ -180,6 +186,8 @@ public Action:Timer_SpawnGhostClass(Handle:hTimer, any:Client)
 
 public Action:Toggle5v5HudCmd(client, args) 
 {
+	if(client == 0 || IsFakeClient(client)) return Plugin_Continue;
+
 	if(!IsInfected(client))
 		return;
 		
@@ -443,24 +451,12 @@ bool:IsSpectator(client)
 	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 1;
 }*/
 
-bool:IsSurvivor(client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 2;
-}
-
-bool:IsInfected(client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client) && GetClientTeam(client) == 3;
-}
 
 bool:IsInfectedGhost(client) 
 {
 	return bool:GetEntProp(client, Prop_Send, "m_isGhost");
 }
-stock bool:IsInfectedAlive(client)
-{
-	return GetEntProp(client, Prop_Send, "m_iHealth") > 1;
-}
+
 L4DSI:GetInfectedClass(client)
 {
 	return IsInfected(client) ? (L4DSI:GetEntProp(client, Prop_Send, "m_zombieClass")) : ZC_None;
@@ -482,11 +478,6 @@ GetTankFrustration(tank)
 	return (100 - GetEntProp(tank, Prop_Send, "m_frustration"));
 }
 
-bool:IsIncapacitated(client)
-{
-	return bool:GetEntProp(client, Prop_Send, "m_isIncapacitated");
-}
-
 bool:IsSurvivorHanging(client)
 {
 	return bool:(GetEntProp(client, Prop_Send, "m_isHangingFromLedge") | GetEntProp(client, Prop_Send, "m_isFallingFromLedge"));
@@ -506,14 +497,13 @@ GetSurvivorHealth(client)
 
 public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	decl client;
-	if (IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
+	if (IsPlayerTank((GetEventInt(event, "entindex_killed"))))
 	{
-		CreateTimer(1.5, FindAnyTank, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
 
-public Action:FindAnyTank(Handle:timer, any:client)
+public Action:FindAnyTank(Handle:timer)
 {
 	if(!IsTankInGame()){
 		passCount = 1;
@@ -523,15 +513,10 @@ public Action:FindAnyTank(Handle:timer, any:client)
 IsTankInGame(exclude = 0)
 {
 	for (new i = 1; i <= MaxClients; i++)
-		if (exclude != i && IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerTank(i) && IsInfectedAlive(i) && !IsIncapacitated(i))
+		if (exclude != i && IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerTank(i) && IsPlayerAlive(i) && !IsIncapacitated(i))
 			return i;
 
 	return 0;
-}
-
-stock bool:IsPlayerTank(tank_index)
-{
-	return GetEntProp(tank_index, Prop_Send, "m_zombieClass") == 5;
 }
 
 /* Stocks */

@@ -30,7 +30,7 @@
 #if defined _l4d_lib_
   #endinput
 #endif
-#define _l4d_lib_ "2.5"
+#define _l4d_lib_ "2.5-2026/10/15"
 
 #include <sourcemod>
 #include <sdktools>
