@@ -40,7 +40,7 @@ char g_sLogPath[PLATFORM_MAX_PATH];
 public Plugin myinfo =
 {
 	name = "l4d_fling_fall_fix",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Fall damage from the speed gravity could give, not from flings redirected into the ground",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/Volence/riverside-l4d-plugins"

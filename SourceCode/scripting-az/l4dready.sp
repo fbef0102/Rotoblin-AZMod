@@ -148,7 +148,6 @@ native ShowRotoInfo();
 native AnnounceSIClasses();//From si_class_announce
 native antibaiter_clear();//From l4d_antibaiter
 native Score_GetTeamCampaignScore(team);//From l4dscores
-native Keep_SI_Starting(); //From l4d_QuadCaps
 native bool TS_GetHostName(char[] str, int size); //From l4d_DynamicHostname, just prevent idiots from changing hostname "[ZS]"
 native void MaterialHack_CheckClients(); //From l4d_texture_manager_block, check if any client uses ConVar cheat
 
@@ -2859,7 +2858,6 @@ RoundIsLive()
 	UnfreezeAllPlayers();
 	readyOff();
 	GiveSurAllPills();
-	Keep_SI_Starting();
 	antibaiter_clear();
 	ChoseTankPrintWhoBecome();
 	CreateTimer(1.5, timerLiveMessageCallback, _, _);

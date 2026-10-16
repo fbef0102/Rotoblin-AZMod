@@ -40,7 +40,7 @@ char g_sLogPath[PLATFORM_MAX_PATH];
 public Plugin myinfo =
 {
 	name = "l4d_ledge_fix",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Blocks ledge hangs over drops that would not hurt",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/Volence/riverside-l4d-plugins"

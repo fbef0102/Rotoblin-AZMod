@@ -33,8 +33,6 @@
 //       Private
 // --------------------
 
-static	const	String:	PLUGIN_FORCEPAUSE_COMMAND[]		= "forcepause";
-static	const	String:	PLUGIN_FORCEUNPAUSE_COMMAND[]	= "forceunpause";
 static	const	String:	PLUGIN_ready_COMMAND[]			= "!ready";
 
 static			Handle:	g_hPauseEnable_Cvar			= INVALID_HANDLE;
@@ -100,12 +98,12 @@ public _P_OnPluginEnabled()
 
 	g_bIsPauseEnable = GetConVarBool(g_hPauseEnable_Cvar);
 	HookConVarChange(g_hPauseEnable_Cvar, _P_PauseEnable_CvarChange);
-
-	AddCommandListenerEx(_P_RotoblinForcePause_Command, PLUGIN_FORCEPAUSE_COMMAND);
-	AddCommandListenerEx(_P_RotoblinForceUnPause_Command, PLUGIN_FORCEUNPAUSE_COMMAND);
-	//AddCommandListener(_P_Say_Command, "say");
-	//AddCommandListener(_P_SayTeam_Command, "say_team");
 	
+    RegAdminCmd("sm_forcepause", ForcePause_Cmd, ADMFLAG_BAN, "Pauses the game and only allows admins to unpause");
+    RegAdminCmd("sm_forceunpause", ForceUnpause_Cmd, ADMFLAG_BAN, "Unpauses the game regardless of team ready status.  Must be used to unpause admin pauses");
+	RegAdminCmd("sm_forcestart", ForceUnpause_Cmd, ADMFLAG_BAN, "Unpauses the game regardless of team ready status.  Must be used to unpause admin pauses");
+	RegAdminCmd("sm_fs", ForceUnpause_Cmd, ADMFLAG_BAN, "Unpauses the game regardless of team ready status.  Must be used to unpause admin pauses");
+
 	RegConsoleCmd("sm_pause", Pause_Cmd, "Pauses the game");
 	RegConsoleCmd("sm_unpause", Unpause_Cmd, "Marks your team as ready for an unpause");
 	RegConsoleCmd("sm_r", Unpause_Cmd, "Marks your team as ready for an unpause");
@@ -131,14 +129,10 @@ public _P_OnPluginEnabled()
  */
 public _P_OnPluginDisabled()
 {
-	RemoveCommandListenerEx(_P_RotoblinForcePause_Command, PLUGIN_FORCEPAUSE_COMMAND);
-	RemoveCommandListenerEx(_P_RotoblinForceUnPause_Command, PLUGIN_FORCEUNPAUSE_COMMAND);
-	//RemoveCommandListener(_P_Say_Command, "say");
-	//RemoveCommandListener(_P_SayTeam_Command, "say_team");
-	
 	g_bIsPaused = false;
 	g_bIsUnpausing = false;
 	g_bWasForced = false;
+	g_bIsPauseEnable = false;
 
 	UnhookConVarChange(g_hPauseEnable_Cvar, _P_PauseEnable_CvarChange);
 
@@ -417,42 +411,43 @@ Action Unpause_Callback(int client, char[] command, int argc)
  * @return				Plugin_Handled to stop command from being performed, 
  *						Plugin_Continue to allow the command to pass.
  */
-public Action:_P_RotoblinForcePause_Command(client, const String:command[], args)
+Action ForcePause_Cmd(int client, int args)
 {
-	if (client == SERVER_INDEX || !g_bIsPauseEnable||IsInReady()||g_bIsUnpausing) return Plugin_Handled;
+	if (!g_bIsPauseEnable||IsInReady()||g_bIsUnpausing) return Plugin_Handled;
 
-	new flags = GetUserFlagBits(client);
-	if (!(flags & ADMFLAG_ROOT || flags & ADMFLAG_GENERIC))
-	{
-		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin13", client);
-		return Plugin_Handled;
-	}
-
-	else if (!g_bIsPaused) // Is not paused
+	if (!g_bIsPaused) // Is not paused
 	{
 		g_bWasForced = true; // Pause was forced so only allow admins to unpause
-		GetClientName(client, g_sAdminName, 64);
-		CPrintToChatAll("[{olive}TS{default}] %t","rotoblin14", g_sAdminName, "!forceunpause");
+		if (client == SERVER_INDEX)
+		{
+			CPrintToChatAll("[{olive}TS{default}] %t","Pause_3", "!forceunpause");
+		}
+		else
+		{
+			GetClientName(client, g_sAdminName, 64);
+			CPrintToChatAll("[{olive}TS{default}] %t","rotoblin14", g_sAdminName, "!forceunpause");
+		}
 		Pause();
 	}
 	return Plugin_Handled;
 }
 
-public Action:_P_RotoblinForceUnPause_Command(client, const String:command[], args)
+Action ForceUnpause_Cmd(int client, int args)
 {
-	if (client == SERVER_INDEX || !g_bIsPauseEnable) return Plugin_Handled;
-
-	new flags = GetUserFlagBits(client);
-	if (!(flags & ADMFLAG_ROOT || flags & ADMFLAG_GENERIC))
-	{
-		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin15",client);
-		return Plugin_Handled;
-	}
+	if (!g_bIsPauseEnable) return Plugin_Handled;
 	
 	if (g_bIsPaused && !g_bIsUnpausing) // Is paused and not currently unpausing
 	{
-		GetClientName(client, g_sAdminName, 64);
-		CPrintToChatAll("[{olive}TS{default}] %t", "rotoblin16", g_sAdminName);
+		if (client == SERVER_INDEX)
+		{
+			CPrintToChatAll("[{olive}TS{default}] %t", "Pause_2");
+		}
+		else
+		{
+			GetClientName(client, g_sAdminName, 64);
+			CPrintToChatAll("[{olive}TS{default}] %t", "rotoblin16", g_sAdminName);
+		}
+
 		g_bIsUnpausing = true; // Set unpausing state
 		CreateTimer(1.0, _P_Unpause_Timer, client, TIMER_REPEAT); // Start unpause countdown
 	}
@@ -619,14 +614,14 @@ static void UpdatePanel()
 
 	if(g_bWasForced)
 	{	
-		new String:Info[35];
+		static char Info[64];
 		if(g_bIsUnpausing)
-			Format(Info, 35, "->1. ★Admin: !%s", PLUGIN_FORCEUNPAUSE_COMMAND);
+			Format(Info, 64, "->1. ★Admin/Server: sm_forcepause");
 		else
-			Format(Info, 35, "->1. ☆Admin: !%s", PLUGIN_FORCEUNPAUSE_COMMAND);
+			Format(Info, 64, "->1. ☆Admin/Server: sm_forceunpause");
 		
-		decl String:Notice[64];
-		FormatEx(Notice, 64, "Paused by admin: %s", g_sAdminName);
+		static char Notice[64];
+		FormatEx(Notice, 64, "Paused by admin/server: %s", g_sAdminName);
 		DrawPanelText(menuPanel, Notice);	
 		
 		Format(Notice, 64, "%s%d:%s%d", (TimeCount/60 < 10) ? "0" : "",TimeCount/60, (TimeCount%60 < 10) ? "0" : "", TimeCount%60);
@@ -700,7 +695,7 @@ static IsPlayer(client)
 	return (client && (team == 2 || team == 3));
 }
 
-public Native_IsPauseing(Handle:plugin, numParams)
+int Native_IsPauseing(Handle plugin, int numParams)
 {
 	return (g_bWasForced||g_bIsPaused||g_bIsUnpausing);
 }
@@ -832,4 +827,9 @@ static void SetClientButtons(int client, int buttons)
     {
         SetEntProp(client, Prop_Data, "m_nButtons", buttons);
     }
+}
+
+int Native_IsPauseEnable(Handle plugin, int numParams)
+{
+	return (g_bIsPauseEnable);
 }

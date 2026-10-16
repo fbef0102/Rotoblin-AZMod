@@ -1,5 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
+#include <left4dhooks>
+#include <readyup>
 
 #define PLUGIN_FILENAME		"l4d_QuadCaps"
 #define DEBUG 0
@@ -18,7 +20,6 @@
 #define KEEPSICHECKDELAY 0.1
 
 static bool:PluginDisable = false;
-static bool:hasleftstartarea;
 new Handle:HCVAR_Z_VS_SMOKER_LIMIT;
 new Handle:HCVAR_Z_VS_BOOMER_LIMIT;
 new Handle:HCVAR_Z_HUNTER_LIMIT;
@@ -29,15 +30,13 @@ new Handle:g_hSetClass		= INVALID_HANDLE;
 new Handle:g_hCreateAbility	= INVALID_HANDLE;
 new g_oAbility			= 0;
 int g_iRoundStart, g_iPlayerSpawn;
-native IsInReady();
-native Is_Ready_Plugin_On();
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = "L4D Quad Caps Control",
 	author = "Harry Potter",
 	description = "As the name says, you dumb fuck",
-	version = "1.5",
+	version = "1.6-2026/10/15",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -51,16 +50,14 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 		return APLRes_SilentFailure;
 	}
 
-	CreateNative("Keep_SI_Starting", Native_KeepSIStarting);
 	return APLRes_Success;
 }
 
-public Native_KeepSIStarting(Handle:plugin, numParams)
-{
-	CreateTimer(KEEPSICHECKDELAY,KeepSIStarting,_); // delay check
-}
+bool 
+	g_bRoundEnd,
+	g_bRoundIsLive;
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	Sub_HookGameData(PLUGIN_FILENAME);
 	
@@ -70,7 +67,6 @@ public OnPluginStart()
 	HookEvent("mission_lost", Event_RoundEnd);
 	HookEvent("finale_win", Event_RoundEnd);
 	HookEvent("player_death", Event_PlayerDeath,	EventHookMode_PostNoCopy);
-	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_PostNoCopy);
 	
 	HCVAR_Z_VS_SMOKER_LIMIT = FindConVar("z_versus_smoker_limit");
 	HCVAR_Z_VS_BOOMER_LIMIT = FindConVar("z_versus_boomer_limit");
@@ -87,7 +83,7 @@ public OnPluginStart()
 	PluginDisable = false;
 }
 
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
 {
 	CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_SMOKER_LIMIT);
 	CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL = GetConVarInt(HCVAR_Z_VS_BOOMER_LIMIT);
@@ -110,7 +106,7 @@ public OnConfigsExecuted()
 	}
 }
 
-public OnPluginEnd()
+public void OnPluginEnd()
 {
 	ResetConVar(HCVAR_Z_VS_SMOKER_LIMIT, true, true);
 	ResetConVar(HCVAR_Z_VS_BOOMER_LIMIT, true, true);
@@ -124,7 +120,7 @@ public void OnMapStart()
 	Hunter_Starting_Line = Smoker_Starting_Line = Boomer_Starting_Line = 0;
 }
 
-public OnMapEnd()
+public void OnMapEnd()
 {
 	ResetConVar(HCVAR_Z_VS_SMOKER_LIMIT, true, true);
 	ResetConVar(HCVAR_Z_VS_BOOMER_LIMIT, true, true);
@@ -133,7 +129,7 @@ public OnMapEnd()
 	PluginDisable = false;
 }
 
-public Sub_HookGameData(String:GameDataFile[])
+void Sub_HookGameData(String:GameDataFile[])
 {
 	new Handle:g_hGameConf = LoadGameConfigFile(GameDataFile);
 
@@ -165,22 +161,23 @@ public Sub_HookGameData(String:GameDataFile[])
 		SetFailState("Error: Unable to load gamedata file, exiting.");
 }
 
-public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	if( g_iPlayerSpawn == 1 && g_iRoundStart == 0 )
 		CreateTimer(0.25, PluginStart);
 	g_iRoundStart = 1;
-	hasleftstartarea = false;
+	g_bRoundEnd = false;
+	g_bRoundIsLive = false;
 }
 
-public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 { 
 	if( g_iPlayerSpawn == 0 && g_iRoundStart == 1 )
 		CreateTimer(0.25, PluginStart);
 	g_iPlayerSpawn = 1;
 }
 
-public Action PluginStart(Handle timer)
+Action PluginStart(Handle timer)
 {
 	if(!InSecondHalfOfRound())
 	{
@@ -200,25 +197,38 @@ public Action PluginStart(Handle timer)
 	return Plugin_Continue;
 }
 
-public Action:Event_RoundEnd(Handle:hEvent, const String:name[], bool:dontBroadcast)
+void Event_RoundEnd(Handle:hEvent, const String:name[], bool:dontBroadcast)
 {
 	Sub_DebugPrint("round end event");
 	SetConvarDefault();
 	ResetVariable();
+	g_bRoundEnd = true;
 }
 
-public LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
+public void OnRoundIsLive() 
 {
-	if(!Is_Ready_Plugin_On())
-	{
-		CreateTimer(KEEPSICHECKDELAY,KeepSIStarting,_); // delay check
-		hasleftstartarea = true;
-	}
+	if(g_bRoundIsLive) return;
+	
+	GameStart();
 }
 
-public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+public void L4D_OnFirstSurvivorLeftSafeArea_Post(int client)
 {
-	if(IsInReady()||IsPluginDisable()) return ;
+	if(g_bRoundIsLive) return;
+
+	GameStart();
+}
+
+void GameStart()
+{
+	g_bRoundIsLive = true;
+
+	CreateTimer(KEEPSICHECKDELAY, KeepSIStarting); // delay check
+}
+
+void Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	if( PluginDisable || !g_bRoundIsLive || g_bRoundEnd ) return ;
 	
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if(!client || !IsClientInGame(client)) return;
@@ -252,41 +262,34 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 	}
 }
 
-public L4D_OnEnterGhostState(client)
+public void L4D_OnEnterGhostState(int client)
 {
 	if(!InSecondHalfOfRound())
 	{
 		Sub_DebugPrint("Round 1");
 		return;
 	}
+
 	Sub_DebugPrint("%N: OnEnterGhostState %s",client,TEAM_CLASS(GetEntProp(client, Prop_Send, "m_zombieClass")));
 	
-	CreateTimer(OnEnterGhostCheckDelay,COLD_DOWN, GetClientUserId(client) ); // delay check since team change event is before round start event
+	if(!g_bRoundIsLive)
+	{
+		Sub_DebugPrint("Is in saferoom or Is in Ready");
+		CreateTimer(OnEnterGhostCheckDelay,COLD_DOWN, GetClientUserId(client) ); // delay check since team change event is before round start event
+	}
 }
 
-public Action COLD_DOWN(Handle timer, int userid)
+Action COLD_DOWN(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 	if(!client || !IsClientInGame(client) || GetClientTeam(client)!=3)	return Plugin_Continue;
 
-	if(!Is_Ready_Plugin_On() && !hasleftstartarea)
-	{
-		Sub_DebugPrint("Is in saferoom");
-		Sub_DetermineClass(client);
-		return Plugin_Continue;
-	}
-
-	if(IsInReady())
-	{
-		Sub_DebugPrint("Is in Ready");
-		Sub_DetermineClass(client);
-		return Plugin_Continue;
-	}
+	Sub_DetermineClass(client);
 
 	return Plugin_Continue;
 }
 
-public void Sub_DetermineClass(int Client)
+void Sub_DetermineClass(int Client)
 {
 	if(IsPlayerGhost(Client))
 	{
@@ -349,7 +352,7 @@ public void Sub_DetermineClass(int Client)
 	return;
 }
 
-public Action:KeepSIStarting(Handle:timer,any:client)
+Action KeepSIStarting(Handle timer)
 {
 	if(!InSecondHalfOfRound())
 	{
@@ -382,12 +385,14 @@ public Action:KeepSIStarting(Handle:timer,any:client)
 		if(Smoker_Starting_Line + Boomer_Starting_Line + Hunter_Starting_Line > GetConVarInt(FindConVar("z_max_player_zombies")))	
 		{
 			Sub_DebugPrint("Error! infected players more than z_max_player_zombies");
-			CreateTimer(KeepSITrackingCheckDelay,KeepSIStarting,_); // keep checking
+			CreateTimer(KeepSITrackingCheckDelay,KeepSIStarting); // keep checking
 		}
 	}
+
+	return Plugin_Continue;
 }
 
-public ConVarChange_hCvar3HT1SProbability(Handle:convar, const String:oldValue[], const String:newValue[])
+void ConVarChange_hCvar3HT1SProbability(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	if (!StrEqual(oldValue, newValue))
 	{
@@ -396,13 +401,16 @@ public ConVarChange_hCvar3HT1SProbability(Handle:convar, const String:oldValue[]
 	}
 }
 
-public Sub_DebugPrint(const String:Message[], any:...)
+void Sub_DebugPrint(const String:Message[], any:...)
 {
-	#if DEBUG
-		decl String:DebugBuff[128];
-		VFormat(DebugBuff, sizeof(DebugBuff), Message, 2);
-		PrintToChatAll("%s",DebugBuff);
-	#endif
+
+#if DEBUG
+	decl String:DebugBuff[128];
+	VFormat(DebugBuff, sizeof(DebugBuff), Message, 2);
+	PrintToChatAll("%s",DebugBuff);
+#else
+	#pragma unused Message
+#endif
 }
 
 SetConvarDefault()
@@ -416,12 +424,7 @@ bool:InSecondHalfOfRound()
 	return bool:GameRules_GetProp("m_bInSecondHalfOfRound");
 }
 
-bool:IsPluginDisable()
-{
-	return PluginDisable;
-}
-
-public bool:IsPlayerGhost(client)
+bool IsPlayerGhost(client)
 {
 	return bool:GetEntProp(client, Prop_Send, "m_isGhost");
 }

@@ -10,19 +10,19 @@
 {
 	"ChangeMap"
 	{
-		"No Mercy VS"
+		"No Mercy"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_hospital01_apartment"
 		}
-		"Death Toll VS"
+		"Death Toll"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_smalltown01_caves"
 		}
-		"Dead Air VS"
+		"Dead Air"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_airport01_greenhouse"
 		}
-		"Blood Harvest VS"
+		"Blood Harvest"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_farm01_hilltop"
 		}
@@ -34,15 +34,15 @@
 		{
 			"cmd" "sm_rcon changelevel l4d_river01_docks"
 		}
-		"City17 VS"
+		"City17"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_city17_01"
 		}
-		"Suicide Blitz VS"
+		"Suicide Blitz"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_stadium1_apartment"
 		}
-		"Dead Flag Blue VS"
+		"Dead Flag Blue"
 		{
 			"cmd" "sm_rcon changelevel l4d_vs_deadflagblues01_city"
 		}
@@ -94,7 +94,7 @@
 		{
 			"cmd" "sm_rcon changelevel re3short_m1"
 		}		
-		"Dark Wood Versus"
+		"Dark Wood"
 		{
 			"cmd" "sm_rcon changelevel dw1_woods"
 		}

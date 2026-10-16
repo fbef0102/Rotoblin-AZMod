@@ -486,6 +486,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * Unfreezes distance if a Survivor makes it to the end saferoom and close door while the Tank is still up.
       * Unfreeze distance if the Tank goes AI
     * Prevents Tank spawns from being blocked when the Special Infected team is full (official cvar `z_max_player_zombies` +1 slots)
+    * Gives a tank back to its player when they rejoin after a disconnect, with the same rage and pass count
+    * Stops one tank rock hurting a survivor twice
+    * A human tank's punch is lag compensated whether he taps or holds attack.
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~

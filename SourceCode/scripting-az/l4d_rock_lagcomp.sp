@@ -164,7 +164,7 @@ ArrayList rockEntitiesArray;
 public Plugin myinfo =
 {
     name = "L4D1 Tank Rock Lag Compensation",
-    author = "Luckylockm, Silvers, Harry, Riverside",
+    author = "Luckylockm, Silvers, Harry, Malevolence",
     description = "Provides lag compensation for tank rock entities",
     version = "1.14-2026/10/1",
     url = "https://github.com/LuckyServ/"

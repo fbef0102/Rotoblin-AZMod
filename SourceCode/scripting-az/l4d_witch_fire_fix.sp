@@ -20,7 +20,7 @@
 public Plugin myinfo =
 {
 	name = "L4D Witch Fire Fix",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Map fire no longer burns the witch",
 	version = "1.0.0",
 	url = ""

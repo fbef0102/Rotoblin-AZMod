@@ -63,7 +63,7 @@ float g_apexes[] = { 32.0, 64.0, 96.0, 128.0 };
 public Plugin myinfo =
 {
 	name = "L4D Witch Unstuck",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Hops a startled witch past whatever she is stuck on",
 	version = "2.4.1",
 	url = "https://github.com/Volence/riverside-l4d-plugins"

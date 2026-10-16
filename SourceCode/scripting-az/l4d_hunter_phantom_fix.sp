@@ -48,7 +48,7 @@ int g_iSwaps;
 public Plugin myinfo =
 {
 	name = "[L4D1] Hunter Phantom Shred Fix",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Stops a Hunter killed mid-pounce from shredding on clients after death.",
 	version = PLUGIN_VERSION,
 	url = ""

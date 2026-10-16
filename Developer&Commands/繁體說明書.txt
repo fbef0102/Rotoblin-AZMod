@@ -52,7 +52,12 @@
 13. Dead Vacation: gamemaps.com/details/30523
 14. Undead Zone: gamemaps.com/details/31513
 15. Resident Evil 3: gamemaps.com/details/34693
-16. Dark Wood: gamemaps.com/details/32164
+
+* 刪除地圖
+1. Dark Wood: gamemaps.com/details/32164
+每一關路程太長
+2. Day Break: gamemaps.com/details/32743
+太多人崩潰
 
 --------支援二代地圖--------
 * L4D2 on L4D1 Maps: www.gamemaps.com/details/32168
@@ -949,6 +954,21 @@
 //Fix smoker pull launching survivor up
 //Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
 //修復被拉的玩家被震時有機率飛到天空上
+
+[244] l4d_tank_reconnect
+//source: github.com/Volence/riverside-l4d-plugins
+//Gives a tank back to its player when they rejoin after a disconnect, with the same rage and pass count
+//Tank玩家掉線回來遊戲之後，立即取回Tank並設置原本的怒氣值
+
+[245] l4d_rock_double_fix
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins
+//Stops one tank rock hurting a survivor twice
+//修復一顆Tank石頭在同一個tick下砸到倖存者兩次 (0距離貼臉砸)
+
+[246] l4d_tank_punch_lagcomp
+//source: github.com/Target5150/MoYu_Server_Stupid_Plugins
+//A human tank's punch is lag compensated whether he taps or holds attack.
+//修復在 L4D 中，只有當你按住攻擊鍵不放時，Tank 的揮拳（Punch）才會享有延遲補償（Lag compensation）。
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

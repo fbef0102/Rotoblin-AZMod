@@ -25,7 +25,7 @@
 public Plugin myinfo =
 {
 	name = "L4D Witch Corner Fix",
-	author = "Riverside",
+	author = "Malevolence",
 	description = "Stops the witch freezing on corners at a low nb_update_frequency",
 	version = "1.1.0",
 	url = ""
