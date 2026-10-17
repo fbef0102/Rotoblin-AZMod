@@ -1,0 +1,19 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Signatures"
+		{
+			// Who is moving this survivor: the smoker dragging (or who just let go), a lunging
+			// hunter that bumped them, a tank that flung them. WitchAttack::OnStart names that
+			// player as the witch's harasser instead of her victim.
+			"CTerrorPlayer::GetOtherResponsibleForMovement"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK13CTerrorPlayer30GetOtherResponsibleForMovementEv"
+				"windows"	"\x56\x8B\xF1\x8B\x86\x30\x21\x00\x00"
+				// sub_102835E0: 56 8B F1 8B 86 30 21 00 00
+			}
+		}
+	}
+}

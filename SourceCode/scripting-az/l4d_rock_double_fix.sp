@@ -32,7 +32,7 @@ public Plugin myinfo =
 
 public void OnEntityDestroyed(int entity)
 {
-	if (entity > MaxClients && entity < 2048 && IsEntityClassname(entity, "tank_rock"))
+	if (entity > MaxClients && entity <= 2048 && IsEntityClassname(entity, "tank_rock"))
 	{
 		AddEntityEFlags(entity, (1<<22)); // EFL_NO_THINK_FUNCTION = (1<<22)
 	}

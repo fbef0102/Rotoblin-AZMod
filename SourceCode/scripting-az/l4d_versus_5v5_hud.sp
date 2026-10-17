@@ -45,7 +45,6 @@ new Handle:z_max_player_zombies;
 new bool:b5v5HudActive[MAXPLAYERS + 1];
 new passCount;
 static bool:g_bLeftStartRoom;
-int g_hSpawnGhostTimer[MAXPLAYERS + 1];
 
 native IsInPause();
 native IsInReady();
@@ -55,7 +54,7 @@ public Plugin:myinfo =
 	name = "L4D1 versus 5v5 Hud",
 	author = "Harry Potter",
 	description = "Provides 5v5 HUDs for infected",
-	version = "8.0",
+	version = "1.0h-2026/10/16",
 	url = "https://github.com/Attano/smplugins"
 };
 
@@ -71,22 +70,13 @@ public OnPluginStart()
 	HookEvent("round_start", RoundStartEvent, EventHookMode_PostNoCopy);//每回合開始就發生的event
 	HookEvent("tank_frustrated", OnTankFrustrated, EventHookMode_Post);
 	HookEvent("entity_killed",		PD_ev_EntityKilled);
-	HookEvent("ghost_spawn_time", Event_GhostSpawnTime);
-	HookEvent("player_team", Event_PlayerTeam);
-	HookEvent("player_spawn", Event_PlayerSpawn);
 	
 	for (new i = 1; i <= MaxClients; i++) 
 	{
 		b5v5HudActive[i] = true;
-		g_hSpawnGhostTimer[i] = -1;
 	}
 		
 	CreateTimer(HUD_5V5_DRAW_INTERVAL, HudDrawTimer, _, TIMER_REPEAT);
-}
-
-public OnClientPutInServer(client)
-{
-	g_hSpawnGhostTimer[client] = -1;
 }
 
 public OnClientDisconnect(Client)
@@ -95,11 +85,6 @@ public OnClientDisconnect(Client)
 	{
 		CreateTimer(1.5, FindAnyTank, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
-	
-	if (IsFakeClient(Client))
-		return;
-		
-	g_hSpawnGhostTimer[Client] = -1;
 }
 
 public RoundStartEvent(Handle:event, const String:name[], bool:dontBroadcast)
@@ -128,60 +113,6 @@ public Event_player_left_checkpoint(Handle:event, const String:name[], bool:dont
 				CPrintToChat(i, "%T","l4d_versus_5v5_hud1",i,Info,"!5v5hud");
 			}
 	}	
-}
-
-public Action:Event_PlayerSpawn(Handle:hEvent, const String:name[], bool:dontBroadcast)
-{
-	new Client = GetClientOfUserId(GetEventInt(hEvent, "userid"));
-
-	if (Client == 0 || !IsClientInGame(Client) || IsFakeClient(Client) || GetClientTeam(Client) != 3)
-		return;
-
-	g_hSpawnGhostTimer[Client] = -1;
-}
-
-public Action:Event_PlayerTeam(Handle:hEvent, const String:name[], bool:dontBroadcast)
-{
-	new Client = GetClientOfUserId(GetEventInt(hEvent, "userid"));
-
-	if (Client == 0 || !IsClientInGame(Client))
-		return;
-
-	new OldTeam = GetEventInt(hEvent, "oldteam");
-
-	if (OldTeam == 3)
-		g_hSpawnGhostTimer[Client] = -1;
-}
-
-public Action:Event_GhostSpawnTime(Handle:hEvent, const String:name[], bool:dontBroadcast)
-{
-	new Client = GetClientOfUserId(GetEventInt(hEvent, "userid"));
-
-	if (Client == 0 || !IsClientInGame(Client) || IsFakeClient(Client))
-		return;
-
-	if (IsPlayerAlive(Client))
-		return;
-		
-	new SpawnTime = GetEventInt(hEvent, "spawntime");
-	
-	g_hSpawnGhostTimer[Client] = SpawnTime - 1;
-	CreateTimer(1.0, Timer_SpawnGhostClass, Client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-}
-
-public Action:Timer_SpawnGhostClass(Handle:hTimer, any:Client)
-{
-
-	if (Client == 0 || !IsClientInGame(Client) || IsFakeClient(Client) || GetClientTeam(Client) != 3 || IsPlayerAlive(Client) || g_hSpawnGhostTimer[Client] == -1)
-	{
-		g_hSpawnGhostTimer[Client] = -1;
-		return Plugin_Stop;
-	}
-	
-	if(g_hSpawnGhostTimer[Client]>0)	
-		g_hSpawnGhostTimer[Client] --;
-	
-	return Plugin_Continue;
 }
 
 public Action:Toggle5v5HudCmd(client, args) 
@@ -299,15 +230,15 @@ FillInfectedInfo(Handle:h5v5Hud)
 		GetClientFixedName(client, name, sizeof(name));
 		if (!IsPlayerAlive(client)) 
 		{
-			new spawnTimer = g_hSpawnGhostTimer[client];
-			if (spawnTimer < 0)
+			int timeLeft = RoundToFloor(L4D_GetPlayerSpawnTime(client));
+			if (timeLeft < 0)
 			{
 				Format(info, sizeof(info), "Dead: %s", name);
 			}
 			else
 			{
-				Format(buffer, sizeof(buffer), "%is", spawnTimer);
-				Format(info, sizeof(info), "Dead (%s): %s", (spawnTimer > 0 ? buffer : "Sp."), name);
+				Format(buffer, sizeof(buffer), "%is", timeLeft);
+				Format(info, sizeof(info), "Dead (%s): %s", (timeLeft > 0 ? buffer : "Sp."), name);
 			}
 		}
 		else 

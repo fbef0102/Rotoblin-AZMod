@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define PLUGIN_VERSION "0.1"
+#define PLUGIN_VERSION "0.2"
 
 #define TEAM_INFECTED		3
 #define ZC_HUNTER			3
@@ -37,7 +37,14 @@
 // A/B in one session (alternate deaths, 2026-09-28): no swap 9 phantoms in 85 mid-shred
 // deaths, swap (0.3 s hold) 0 in 80.
 //
-// Only Hunters that landed a pounce in the last few seconds are touched.
+// Only Hunters that were pinning someone in the last few seconds are touched. 0.1 timed that
+// from lunge_pounce (the pin's start), but a pin lasts as long as nobody frees the survivor
+// (about 20 s at live damage settings) and CTerrorPlayer::UpdatePounce restarts the clip
+// whenever the fire layer goes idle (server.so 0x7a2c99), so a Hunter killed 12 to 25 s into
+// a pin was mid-clip and skipped. 0.2 also stamps pounce_end, which the death path fires
+// (Event_Killed -> OnLeaveActiveState -> CleanupPlayerState -> OnPounceEnded, 0x75d4f9)
+// before player_death. CleanupPlayerState fires pounce_end on EVERY death, so only one that
+// names a victim (a pin was really on) counts. Decompile audit: l4d-source docs/annotated/hunter-pounce/.
 
 ConVar g_hCvarEnable, g_hCvarDelay, g_hCvarHold;
 float g_fPounceAt[MAXPLAYERS + 1];
@@ -61,6 +68,7 @@ public void OnPluginStart()
 	g_hCvarHold = CreateConVar("l4d_hunter_phantom_fix_hold", "1.0", "Seconds the swapped model is held before the Hunter model is put back.", FCVAR_NOTIFY, true, 0.1, true, 5.0);
 	CreateConVar("l4d_hunter_phantom_fix_version", PLUGIN_VERSION, "Plugin version", FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	HookEvent("lunge_pounce", Ev_Pounce);
+	HookEvent("pounce_end", Ev_PounceEnd);
 	HookEvent("player_death", Ev_Death);
 	HookEvent("player_spawn", Ev_Spawn);
 	RegAdminCmd("sm_phantomfix_stats", Cmd_Stats, ADMFLAG_ROOT, "Model swaps done since load");
@@ -78,6 +86,12 @@ void Ev_Pounce(Event e, const char[] name, bool dontBroadcast)
 	if (c > 0) g_fPounceAt[c] = GetGameTime();
 }
 
+void Ev_PounceEnd(Event e, const char[] name, bool dontBroadcast)
+{
+	int c = GetClientOfUserId(e.GetInt("userid"));
+	if (c > 0 && e.GetInt("victim") > 0) g_fPounceAt[c] = GetGameTime();
+}
+
 void Ev_Spawn(Event e, const char[] name, bool dontBroadcast)
 {
 	int c = GetClientOfUserId(e.GetInt("userid"));
@@ -90,7 +104,8 @@ void Ev_Death(Event e, const char[] name, bool dontBroadcast)
 	int c = GetClientOfUserId(e.GetInt("userid"));
 	if (c < 1 || !IsClientInGame(c) || GetClientTeam(c) != TEAM_INFECTED) return;
 	if (GetEntProp(c, Prop_Send, "m_zombieClass") != ZC_HUNTER) return;
-	// Melee_Pounce is a 10 s clip; a Hunter that has not pounced within it cannot be in it.
+	// Melee_Pounce is a 10 s clip; a Hunter whose pin neither started nor ended within it
+	// cannot be in it.
 	if (g_fPounceAt[c] <= 0.0 || GetGameTime() - g_fPounceAt[c] > 11.0) return;
 	CreateTimer(g_hCvarDelay.FloatValue, T_Swap, GetClientUserId(c), TIMER_FLAG_NO_MAPCHANGE);
 }

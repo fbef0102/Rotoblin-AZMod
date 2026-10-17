@@ -8,7 +8,7 @@
 public Plugin myinfo = {
 	name        = "L4D2 Tank Props,l4d1 modify by Harry",
 	author      = "Jahze & Harry Potter",
-	version     = "2.8-2026/1/13",
+	version     = "2.9-2026/10/17",
 	description = "Stop tank props from fading whilst the tank is alive + add Hittable Glow",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 };
@@ -399,6 +399,7 @@ void CreateTankPropGlow(int car)
 
 	g_iInfGlowRef[car] = EntIndexToEntRef(entity);
 
+	/*
 	//暴力法
 	SDKHook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 
@@ -408,22 +409,20 @@ void CreateTankPropGlow(int car)
 	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
 	SetEntityRenderMode(entity, RENDER_TRANSCOLOR);
 	SetEntityRenderColor (entity, g_iCvarColor[0], g_iCvarColor[1], g_iCvarColor[2], 255);
+	*/
 
-	/*
 	//沒暴力法
 	SetVariantString("!activator");
 	AcceptEntityInput(entity, "SetParent", car); 
-
-	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
+	SetEntityRenderMode(entity, RENDER_NONE);
 
 	if(g_iCvarColor[0] == -1 && g_iCvarColor[1] == -1 && g_iCvarColor[2] == -1) return;
 	SetEntityRenderMode(car, RENDER_TRANSCOLOR);
 	SetEntityRenderColor (car, g_iCvarColor[0], g_iCvarColor[1], g_iCvarColor[2], 255);
-	*/
 }
 
 
-void TankThink(int car)
+/*void TankThink(int car)
 {
 	if (IsValidEntRef(g_iInfGlowRef[car]))
 	{
@@ -437,7 +436,7 @@ void TankThink(int car)
 	{
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
-}
+}*/
 
 void CreateTankPropGlowSpectator(int car)
 {
@@ -477,19 +476,19 @@ void CreateTankPropGlowSpectator(int car)
 
 	g_iSpecGlowRef[car] = EntIndexToEntRef(entity);
 
+	/*
 	//暴力法
 	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
 	SDKHook(car, SDKHook_VPhysicsUpdatePost, SpecTankThink);
+	*/
 
-	/*
 	//沒暴力法
 	SetVariantString("!activator");
 	AcceptEntityInput(entity, "SetParent", car); 
-	SetEntityRenderFx(entity, RENDERFX_FADE_FAST);
-	 */
+	SetEntityRenderMode(entity, RENDER_NONE);
 }
 
-void SpecTankThink(int car)
+/*void SpecTankThink(int car)
 {
 	if (IsValidEntRef(g_iSpecGlowRef[car]))
 	{
@@ -503,7 +502,7 @@ void SpecTankThink(int car)
 	{
 		SDKUnhook(car, SDKHook_VPhysicsUpdatePost, TankThink);
 	}
-}
+}*/
 
 Action TankPropsBeGone( Handle timer ) 
 {

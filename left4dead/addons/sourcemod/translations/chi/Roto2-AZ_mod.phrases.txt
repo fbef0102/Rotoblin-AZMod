@@ -2323,6 +2323,14 @@
 	{
 		"chi"		"[{green}Pause{default}] {olive}%N {default}已加载入服务器"
 	}	
+	"Pause_2"
+	{
+		"chi"		"{lightgreen}服务器{default} 已解除暂停"
+	}	
+	"Pause_3"
+	{
+		"chi" 		"{lightgreen}伺服器{default} 强制暂停游戏.\n管理员可输入{green}{1}{default}解除暂停"
+	}
 	///////////////l4d_tank_stumble_door.smx///////////////
 	"l4d_tank_stumble_door_break_1"
 	{
@@ -2367,4 +2375,29 @@
 	{
 		"chi"		"{red}幸存者 {default}已到达终点安全室。{olive}解除冻结 {default}平均距离分数！"
 	}
+	///////////////autopause.smx///////////////
+    "autopause_Unpausing"
+    {
+        "chi"           "{blue}[{default}AutoPause{blue}] {default}所有{green}崩溃的{default}玩家已重连.. {blue}解除暂停{default}!"
+    }
+
+    "autopause_Waiting"
+    {
+        "chi"           "{blue}[{default}AutoPause{blue}] {default}正在等待 {olive}{1} {default}名{green}崩溃的{default}{2}以启动{blue}暂停解除{default}!"
+    }
+
+    "autopause_Crashed"
+    {
+        "chi"           "{blue}[{default}AutoPause{blue}] {olive}{1} {default}游戏崩溃了."
+    }
+
+    "autopause_players"           //此种语境下不需要加 '们'
+    {
+        "chi"           "玩家"
+    }
+
+    "autopause_player"
+    {
+        "chi"           "玩家"
+    }
 }

@@ -5,7 +5,7 @@
 #include <sdkhooks>
 #include <dhooks>
 
-#define PLUGIN_VERSION "1.4-riverside3"
+#define PLUGIN_VERSION "1.4-riverside4"
 
 public Plugin myinfo =
 {
@@ -100,7 +100,6 @@ public void OnPluginStart()
 	delete gd.CreateDetourOrFail("CTerrorPlayer::OnTakeDamageInternal", DTR_OnTakeDamageInternal, DTR_OnTakeDamageInternal_Post);
 	delete gd;
 
-	//forward void L4D_OnLagCompPounce(int hunter, int attacker, int pouncing)
 	g_fwdPounceRewound = new GlobalForward("L4D_OnLagCompPounce", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 }
 
@@ -136,8 +135,6 @@ public void OnMapStart()
 	g_iDepth = 0;
 }
 
-
-// SDKHook_TraceAttack -> SDKHook_OnTakeDamage -> DTR_OnTakeDamageInternal -> DTR_OnTakeDamageInternal_Post -> SDKHook_OnTakeDamageAlive
 MRESReturn DTR_OnTakeDamageInternal(int victim, DHookParam hParams)
 {
 	if (++g_iDepth > 1)
@@ -172,9 +169,16 @@ MRESReturn DTR_OnTakeDamageInternal(int victim, DHookParam hParams)
 	{
 		float flLungeStartTime = GetEntPropFloat(ability, Prop_Send, "m_lungeStartTime");
 
-		g_iSave_m_isAttemptingToPounce = GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce");
-		g_iSet_m_isAttemptingToPounce = flTargetTime >= flLungeStartTime;
-		SetPounceFlag(victim, attacker, g_iSet_m_isAttemptingToPounce);
+		// riverside4: only ever ARM the flag here. Clearing it when the shooter saw him before the
+		// lunge sent the damage down the non-pounce path, which still charges the pounce interrupt
+		// budget and, when that runs out, stuns the hunter for 0.5 s instead of killing him. Stock
+		// versus does neither: a lunging hunter takes pounce (skeet) damage. Owner chose stock 2026-10-16.
+		if (flTargetTime >= flLungeStartTime)
+		{
+			g_iSave_m_isAttemptingToPounce = GetEntProp(victim, Prop_Send, "m_isAttemptingToPounce");
+			g_iSet_m_isAttemptingToPounce = 1;
+			SetPounceFlag(victim, attacker, g_iSet_m_isAttemptingToPounce);
+		}
 	}
 	else
 	{

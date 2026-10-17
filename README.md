@@ -358,10 +358,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Change rules of props' move away, moved above props. [Details](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_prop_touching_rules)
 * Fix thin/small 'prop_*' entity not blocking LOS.
 * Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
+* When a player disconnects due to crash, automatically pause the game. When they rejoin, give them a correct spawn timer.
 
 - - - -
 ### Gameplay / Balance Changes ###
-* Common Infected
+* Common Infected:
   * Fix common infected blocking the tank punch tracing.
   * In some custom maps, fix the wrong .wav sound coming from common infected when been shot
   * Prevents director or map overrides of z_common_limit. Kill common if overflow.
@@ -489,6 +490,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Gives a tank back to its player when they rejoin after a disconnect, with the same rage and pass count
     * Stops one tank rock hurting a survivor twice
     * A human tank's punch is lag compensated whether he taps or holds attack.
+    * Stops dead commons' ragdolls dragging hittables out of place on clients
+    * The windup-end punch target follows the fist: no hits the fist never came near, and hits the fist visibly went through.
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
@@ -508,8 +511,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
     * Fixed a door can startle the witch, causing her to lose target
     * Hops a startled witch past whatever she is stuck on
-    * Stops the witch freezing on corners at a low `nb_update_frequency`. Credit: [Volence](https://github.com/Volence/riverside-l4d-plugins)
-    * Map fire no longer burns the witch
+    * Witch movement fixes. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
+      * Corner fix: Stops the witch freezing on corners at a low `nb_update_frequency`. 
+      * Direct fix: No straight-line run at her victim over a pit or open air
+      * Climb fix: No endless climb-and-slide on props and rounded ledges
+      * Fire fix: Map fire no longer burns the witch
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -525,6 +531,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *Smoker get on a quick clear by Tank punch/rock*: 3.0s -> 8.0s
       - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
     * Fix unable to stagger smoker when smoker is shooting tongue
+    * A tongue aimed through several survivors goes to the nearest one, judged on what the smoker saw.
 	
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when player MIC on. ([video](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s))

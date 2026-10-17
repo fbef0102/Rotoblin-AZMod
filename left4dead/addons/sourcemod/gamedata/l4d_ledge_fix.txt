@@ -1,0 +1,19 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Signatures"
+		{
+			// float CTerrorPlayer::EstimateFallingDamage(): the game's own prediction, the one
+			// CTerrorGameMovement::CheckForLedges tests against 95 (server.so 0x6a5d10)
+			"CTerrorPlayer::EstimateFallingDamage"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer21EstimateFallingDamageEv"
+				"windows"	"\x81\x2A\xC8\x00\x00\x00\x57\x8B\x2A\x8B\x2A\x8B"
+				/* 81 ? C8 00 00 00 57 8B ? 8B ? 8B */
+				/* Search "Too many traces, %f damage, %d iterations\n" */
+			}
+		}
+	}
+}

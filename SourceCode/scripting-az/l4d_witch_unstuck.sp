@@ -31,9 +31,17 @@
  *
  * An infected player can set her off too (a smoker or hunter next to her, a boomer
  * popped on her). The game still sends her after a survivor, but the harasser event
- * names the infected player, so for such a witch the plugin measures progress toward
- * the nearest standing survivor instead, and treats her like any other witch. Her
- * chase ends when she hurts a survivor.
+ * names the infected player. When her victim is being moved by that player (dragged
+ * or just released by a smoker, bumped by a lunging hunter, flung by a tank), the
+ * game names the mover instead of the victim (WitchAttack::OnStart), so the plugin asks
+ * the game the same question (CTerrorPlayer::GetOtherResponsibleForMovement) and
+ * tracks that survivor. Otherwise it measures progress toward the nearest standing
+ * survivor.
+ *
+ * A survivor who body-blocks her twice silently becomes her new victim
+ * (WitchAttack::OnContact, z_witch_allow_change_victim, no event). So for every witch
+ * the chase also ends when she hurts or incaps anyone, or a survivor goes down next to
+ * her after she was set off: she is never nudged or hopped off someone she is killing.
  *
  * Tracking ends when the target is incapped, dies or leaves the survivors, or the
  * witch dies.
@@ -65,8 +73,8 @@ public Plugin myinfo =
 	name = "L4D Witch Unstuck",
 	author = "Malevolence",
 	description = "Hops a startled witch past whatever she is stuck on",
-	version = "2.4.1",
-	url = "https://github.com/Volence/riverside-l4d-plugins"
+	version = "2.5.0",
+	url = ""
 };
 
 ConVar g_cvNudge, g_cvNudgeAfter, g_cvMaxNudges, g_cvMode, g_cvTime, g_cvProgress, g_cvStill, g_cvHop, g_cvGain, g_cvMinDist, g_cvMaxMoves, g_cvLog, g_cvGravity;
@@ -94,6 +102,9 @@ float g_hopVel[2048][3];
 float g_hopTo[2048][3];
 float g_hopStart[2048];
 float g_hopFlight[2048];
+float g_since[2048];         // when she was set off
+float g_downAt[MAXPLAYERS + 1];  // when each survivor last went down (incap or ledge)
+Handle g_hResponsible;      // CTerrorPlayer::GetOtherResponsibleForMovement, null if the gamedata is missing
 
 char g_log[PLATFORM_MAX_PATH];
 
@@ -115,9 +126,23 @@ public void OnPluginStart()
 	g_cvGravity = FindConVar("sv_gravity");
 
 	BuildPath(Path_SM, g_log, sizeof(g_log), "logs/witch_unstuck.log");
+	GameData gd = new GameData("l4d_witch_unstuck");
+	if (gd != null)
+	{
+		StartPrepSDKCall(SDKCall_Player);
+		if (PrepSDKCall_SetFromConf(gd, SDKConf_Signature, "CTerrorPlayer::GetOtherResponsibleForMovement"))
+		{
+			PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
+			g_hResponsible = EndPrepSDKCall();
+		}
+		delete gd;
+	}
+	if (g_hResponsible == null) Log("CTerrorPlayer::GetOtherResponsibleForMovement not found, only a smoker's tongue victim is matched");
 	HookEvent("witch_harasser_set", Ev_Harasser);
 	HookEvent("witch_killed", Ev_WitchKilled);
 	HookEvent("player_hurt", Ev_PlayerHurt);
+	HookEvent("player_incapacitated", Ev_Incapped);
+	HookEvent("player_ledge_grab", Ev_LedgeGrab);
 	RegConsoleCmd("sm_stuckwitch", Cmd_StuckWitch, "Report a stuck witch: logs where every witch and survivor is right now");
 	HookEvent("round_start", Ev_RoundStart, EventHookMode_PostNoCopy);
 	CreateTimer(TICK, T_Tick, _, TIMER_REPEAT);
@@ -136,6 +161,7 @@ public void Ev_RoundStart(Event e, const char[] n, bool nb)
 void ResetAll()
 {
 	for (int i = 0; i < sizeof(g_ref); i++) { g_ref[i] = INVALID_ENT_REFERENCE; g_hopping[i] = false; g_stuck[i] = false; }
+	for (int i = 0; i <= MaxClients; i++) g_downAt[i] = 0.0;
 	g_hops = 0;
 }
 
@@ -146,9 +172,13 @@ public void Ev_Harasser(Event e, const char[] n, bool nb)
 	if (witch <= MaxClients || witch >= sizeof(g_ref) || !IsValidEntity(witch)) return;
 	g_ref[witch] = EntIndexToEntRef(witch);
 	int client = GetClientOfUserId(user);
-	g_nearest[witch] = !(client > 0 && IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR);
-	g_setBy[witch] = g_nearest[witch] ? user : 0;
-	g_targetUser[witch] = g_nearest[witch] ? 0 : user;
+	bool survivor = client > 0 && IsClientInGame(client) && GetClientTeam(client) == TEAM_SURVIVOR;
+	// the game named the infected player moving her victim: that survivor is who she goes for
+	int moved = survivor ? 0 : MovedBy(client);
+	g_nearest[witch] = !survivor && moved == 0;
+	g_setBy[witch] = survivor ? 0 : user;
+	g_targetUser[witch] = survivor ? user : (moved > 0 ? GetClientUserId(moved) : 0);
+	g_since[witch] = GetGameTime();
 	g_best[witch] = 999999.0;
 	g_bestAt[witch] = GetGameTime();
 	GetEntPropVector(witch, Prop_Send, "m_vecOrigin", g_anchor[witch]);
@@ -178,12 +208,13 @@ public Action T_Tick(Handle t)
 		if (g_hopping[w]) continue;
 		float wp[3], tp[3];
 		GetEntPropVector(w, Prop_Send, "m_vecOrigin", wp);
-		// her first blow incaps without a player_hurt from her, so a survivor down beside her means she got someone
-		int downed = g_nearest[w] ? DownedNear(wp, 120.0) : 0;
+		// her first blow incaps without a player_hurt from her, so a survivor gone down beside her since she
+		// was set off means she got someone, maybe a new victim she switched to without any event
+		int downed = DownedNear(wp, 120.0, g_since[w]);
 		if (downed > 0)
 		{
 			if (g_stuck[w]) Log("END witch %d moving again after %.1fs stuck: she reached %N", w, now - g_stuckAt[w], downed);
-			Log("REACHED witch %d got %N (set off by an infected player)", w, downed);
+			Log("REACHED witch %d: %N went down next to her%s", w, downed, g_nearest[w] ? " (set off by an infected player)" : "");
 			g_stuck[w] = false;
 			g_ref[w] = INVALID_ENT_REFERENCE;
 			continue;
@@ -275,6 +306,8 @@ public Action T_Tick(Handle t)
 			int setter = GetClientOfUserId(g_setBy[w]);
 			if (g_nearest[w] && setter > 0) Format(by, sizeof(by), " (nearest; set off by infected %N)", setter);
 			else if (g_nearest[w]) by = " (nearest; set off by an infected player)";
+			else if (g_setBy[w] != 0 && setter > 0) Format(by, sizeof(by), " (being moved by infected %N)", setter);
+			else if (g_setBy[w] != 0) by = " (being moved by an infected player)";
 			else by[0] = 0;
 			Log("START %s witch %d stuck %.0fs: at %.0f %.0f %.0f seq %d rage %.2f | target %L%s at %.0f %.0f %.0f, %.0f away, nav walk %.0f | hop %s (search %.1f ms)",
 				map, w, now - g_bestAt[w], wp[0], wp[1], wp[2], Seq(w), Rage(w), target, by, tp[0], tp[1], tp[2], d, Travel(wp, tp),
@@ -306,17 +339,48 @@ public Action T_Tick(Handle t)
 	return Plugin_Continue;
 }
 
-// A witch set off by an infected player has no named target, so her chase ends when she hurts anyone.
+// Her chase ends when she hurts or incaps anyone: the one she hit may not be the survivor
+// we track (no named target, or a silent victim change on a second body-block).
 public void Ev_PlayerHurt(Event e, const char[] n, bool nb)
 {
-	int w = e.GetInt("attackerentid");
-	if (w <= MaxClients || w >= sizeof(g_ref) || g_ref[w] == INVALID_ENT_REFERENCE || !g_nearest[w]) return;
-	if (EntRefToEntIndex(g_ref[w]) != w) return;
+	Reached(e.GetInt("attackerentid"), GetClientOfUserId(e.GetInt("userid")));
+}
+
+public void Ev_Incapped(Event e, const char[] n, bool nb)
+{
 	int victim = GetClientOfUserId(e.GetInt("userid"));
+	if (victim > 0) g_downAt[victim] = GetGameTime();
+	Reached(e.GetInt("attackerentid"), victim);
+}
+
+public void Ev_LedgeGrab(Event e, const char[] n, bool nb)
+{
+	int victim = GetClientOfUserId(e.GetInt("userid"));
+	if (victim > 0) g_downAt[victim] = GetGameTime();
+}
+
+void Reached(int w, int victim)
+{
+	if (w <= MaxClients || w >= sizeof(g_ref) || g_ref[w] == INVALID_ENT_REFERENCE) return;
+	if (EntRefToEntIndex(g_ref[w]) != w || victim <= 0) return;
 	if (g_stuck[w]) Log("END witch %d moving again after %.1fs stuck: she reached %N", w, GetGameTime() - g_stuckAt[w], victim);
-	Log("REACHED witch %d got %N (set off by an infected player)", w, victim);
+	Log("REACHED witch %d got %N%s", w, victim, g_nearest[w] ? " (set off by an infected player)" : "");
 	g_stuck[w] = false;
 	g_ref[w] = INVALID_ENT_REFERENCE;
+}
+
+// The survivor the game says this infected player is moving: WitchAttack::OnStart names
+// the mover as her harasser in that case. 0 when there is none.
+int MovedBy(int infected)
+{
+	if (infected <= 0 || !IsClientInGame(infected)) return 0;
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || GetClientTeam(i) != TEAM_SURVIVOR || !IsPlayerAlive(i)) continue;
+		int mover = g_hResponsible != null ? SDKCall(g_hResponsible, i) : GetEntPropEnt(i, Prop_Send, "m_tongueOwner");
+		if (mover == infected) return i;
+	}
+	return 0;
 }
 
 public void Ev_WitchKilled(Event e, const char[] n, bool nb)
@@ -403,12 +467,14 @@ float Rage(int w)
 	return HasEntProp(w, Prop_Send, "m_rage") ? GetEntPropFloat(w, Prop_Send, "m_rage") : -1.0;
 }
 
-int DownedNear(const float from[3], float range)
+// A survivor down (incapped or on a ledge) within range who went down at or after `since`.
+int DownedNear(const float from[3], float range, float since)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || GetClientTeam(i) != TEAM_SURVIVOR || !IsPlayerAlive(i)) continue;
 		if (!GetEntProp(i, Prop_Send, "m_isIncapacitated") && !GetEntProp(i, Prop_Send, "m_isHangingFromLedge")) continue;
+		if (g_downAt[i] < since) continue;
 		float p[3];
 		GetClientAbsOrigin(i, p);
 		if (GetVectorDistance(from, p) < range) return i;
@@ -492,8 +558,8 @@ bool FindNudge(int witch, const float wp[3], const float tp[3], float out[3], in
 			delete tr;
 			if (!floor || FloatAbs(p[2] - wp[2]) > 18.0) continue;
 			p[2] += 1.0;
-			if (!HasRoom(witch, p)) continue;
-			tr = TR_TraceHullFilterEx(wp, p, mn, mx, MASK_NPCSOLID, F_NotPlayers, witch);
+			if (!HasRoom(witch, p, true)) continue;
+			tr = TR_TraceHullFilterEx(wp, p, mn, mx, MASK_NPCSOLID, F_NotWitchOrInfected, witch);
 			bool clear = !TR_DidHit(tr);
 			delete tr;
 			if (!clear) continue;
@@ -575,7 +641,7 @@ bool FindHop(int witch, const float wp[3], const float tp[3], float out[3], floa
 	for (int i = 0; i < cands.Length && checks < TRAVEL_CHECKS; i++)
 	{
 		cands.GetArray(i, c);
-		if (!HasRoom(witch, c.pos)) { noRoom++; continue; }
+		if (!HasRoom(witch, c.pos, true)) { noRoom++; continue; }
 		checks++;
 		float left = Travel(c.pos, tp);
 		float gain = mine - left;
@@ -743,14 +809,15 @@ void ClearStart(int witch, const float wp[3], float out[3])
 	}
 }
 
-bool HasRoom(int witch, const float pos[3])
+// survivors: also count a survivor standing there (a landing spot); her own spot ignores them
+bool HasRoom(int witch, const float pos[3], bool survivors = false)
 {
 	float mn[3], mx[3], a[3];
 	GetEntPropVector(witch, Prop_Send, "m_vecMins", mn);
 	GetEntPropVector(witch, Prop_Send, "m_vecMaxs", mx);
 	a = pos;
 	a[2] += 4.0;
-	Handle tr = TR_TraceHullFilterEx(a, a, mn, mx, MASK_NPCSOLID, F_NotPlayers, witch);
+	Handle tr = TR_TraceHullFilterEx(a, a, mn, mx, MASK_NPCSOLID, survivors ? F_NotWitchOrInfected : F_NotPlayers, witch);
 	bool clear = !TR_DidHit(tr);
 	delete tr;
 	return clear;
@@ -759,6 +826,13 @@ bool HasRoom(int witch, const float pos[3])
 public bool F_NotPlayers(int ent, int mask, any witch)
 {
 	return ent != witch && (ent == 0 || ent > MaxClients);
+}
+
+public bool F_NotWitchOrInfected(int ent, int mask, any witch)
+{
+	if (ent == witch) return false;
+	if (ent >= 1 && ent <= MaxClients) return IsClientInGame(ent) && GetClientTeam(ent) == TEAM_SURVIVOR && IsPlayerAlive(ent);
+	return true;
 }
 
 void Log(const char[] fmt, any ...)

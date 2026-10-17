@@ -7,7 +7,7 @@
 #include <sourcescramble>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.0-riverside2"
 #define GAMEDATA_FILE "l4d_versus_rescue_door_fix"
 #define FUNCTION_PATCH "CSurvivorRescue::AreaScanThink"
 #define KEY_PATCH "CTerrorPlayer::OnPreThinkGhostState__ChangeSpawnAttributes"
@@ -152,7 +152,10 @@ void FixRescueDoors()
 			//LogMessage("rescue door %d is rescue door", entity);
 			SetEntProp(entity, Prop_Data, "m_takedamage", 2); //breakable
 			SetEntProp(entity, Prop_Data, "m_spawnflags", m_spawnflags & (~39424)); //normal door
-			SetEntProp(entity, Prop_Data, "m_bLocked", 0); //unlock
+			// riverside2: m_bLocked is networked; a Prop_Data write is not marked as changed,
+			// so clients could keep showing the locked prompt and sound
+			if (HasEntProp(entity, Prop_Send, "m_bLocked")) SetEntProp(entity, Prop_Send, "m_bLocked", 0); //unlock
+			else SetEntProp(entity, Prop_Data, "m_bLocked", 0);
 		}
 	}
 }

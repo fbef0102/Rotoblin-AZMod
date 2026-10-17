@@ -1,0 +1,61 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"OS"
+			{
+				"linux"			"1"
+				"windows"		"0"
+			}
+		}
+
+		"MemPatches"
+		{
+			"jointeam_force_SpawnTank_vector"
+			{
+				"signature"		"ZombieManager::SpawnTank(Vector const&, QAngle const&)"
+				"linux"
+				{
+					"offset"	"2Ah"
+					"verify"	"\xC7\x44\x24\x0C\x00\x00\x00\x00"
+					"patch"		"\xC7\x44\x24\x0C\x01"
+				}
+				"windows"
+				{
+					"offset"	"20h"
+					"verify"	"\x6A\x00"
+					"patch"		"\x6A\x01"
+				}
+			}
+
+			"linux"
+			{
+				"jointeam_force_SpawnTank_navarea"
+				{
+					"signature"		"ZombieManager::SpawnTank(TerrorNavArea const*, QAngle const&)"
+					"offset"		"D9h"
+					"verify"		"\xC7\x44\x24\x0C\x00\x00\x00\x00"
+					"patch"			"\xC7\x44\x24\x0C\x01"
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"ZombieManager::SpawnTank(Vector const&, QAngle const&)"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13ZombieManager9SpawnTankERK6VectorRK6QAngle"
+				"windows"		"\x56\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\xF0\x83\xC4\x04\x85\xF6\x75\x2A\x5E\xC2\x08\x00\x8B\x06\x8B\x90\xB8\x07\x00\x00\x6A\x00\x6A\x00\x6A\x03\x8B\xCE\xFF\xD2\x6A\x00\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8B\x44\x24\x08\x50\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8B\x4C\x24\x0C\x51\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x89\x35\x2A\x2A\x2A\x2A\x8B\x16\x8B\x42\x54\x8B\xCE\xFF\xD0\x6A\x01\x6A\x05"
+			}
+
+			"ZombieManager::SpawnTank(TerrorNavArea const*, QAngle const&)"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13ZombieManager9SpawnTankEPK13TerrorNavAreaRK6QAngle"
+			}
+		}
+	}
+}

@@ -1,0 +1,39 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Functions"
+		{
+			"HD_IsPushableEntity"
+			{
+				"signature"	"IsPushableEntity"
+				"callconv"	"cdecl"
+				"return"	"bool"
+				"arguments"
+				{
+					"entity"
+					{
+						"type"	"cbaseentity"
+					}
+				}
+			}
+		}
+		"Signatures"
+		{
+			"IsPushableEntity"
+			{
+				"library"	"server"
+				"linux"		"@_Z16IsPushableEntityP11CBaseEntity"
+				"windows"	"\x56\x8B\x74\x24\x08\x85\xF6\x74\x2A\xA1\x2A\x2A\x2A\x2A"
+				//sub_100F57A0: 56 8B 74 24 08 85 F6 74 ? A1 ? ? ? ? 
+			}
+			"CBaseEntity::SetCollisionGroup"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11CBaseEntity17SetCollisionGroupEi"
+				"windows"	"\x53\x56\x8B\xD9\x57\x8B\x7C\x24\x10\x39\xBB\xD4\x01\x00\x00"
+				//sub_10053630: 53 56 8B D9 57 8B 7C 24 10 39 BB D4 01 00 00 
+			}
+		}
+	}
+}

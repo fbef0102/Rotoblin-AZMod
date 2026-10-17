@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION "0.1-riverside1"
+#define PLUGIN_VERSION "0.2"
 
 /**
  * l4d_tank_reconnect - a tank whose player drops gets the tank back on rejoin.
@@ -35,6 +35,20 @@
  * fires player_bot_replace, but its player never disconnects, so nothing is
  * saved. If the bot tank dies before the player is back, the save is dropped.
  *
+ * 0.2, from the server.so decompile audit (l4d-source docs/annotated/tank-control/):
+ *  - The swap is the game's own CTerrorPlayer::TakeOverZombieBot, the call that hands every
+ *    versus lottery winner the AI tank. ReplaceTank copied only position, health and crouch,
+ *    so a burning tank came back unlit, eye angles and the Crash Course finale slot were lost,
+ *    and the culled bot could respawn as a second tank. (Not the left4dhooks native: it calls
+ *    SetClass afterwards, which resets a tank to full health and gives a second claw.)
+ *  - The rage grace timer is carried too. Every new controller goes through Spawn, which
+ *    zeroes rage and freezes it for z_frustration_spawn_delay (25 s in our cfg), so 0.1's
+ *    returned tank had its rage written back but frozen for 25 s. The time left on
+ *    m_frustrationTimer (m_frustration + 4) is saved at the disconnect and restored.
+ *  - An incapacitated (dying) bot tank is not handed back, as the game's own swaps skip them.
+ *  - A kick at match end (pug-match's end kick) or a server shutdown saves nothing, so the
+ *    "The AI holds their tank" line no longer shows after the last round.
+ *
  * Every save, return and drop is logged to logs/tank_reconnect.log.
  * l4d_tank_reconnect 0 turns the give-back off (saves are still logged).
  */
@@ -48,12 +62,15 @@
 char VIA_NAMES[][] = { "ReplaceTank", "game takeover", "bot_player_replace" };
 
 ConVar g_cvEnabled;
+Handle g_hTakeOverZombieBot;         // CTerrorPlayer::TakeOverZombieBot(CTerrorPlayer *bot)
+int g_iFrusTimer;                    // m_frustrationTimer (CountdownTimer): duration +4, timestamp +8
 char g_sLog[PLATFORM_MAX_PATH];
 
 // Pending: filled during the disconnect frame, keyed by the leaving client.
 int g_iPendBot[MAXPLAYERS + 1];      // userid of the bot that took the body, 0 = none
 int g_iPendFrus[MAXPLAYERS + 1];
 int g_iPendPass[MAXPLAYERS + 1];
+float g_fPendGrace[MAXPLAYERS + 1];  // seconds left on the rage grace timer, 0 = rage was growing
 bool g_bPendLeaving[MAXPLAYERS + 1];
 char g_sPendAuth[MAXPLAYERS + 1][32];
 char g_sPendName[MAXPLAYERS + 1][MAX_NAME_LENGTH];
@@ -66,6 +83,7 @@ char g_sSaveName[MAX_SAVES][MAX_NAME_LENGTH];
 int g_iSaveBot[MAX_SAVES];
 int g_iSaveFrus[MAX_SAVES];
 int g_iSavePass[MAX_SAVES];
+float g_fSaveGrace[MAX_SAVES];
 float g_fSaveAt[MAX_SAVES];
 bool g_bSaveReplacing[MAX_SAVES];   // our ReplaceTank is in flight; its bot death is not a takeover
 
@@ -90,6 +108,21 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("round_start", Event_Reset, EventHookMode_PostNoCopy);
 	HookEvent("round_end", Event_Reset, EventHookMode_PostNoCopy);
+
+	g_iFrusTimer = FindSendPropInfo("CTerrorPlayer", "m_frustration") + 4;
+	GameData gd = new GameData("left4dhooks.l4d1");
+	if (gd != null)
+	{
+		StartPrepSDKCall(SDKCall_Player);
+		if (PrepSDKCall_SetFromConf(gd, SDKConf_Signature, "CTerrorPlayer::TakeOverZombieBot"))
+		{
+			PrepSDKCall_AddParameter(SDKType_CBasePlayer, SDKPass_Pointer);
+			g_hTakeOverZombieBot = EndPrepSDKCall();
+		}
+		delete gd;
+	}
+	if (g_hTakeOverZombieBot == null)
+		LogToFileEx(g_sLog, "CTerrorPlayer::TakeOverZombieBot not found, falling back to ReplaceTank");
 
 	RegAdminCmd("sm_tank_reconnect_status", Cmd_Status, ADMFLAG_ROOT, "Alive tanks (rage, health, pass count) and saved tanks waiting for their player.");
 }
@@ -160,6 +193,20 @@ int Frustration(int client)
 	return GetEntProp(client, Prop_Send, "m_frustration");
 }
 
+// Seconds before rage starts growing again, 0 if it already grows.
+float GraceLeft(int client)
+{
+	float ts = GetEntDataFloat(client, g_iFrusTimer + 8);
+	float left = ts - GetGameTime();
+	return (ts <= 0.0 || left < 0.0) ? 0.0 : left;
+}
+
+void SetGraceLeft(int client, float left)
+{
+	SetEntDataFloat(client, g_iFrusTimer + 4, left);
+	SetEntDataFloat(client, g_iFrusTimer + 8, GetGameTime() + left);
+}
+
 void ClearPending(int client)
 {
 	g_iPendBot[client] = 0;
@@ -195,6 +242,7 @@ public void Event_PlayerBotReplace(Event event, const char[] name, bool dontBroa
 	if (!g_bPendLeaving[player])
 	{
 		g_iPendPass[player] = L4D2Direct_GetTankPassedCount();
+		g_fPendGrace[player] = GraceLeft(player);
 		GetClientAuthId(player, AuthId_Engine, g_sPendAuth[player], sizeof(g_sPendAuth[]), false);
 		GetClientName(player, g_sPendName[player], sizeof(g_sPendName[]));
 	}
@@ -209,11 +257,22 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 	bool tank = IsAliveTank(client);
 	if (!tank && g_iPendBot[client] == 0) return Plugin_Continue;
 
+	// 0.2: the end-of-match kick and a shutdown are not a drop to come back from
+	char reason[128];
+	event.GetString("reason", reason, sizeof(reason));
+	if (IsClientInKickQueue(client) || StrContains(reason, "shutting down", false) != -1)
+	{
+		LogToFileEx(g_sLog, "left \"%N\" as tank by kick or shutdown (%s); nothing saved", client, reason);
+		ClearPending(client);
+		return Plugin_Continue;
+	}
+
 	g_bPendLeaving[client] = true;
 	if (tank)
 	{
 		g_iPendFrus[client] = Frustration(client);
 		g_iPendPass[client] = L4D2Direct_GetTankPassedCount();
+		g_fPendGrace[client] = GraceLeft(client);
 	}
 	if (g_sPendAuth[client][0] == '\0')
 	{
@@ -272,11 +331,12 @@ public void Frame_CommitIndex(int client)
 	g_iSaveBot[slot] = g_iPendBot[client];
 	g_iSaveFrus[slot] = g_iPendFrus[client];
 	g_iSavePass[slot] = g_iPendPass[client];
+	g_fSaveGrace[slot] = g_fPendGrace[client];
 	g_fSaveAt[slot] = GetGameTime();
 
 	int bot = GetClientOfUserId(g_iSaveBot[slot]);
-	LogToFileEx(g_sLog, "save \"%s\" %s: bot %d hp=%d frustration=%d passes=%d",
-		g_sSaveName[slot], g_sSaveAuth[slot], bot, GetClientHealth(bot), g_iSaveFrus[slot], g_iSavePass[slot]);
+	LogToFileEx(g_sLog, "save \"%s\" %s: bot %d hp=%d frustration=%d grace=%.1f s passes=%d",
+		g_sSaveName[slot], g_sSaveAuth[slot], bot, GetClientHealth(bot), g_iSaveFrus[slot], g_fSaveGrace[slot], g_iSavePass[slot]);
 	PrintToChatAll("\x04[Tank]\x01 %s dropped. The AI holds their tank; it goes back to them if they rejoin.", g_sSaveName[slot]);
 	ClearPending(client);
 }
@@ -404,6 +464,12 @@ void TryReturn(int client, int userid)
 		int bot = GetClientOfUserId(g_iSaveBot[i]);
 		if (!IsAliveTank(bot) || !IsFakeClient(bot) || IsAliveTank(client))
 			return;
+		// 0.2: a dying tank stays with the AI, as the game's own swaps skip incapacitated tanks
+		if (GetEntProp(bot, Prop_Send, "m_isIncapacitated"))
+		{
+			LogToFileEx(g_sLog, "back \"%N\" %s: the bot tank is incapacitated, the AI keeps it", client, auth);
+			return;
+		}
 		if (!g_cvEnabled.BoolValue)
 		{
 			LogToFileEx(g_sLog, "back \"%N\" %s after %.0f s: give-back off, the AI keeps the tank", client, auth, GetGameTime() - g_fSaveAt[i]);
@@ -414,10 +480,14 @@ void TryReturn(int client, int userid)
 		int hp = GetClientHealth(bot);
 		int botUserId = g_iSaveBot[i];
 		g_bSaveReplacing[i] = true;
-		L4D_ReplaceTank(bot, client);
-		// ReplaceTank was written for a pass between two players. When the old
-		// tank is a bot, the bot comes straight back as a SECOND tank (seen on
-		// the rig 2026-10-06, during a pause). Kick it once the swap has landed.
+		// 0.2: the game's own bot handoff (moves the bot to spectators, fires
+		// bot_player_replace, keeps burn, angles and the finale slot)
+		if (g_hTakeOverZombieBot != null)
+			SDKCall(g_hTakeOverZombieBot, client, bot);
+		else
+			L4D_ReplaceTank(bot, client);
+		// The old bot is not needed any more (ReplaceTank even brought it back as a
+		// SECOND tank, seen on the rig 2026-10-06). Kick it once the swap has landed.
 		DataPack kick = new DataPack();
 		kick.WriteCell(botUserId);
 		kick.WriteCell(userid);
@@ -471,15 +541,17 @@ public void Frame_Restore(DataPack dp)
 
 	int passesNow = L4D2Direct_GetTankPassedCount();
 	int frusNow = Frustration(client);
+	float graceNow = GraceLeft(client);
 	SetEntProp(client, Prop_Send, "m_frustration", g_iSaveFrus[slot]);
+	SetGraceLeft(client, g_fSaveGrace[slot]);
 	L4D2Direct_SetTankPassedCount(g_iSavePass[slot]);
 
 	char auth[32];
 	GetClientAuthId(client, AuthId_Engine, auth, sizeof(auth), false);
 	bool owner = StrEqual(auth, g_sSaveAuth[slot]);
-	LogToFileEx(g_sLog, "%s \"%N\" %s after %.0f s via %s (tank of \"%s\"): hp %d -> %d, frustration %d -> %d, passes %d (was %d after the takeover)",
+	LogToFileEx(g_sLog, "%s \"%N\" %s after %.0f s via %s (tank of \"%s\"): hp %d -> %d, frustration %d -> %d, grace %.1f -> %.1f s, burning %d, passes %d (was %d after the takeover)",
 		owner ? "return" : "taken", client, auth, GetGameTime() - g_fSaveAt[slot], VIA_NAMES[via], g_sSaveName[slot], hp, GetClientHealth(client),
-		frusNow, g_iSaveFrus[slot], g_iSavePass[slot], passesNow);
+		frusNow, g_iSaveFrus[slot], graceNow, g_fSaveGrace[slot], (GetEntityFlags(client) & FL_ONFIRE) ? 1 : 0, g_iSavePass[slot], passesNow);
 	if (owner)
 		PrintToChatAll("\x04[Tank]\x01 %N is back in their tank (rage %d%% left%s).", client,
 			100 - g_iSaveFrus[slot], g_iSavePass[slot] > 1 ? ", already passed once" : "");

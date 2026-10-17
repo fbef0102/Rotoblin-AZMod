@@ -2009,6 +2009,10 @@ MRESReturn DTR_ZombieManager_ReplaceTank(DHookReturn hReturn, DHookParam hParams
 MRESReturn DTR_CTankClaw_DoSwing_Pre(int pThis) // Forward "L4D_TankClaw_DoSwing_Pre"
 {
 	//PrintToServer("##### DTR_CTankClaw_DoSwing_Pre");
+	static char sTemp[32];
+	GetEdictClassname(pThis, sTemp, sizeof(sTemp));
+	if( strcmp(sTemp, "weapon_tank_claw") != 0 ) return MRES_Ignored;
+
 	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
 
 	Call_StartForward(g_hFWD_CTankClaw_DoSwing_Pre);
@@ -2022,6 +2026,10 @@ MRESReturn DTR_CTankClaw_DoSwing_Pre(int pThis) // Forward "L4D_TankClaw_DoSwing
 MRESReturn DTR_CTankClaw_DoSwing_Post(int pThis) // Forward "L4D_TankClaw_DoSwing_Post"
 {
 	//PrintToServer("##### DTR_CTankClaw_DoSwing_Post");
+	static char sTemp[32];
+	GetEdictClassname(pThis, sTemp, sizeof(sTemp));
+	if( strcmp(sTemp, "weapon_tank_claw") != 0 ) return MRES_Ignored;
+
 	int tank = GetEntPropEnt(pThis, Prop_Data, "m_hOwner");
 
 	Call_StartForward(g_hFWD_CTankClaw_DoSwing_Post);

@@ -1,0 +1,28 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Functions"
+		{
+			"CTongue::OnEnterExtendingState"
+			{
+				"signature"	"CTongue::OnEnterExtendingState"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+			}
+		}
+
+		"Signatures"
+		{
+			// server.so 0x62f5aa: copies m_potentialTarget into m_currentTipTarget at launch
+			"CTongue::OnEnterExtendingState"
+			{
+				"library"	"server"
+				"linux"		"@_ZN7CTongue21OnEnterExtendingStateEv"
+				"windows"	"\x83\xEC\x0C\x57\x8B\xF9\x8B\x87\x74\x03\x00\x00"
+				//sub_102CCED0: 83 EC 0C 57 8B F9 8B 87 74 03 00 00
+			}
+		}
+	}
+}

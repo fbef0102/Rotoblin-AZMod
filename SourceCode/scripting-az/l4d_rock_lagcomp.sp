@@ -147,9 +147,10 @@ Handle g_SDKCall;
 GlobalForward g_hForwardRockSkeeted;
 int g_iLastSkeetedRock = INVALID_ENT_REFERENCE;
 
-// tick_count of the usercmd each client is running, for the rewind
+// riverside: tick_count of the usercmd each client is running, for the rewind
 int g_iCmdTickCount[MAXPLAYERS+1];
 ConVar cvarMaxUnlag;
+ConVar cvarThrowHealth;   // riverside4: z_tank_throw_health, for mounted gun damage
 ConVar cvarLagPushTicks;
 
 /**
@@ -166,15 +167,12 @@ public Plugin myinfo =
     name = "L4D1 Tank Rock Lag Compensation",
     author = "Luckylockm, Silvers, Harry, Malevolence",
     description = "Provides lag compensation for tank rock entities",
-    version = "1.14-2026/10/1",
+    version = "1.14-riverside4",
     url = "https://github.com/LuckyServ/"
 };
 
-ConVar z_tank_throw_health;
-
 public void OnPluginStart()
 {
-	z_tank_throw_health = FindConVar("z_tank_throw_health");
 
 	StartPrepSDKCall(SDKCall_Entity);
 		
@@ -198,7 +196,11 @@ public void OnPluginStart()
 	cvarRockPrint = CreateConVar("sm_rock_print", "0", "Toggle printing of rock damage and range values", FCVAR_NONE, true, 0.0, true, 1.0);
 	cvarRockHitbox = CreateConVar("sm_rock_hitbox", "1", "Toggle for rock custom hitbox", FCVAR_NONE, true, 0.0, true, 1.0);
 	cvarRockTankLagComp = CreateConVar("sm_rock_lagcomp", "1", "Toggle for lag compensation", FCVAR_NONE, true, 0.0, true, 1.0);
-	cvarRockGodframes = CreateConVar("sm_rock_godframes", "1.7", "Godframe time for rock (in seconds)", FCVAR_NONE, true, 0.0, true, 10.0);
+	// riverside4: counted from the RELEASE (the tank lets go), not from the rock's creation: he holds it 1.2 to 1.7 s
+	// depending on the throw animation, so 1.7 from creation left 0.5, 0.23 or 0 s. Stock is 0.5 s after release
+	// (CTankRock::ProximityThink: no damage and a bigger box for the first 0.5 s of flight). Owner's pick 2026-10-16:
+	// 0.2, about what players got on average before, now the same on every throw.
+	cvarRockGodframes = CreateConVar("sm_rock_godframes", "0.2", "Godframe time for rock after the tank releases it (in seconds)", FCVAR_NONE, true, 0.0, true, 10.0);
 	cvarRockGodframesRender = CreateConVar("sm_rock_godframes_render", "1", "Toggle visual godframes feedback", FCVAR_NONE, true, 0.0, true, 1.0);
 	cvarRockHitboxRadius = CreateConVar("sm_rock_hitbox_radius", "30", "Rock hitbox radius", FCVAR_NONE, true, 0.0, true, 10000.0);
 
@@ -228,6 +230,7 @@ public void OnPluginStart()
 	HookEvent("weapon_fire", ProcessRockHitboxes);
 
 	cvarMaxUnlag = FindConVar("sv_maxunlag");
+	cvarThrowHealth = FindConVar("z_tank_throw_health");
 	cvarLagPushTicks = FindConVar("sv_lagpushticks");
 }
 
@@ -287,12 +290,40 @@ public void OnEntityDestroyed(int entity)
  */ 
 Action PreventDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype) {
 	if (ROCK_HITBOX_ENABLED) {
+		// riverside4: a finale minigun or .50 cal never fires weapon_fire, so the hitbox test
+		// never sees it. Count its real damage against z_tank_throw_health, as stock does.
+		//if (IsMountedGunHit(attacker, inflictor)) {
+		//	int i = Array_SearchRock(rockEntitiesArray, EntIndexToEntRef(victim));
+		//	if (i >= 0 && Array_IsRockAllowedDmg(i)) {
+		//		float rockDamage = view_as<float>(rockEntitiesArray.Get(i, BLOCK_DMG_DEALT)) + damage * 1.0;
+		//		rockEntitiesArray.Set(i, rockDamage, BLOCK_DMG_DEALT);
+		//		if (rockDamage >= cvarThrowHealth.FloatValue) {
+		//			RockSkeeted(attacker, EntIndexToEntRef(victim));
+		//		}
+		//	}
+		//}
 		damage = 0.0;
 		return Plugin_Handled;
 	} else {
 		return Plugin_Continue;
 	}
 }
+
+/*bool IsMountedGunHit(int attacker, int inflictor)
+{
+	if (!IsSurvivor(attacker)) {
+		return false;
+	}
+	if (inflictor > MaxClients && IsValidEntity(inflictor)) {
+		char cls[MAX_STR_LEN];
+		GetEntityClassname(inflictor, cls, sizeof(cls));
+		if (StrEqual(cls, "prop_minigun") || StrEqual(cls, "prop_mounted_machine_gun")) {
+			return true;
+		}
+	}
+	return GetEntProp(attacker, Prop_Send, "m_usingMinigun") != 0
+		|| (HasEntProp(attacker, Prop_Send, "m_usingMountedWeapon") && GetEntProp(attacker, Prop_Send, "m_usingMountedWeapon") != 0);
+}*/
 
 /*
  * Tracking origin vector of every rock for every frame (for rollback).
@@ -308,10 +339,19 @@ public void OnGameFrame()
 		if( !rockEntity || EntRefToEntIndex(rockEntity) == INVALID_ENT_REFERENCE )
 		{
 			Array_RemoveRock(rockEntitiesArray, rockEntity);
-			--i; // the next rock moved into slot i, do not skip its sample
+			--i; // riverside: the next rock moved into slot i, do not skip its sample
 			continue;
 		}
-		GetEntPropVector(rockEntity, Prop_Send, "m_vecOrigin", pos); 
+		// riverside4: a held rock is parented to the tank with a zero local origin, so its
+		// m_vecOrigin reads (0,0,0) until release. Start the godframe clock at release
+		// (OnRelease sets FLYGRAVITY) and record world positions only from then on.
+		if (rockEntitiesArray.Get(i, BLOCK_START_TIME) == 0) {
+			if (GetEntityMoveType(rockEntity) == MOVETYPE_NONE) {
+				continue;
+			}
+			rockEntitiesArray.Set(i, CURR_GAME_TIME, BLOCK_START_TIME);
+		}
+		GetEntPropVector(rockEntity, Prop_Data, "m_vecAbsOrigin", pos); 
 		new ArrayList:posArray = rockEntitiesArray.Get(i, BLOCK_POS_HISTORY);
 		posArray.Set(index, pos[0], 0);
 		posArray.Set(index, pos[1], 1);
@@ -337,8 +377,8 @@ void Array_AddNewRock(ArrayList array, int entity)
 {
 	new index = array.Push(entity);
 	array.Set(index, CreateArray(3, MAX_HISTORY_FRAMES), BLOCK_POS_HISTORY);
-	array.Set(index, 0, BLOCK_DMG_DEALT);
-	array.Set(index, CURR_GAME_TIME, BLOCK_START_TIME);
+	array.Set(index, 0.0, BLOCK_DMG_DEALT);
+	array.Set(index, 0, BLOCK_START_TIME);   // riverside4: set at release, see OnGameFrame
 }
 
 /**
@@ -383,7 +423,8 @@ int Array_SearchRock(ArrayList array, rockEntity)
  */
 bool Array_IsRockAllowedDmg(rockIndex)
 {
-	return CURR_GAME_TIME - rockEntitiesArray.Get(rockIndex, BLOCK_START_TIME) >= ROCK_GODFRAMES_TIME;
+	int start = rockEntitiesArray.Get(rockIndex, BLOCK_START_TIME);
+	return start != 0 && CURR_GAME_TIME - start >= ROCK_GODFRAMES_TIME;
 }
 
 /**
@@ -441,11 +482,16 @@ Action ProcessRockHitboxes(Event event, const char[] name,
 	new Float:delta;
 	
 	//PrintToChatAll("%d - %d = %d", GetGameTickCount(), rollBackTick, GetGameTickCount() - rollBackTick);
-	
+
 	for (int i = 0; i < rockEntitiesArray.Length; ++i) {
 		
 		if (Array_IsRockAllowedDmg(i)) {
 			entity = rockEntitiesArray.Get(i, BLOCK_ENT_REF); 
+			// riverside4: already detonated this tick (EFL_KILLME), deleted at the end of the frame
+			int ent = EntRefToEntIndex(entity);
+			if (ent == INVALID_ENT_REFERENCE || (GetEntProp(ent, Prop_Data, "m_iEFlags") & 1)) {
+				continue;
+			}
 			rockPositionsArray = rockEntitiesArray.Get(i, BLOCK_POS_HISTORY);
 			
 			c[0] = rockPositionsArray.Get(index, 0);
@@ -456,7 +502,7 @@ Action ProcessRockHitboxes(Event event, const char[] name,
 			delta = GetVectorDotProduct(l, o_Minus_c) * GetVectorDotProduct(l, o_Minus_c) 
 			- GetVectorLength(o_Minus_c, true) + radius*radius;
 			
-			// the ray only goes forward. The far intersection
+			// riverside: the ray only goes forward. The far intersection
 			// -(l.(o-c)) + sqrt(delta) must be >= 0, else the whole sphere is
 			// behind the shooter; and a wall between eye and rock blocks it.
 			if (delta >= 0.0 
@@ -471,7 +517,7 @@ Action ProcessRockHitboxes(Event event, const char[] name,
 }
 
 /*
- * the history tick holding the rock where this client saw it when
+ * riverside: the history tick holding the rock where this client saw it when
  * it fired, computed like CLagCompensationManager::StartLagCompensation:
  *   correct    = clamp(outgoing latency + m_fLerpTime, 0, sv_maxunlag)
  *   targetTime = cmd tick_count * interval - m_fLerpTime
@@ -491,8 +537,11 @@ int GetLagCompHistoryTick(int client)
 	correct = Clamp(correct, 0.0, cvarMaxUnlag != null ? cvarMaxUnlag.FloatValue : 1.0);
 
 	float targetTime = g_iCmdTickCount[client] * interval - lerp;
-	if (FloatAbs(correct - (GetGameTime() - targetTime)) > 0.2) {
-		targetTime = GetGameTime() - correct;
+	// riverside4: the engine's curtime here is tickcount * interval; GetGameTime() inside a
+	// usercmd is the player's tick base, which can run a few ticks ahead
+	float now = GetGameTickCount() * interval;
+	if (FloatAbs(correct - (now - targetTime)) > 0.2) {
+		targetTime = now - correct;
 	}
 
 	if (cvarLagPushTicks != null) {
@@ -507,7 +556,7 @@ int GetLagCompHistoryTick(int client)
 }
 
 /*
- * true unless a wall sits between the eye and the rock. A hit within the hitbox
+ * riverside: true unless a wall sits between the eye and the rock. A hit within the hitbox
  * radius of the rock is the rock's own surface, not a wall in front of it.
  * CONTENTS_WINDOW is left out of the mask because bullets go through glass.
  */
@@ -622,21 +671,24 @@ void ApplyDamageOnRock(rockIndex, client, float eyePos[3], float c[3], Event eve
  */
 void ApplyBulletToRock(int client, int rockIndex, int rockEntity, float damage, float range)
 {
-	new Float:rockDamage = float(rockEntitiesArray.Get(rockIndex, BLOCK_DMG_DEALT));
+	// riverside4: kept as a float (it was rounded on every shot) and detonated right here, inside
+	// the shooter's usercmd like a stock kill. RequestFrame ran it next tick, after the rock's own
+	// think could still hit a survivor and remove the rock, losing the skeet.
+	float rockDamage = view_as<float>(rockEntitiesArray.Get(rockIndex, BLOCK_DMG_DEALT));
 	rockDamage += damage / range * 100;
+	rockEntitiesArray.Set(rockIndex, rockDamage, BLOCK_DMG_DEALT);
 	
-	if (RoundFloat(rockDamage) > z_tank_throw_health.IntValue) {
+	if (rockDamage >= cvarThrowHealth.FloatValue) {
+		//RockSkeeted(client, rockEntity);
 		DataPack hData = new DataPack();
 		hData.WriteCell(GetClientUserId(client));
 		hData.WriteCell(rockEntity);
 		hData.Reset();
 		RequestFrame(CTankRock__Detonate, hData);
-	} else {
-		rockEntitiesArray.Set(rockIndex, RoundFloat(rockDamage), BLOCK_DMG_DEALT);
 	}
 	
 	if (ROCK_PRINT) {
-		PrintToChatAll("Rock health: %d\%", RoundFloat(z_tank_throw_health.IntValue - rockDamage));
+		PrintToChatAll("Rock health: %d\%", RoundFloat(cvarThrowHealth.FloatValue - rockDamage));
 	}
 }
 
@@ -725,8 +777,11 @@ CTankRock__Detonate(DataPack pack)
 	if (rock == INVALID_ENT_REFERENCE || !attacker || !IsClientInGame(attacker))
 		return;
 
-	// Every pellet past ROCK_HEALTH queues its own detonate for the same frame,
-	// so count the rock once however many requests it gathered.
+	if (GetEntProp(rock, Prop_Data, "m_iEFlags") & 1)
+		return;
+
+	// More than one shot can pass ROCK_HEALTH in the same tick (two shooters):
+	// count the rock once.
 	int rockRef = EntIndexToEntRef(rock);
 	if (rockRef != g_iLastSkeetedRock) {
 		g_iLastSkeetedRock = rockRef;
@@ -739,11 +794,12 @@ CTankRock__Detonate(DataPack pack)
 		Call_PushCell(attacker);
 		Call_PushCell(tank);
 		Call_Finish();
+
+		// riverside: detonate and announce once too (were outside the de-dup, so two shooters in one tick doubled them)
+		SDKCall(g_SDKCall, rock);
+
+		CPrintToChatAll("[{olive}TS{default}] {olive}%N{default} %t", attacker, "skeeted a tank rock.");
 	}
-
-	SDKCall(g_SDKCall, rock);
-
-	CPrintToChatAll("[{olive}TS{default}] {olive}%N{default} %t", attacker, "skeeted a tank rock.");
 }
 
 /**

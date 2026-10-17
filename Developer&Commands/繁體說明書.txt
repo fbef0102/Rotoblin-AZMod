@@ -889,10 +889,13 @@
 //A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
 //嘗試修復殺死撲人的hunter之後．依然原地播放hunter撲人音效與噴血特效
 
-[233] l4d_witch_corner_fix
+[233] l4d_witch_fixes
 //source: github.com/Volence/riverside-l4d-plugins
-//Stops the witch freezing on corners at a low nb_update_frequency
+//Witch movement fixes: corners, straight-line cuts over gaps, failed climbs, map fire
 //解決因為nb_update_frequency頻率過高導致witch容易卡在門口或是角落一系列問題
+//解決witch爬牆卡住問題
+//Witch不會再被地圖上的火焰燃燒, 失去目標
+//優化witch跑向倖存者的AI路徑
 
 [234] l4d_witch_unstuck
 //source: github.com/Volence/riverside-l4d-plugins
@@ -914,33 +917,28 @@
 //Commons can go through Witches without pushing them away
 //小殭屍不會推擠witch, witch不會擋住小殭屍, 小殭屍會直接穿透witch
 
-[239] l4d_infected_collisions
+[238] l4d_infected_collisions
 //source: github.com/jensewe
 //Common infected and witch can phase through pulled or pounced survivors
 //小殭屍可以穿透走過去smoker拉走的倖存者, 跑向另外被噴的倖存者
 //witch不受影響, 被擋住會轉移目標
 
-[240] l4d_ledge_fix
+[239] l4d_ledge_fix
 //source: github.com/Volence/riverside-l4d-plugins
 //Blocks ledge hangs over drops that would not hurt
 //防止倖存者莫名其妙掛邊在低處地方
 
-[241] l4d_tank_rush
+[240] l4d_tank_rush
 //source: github.com/Volence/riverside-l4d-plugins, github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d_tank_rush.sp
 //Stops distance points accumulating whilst the tank is alive, with the option of unfreezing distance on reaching the Saferoom
 //Tank存活期間凍結距離分數, Tank變成AI或是倖存者到安全室時解除凍結
 
-[242] l4d_fix_tank_jointeam
+[241] l4d_fix_tank_jointeam
 //source: github.com/jensewe
 //Prevents Tank spawns from being blocked when the Special Infected team is full (z_max_player_zombies +1 slots)
 //Tank生成不會受到特感隊伍限制 (z_max_player_zombies +1 位置已滿)
 
-[243] l4d_witch_fire_fix
-//source: github.com/Volence/riverside-l4d-plugins
-//map fire no longer burns the witch.
-//Witch不會再被地圖上的火焰燃燒, 失去目標
-
-[243] l4d_fling_fall_fix
+[242] l4d_fling_fall_fix
 //source: github.com/Volence/riverside-l4d-plugins
 //Fall damage from the speed gravity could give, not from flings redirected into the ground
 //Example: 1. Stops survivors dying to "fell too far" from short drops after a tank punch
@@ -949,7 +947,7 @@
 //譬如: 1. 被Tank拍飛一小段距離, 但加速墬落死亡
 //2. 踩到witch或是小殭屍的頭, 之後加速墬落死亡
 
-[244] l4d2_fix_rocket_pull
+[243] l4d2_fix_rocket_pull
 //source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_fix_rocket_pull.sp
 //Fix smoker pull launching survivor up
 //Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
@@ -968,7 +966,29 @@
 [246] l4d_tank_punch_lagcomp
 //source: github.com/Target5150/MoYu_Server_Stupid_Plugins
 //A human tank's punch is lag compensated whether he taps or holds attack.
-//修復在 L4D 中，只有當你按住攻擊鍵不放時，Tank 的揮拳（Punch）才會享有延遲補償（Lag compensation）。
+//修復在 L4D 中，只有當你按住攻擊鍵不放時，Tank 的揮拳（Punch）才會享有延遲補償（Lag compensation）
+
+[247] autopause
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/autopause.sp
+//When a player disconnects due to crash, automatically pause the game. When they rejoin, give them a correct spawn timer.
+//玩家崩潰後自動暫停, 崩潰的玩家重新連線後給予之前的復活時間
+
+[248] l4d_hittable_desync_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//Stops dead commons' ragdolls dragging hittables out of place on clients
+//嘗試修復每個玩家看到的車子位置與伺服器實際上的位置不同的問題
+//原因: 客戶端上汽車的物理複本會與死亡屍體發生碰撞。當屍體堆積在車子下方或卡在車子旁邊時，它們會把客戶端上的車子位置「卡死」在原地，但伺服器上真正的車子卻還在繼續移動
+
+[249] l4d_tank_fair_punch
+//source: github.com/Volence/riverside-l4d-plugins
+//The windup-end punch target follows the fist: no hits the fist never came near, and hits the fist visibly went through.
+//優化 Tank 的揮拳判定: 拳頭根本沒靠近受害者但命中, 拳頭視覺上穿過了倖存者但沒命中
+
+[250] l4d_tongue_target
+//source: github.com/Volence/riverside-l4d-plugins
+//A tongue aimed through several survivors goes to the nearest one, judged on what the smoker saw.
+//修復smoker舌頭拉走倖存者的判定
+//原因: 當複數玩家在同一準心上時, 要拉走哪一位受害者是根據client index誰最大決定
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

@@ -15,9 +15,9 @@
 public Plugin myinfo = 
 {
     name =          "Tank Punch Ceiling Stuck Fix",
-    author =        "Tabun, Visor, HarryPotter",
+    author =        "Tabun, Visor, HarryPotter, Malevolence",
     description =   "Fixes the problem where tank-punches get a survivor stuck in the roof.",
-    version =       "2.0-2026/10/6-riverside5",
+    version =       "2.0-2026/10/6-riverside6",
     url =           "https://github.com/SirPlease/L4D2-Competitive-Rework"
 }
 
@@ -26,7 +26,7 @@ public Plugin myinfo =
 
 // riverside2: a punch that leaves its victim inside the world puts him back where he really was (match 505, 2026-10-05)
 #define WATCH_TIME              1.0     // keep checking a punched survivor this long after the hit
-ConVar  g_hCvarSolidFix;
+ConVar  g_hCvarSolidFix, g_hCvarLog;
 float   g_vPreSwing             [MAXPLAYERS + 1][3];                                       // real origin before the swing's lag compensation
 float   g_vLastClear            [MAXPLAYERS + 1][3];                                       // last origin his hull fit at, since the hit
 bool    g_bHitThisSwing         [MAXPLAYERS + 1];
@@ -53,6 +53,7 @@ public OnPluginStart()
     sv_lagcompensationforcerestore = FindConVar("sv_lagcompensationforcerestore");
     
     g_hCvarSolidFix = CreateConVar("sm_punchstuckfix_solid", "1", "1: a survivor a tank punch leaves inside the world is moved back to his last clear position. 0: off.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarLog = CreateConVar("l4d_tankpunchstuckfix_log", "1", "Log tank punch stuck to logs/tank_fair_punch.log.", FCVAR_NONE, true, 0.0, true, 1.0);
     BuildPath(Path_SM, g_sFixLog, sizeof(g_sFixLog), "logs/tank_punch_stuck.log");
 
     HookEvent("round_start", RoundStart_Event, EventHookMode_PostNoCopy);
@@ -164,14 +165,14 @@ void CheckPunchedSolid(int client, const char[] when)
 		// riverside4: he was already moved once this punch and is "stuck" again, so whatever the
 		// trace hits is not stopping his movement; stop watching instead of pinning him every tick
 		g_fWatchUntil[client] = 0.0;
-		LogToFileEx(g_sFixLog, "GIVEUP map=%s survivor=\"%N\" when=%s at=%.1f %.1f %.1f hit=%s",
+		if(g_hCvarLog.BoolValue) LogToFileEx(g_sFixLog, "GIVEUP map=%s survivor=\"%N\" when=%s at=%.1f %.1f %.1f hit=%s",
 			map, client, when, pos[0], pos[1], pos[2], what);
 	}
 	else if (!HullInWorld(client, g_vLastClear[client], lastHit))
 	{
 		g_bFixed[client] = true;
 		TeleportEntity(client, g_vLastClear[client], NULL_VECTOR, NULL_VECTOR);   // velocity kept, the fling carries on
-		LogToFileEx(g_sFixLog, "FIX map=%s survivor=\"%N\" when=%s stuck=%.1f %.1f %.1f moved_to=%.1f %.1f %.1f ducked=%d hit=%s",
+		if(g_hCvarLog.BoolValue) LogToFileEx(g_sFixLog, "FIX map=%s survivor=\"%N\" when=%s stuck=%.1f %.1f %.1f moved_to=%.1f %.1f %.1f ducked=%d hit=%s",
 			map, client, when, pos[0], pos[1], pos[2], g_vLastClear[client][0], g_vLastClear[client][1], g_vLastClear[client][2],
 			GetEntProp(client, Prop_Send, "m_bDucked"), what);
 	}
@@ -180,7 +181,7 @@ void CheckPunchedSolid(int client, const char[] when)
 		g_bWarped[client] = true;
 		L4D_WarpToValidPositionIfStuck(client);
 		GetClientAbsOrigin(client, g_vLastClear[client]);
-		LogToFileEx(g_sFixLog, "WARP map=%s survivor=\"%N\" when=%s stuck=%.1f %.1f %.1f warped_to=%.1f %.1f %.1f moved=%d hit=%s",
+		if(g_hCvarLog.BoolValue) LogToFileEx(g_sFixLog, "WARP map=%s survivor=\"%N\" when=%s stuck=%.1f %.1f %.1f warped_to=%.1f %.1f %.1f moved=%d hit=%s",
 			map, client, when, pos[0], pos[1], pos[2], g_vLastClear[client][0], g_vLastClear[client][1], g_vLastClear[client][2],
 			GetVectorDistance(pos, g_vLastClear[client]) > 0.1, what);
 	}
@@ -194,7 +195,11 @@ bool HullInWorld(int client, const float pos[3], int &hit)
 	// riverside3 (audit B1): without CONTENTS_MONSTER, so commons or a witch standing in his
 	// hull do not count as "inside the world" (the collision ports let commons walk into a
 	// pinned survivor on purpose)
-	Handle tr = TR_TraceHullFilterEx(pos, pos, mins, maxs, MASK_PLAYERSOLID & ~CONTENTS_MONSTER, TraceFilter_PlayerBlockers);
+	// riverside6: a survivor's MOVEMENT mask (CTerrorGameMovement::PlayerSolidMask, brush-only
+	// survivor value 0x14a0b) also has 0x800 (survivor-only env_player_blocker) and 0x200; with
+	// MASK_PLAYERSOLID & ~CONTENTS_MONSTER (0x1400b) a survivor stuck inside a survivor-only
+	// blocker read as clear. l4d-source docs/annotated/player-hull/.
+	Handle tr = TR_TraceHullFilterEx(pos, pos, mins, maxs, (MASK_PLAYERSOLID & ~CONTENTS_MONSTER), TraceFilter_PlayerBlockers);
 	bool solid = TR_StartSolid(tr);
 	hit = TR_GetEntityIndex(tr);
 	delete tr;

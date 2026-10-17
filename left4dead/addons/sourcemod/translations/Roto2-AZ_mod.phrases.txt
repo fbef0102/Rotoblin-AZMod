@@ -3103,6 +3103,17 @@
 		"en"		"[{green}Pause{default}] {olive}%N {default}has fully loaded"
 		"zho"		"[{green}Pause{default}] {olive}%N {default}已加載入伺服器"
 	}	
+	"Pause_2"
+	{
+		"en"		"The game has been unpaused by {lightgreen}the server{default}."
+		"zho"		"{lightgreen}伺服器{default} 已解除暫停."
+	}	
+	"Pause_3"
+	{
+		"#format"	"{1:s}"
+		"en"		"The game has been paused by {lightgreen}the server{default}).\nAn admin can unpause it with {green}{1}{default}."
+		"zho" 		"{lightgreen}伺服器{default} 強制暫停遊戲.\n管理員輸入 {green}{1}{default} 解除暫停"
+	}
 	///////////////l4d_tank_stumble_door.smx///////////////
 	"l4d_tank_stumble_door_break_1"
 	{
@@ -3159,4 +3170,33 @@
 		"en"		"{red}Survivors {default}made it to the saferoom. {olive}Unfreezing {default}distance points!"
 		"zho"		"{red}倖存者 {default}已到達終點安全室。{olive}解除凍結 {default}平均距離分數！"
 	}
+	///////////////autopause.smx///////////////
+	"autopause_Unpausing"
+    {
+        "en"        "{blue}[{default}AutoPause{blue}] {default}All {green}crashed {default}players have reconnected.. {blue}Unpausing{default}!"
+		"zho"		"{blue}[{default}AutoPause{blue}] {default}所有 {green}崩潰 {default}的玩家已重新連線 .. {blue}解除暫停{default}!"
+	}
+    "autopause_Waiting"
+    {
+        "#format"   "{1:i},{2:t}"   // 1: remainingCrashers 2: remainingCrashers > 1 ? "players" : "player"
+		"en"        "{blue}[{default}AutoPause{blue}] {default}Waiting for {olive}{1} {default}more {green}crashed {default}{2} before automatic {blue}Unpause{default}!"
+        "zho"       "{blue}[{default}AutoPause{blue}] {default}正在等待 {olive}{1} {default}名{green}崩潰的{default}{2}以啟動{blue}暫停解除{default}!"
+    }
+    "autopause_Crashed"
+    {
+        "#format"   "{1:N}"         // 1: client
+        "en"        "{blue}[{default}AutoPause{blue}] {olive}{1} {default}crashed."
+        "zho"       "{blue}[{default}AutoPause{blue}] {olive}{1} {default}遊戲崩潰了."
+    }
+    "autopause_players"
+    {
+        "en"        "players"
+		"zho"       "玩家"
+    }
+
+    "autopause_player"
+    {
+        "en"        "player"
+		"zho"       "玩家"
+    }
 }
