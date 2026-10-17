@@ -9,6 +9,9 @@ new Handle:tongue_drag_damage_amount;
 new Handle:tongue_drag_first_damage_interval;
 new Handle:tongue_drag_first_damage;
 new bool:g_bChoking[MAXPLAYERS+1];
+// The pending timer of the victim's current drag chain; a chain whose timer is not this one is stale
+// (a re-grab inside the first interval used to run two chains, double drag damage)
+new Handle:g_hDragTimer[MAXPLAYERS+1];
 new Float:ftongue_drag_damage_amount;
 new Float:ftongue_drag_first_damage_interval;
 new Float:ftongue_drag_first_damage_amount;
@@ -20,7 +23,7 @@ public Plugin:myinfo =
 	name = "L4D1 Smoker Drag Damage Interval",
 	author = "Visor, l4d1 port by Harry",
 	description = "Implements a native-like cvar that should've been there out of the box",
-	version = "1.0",
+	version = "1.1",
 	url = "https://github.com/Attano/Equilibrium"
 };
 
@@ -85,16 +88,34 @@ public Event_ChokeStart(Handle:event, const String:name[], bool:dontBroadcast)
 
 public Event_ChokeStop(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "victim"));
+	new userid = GetEventInt(event, "victim");
+	new client = GetClientOfUserId(userid);
 	//PrintToChatAll("%N Event_ChokeStop",client);
 	g_bChoking[client] = false;
+
+	// A ground choke ends mid-drag when a snagged victim breaks free (CTongue::UpdateGroundChoke ->
+	// OnStopHangingFromTongue fires choke_end) and the same tongue keeps pulling. The drag chain stopped when it
+	// saw the choke and only tongue_grab restarts it, so the rest of that drag did no damage. Resume it.
+	if (!IsSurvivor(client)) return;
+	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
+	if (!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker))) return;
+
+	g_hDragTimer[client] = CreateTimer(
+			ftongue_drag_damage_interval,
+			Timer_DragInterval,
+			userid,
+			TIMER_FLAG_NO_MAPCHANGE
+	);
 }
 
 public OnTongueGrab(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	//PrintToChatAll("%d got grab", GetClientOfUserId(GetEventInt(event, "victim"));
 
-	CreateTimer(
+	new client = GetClientOfUserId(GetEventInt(event, "victim"));
+	if (!client) return;
+
+	g_hDragTimer[client] = CreateTimer(
 			ftongue_drag_first_damage_interval, 
 			Timer_FirstDrag, 
 			GetEventInt(event, "victim"), 
@@ -106,7 +127,7 @@ public Action Timer_FirstDrag(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 
-	if (!IsSurvivor(client))
+	if (!IsSurvivor(client) || timer != g_hDragTimer[client])
 	{
 		return Plugin_Stop;
 	}
@@ -114,6 +135,7 @@ public Action Timer_FirstDrag(Handle timer, int userid)
 	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if(!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker)) || IsSurvivorBeingChoked(client)) 
 	{
+		g_hDragTimer[client] = null;
 		return Plugin_Stop;
 	}
 
@@ -121,7 +143,7 @@ public Action Timer_FirstDrag(Handle timer, int userid)
 
 	if(IsInPause())
 	{
-		CreateTimer(
+		g_hDragTimer[client] = CreateTimer(
 			ftongue_drag_first_damage_interval, 
 			Timer_FirstDrag, 
 			userid, 
@@ -131,7 +153,7 @@ public Action Timer_FirstDrag(Handle timer, int userid)
 		return Plugin_Continue;
 	}
 	
-	CreateTimer(
+	g_hDragTimer[client] = CreateTimer(
 		ftongue_drag_damage_interval,  
 		Timer_DragInterval, 
 		userid, 
@@ -147,19 +169,20 @@ public Action Timer_DragInterval(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 
-	if (!IsSurvivor(client))
+	if (!IsSurvivor(client) || timer != g_hDragTimer[client])
 	{
 		return Plugin_Stop;
 	}
 	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if(!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker)) || IsSurvivorBeingChoked(client)) 
 	{
+		g_hDragTimer[client] = null;
 		return Plugin_Stop;
 	}
 
 	//PrintToChatAll("%N Timer_DragInterval",client);
 
-	CreateTimer(
+	g_hDragTimer[client] = CreateTimer(
 			ftongue_drag_damage_interval,  
 			Timer_DragInterval, 
 			userid, 
