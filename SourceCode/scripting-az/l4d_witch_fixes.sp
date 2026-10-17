@@ -60,7 +60,7 @@ public Plugin myinfo =
 	name = "L4D Witch Fixes",
 	author = "Malevolence",
 	description = "Witch movement fixes: corners, straight-line cuts over gaps, failed climbs, map fire",
-	version = "1.1.0",
+	version = "1.1.1",
 	url = "https://github.com/Volence/riverside-l4d-plugins"
 };
 
@@ -83,6 +83,8 @@ DynamicHook g_hTrav;
 // climb
 int g_botOffset;                // Witch -> its INextBot
 Address g_ontoThunk;            // what slot g_ontoSlot of a witch's INextBot vtable must hold
+Address g_ontoVtable;           // the INextBot vtable already checked: every witch shares it, and once the
+                                // first one is hooked its slot holds the DHooks trampoline, not g_ontoThunk
 int g_ontoSlot;
 DynamicHook g_hOnto, g_hUpPre, g_hUpPost;
 
@@ -598,7 +600,8 @@ void HookWitch(int w)
 	{
 		Address bot = GetEntityAddress(w) + view_as<Address>(g_botOffset);
 		Address bvt = view_as<Address>(LoadFromAddress(bot, NumberType_Int32));
-		if (VtableSlot(bvt, g_ontoSlot) != g_ontoThunk)
+		if (bvt != g_ontoVtable && VtableSlot(bvt, g_ontoSlot) == g_ontoThunk) g_ontoVtable = bvt;
+		if (bvt != g_ontoVtable)
 		{
 			LogError("witch %d INextBot slot %d is not Infected::IsAbleToClimbOnto; climb fix not hooked on her", w, g_ontoSlot);
 		}

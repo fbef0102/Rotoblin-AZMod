@@ -11,7 +11,7 @@ new Handle:tongue_drag_first_damage;
 new bool:g_bChoking[MAXPLAYERS+1];
 // The pending timer of the victim's current drag chain; a chain whose timer is not this one is stale
 // (a re-grab inside the first interval used to run two chains, double drag damage)
-new Handle:g_hDragTimer[MAXPLAYERS+1];
+Handle g_hDragTimer[MAXPLAYERS+1];
 new Float:ftongue_drag_damage_amount;
 new Float:ftongue_drag_first_damage_interval;
 new Float:ftongue_drag_first_damage_amount;
@@ -71,11 +71,25 @@ public tongue_drag_first_damageValueChanged(Handle:convar, const String:oldValue
 	ftongue_drag_first_damage_amount = GetConVarFloat(tongue_drag_first_damage);
 }
 
+public void OnMapEnd()
+{
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		delete g_hDragTimer[i];
+	}
+}
+
+public void OnClientDisconnect(int client)
+{
+	delete g_hDragTimer[client];
+}
+
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    for (new client=1; client<=MaxClients; client++)
+	for (new client=1; client<=MaxClients; client++)
 	{
 		g_bChoking[client] = false;
+		delete g_hDragTimer[client];
 	}
 }
 
@@ -97,104 +111,127 @@ public Event_ChokeStop(Handle:event, const String:name[], bool:dontBroadcast)
 	// OnStopHangingFromTongue fires choke_end) and the same tongue keeps pulling. The drag chain stopped when it
 	// saw the choke and only tongue_grab restarts it, so the rest of that drag did no damage. Resume it.
 	if (!IsSurvivor(client)) return;
-	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
+
+	int attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if (!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker))) return;
 
-	g_hDragTimer[client] = CreateTimer(
+	delete g_hDragTimer[client];
+
+	DataPack hPack;
+	g_hDragTimer[client] = CreateDataTimer(
 			ftongue_drag_damage_interval,
 			Timer_DragInterval,
-			userid,
-			TIMER_FLAG_NO_MAPCHANGE
-	);
+			hPack);
+
+	hPack.WriteCell(client);
+	hPack.WriteCell(userid);
 }
 
 public OnTongueGrab(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	//PrintToChatAll("%d got grab", GetClientOfUserId(GetEventInt(event, "victim"));
+	int userid = GetEventInt(event, "victim");
+	int client = GetClientOfUserId(userid);
+	if (!client || !IsClientInGame(client)) return;
 
-	new client = GetClientOfUserId(GetEventInt(event, "victim"));
-	if (!client) return;
+	//PrintToChatAll("%N got grab", client);
 
-	g_hDragTimer[client] = CreateTimer(
+	delete g_hDragTimer[client];
+
+	DataPack hPack;
+	g_hDragTimer[client] = CreateDataTimer(
 			ftongue_drag_first_damage_interval, 
 			Timer_FirstDrag, 
-			GetEventInt(event, "victim"), 
-			TIMER_FLAG_NO_MAPCHANGE
-	);
+			hPack);
+
+	hPack.WriteCell(client);
+	hPack.WriteCell(userid);
 }
 
-public Action Timer_FirstDrag(Handle timer, int userid)
+Action Timer_FirstDrag(Handle timer, DataPack hPack)
 {
+	hPack.Reset();
+	int index = hPack.ReadCell();
+	int userid = hPack.ReadCell();
+
 	int client = GetClientOfUserId(userid);
 
-	if (!IsSurvivor(client) || timer != g_hDragTimer[client])
+	if (!IsSurvivor(client))
 	{
-		return Plugin_Stop;
+		g_hDragTimer[index] = null;
+		return Plugin_Continue;
 	}
 	
-	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
+	int attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if(!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker)) || IsSurvivorBeingChoked(client)) 
 	{
 		g_hDragTimer[client] = null;
-		return Plugin_Stop;
+		return Plugin_Continue;
 	}
 
 	//PrintToChatAll("%N Timer_FirstDrag",client);
 
-	if(IsInPause())
+	if(!IsInPause())
 	{
-		g_hDragTimer[client] = CreateTimer(
+		HurtEntity(client, attacker, ftongue_drag_first_damage_amount);
+
+		DataPack hPack2;
+		g_hDragTimer[client] = CreateDataTimer(
+			ftongue_drag_damage_interval,  
+			Timer_DragInterval, 
+			hPack2);
+		hPack2.WriteCell(client);
+		hPack2.WriteCell(userid);
+	}
+	else
+	{
+		DataPack hPack2;
+		g_hDragTimer[client] = CreateDataTimer(
 			ftongue_drag_first_damage_interval, 
 			Timer_FirstDrag, 
-			userid, 
-			TIMER_FLAG_NO_MAPCHANGE
-		);
-		
-		return Plugin_Continue;
+			hPack2);
+		hPack2.WriteCell(client);
+		hPack2.WriteCell(userid);
 	}
-	
-	g_hDragTimer[client] = CreateTimer(
-		ftongue_drag_damage_interval,  
-		Timer_DragInterval, 
-		userid, 
-		TIMER_FLAG_NO_MAPCHANGE
-	);
-
-	HurtEntity(client, attacker, ftongue_drag_first_damage_amount);
 
 	return Plugin_Continue;
 }
 
-public Action Timer_DragInterval(Handle timer, int userid)
+Action Timer_DragInterval(Handle timer, DataPack hPack)
 {
+	hPack.Reset();
+	int index = hPack.ReadCell();
+	int userid = hPack.ReadCell();
+
 	int client = GetClientOfUserId(userid);
 
-	if (!IsSurvivor(client) || timer != g_hDragTimer[client])
+	if (!IsSurvivor(client))
 	{
-		return Plugin_Stop;
+		g_hDragTimer[index] = null;
+		return Plugin_Continue;
 	}
-	new attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
+
+	int attacker = GetEntPropEnt(client, Prop_Send, "m_tongueOwner");
 	if(!(attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker)) || IsSurvivorBeingChoked(client)) 
 	{
 		g_hDragTimer[client] = null;
-		return Plugin_Stop;
+		return Plugin_Continue;
 	}
 
 	//PrintToChatAll("%N Timer_DragInterval",client);
 
-	g_hDragTimer[client] = CreateTimer(
-			ftongue_drag_damage_interval,  
-			Timer_DragInterval, 
-			userid, 
-			TIMER_FLAG_NO_MAPCHANGE
-	);
-
-	if(IsInPause())
+	if(!IsInPause())
 	{
-		return Plugin_Continue;
+		HurtEntity(client, attacker, ftongue_drag_damage_amount);
 	}
 
-	HurtEntity(client, attacker, ftongue_drag_damage_amount);
+	DataPack hPack2;
+	g_hDragTimer[client] = CreateDataTimer(
+			ftongue_drag_damage_interval,  
+			Timer_DragInterval, 
+			hPack2);
+
+	hPack2.WriteCell(index);
+	hPack2.WriteCell(userid);
 
 	return Plugin_Continue;
 }
