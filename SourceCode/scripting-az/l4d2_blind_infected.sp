@@ -4,180 +4,231 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <l4d_lib>
+#include <l4d2_weapon_stocks>
 
-#define SURVIVOR_TEAM 2
-#define INFECTED_TEAM 3
-#define ENT_CHECK_INTERVAL 1.0
+#define ENTITY_MAX_NAME_LENGTH		64
+
+// The whole pending list is checked once every ENT_CHECK_SLICE * ENT_CHECK_SLICES seconds.
+#define ENT_CHECK_SLICE 0.1
+#define ENT_CHECK_SLICES 10
+
 #define TRACE_TOLERANCE 75.0
+#define MAX_ENTS 2048
 
-#if SOURCEMOD_V_MINOR > 9
-enum struct EntInfo
+static const int g_iIdsToBlock[] =
 {
-	int iEntRef;
-	bool hasBeenSeen;
-}
-#else
-enum EntInfo
-{
-	iEntRef,
-	bool:hasBeenSeen
+	WEPID_PISTOL,
+	WEPID_SMG,
+	WEPID_PUMPSHOTGUN,
+	WEPID_AUTOSHOTGUN,
+	WEPID_RIFLE,
+	WEPID_HUNTING_RIFLE,
+	//WEPID_SMG_SILENCED,
+	//WEPID_SHOTGUN_CHROME,
+	//WEPID_RIFLE_DESERT,
+	//WEPID_SNIPER_MILITARY,
+	//WEPID_SHOTGUN_SPAS,
+	WEPID_FIRST_AID_KIT,
+	WEPID_MOLOTOV,
+	WEPID_PIPE_BOMB,
+	WEPID_PAIN_PILLS,
+	//WEPID_MELEE,
+	//WEPID_CHAINSAW,
+	//WEPID_GRENADE_LAUNCHER,
+	//WEPID_AMMO_PACK,
+	//WEPID_ADRENALINE,
+	//WEPID_DEFIBRILLATOR,
+	//WEPID_VOMITJAR,
+	//WEPID_RIFLE_AK47,
+	//WEPID_INCENDIARY_AMMO,
+	//WEPID_FRAG_AMMO,
+	//WEPID_PISTOL_MAGNUM,
+	//WEPID_SMG_MP5,
+	//WEPID_RIFLE_SG552,
+	//WEPID_SNIPER_SCOUT,
+	//WEPID_SNIPER_AWP
+	WEPID_GASCAN,
+	WEPID_PROPANE_TANK,
+	WEPID_OXYGEN_TANK
 };
-#endif
 
-ArrayList
-	hBlockedEntities;
+bool g_bBlocked[MAX_ENTS + 1];
 
-int
-	g_iEntListIndex[2049]; // entity index -> position in hBlockedEntities + 1, checked against the entref in OnTransmit
+// Entity references not yet seen by survivors.
+ArrayList g_hPending = null;
+
+int g_iCursor = 0;
 
 public Plugin myinfo =
 {
 	name = "Blind Infected",
-	author = "CanadaRox, ProdigySim, A1m`, HarryPotter",
+	author = "CanadaRox, ProdigySim, A1m`, Ferks-FK, HarryPotter",
 	description = "Hides specified weapons from the infected team until they are (possibly) visible to one of the survivors to prevent SI scouting the map",
-	version = "1.0.6h-2026/9/30",
+	version = "1.2.3h-2026/10/20",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
 public void OnPluginStart()
 {
+	L4D2Weapons_Init();
+
+	g_hPending = new ArrayList();
+
 	HookEvent("round_start", RoundStart_Event, EventHookMode_PostNoCopy);
+	CreateTimer(ENT_CHECK_SLICE, Timer_EntCheck, _, TIMER_REPEAT);
 
-#if SOURCEMOD_V_MINOR > 9
-	hBlockedEntities = new ArrayList(sizeof(EntInfo));
-#else
-	hBlockedEntities = new ArrayList(view_as<int>(EntInfo));
-#endif
-
-	CreateTimer(ENT_CHECK_INTERVAL, EntCheck_Timer, _, TIMER_REPEAT);
-}
-
-public Action EntCheck_Timer(Handle hTimer)
-{
-	char tmp[PLATFORM_MAX_PATH];
-	int iSize = hBlockedEntities.Length;
-
-#if SOURCEMOD_V_MINOR > 9
-	EntInfo currentEnt;
-	for (int i = 0; i < iSize; i++) {
-		hBlockedEntities.GetArray(i, currentEnt, sizeof(EntInfo));
-		int ent = EntRefToEntIndex(currentEnt.iEntRef);
-		if (ent != INVALID_ENT_REFERENCE && !currentEnt.hasBeenSeen && IsVisibleToSurvivors(ent)) {
-			GetEntPropString(ent, Prop_Data, "m_ModelName", tmp, sizeof(tmp));
-			currentEnt.hasBeenSeen = true;
-			hBlockedEntities.SetArray(i, currentEnt, sizeof(EntInfo));
+	// Late load.
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i)) {
+			OnClientPutInServer(i);
 		}
 	}
-#else
-	EntInfo currentEnt[EntInfo];
-	for (int i = 0; i < iSize; i++) {
-		hBlockedEntities.GetArray(i, currentEnt[0], view_as<int>(EntInfo));
-		int ent = EntRefToEntIndex(currentEnt[iEntRef]);
-		if (ent != INVALID_ENT_REFERENCE && !currentEnt[hasBeenSeen] && IsVisibleToSurvivors(ent)) {
-			GetEntPropString(ent, Prop_Data, "m_ModelName", tmp, sizeof(tmp));
-			currentEnt[hasBeenSeen] = true;
-			hBlockedEntities.SetArray(i, currentEnt[0], view_as<int>(EntInfo));
-		}
+}
+
+public void OnClientPutInServer(int iClient)
+{
+	SDKHook(iClient, SDKHook_WeaponEquipPost, OnWeaponEquipPost);
+}
+
+// Once equipped, a weapon is parented to the player and its m_vecOrigin becomes
+// relative, so the visibility trace would never reach it and it would stay hidden.
+void OnWeaponEquipPost(int iClient, int iWeapon)
+{
+	if (iWeapon > MaxClients && iWeapon <= MAX_ENTS && g_bBlocked[iWeapon]) {
+		UnblockEntity(iWeapon);
 	}
-#endif
-
-	return Plugin_Continue;
 }
 
-public void RoundStart_Event(Event hEvent, const char[] name, bool dontBroadcast)
+void UnblockEntity(int iEntity)
 {
-	delete hBlockedEntities;
-	#if SOURCEMOD_V_MINOR > 9
-		hBlockedEntities = new ArrayList(sizeof(EntInfo));
-	#else
-		hBlockedEntities = new ArrayList(view_as<int>(EntInfo));
-	#endif
-	CreateTimer(3.0, RoundStartDelay_Timer, _, TIMER_FLAG_NO_MAPCHANGE);
+	SDKUnhook(iEntity, SDKHook_SetTransmit, OnTransmit);
+	g_bBlocked[iEntity] = false;
 }
 
-public Action RoundStartDelay_Timer(Handle hTimer)
+public void OnMapStart()
 {
-#if SOURCEMOD_V_MINOR > 9
-	EntInfo bhTemp;
-#else
-	EntInfo bhTemp[EntInfo];
-#endif
-	
-	int psychonic = GetMaxEntities();
-	char sWeapClass[64];
+	ClearAll();
+}
 
-	for (int weapon = MaxClients + 1; weapon <= psychonic; weapon++) {
+// Prevents a recycled entity index from inheriting the blocked state.
+public void OnEntityDestroyed(int iEntity)
+{
+	if (iEntity > 0 && iEntity <= MAX_ENTS) {
+		g_bBlocked[iEntity] = false;
+	}
+}
 
-		if (weapon == INVALID_ENT_REFERENCE || !IsValidEntity(weapon)) continue;
-
-		GetEntityClassname(weapon, sWeapClass, 64);
-		if (IsWeaponClass(sWeapClass)||IsItemModel(weapon)) {
-			SDKHook(weapon, SDKHook_SetTransmit, OnTransmit);
-			
-			#if SOURCEMOD_V_MINOR > 9
-				bhTemp.iEntRef = EntIndexToEntRef(weapon);
-				bhTemp.hasBeenSeen = false;
-				g_iEntListIndex[weapon] = hBlockedEntities.PushArray(bhTemp, sizeof(EntInfo)) + 1;
-			#else
-				bhTemp[iEntRef] = EntIndexToEntRef(weapon);
-				bhTemp[hasBeenSeen] = false;
-				g_iEntListIndex[weapon] = hBlockedEntities.PushArray(bhTemp[0], view_as<int>(EntInfo)) + 1;
-			#endif
-		}
+void ClearAll()
+{
+	for (int i = 0; i <= MAX_ENTS; i++) {
+		g_bBlocked[i] = false;
 	}
 
-	return Plugin_Continue;
+	if (g_hPending != null) {
+		g_hPending.Clear();
+	}
+
+	g_iCursor = 0;
 }
 
-public Action OnTransmit(int entity, int client)
+void RoundStart_Event(Event hEvent, const char[] sEventName, bool bDontBroadcast)
 {
-	if (GetClientTeam(client) != INFECTED_TEAM) {
+	ClearAll();
+	CreateTimer(1.2, RoundStartDelay_Timer, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+Action RoundStartDelay_Timer(Handle hTimer)
+{
+	// Entity indices can have gaps, so GetEntityCount() is not a valid upper bound.
+	int iMax = GetMaxEntities();
+
+	for (int i = (MaxClients + 1); i < iMax; i++) {
+		int iWeapon = IdentifyWeapon(i);
+		if (!iWeapon) {
+			continue;
+		}
+
+		// Already equipped, e.g. the survivors' starting pistols.
+		int iOwner = GetEntPropEnt(i, Prop_Send, "m_hOwnerEntity");
+		if (iOwner > 0 && iOwner <= MaxClients) {
+			continue;
+		}
+
+		for (int j = 0; j < sizeof(g_iIdsToBlock); j++) {
+			if (iWeapon == g_iIdsToBlock[j]) {
+				SDKHook(i, SDKHook_SetTransmit, OnTransmit);
+				g_bBlocked[i] = true;
+				g_hPending.Push(EntIndexToEntRef(i));
+				break;
+			}
+		}
+	}
+
+	return Plugin_Stop;
+}
+
+Action OnTransmit(int iEntity, int iClient)
+{
+	if (iEntity < 0 || iEntity > MAX_ENTS || !g_bBlocked[iEntity]) {
 		return Plugin_Continue;
 	}
-	
-#if SOURCEMOD_V_MINOR > 9
-	EntInfo currentEnt;
-#else
-	EntInfo currentEnt[EntInfo];
-#endif
-	
-	// index may be stale from an earlier round, the entref check below rejects it
-	int i = g_iEntListIndex[entity] - 1;
-	if (i >= 0 && i < hBlockedEntities.Length) {
-		#if SOURCEMOD_V_MINOR > 9
-			hBlockedEntities.GetArray(i, currentEnt, sizeof(EntInfo));
-			if (entity == EntRefToEntIndex(currentEnt.iEntRef)) {
-				return (currentEnt.hasBeenSeen) ? Plugin_Continue : Plugin_Handled;
-			}
-		#else
-			hBlockedEntities.GetArray(i, currentEnt[0], view_as<int>(EntInfo));
-			if (entity == EntRefToEntIndex(currentEnt[iEntRef])) {
-				return (currentEnt[hasBeenSeen]) ? Plugin_Continue : Plugin_Handled;
-			}
-		#endif
+
+	if (GetClientTeam(iClient) != 3) {
+		return Plugin_Continue;
 	}
-	
-	return Plugin_Continue;
+
+	return Plugin_Handled;
 }
 
-// IsItem() in l4d_lib compares model paths, so pass it the model, not the classname
-bool IsItemModel(int entity)
+Action Timer_EntCheck(Handle hTimer)
 {
-	char sModel[PLATFORM_MAX_PATH];
-	GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
-	return IsItem(sModel);
+	int iSize = g_hPending.Length;
+	if (iSize == 0) {
+		return Plugin_Continue;
+	}
+
+	int iBatch = (iSize + ENT_CHECK_SLICES - 1) / ENT_CHECK_SLICES;
+
+	if (g_iCursor >= iSize) {
+		g_iCursor = 0;
+	}
+
+	int iProcessed = 0;
+
+	while (iProcessed < iBatch && g_iCursor < g_hPending.Length) {
+		int iRef = g_hPending.Get(g_iCursor);
+		int iEntity = EntRefToEntIndex(iRef);
+
+		if (iEntity == INVALID_ENT_REFERENCE || !g_bBlocked[iEntity]) {
+			g_hPending.Erase(g_iCursor);
+			iProcessed++;
+			continue;
+		}
+
+		if (IsVisibleToSurvivors(iEntity)) {
+			UnblockEntity(iEntity);
+			g_hPending.Erase(g_iCursor);
+			iProcessed++;
+			continue;
+		}
+
+		g_iCursor++;
+		iProcessed++;
+	}
+
+	return Plugin_Continue;
 }
 
 // from http://code.google.com/p/srsmod/source/browse/src/scripting/srs.despawninfected.sp
-stock bool IsVisibleToSurvivors(int entity)
+bool IsVisibleToSurvivors(int iEntity)
 {
-	int iSurv = 0;
+	int iSurvCount = 0;
 
-	for (int i = 1; i <= MaxClients && iSurv < 4; i++) {
-		if (IsClientInGame(i) && GetClientTeam(i) == SURVIVOR_TEAM) {
-			iSurv++;
-			if (IsPlayerAlive(i) && IsVisibleTo(i, entity)) {
+	for (int i = 1; i <= MaxClients && iSurvCount < 4; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) == 2) {
+			iSurvCount++;
+			
+			if (IsPlayerAlive(i) && IsVisibleTo(i, iEntity)) {
 				return true;
 			}
 		}
@@ -186,47 +237,47 @@ stock bool IsVisibleToSurvivors(int entity)
 	return false;
 }
 
-bool IsVisibleTo(int client, int entity) // check an entity for being visible to a client
+bool IsVisibleTo(int iClient, int iEntity) // check an entity for being visible to a client
 {
-	float vAngles[3], vOrigin[3], vEnt[3], vLookAt[3];
+	float fAngles[3], fOrigin[3], fEnt[3], fLookAt[3];
 	
-	GetClientEyePosition(client,vOrigin); // get both player and zombie position
+	GetClientEyePosition(iClient, fOrigin); // get both player and zombie position
 	
-	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", vEnt);
+	GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fEnt);
 	
-	MakeVectorFromPoints(vOrigin, vEnt, vLookAt); // compute vector from player to zombie
+	MakeVectorFromPoints(fOrigin, fEnt, fLookAt); // compute vector from player to zombie
 	
-	GetVectorAngles(vLookAt, vAngles); // get angles from vector for trace
+	GetVectorAngles(fLookAt, fAngles); // get angles from vector for trace
 	
 	// execute Trace
-	Handle trace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, TraceFilter);
+	Handle hTrace = TR_TraceRayFilterEx(fOrigin, fAngles, MASK_SHOT, RayType_Infinite, TraceFilter);
 	
-	bool isVisible = false;
-	if (TR_DidHit(trace)) {
-		float vStart[3];
-		TR_GetEndPosition(vStart, trace); // retrieve our trace endpoint
+	bool bIsVisible = false;
+	if (TR_DidHit(hTrace)) {
+		float fStart[3];
+		TR_GetEndPosition(fStart, hTrace); // retrieve our trace endpoint
 		
-		if ((GetVectorDistance(vOrigin, vStart, false) + TRACE_TOLERANCE) >= GetVectorDistance(vOrigin, vEnt)) {
-			isVisible = true; // if trace ray lenght plus tolerance equal or bigger absolute distance, you hit the targeted zombie
+		if ((GetVectorDistance(fOrigin, fStart, false) + TRACE_TOLERANCE) >= GetVectorDistance(fOrigin, fEnt)) {
+			bIsVisible = true; // if trace ray lenght plus tolerance equal or bigger absolute distance, you hit the targeted zombie
 		}
 	} else {
 		//Debug_Print("Zombie Despawner Bug: Player-Zombie Trace did not hit anything, WTF");
-		isVisible = true;
+		bIsVisible = true;
 	}
 	
-	CloseHandle(trace);
+	delete hTrace;
 
-	return isVisible;
+	return bIsVisible;
 }
 
-public bool TraceFilter(int entity, int contentsMask)
+bool TraceFilter(int iEntity, int iContentsMask)
 {
-	if (entity <= MaxClients || !IsValidEntity(entity)) { // dont let WORLD, players, or invalid entities be hit
+	if (iEntity <= MaxClients || !IsValidEntity(iEntity)) { // dont let WORLD, players, or invalid entities be hit
 		return false;
 	}
 	
-	char class[128];
-	GetEdictClassname(entity, class, sizeof(class)); // Ignore prop_physics since some can be seen through
+	char sClassName[ENTITY_MAX_NAME_LENGTH];
+	GetEdictClassname(iEntity, sClassName, sizeof(sClassName)); // Ignore prop_physics since some can be seen through
 	
-	return strncmp(class, "prop_physics", 12, false) != 0;
+	return (strncmp(sClassName, "prop_physics", 12, false) != 0);
 }
