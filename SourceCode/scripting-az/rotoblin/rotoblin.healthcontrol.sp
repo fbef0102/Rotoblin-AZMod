@@ -881,7 +881,7 @@ static RemoveToLimits()
 				if(IsValidEntity(curitem.IT_entity))
 				{
 					RemoveEntity(curitem.IT_entity);
-					LogError("[IT] Error killing instance of item %s", g_sItemNames[itemidx][IN_longname]);
+					//LogMessage("[IT] Error killing instance of item %s", g_sItemNames[itemidx][IN_longname]);
 				}
 				g_hItemSpawns[itemidx].Erase(killidx);
 			}

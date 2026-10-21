@@ -1,0 +1,37 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"		"<{olive}Horde{default}>"
+	}
+	"TankPlay"
+	{
+		"en"		"Horde has {blue}paused{default} due to tank in play! Progressing by {blue}%0.1f%%{default} will start the horde."
+		"zho"		"Tank存活期間屍潮 {blue}暫停{default}! 往前 {blue}%0.1f%%{default} 路程將會恢復屍潮."
+		"chi"		"Tank存活期间尸潮 {blue}暂停{default}! 往前 {blue}%0.1f%%{default} 路程将会恢复尸潮."
+	}
+	"UntilHordeStarts"
+	{
+		"en"		"{blue}%0.1f%%{default} left until horde starts..."
+		"zho"		"剩餘 {blue}%0.1f%%{default} 路程恢復屍潮..."
+		"chi"		"剩余 {blue}%0.1f%%{default} 路程恢复尸潮..."
+	}
+	"HordeResumed"
+	{
+		"en"		"Horde has {blue}resumed{default} at {green}%i%% strength{default}, pushing will increase the horde."
+		"zho"		"屍潮 {blue}已恢復{default} {green}%i%% 生成比例{default}, 繼續往前將增加數量."
+		"chi"		"尸潮 {blue}已恢复{default} {green}%i%% 生成比例{default}, 继续往前将增加数量."
+	}
+	"HordeStrength"
+	{
+		"en"		"Horde is at {green}%i%% strength{default}..."
+		"zho"		"屍潮處於 {green}%i%% 生成比例{default}..."
+		"chi"		"尸潮处于 {green}%i%% 生成比例{default}..."
+	}
+	"HordeVeryStrength"
+	{
+		"en"		"{red}Survivors have pushed too far{default}, horde is at {green}100%% strength{default}!"
+		"zho"		"{red}倖存者已往前太遠{default}, 屍潮恢復 {green}100%% 生成比例{default}!"
+		"chi"		"{red}幸存者已往前太远{default}, 尸潮恢复 {green}100%% 生成比例{default}!"
+	}
+}

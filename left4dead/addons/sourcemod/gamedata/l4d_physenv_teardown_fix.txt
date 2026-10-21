@@ -1,0 +1,51 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Addresses"
+		{
+			// The global IPhysicsEnvironment *physenv in server (the level's physics environment).
+			// Both platforms resolve to the address of that variable; the plugin loads the pointer from it.
+			"physenv"
+			{
+				"linux"
+				{
+					"signature"	"physenv"
+				}
+				"windows"
+				{
+					// mov ecx, dword ptr [physenv] in CPhysicsHook::LevelInitPreEntity
+					"signature"	"physenv_ref"
+					"read"		"2"
+				}
+			}
+		}
+		"Offsets"
+		{
+			// IPhysicsEnvironment::EnableConstraintNotify(bool)
+			// linux: vphysics.so 0x22020, slot 66 of _ZTV19CPhysicsEnvironment (two destructors at 0 and 1)
+			// windows: vphysics.dll 0x1000e930, slot 65 (one destructor), the setter of this+0x7c
+			"EnableConstraintNotify"
+			{
+				"linux"		"66"
+				"windows"	"65"
+			}
+		}
+		"Signatures"
+		{
+			"physenv"
+			{
+				"library"	"server"
+				"linux"		"@physenv"
+			}
+			// server.dll 0x100ff333 (1.0.4.5): the first two of CPhysicsHook::LevelInitPreEntity's run of
+			// physenv calls, mov ecx,[physenv] / mov eax,[ecx] / mov edx,[eax+0xC8] / push 1 / call edx /
+			// mov ecx,[physenv]; unique in the file
+			"physenv_ref"
+			{
+				"library"	"server"
+				"windows"	"\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x01\x8B\x90\xC8\x00\x00\x00\x6A\x01\xFF\xD2\x8B\x0D"
+			}
+		}
+	}
+}
