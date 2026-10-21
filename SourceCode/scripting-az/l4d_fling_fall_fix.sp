@@ -34,6 +34,16 @@
  *    so how stock scores slope slides is still open; the peak rule is the safe side.)
  *  - The first airborne tick after the ground cannot start faster down than one tick of
  *    gravity (on the ground vz is 0), so a clip in that tick no longer counts as real.
+ *
+ * 1.3 (2026-10-20 log review): on long falls the tick-by-tick tracker read only 0.6 to 0.85
+ * of the real landing speed, so 1.2 softened 35 ordinary falls, real deaths included (VI,
+ * match 747, farm02: a 375-unit drop after a punch, 66.6 damage cut to 0). The game's
+ * landing speed never exceeded free fall from the logged height. So the gravity-only
+ * speed now also has a floor from energy: in flight under gravity alone,
+ * v^2 = vz0^2 + 2 g (z0 - z), from the stretch's starting speed and height, whatever path
+ * it took. The fix only steps in when the game's speed is more than the margin above
+ * that too, which keeps the phantom short falls (20 units at 600+ u/s) and the farm03
+ * bridge clips and leaves every real fall alone.
  */
 #pragma semicolon 1
 #pragma newdecls required
@@ -42,7 +52,7 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define PLUGIN_VERSION	"1.2"
+#define PLUGIN_VERSION	"1.3"
 #define TEAM_SURVIVOR	2
 
 ConVar g_cvMode, g_cvLog, g_cvMargin, g_cvSafe, g_cvFatal, g_cvGravity;
@@ -50,6 +60,8 @@ bool g_bAir[MAXPLAYERS + 1];
 float g_fVz[MAXPLAYERS + 1];		// gravity-consistent vertical speed, u/s (negative = down)
 float g_fTop[MAXPLAYERS + 1];		// highest z of this airborne stretch, for the log
 float g_fPeak[MAXPLAYERS + 1];		// fastest gravity-limited downward speed of this stretch, u/s (positive = down)
+float g_fStartZ[MAXPLAYERS + 1];	// z where this airborne stretch began
+float g_fStartVz[MAXPLAYERS + 1];	// vertical speed it began with (after the first-tick clamp), u/s
 bool g_bGround[MAXPLAYERS + 1];		// on the ground last PostThink
 char g_sLogPath[PLATFORM_MAX_PATH];
 
@@ -126,6 +138,8 @@ public void OnPostThinkPost(int client)
 		g_bGround[client] = false;
 		g_fTop[client] = pos[2];
 		g_fPeak[client] = g_fVz[client] < 0.0 ? -g_fVz[client] : 0.0;
+		g_fStartZ[client] = pos[2];
+		g_fStartVz[client] = g_fVz[client];
 		return;
 	}
 	float gravityOnly = g_fVz[client] - Gravity(client) * GetTickInterval();
@@ -159,14 +173,17 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	float gravitySpeed = -(g_fVz[victim] - Gravity(victim) * GetTickInterval());
 	// like the game, judge the fall by its peak, not the landing speed
 	if (g_fPeak[victim] > gravitySpeed) gravitySpeed = g_fPeak[victim];
+	// and never below what gravity alone gives from where the stretch began (1.3)
+	float pos[3];
+	GetClientAbsOrigin(victim, pos);
+	float energy = g_fStartVz[victim] * g_fStartVz[victim] + 2.0 * Gravity(victim) * (g_fStartZ[victim] - pos[2]);
+	if (energy > 0.0 && SquareRoot(energy) > gravitySpeed) gravitySpeed = SquareRoot(energy);
 	if (gameSpeed <= gravitySpeed + g_cvMargin.FloatValue)
 		return Plugin_Continue;
 
 	float fixed = DamageForSpeed(gravitySpeed);
 	if (g_cvLog.BoolValue)
 	{
-		float pos[3];
-		GetClientAbsOrigin(victim, pos);
 		char map[64];
 		GetCurrentMap(map, sizeof(map));
 		LogToFileEx(g_sLogPath, "%s %N hp %d+%.0f fell %.0f: game %.0f u/s = %.1f dmg, gravity %.0f u/s = %.1f dmg%s at %.0f %.0f %.0f",

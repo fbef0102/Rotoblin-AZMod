@@ -2,7 +2,7 @@ v8.6.3
 
 * This repository only supports Sourcemod 1.12 and up.
 * Recompile all plugins with sourcemod 1.12 compiler
-* Download latest windows and linux server packge
+* Download latest windows and linux server package
 
 ## New
 * l4d2_tankrage.smx: For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds

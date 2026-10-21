@@ -1,0 +1,21 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			// Survivor side of a queued pin, written by CTerrorPlayer::OnLungedInto and consumed by
+			// CTerrorPlayer::UpdatePounce (server.so md5 9ad66748, offsets 0x2ac4 / 0x2ac8). Not networked.
+			"CTerrorPlayer::m_hPendingPounceAttacker"
+			{
+				"linux"		"10948"
+				"windows"	"10928"
+			}
+			"CTerrorPlayer::m_pendingPounceTime"
+			{
+				"linux"		"10952"
+				"windows"	"10932"
+			}
+		}
+	}
+}

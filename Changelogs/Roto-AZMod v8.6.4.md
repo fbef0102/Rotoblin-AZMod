@@ -1,6 +1,6 @@
 v8.6.4
 
-* Download latest windows and linux server packge
+* Download latest windows and linux server package
 
 ## New
 * l4d_lagcomp_skeet: Make hunter skeets more consistent across different pings.

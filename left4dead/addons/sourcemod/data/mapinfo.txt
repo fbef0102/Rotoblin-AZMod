@@ -11,10 +11,10 @@
 // When a large number of infected corpses die on the water, it generates multiple ripples, causing players' games to crash. 
 // The reason lies in how players' modern, high-end graphics cards render water ripples in old source engine games, poorly optimized.
 //
-// "GauntletFinale_map": Gauntlet Finale
+// "GauntletFinale_map": Gauntlet Finale (for custom maps and l4d2 maps)
 // Rather than having the player holdout in an enclosed arena, gauntlets force players to run to the end of the level, where the rescue vehicle is already waiting for them.
 // For example: In The Parish map 5, the players must run across a bridge to make it to a rescue helicopter.
-// 1. Hittable car does less damage to survivors (for custom maps and l4d2 maps)
+// 1. Modify Hittable car damage to survivors 
 // 2. First tank spawns during final
 //
 // "WAIT_FOR_FINALE_map": Fixed stupid "WAIT_FOR_FINALE_map" spawn issue when playing infected 
@@ -760,9 +760,10 @@
 	}
 	"c4m5_milltown_escape"
 	{
-		"pill_limit" "0"
+		"pill_limit" 			"0"
 		"VersusModifier"		"2.0"
-		"tank_map_off" "1"
+		"tank_map_off" 			"1"
+		"witch_map_off" 		"1"
 		"no_final_first_tank" 	"0"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
@@ -826,7 +827,7 @@
 		"pill_limit" 			"1"
 		"VersusModifier"		"2.0"
 		"WAIT_FOR_FINALE_map"	"1"
-		"GauntletFinale_map"	"0" //1 hittable car left by the tank fight
+		"GauntletFinale_map"	"1"
 		"witch_map_off" 		"1"
 		"versus_boss_flow_min" 	"12"
 		"tank_ban_flow"
@@ -2032,10 +2033,9 @@
 	
 	"dw1_woods"
 	{
-		"pill_limit" "4"
+		"pill_limit" "5"
 		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
-		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank"
@@ -2054,10 +2054,9 @@
 	
 	"dw2_underground"
 	{
-		"pill_limit" "4"
+		"pill_limit" "5"
 		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
-		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank + 1st On Way Drop"
@@ -2080,9 +2079,8 @@
 	
 	"dw3_complex"
 	{
-		"pill_limit" "4"
+		"pill_limit" "5"
 		"VersusModifier"		"1.4"
-		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Early Tank"
@@ -2119,10 +2117,9 @@
 	
 	"dw4_otherworld"
 	{
-		"pill_limit" "4"
+		"pill_limit" "5"
 		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
-		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"Evelator"
@@ -2173,11 +2170,10 @@
 	
 	"dw5_final"
 	{
-		"pill_limit" 			"2"
+		"pill_limit" 			"3"
 		"pillflow_finale"		"1"
 		"VersusModifier"		"2.0"
 		"WaterSlowDown_map" 	"1"
-		"tank_map_off" "1"
 		"tank_ban_flow"
 		{
 			"One way drop"
@@ -2300,5 +2296,37 @@
 		"pillflow_finale"		"1"
 		"VersusModifier"		"2.0"
 		"tank_map_off"			"1"
+		"witch_map_off" 		"1"
+		"GauntletFinale_map"	"1"
+	}
+	
+	//=============== Open Road 绝命公路
+	"x1m5_salvation"
+	{
+		"tank_map_off"			"1"
+		"no_final_first_tank" 	"0"
+	}
+	
+	//=============== Diescraper redux 喋血蜃楼
+	"l4d2_diescraper4_top_361"
+	{
+		"tank_map_off"			"1"
+		"no_final_first_tank" 	"0"
+	}
+	
+	//=============== Haunted Forest 战栗森林
+	"hf04_escape"
+	{
+		"tank_map_off"			"1"
+		"witch_map_off" 		"1"
+		"GauntletFinale_map"	"1"
+	}
+	
+	//=============== Carried Off 绝境逢生
+	"cwm4_building"
+	{
+		"tank_map_off"			"1"
+		"witch_map_off" 		"1"
+		"GauntletFinale_map"	"1"
 	}
 }

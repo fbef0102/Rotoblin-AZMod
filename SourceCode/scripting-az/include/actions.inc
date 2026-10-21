@@ -137,6 +137,106 @@ methodmap ActionDesiredResult < ActionResult
 	}
 }
 
+
+/**
+ * @brief Type of value stored in an action transition context.
+ */
+enum ActionTransitionValueType
+{
+    ActionTransitionValue_PlainData = 0,
+    ActionTransitionValue_QueryResult,
+    ActionTransitionValue_Action,
+    ActionTransitionValue_ActionResult,
+    ActionTransitionValue_DesiredResult,
+    ActionTransitionValue_Vector,
+    ActionTransitionValue_PathFollower,
+    ActionTransitionValue_KnownEntity
+};
+
+/**
+ * @brief Temporary context describing a value returned by an action method.
+ * @note The handle is borrowed and is only valid for the duration of the forward
+ *       in which it was provided. Do not store it for later use.
+ */
+methodmap ActionTransitionContext < Handle
+{
+	/**
+	 * @brief Gets the value type stored in this context.
+	 */
+	property ActionTransitionValueType Type
+	{
+		public native get();
+	}
+
+	/**
+	 * @brief Gets plain data as float.
+	 * @error Context kind is not PlainData or stored data size does not match float.
+	 */
+	public native float GetFloat();
+
+	/**
+	 * @brief Gets plain data as int.
+	 * @error Context kind is not PlainData or stored data size does not match int.
+	 */
+	public native int GetInt();
+
+	/**
+	 * @brief Gets plain data as bool.
+	 * @error Context kind is not PlainData or stored data size does not match bool.
+	 */
+	public native bool GetBool();
+
+	/**
+	 * @brief Gets a PathFollower pointer.
+	 * @return Native PathFollower address.
+	 * @error Context kind is not PathFollower.
+	 */
+	public native any GetPathFollower();
+
+	/**
+	 * @brief Gets a CKnownEntity pointer.
+	 * @return Native CKnownEntity address.
+	 * @error Context kind is not KnownEntity.
+	 */
+	public native any GetKnownEntity();
+
+	/**
+	 * @brief Gets the stored vector.
+	 * @param out Buffer to receive the vector.
+	 * @error Context kind is not Vector.
+	 */
+	public native void GetVector(float out[3]);
+
+	/**
+	 * @brief Gets an ActionResult.
+	 * @error Context kind is not ActionResult.
+	 */
+	public native ActionResult GetActionResult();
+
+	/**
+	 * @brief Gets an EventDesiredResult.
+	 * @error Context kind is not DesiredResult.
+	 */
+	public native ActionDesiredResult GetEventDesiredResult();
+
+	/**
+	 * @brief Gets an action pointer.
+	 * @error Context kind is not ActionPtr.
+	 */
+	public native BehaviorAction GetAction();
+
+	/**
+	 * @brief Gets a query result.
+	 * @error Context kind is not QueryResult.
+	 */
+	public native QueryResultType GetQueryResult();
+
+	/**
+	 * @brief Gets the function name.
+	 */
+	public native int GetFunctionName(char[] buffer, int length);
+};
+
 /**
  * @brief Called for every action
  *
@@ -178,6 +278,16 @@ typeset ActionComponentFn
 	 */
 	function Action(ActionComponent component, int entity);
 }
+
+/**
+ * @brief Called whenever an action transition is processed.
+ *
+ * @param action            Action involved in the transition.
+ * @param context           Context describing the transition.
+ *
+ * @noreturn
+ */
+forward void OnActionTransition( BehaviorAction action, ActionTransitionContext context );
 
 /**
  * @brief Called whenever action is created
@@ -370,79 +480,6 @@ methodmap ActionsManager
  	* @noreturn		
  	*/
 	public static native void SetActionUserDataString(BehaviorAction action, const char[] key, const char[] string);
-
-	/**
- 	* @brief Gets action user data with identity
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key for data 
- 	* @param data			Variable for stored data
- 	*
- 	* @return				True if data exists, false otherwise
- 	*/
-	public static native bool GetActionUserDataIdentity(BehaviorAction action, const char[] key, any &data);
-
-	/**
- 	* @brief Gets action user data with identity (vector)
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key for data 
- 	* @param vector			Variable for stored data
- 	*
- 	* @return				True if data exists, false otherwise
- 	*/
-	public static native bool GetActionUserDataIdentityVector(BehaviorAction action, const char[] key, float vector[3]);
-
-	/**
- 	* @brief Gets action user data with identity (string)
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key for data 
- 	* @param buffer			Variable for stored data
- 	* @param length			Length of buffer
- 	*
- 	* @return				True if data exists, false otherwise
- 	*/
-	public static native bool GetActionUserDataIdentityString(BehaviorAction action, const char[] key, char[] buffer, int length);
-
-	/**
- 	* @brief Sets action user data with identity
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key to store data at 
- 	* @param data			Data to store
- 	*
- 	* @noreturn	
- 	*/
-	public static native void SetActionUserDataIdentity(BehaviorAction action, const char[] key, any data);
-
-	/**
- 	* @brief Sets action user data with identity (vector)
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key to store data at 
- 	* @param vector			Vector to store
- 	*
- 	* @noreturn	
- 	*/
-	public static native void SetActionUserDataIdentityVector(BehaviorAction action, const char[] key, const float vector[3]);
-
-	/**
- 	* @brief Sets action user data with identity (vector)
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key to store data at 
- 	* @param string			String to store
- 	*
- 	* @noreturn	
- 	*/
-	public static native void SetActionUserDataIdentityString(BehaviorAction action, const char[] key, const char[] string);
 }
 
 methodmap ActionComponent < Handle
@@ -560,7 +597,7 @@ methodmap BehaviorAction < BehaviorActionListeners
 	* @error				Invalid action passed or invalid runtime result
  	* @return				Number of bytes written?
  	*/
-	public native int GetName( char[] destination, int maxlength = ACTION_NAME_LENGTH );
+	public native int GetName( char[] destination, int maxlength /* = ACTION_NAME_LENGTH */);
 
 	/**
  	* @brief Continue executing this action 
@@ -749,112 +786,11 @@ methodmap BehaviorAction < BehaviorActionListeners
 	{
 		ActionsManager.SetActionUserDataString(this, key, string);
 	}
-
-	/**
- 	* @brief Gets action user data with identity
-	* @remark Doesn't check if data exists 
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key for data
- 	*
-	* @error				Invalid action passed
- 	* @return				Stored data
- 	*/
-	public any GetUserDataIdentity(const char[] key)
-	{
-		int data;
-		ActionsManager.GetActionUserDataIdentity(this, key, data);
-		return data;
-	}
-
-	/**
- 	* @brief Gets action user data (vector)
-	* @remark Doesn't check if data exists 
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
- 	*
- 	* @param key			Key for data
- 	* @param out			Out vector
- 	*
-	* @error				Invalid action passed
- 	* @noreturn				
- 	*/
-	public void GetUserDataIdentityVector(const char[] key, float out[3])
-	{
-		ActionsManager.GetActionUserDataIdentityVector(this, key, out);
-	}
-
-	/**
- 	* @brief Gets action user data (string)
-	* @remark Doesn't check if data exists 
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
- 	*
- 	* @param key			Key for data
- 	* @param buffer			Out buffer
-	* @param length 		Buffer length
- 	*
-	* @error				Invalid action passed
- 	* @noreturn				
- 	*/
-	public void GetUserDataIdentityString(const char[] key, char[] buffer, int length)
-	{
-		ActionsManager.GetActionUserDataIdentityString(this, key, buffer, length);
-	}
-
-	/**
- 	* @brief Sets action user data with identity
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
-	*
- 	* @param key			Key to store data at 
- 	* @param data			Data to store
- 	*
- 	* @noreturn	
- 	*/
-	public void SetUserDataIdentity(const char[] key, any data)
-	{
-		ActionsManager.SetActionUserDataIdentity(this, key, data);
-	}
-
-	/**
- 	* @brief Sets action user data with identity
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
- 	*
- 	* @param key			Key to store data at 
- 	* @param vector			Vector to store
- 	*
-	* @error				Invalid action passed
- 	* @noreturn	
- 	*/
-	public void SetUserDataIdentityVector(const char[] key, const float vector[3])
-	{
-		ActionsManager.SetActionUserDataIdentityVector(this, key, vector);
-	}
-
-	/**
- 	* @brief Sets action user data with identity
- 	* @remark Data persists until the plugin who owns data is unloaded
- 	* @remark Data is still usable in OnActionDestroyed callback
- 	*
- 	* @param key			Key to store data at 
- 	* @param string			String to store
- 	*
-	* @error				Invalid action passed
- 	* @noreturn	
- 	*/
-	public void SetUserDataIdentityString(const char[] key, const char[] string)
-	{
-		ActionsManager.SetActionUserDataIdentityString(this, key, string);
-	}
 	
  	/**
  	* @brief Returns entity index from entity handle at specified offset
  	*
  	* @param offset			Offset to ehandle 
- 	*Add commentMore actions
  	* @return				entity index
  	*/
 	public native int GetHandleEntity( int offset );
@@ -1083,6 +1019,18 @@ public void __ext_actions_SetNTVOptional()
 	MarkNativeAsOptional("ActionDesiredResult.priority.get");
 	MarkNativeAsOptional("ActionDesiredResult.priority.set");
 
+	MarkNativeAsOptional("ActionTransitionContext.Type");
+	MarkNativeAsOptional("ActionTransitionContext.GetFloat");
+	MarkNativeAsOptional("ActionTransitionContext.GetInt");
+	MarkNativeAsOptional("ActionTransitionContext.GetBool");
+	MarkNativeAsOptional("ActionTransitionContext.GetPathFollower");
+	MarkNativeAsOptional("ActionTransitionContext.GetKnownEntity");
+	MarkNativeAsOptional("ActionTransitionContext.GetVector");
+	MarkNativeAsOptional("ActionTransitionContext.GetActionResult");
+	MarkNativeAsOptional("ActionTransitionContext.GetEventDesiredResult");
+	MarkNativeAsOptional("ActionTransitionContext.GetAction");
+	MarkNativeAsOptional("ActionTransitionContext.GetQueryResult");
+
 	MarkNativeAsOptional("ActionsManager.Create");
 	MarkNativeAsOptional("ActionsManager.Allocate");
 	MarkNativeAsOptional("ActionsManager.Deallocate");
@@ -1096,8 +1044,6 @@ public void __ext_actions_SetNTVOptional()
 
 	MarkNativeAsOptional("ActionsManager.GetActionUserData");
 	MarkNativeAsOptional("ActionsManager.SetActionUserData");
-	MarkNativeAsOptional("ActionsManager.GetActionUserDataIdentity");
-	MarkNativeAsOptional("ActionsManager.SetActionUserDataIdentity");
 
 	MarkNativeAsOptional("BehaviorAction.Continue");
 	MarkNativeAsOptional("BehaviorAction.ChangeTo");

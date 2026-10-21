@@ -990,6 +990,20 @@
 //修復smoker舌頭拉走倖存者的判定
 //原因: 當複數玩家在同一準心上時, 要拉走哪一位受害者是根據client index誰最大決定
 
+[251] l4d_pounce_land_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//A hunter landing a pounce on a survivor's head can no longer restart the pounce (and lose its damage) before the pin goes through.
+//Hunter高撲落在玩家頭上時還可以再飛第二次，導致沒有高撲傷害
+//原因: 高撲途中的觸碰會讓 Hunter 保持撲擊狀態直到壓制倖存者發生，但站在頭上則被視為「地面」
+//	CLunge::UpdateAbility 會在同一個 Tick 結束撲擊（即「結束撲擊」），並且在 z_lunge_interval（0.1 秒）之後，Hunter 可能會再次發動撲擊。
+//  由於壓制是根據倖存者的時脈觸發，而非 Hunter 的時脈，因此在實際客戶端上它可能會比預期來得晚
+
+[252] l4d_witch_retreat_panic_fix
+//source: github.com/fbef0102/L4D1_2-Plugins/tree/master/l4d_witch_retreat_panic_fix
+//Fixed the bug that witch cancels retreat and comes back to chase survivor again if game starts panic event
+//修復Witch撤退之後又馬上重新攻擊倖存者的Bug
+//原因:Witch殺死人之後撤退->觸發屍潮事件->Witch重新追擊倖存者
+
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk
 //重製所有官方地圖的nav
