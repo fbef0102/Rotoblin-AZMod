@@ -1,0 +1,82 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Functions"
+		{
+			"CTankClaw::SweepFist"
+			{
+				"signature"	"CTankClaw::SweepFist"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"from"
+					{
+						"type"	"vectorptr"
+					}
+					"to"
+					{
+						"type"	"vectorptr"
+					}
+				}
+			}
+			"CTankClaw::OnHit"
+			{
+				"signature"	"CTankClaw::OnHit"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"tr"
+					{
+						"type"	"int"
+					}
+					"dir"
+					{
+						"type"	"vectorptr"
+					}
+					"bFirstHit"
+					{
+						"type"	"bool"
+					}
+				}
+			}
+		}
+		"Offsets"
+		{
+			// CGameTrace (CBaseTrace) layout, l4d-source types/hl2sdk-l4d.layouts.json
+			"CGameTrace::endpos"
+			{
+				"linux"		"12"
+				"windows"	"12"
+			}
+			"CGameTrace::m_pEnt"
+			{
+				"linux"		"76"
+				"windows"	"76"
+			}
+		}
+		"Signatures"
+		{
+			// server.so 0x30acbe
+			"CTankClaw::SweepFist"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankClaw9SweepFistERK6VectorS2_"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x55\x56\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x0D"
+						/* ? ? ? ? ? ? 55 56 8B ? E8 ? ? ? ? 8B ? 85 ? 0F 84 ? ? ? ? 8B 0D */
+			}
+			// server.so 0x30e0c6, vtable slot 398 (+0x638)
+			"CTankClaw::OnHit"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankClaw5OnHitER10CGameTraceRK6Vectorb"
+				"windows"	"\x81\xEC\x30\x01\x00\x00\x53\x55\x56\x8B\xE9"
+				// sub_1034D680: 81 EC 30 01 00 00 53 55 56 8B E9 
+			}
+		}
+	}
+}

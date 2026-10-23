@@ -3,12 +3,13 @@
 #include <sourcemod>
 #include <left4dhooks>
 #include <collisionhook>
+
 public Plugin myinfo = 
 {
 	name = "[L4D1/L4D2] Collision Adjustments",
 	author = "Sir, Harry Potter",
 	description = "No collisions to fix a handful of silly collision bugs in l4d",
-	version = "1.2h-2026/10/5-riverside2",
+	version = "1.3h-2026/10/23",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -43,19 +44,21 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 #define ZC_HUNTER	3
 
-ConVar g_hCvarRockFix, g_hCvarPullThrough, g_hCvarRockThroughIncap, g_hCvarHunterThroughInacp, g_hCvarSIThroughWitch,
-	g_hCvarClientPushPipeBombFix;
-bool g_bCvarRockFix,g_bCvarPullThrough,g_bCvarRockThroughIncap, g_bCvarHunterThroughInacp, g_bCvarSIThroughWitch,
-	g_bCvarClientPushPipeBombFix;
-// riverside2: a hunter aimed at an incap still lands on him, only incaps he is not aimed at are passed through
-ConVar g_hCvarHunterIncapAim;
-float g_fCvarHunterIncapAimCos;
-int g_iPounceAimTarget[MAXPLAYERS+1];
-bool g_bPulled[MAXPLAYERS + 1] = {false, ...};
-float g_fPouncingStartTime[MAXPLAYERS+1];
-
+#define MODEL_GASCAN                  "models/props_junk/gascan001a.mdl"
+#define MODEL_PROPANECANISTER         "models/props_junk/propanecanister001a.mdl"
+#define MODEL_OXYGENTANK              "models/props_equipment/oxygentank01.mdl"
+#define MODEL_FIREWORKS_CRATE         "models/props_junk/explosive_box001.mdl"
+#define MODEL_GNOME                   "models/props_junk/gnome.mdl"
+#define MODEL_COLA                    "models/w_models/weapons/w_cola.mdl"
 
 #define MAXENTITIES                   2048
+
+ConVar g_hCvarRockFix, g_hCvarPullThrough, g_hCvarRockThroughIncap, g_hCvarHunterThroughInacp, g_hCvarSIThroughWitch,
+	g_hCvarClientPushPipeBombFix, g_hCvarWeaponCommon, g_hSurvivorLadder;
+bool g_bCvarRockFix,g_bCvarPullThrough,g_bCvarRockThroughIncap, g_bCvarHunterThroughInacp, g_bCvarSIThroughWitch,
+	g_bCvarClientPushPipeBombFix, g_bCvarWeaponCommon, g_bSurvivorLadder;
+
+bool g_bPulled[MAXPLAYERS + 1] = {false, ...};
 
 enum EEntity_Type
 {
@@ -66,13 +69,24 @@ enum EEntity_Type
 	EEntity_Witch,
 	EEntity_PipeBombProj,
 	EEntity_MolotovProj,
+	EEntity_WeaponItems,
+	EEntity_InfLadder
 }
 
 EEntity_Type 
 	g_iEntityType[MAXENTITIES+1];
 
 int 
-	g_iZombieClass;
+	g_iZombieClass,
+	g_iModel_Gascan = -1,
+	g_iModel_PropaneCanister = -1,
+	g_iModel_OxygenTank = -1,
+	g_iModel_FireworksCrate = -1,
+	g_iModel_Gnome = -1,
+	g_iModel_Cola = -1;
+
+float 
+	g_flPlayerNoCollideTime[MAXPLAYERS+1][MAXPLAYERS+1];
 
 public void OnPluginStart()
 {
@@ -82,9 +96,10 @@ public void OnPluginStart()
 	g_hCvarPullThrough 				= CreateConVar("l4d_collision_adjustments_smoker_common", 	"1", "If 1, Pulled Survivors can go through Common Infected", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarRockThroughIncap 		= CreateConVar("l4d_collision_adjustments_tankrock_incap", 	"1", "If 1, Rocks can go through Incapacitated Survivors? (Won't go through new incaps caused by the Rock)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarHunterThroughInacp 		= CreateConVar("l4d_collision_adjustments_hunter_incap", 	"1", "If 1, Hunter can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_hCvarHunterIncapAim 			= CreateConVar("l4d_collision_adjustments_hunter_incap_aim", "60", "(riverside) With hunter_incap 1, a pounce still lands on the incap closest to the hunter's crosshair at pounce start if he is within this many degrees of it. 0 = always pass through incaps", FCVAR_NOTIFY, true, 0.0, true, 180.0);
 	g_hCvarSIThroughWitch 			= CreateConVar("l4d_collision_adjustments_si_witch", 		"1", "If 1, Special infected and Tank can go through witch (Prevent stuck and stagger)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvarClientPushPipeBombFix 	= CreateConVar("l4d_collision_adjustments_client_pipebomb", "1", "If 1, Fix the bug where survivor and special infected can push pipebomb projectiles", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvarWeaponCommon 			= CreateConVar("l4d_collision_adjustments_weapon_common",   "1", "If 1, Common Infected can go through Weapons, items, and carryables (GasCan, Prop tank, Oxygen tank, Fireworks crate, Gnome, Cola)\n (Prevent stuck)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hSurvivorLadder 				= CreateConVar("l4d_collision_adjustments_survivor_ladder", "1", "If 1, Remove survivor collision with infected ladders. (Prevents Survivors from getting jitter/rubberbanding on infected ladder)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	AutoExecConfig(true,            "l4d_collision_adjustments");
 
 	GetCvars();
@@ -92,9 +107,10 @@ public void OnPluginStart()
 	g_hCvarPullThrough.AddChangeHook(ConVarChanged);
 	g_hCvarRockThroughIncap.AddChangeHook(ConVarChanged);
 	g_hCvarHunterThroughInacp.AddChangeHook(ConVarChanged);
-	g_hCvarHunterIncapAim.AddChangeHook(ConVarChanged);
 	g_hCvarSIThroughWitch.AddChangeHook(ConVarChanged);
 	g_hCvarClientPushPipeBombFix.AddChangeHook(ConVarChanged);
+	g_hCvarWeaponCommon.AddChangeHook(ConVarChanged);
+	g_hSurvivorLadder.AddChangeHook(ConVarChanged);
 	
 	HookEvent("tongue_grab", Event_SurvivorPulled);
 	HookEvent("tongue_release", Event_PullEnd);
@@ -126,6 +142,8 @@ void LateLoad()
     }
 }
 
+// Cvars-------------------------------
+
 void ConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	GetCvars();
@@ -137,10 +155,13 @@ void GetCvars()
 	g_bCvarPullThrough = g_hCvarPullThrough.BoolValue;
 	g_bCvarRockThroughIncap = g_hCvarRockThroughIncap.BoolValue;
 	g_bCvarHunterThroughInacp = g_hCvarHunterThroughInacp.BoolValue;
-	g_fCvarHunterIncapAimCos = g_hCvarHunterIncapAim.FloatValue > 0.0 ? Cosine(DegToRad(g_hCvarHunterIncapAim.FloatValue)) : 2.0;
 	g_bCvarSIThroughWitch = g_hCvarSIThroughWitch.BoolValue;
 	g_bCvarClientPushPipeBombFix = g_hCvarClientPushPipeBombFix.BoolValue;
+	g_bCvarWeaponCommon = g_hCvarWeaponCommon.BoolValue;
+	g_bSurvivorLadder = g_hSurvivorLadder.BoolValue;
 }
+
+// Collision Hook API
 
 public Action CH_PassFilter(int ent1, int ent2, bool &result)
 {
@@ -161,8 +182,8 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		if(ent2 > 0 && ent2 <= MaxClients && IsClientInGame(ent2) && IsPlayerAlive(ent2))
 		{
 			if( g_bCvarHunterThroughInacp && team1 == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent1)
-				&& GetClientTeam(ent2) == L4D_TEAM_INF && GetZombieClass(ent2) == ZC_HUNTER && IsStartToPounce(ent2)
-				&& g_iPounceAimTarget[ent2] != ent1)
+				&& GetClientTeam(ent2) == L4D_TEAM_INF && GetZombieClass(ent2) == ZC_HUNTER 
+				&& g_flPlayerNoCollideTime[ent2][ent1] > GetGameTime())
 			{
 				result = false;
 				return Plugin_Handled;
@@ -196,6 +217,14 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 				result = false;
 				return Plugin_Handled;
 			}	
+
+			// We don't let survivors collide with infected ladders, this bit handles the server side collision (actual collision)
+			if (g_bSurvivorLadder && g_iEntityType[ent2] == EEntity_InfLadder
+				&& team1 == L4D_TEAM_SUR)
+			{
+				result = false;
+				return Plugin_Handled;
+			}	
 		}
 	}
 
@@ -205,8 +234,8 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 		if( ent1 > 0 && ent1 <= MaxClients && IsClientInGame(ent1) && IsPlayerAlive(ent1) )
 		{
 			if( g_bCvarHunterThroughInacp && team2 == L4D_TEAM_SUR && L4D_IsPlayerIncapacitated(ent2)
-				&& GetClientTeam(ent1) == L4D_TEAM_INF && GetZombieClass(ent1) == ZC_HUNTER && IsStartToPounce(ent1)
-				&& g_iPounceAimTarget[ent1] != ent2 )
+				&& GetClientTeam(ent1) == L4D_TEAM_INF && GetZombieClass(ent1) == ZC_HUNTER 
+				&& g_flPlayerNoCollideTime[ent1][ent2] > GetGameTime())
 			{
 				result = false;
 				return Plugin_Handled;
@@ -240,6 +269,14 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 				result = false;
 				return Plugin_Handled;
 			}	
+
+			// We don't let survivors collide with infected ladders, this bit handles the server side collision (actual collision)
+			if (g_bSurvivorLadder && g_iEntityType[ent1] == EEntity_InfLadder
+				&& team2 == L4D_TEAM_SUR)
+			{
+				result = false;
+				return Plugin_Handled;
+			}	
 		}
 	}
 
@@ -253,10 +290,21 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 				result = false;
 				return Plugin_Handled;
 			}
+			else if (g_bCvarWeaponCommon && g_iEntityType[ent2] == EEntity_WeaponItems)
+			{
+				result = false;
+				return Plugin_Handled;
+			}
 		}
-		else if (g_iEntityType[ent2] == EEntity_Infected)
+
+		if (g_iEntityType[ent2] == EEntity_Infected)
 		{
 			if (g_bCvarRockFix && g_iEntityType[ent1] == EEntity_Rock)
+			{
+				result = false;
+				return Plugin_Handled;
+			}
+			else if (g_bCvarWeaponCommon && g_iEntityType[ent1] == EEntity_WeaponItems)
 			{
 				result = false;
 				return Plugin_Handled;
@@ -265,6 +313,21 @@ public Action CH_PassFilter(int ent1, int ent2, bool &result)
 	}
 
 	return Plugin_Continue;
+}
+
+// Sourcemod API Forward-------------------------------
+
+public void OnMapStart()
+{
+	g_iModel_Gascan = PrecacheModel(MODEL_GASCAN, true);
+	g_iModel_PropaneCanister = PrecacheModel(MODEL_PROPANECANISTER, true);
+	g_iModel_OxygenTank = PrecacheModel(MODEL_OXYGENTANK, true);
+	if (g_bL4D2Version)
+	{
+		g_iModel_FireworksCrate = PrecacheModel(MODEL_FIREWORKS_CRATE, true);
+		g_iModel_Gnome = PrecacheModel(MODEL_GNOME, true);
+		g_iModel_Cola = PrecacheModel(MODEL_COLA, true);
+	}
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
@@ -281,6 +344,10 @@ public void OnEntityCreated(int entity, const char[] classname)
 			if (StrEqual(classname, "witch"))
 			{
 				g_iEntityType[entity] = EEntity_Witch;
+			}
+			else if (strncmp(classname, "weapon_", 7 ,false) == 0)
+			{
+				g_iEntityType[entity] = EEntity_WeaponItems;
 			}
 		}
 		case 'i':
@@ -303,6 +370,8 @@ public void OnEntityCreated(int entity, const char[] classname)
 			{
 				g_iEntityType[entity] = EEntity_PipeBombProj;
 			}
+			else if (HasEntProp(entity, Prop_Send, "m_isCarryable")) // CPhysicsProp
+				RequestFrame(OnNextFramePhysics, EntIndexToEntRef(entity)); // 1 frame later required to apply the collision properly
 		}
 		/*case 'm':
 		{
@@ -311,8 +380,96 @@ public void OnEntityCreated(int entity, const char[] classname)
 				g_iEntityType[entity] = EEntity_MolotovProj;
 			}
 		}*/
+		case 'f':
+		{
+			if (StrEqual(classname, "func_simpleladder"))
+			{
+				RequestFrame(OnNextFrame_func_simpleladder, EntIndexToEntRef(entity));
+			}
+		}
 	}
 }
+
+// Timer & Frame-------------------------------
+
+void OnNextFramePhysics(int entityRef)
+{
+    int entity = EntRefToEntIndex(entityRef);
+
+    if (entity == INVALID_ENT_REFERENCE)
+        return;
+
+    int modelIndex = GetEntProp(entity, Prop_Send, "m_nModelIndex");
+
+    if (modelIndex == g_iModel_Gascan)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+
+    if (modelIndex == g_iModel_PropaneCanister)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+
+    if (modelIndex == g_iModel_OxygenTank)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+
+    if (!g_bL4D2Version)
+        return;
+
+    if (modelIndex == g_iModel_FireworksCrate)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+
+    if (modelIndex == g_iModel_Gnome)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+
+    if (modelIndex == g_iModel_Cola)
+    {
+        g_iEntityType[entity] = EEntity_WeaponItems;
+        return;
+    }
+}
+
+void OnNextFrame_func_simpleladder(int entityRef)
+{
+	int entity = EntRefToEntIndex(entityRef);
+
+	if (entity == INVALID_ENT_REFERENCE)
+		return;
+
+	//PrintToChatAll("m_iTeamNum %d", GetEntProp(entity, Prop_Send, "m_iTeamNum"));
+	if (GetEntProp(entity, Prop_Send, "m_iTeamNum") == L4D_TEAM_INF) {
+		g_iEntityType[entity] = EEntity_InfLadder;
+		SDKHook(entity, SDKHook_SetTransmit, Hook_SetTransmit);
+	}
+}
+
+// SDKHooks-------------------------------
+
+// Credit: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_fix_ladder_collision.sp 
+// We don't send infected ladder data to survivors, this bit handles the clientside prediction so that they don't get visual bugs (jitter/rubberbanding)
+Action Hook_SetTransmit(int entity, int client)
+{
+	if (GetClientTeam(client) == L4D_TEAM_SUR) {
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
+// Event
+
 // hunters pouncing / tracking
 void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 {
@@ -329,9 +486,21 @@ void Event_AbilityUse(Event hEvent, const char[] name, bool dontBroadcast)
 		|| GetClientTeam(client) != L4D_TEAM_INF)
 			return;
 
-		// Hunter pounce
-		g_fPouncingStartTime[client] = GetEngineTime();
-		g_iPounceAimTarget[client] = FindPounceAimTarget(client);
+		g_flPlayerNoCollideTime[client][0] = GetGameTime() + 0.5;
+		for (int i = 1; i <= MaxClients; ++i)
+		{
+			if (IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i) && L4D_IsPlayerIncapacitated(i))
+			{
+				float AA[3], AB[3], BA[3], BB[3];
+				GetEntityWorldSpaceBounds(client, AA, AB);
+				GetEntityWorldSpaceBounds(i, BA, BB);
+
+				if (IsBoxIntersectingBox(AA, AB, BA, BB))
+				{
+					g_flPlayerNoCollideTime[client][i] = GetGameTime() + 0.5;
+				}
+			}
+		}
 	}
 }
 
@@ -352,8 +521,10 @@ void event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 	for (int i = 1; i <= MaxClients; i++) //clear
 	{
 		g_bPulled[i] = false;
-		g_fPouncingStartTime[i] = 0.0;
-		g_iPounceAimTarget[i] = 0;
+		for (int j = 0; j <= MaxClients; j++)
+		{
+			g_flPlayerNoCollideTime[i][j] = 0.0;
+		}
 	}
 }
 
@@ -382,48 +553,7 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 	g_bPulled[client] = false;
 }
 
-// ----------------------------
-
-// riverside2: the survivor closest to the hunter's crosshair when the pounce starts, if that is an incap
-// within the aim cone; 0 otherwise. Standing survivors count too, so aiming at a survivor who stands next
-// to an incap still passes through the incap (the original anti suck-in behaviour).
-int FindPounceAimTarget(int hunter)
-{
-	if (g_fCvarHunterIncapAimCos > 1.0)
-		return 0;
-
-	float vEye[3], vAng[3], vAim[3];
-	GetClientEyePosition(hunter, vEye);
-	GetClientEyeAngles(hunter, vAng);
-	GetAngleVectors(vAng, vAim, NULL_VECTOR, NULL_VECTOR);
-
-	int best;
-	float bestDot = g_fCvarHunterIncapAimCos;
-	float vMins[3], vMaxs[3], vTo[3];
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsClientInGame(i) || GetClientTeam(i) != L4D_TEAM_SUR || !IsPlayerAlive(i))
-			continue;
-
-		// aim at the middle of the survivor's hull, which is low for an incap
-		GetClientAbsOrigin(i, vTo);
-		GetClientMins(i, vMins);
-		GetClientMaxs(i, vMaxs);
-		vTo[2] += (vMins[2] + vMaxs[2]) * 0.5;
-		SubtractVectors(vTo, vEye, vTo);
-		if (NormalizeVector(vTo, vTo) <= 0.0)
-			continue;
-
-		float dot = GetVectorDotProduct(vAim, vTo);
-		if (dot > bestDot)
-		{
-			bestDot = dot;
-			best = i;
-		}
-	}
-
-	return (best && L4D_IsPlayerIncapacitated(best)) ? best : 0;
-}
+// Other-----
 
 bool IsClientIndex(int client)
 {
@@ -435,31 +565,32 @@ int GetZombieClass(int client)
 	return GetEntData(client, g_iZombieClass);
 }
 
-bool IsStartToPounce(int client)
-{
-	if(g_bL4D2Version)
-	{
-		int Activity = PlayerAnimState.FromPlayer(client).GetMainActivity();
-		if(Activity == L4D2_ACT_TERROR_HUNTER_POUNCE 
-			&& g_fPouncingStartTime[client] + 0.09 > GetEngineTime())
-		{
-			return true;
-		}
-	}
-	else
-	{
-		int Activity = L4D1_GetMainActivity(client);
-		if(Activity == L4D1_ACT_TERROR_HUNTER_POUNCE 
-			&& g_fPouncingStartTime[client] + 0.09 > GetEngineTime())
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 bool IsValidEntityIndex(int entity)
 {
-	return (MaxClients+1 <= entity <= GetMaxEntities());
+	return (MaxClients+1 <= entity <= MAXENTITIES);
+}
+
+void GetEntityWorldSpaceBounds(int entity, float worldMins[3], float worldMaxs[3])
+{
+	float pos[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", pos);
+
+	float mins[3], maxs[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecMins", mins);
+	GetEntPropVector(entity, Prop_Data, "m_vecMaxs", maxs);
+
+	AddVectors(pos, mins, worldMins);
+	AddVectors(pos, maxs, worldMaxs);
+}
+
+bool IsBoxIntersectingBox( const float boxMin1[3], const float boxMax1[3], 
+						const float boxMin2[3], const float boxMax2[3] )
+{
+	if ( (boxMin1[0] > boxMax2[0]) || (boxMax1[0] < boxMin2[0]) )
+		return false;
+	if ( (boxMin1[1] > boxMax2[1]) || (boxMax1[1] < boxMin2[1]) )
+		return false;
+	if ( (boxMin1[2] > boxMax2[2]) || (boxMax1[2] < boxMin2[2]) )
+		return false;
+	return true;
 }

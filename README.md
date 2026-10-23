@@ -341,10 +341,13 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Rocks go through Common Infected (and also kill them) instead of possibly getting stuck on them
   * Pulled Survivors go through Common Infected. ([video](https://www.youtube.com/watch?v=Jj04A73AYk0))
   * Rocks go through Incapacitated Survivors (Won't go through new incaps caused by the Rock)
-  * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
   * Hunters can go through incapacitated survivor (Prevent hunter stuck inside incapacitated survivor, still can pounce them)
-  * Commons can go through Witches without pushing them away
-  * Common infected can phase through pulled or pounced survivors, while witches can't
+  * Special infecteds and Tanks go through witch (Prevent stuck and stagger)
+  * Fix the bug where survivor and special infected can push pipebomb projectiles
+  * Common Infected can go through Weapons, items, and carryables (GasCan, Prop tank, Oxygen tank)
+  * Remove survivor collision with infected ladders. (Prevents Survivors from getting jitter/rubberbanding on infected ladder)
+* Commons can go through Witches without pushing them away
+* Common infected can phase through pulled or pounced survivors, while witches can't
 * Prevent \"point_deathfall_camera\" and \"point_viewcontrol*\" permanently locking view.
 * Fixed server crash when kicking a bot who have been an active target of camera (point_viewcontrol_survivor)
 * Fixed Multiple visual spectator bugs after team swap in finale
@@ -359,6 +362,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fix thin/small 'prop_*' entity not blocking LOS.
 * Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
 * When a player disconnects due to crash, automatically pause the game. When they rejoin, give them a correct spawn timer.
+* Stops the vphysics use-after-free that can crash the server at a level change.
 
 - - - -
 ### Gameplay / Balance Changes ###
@@ -373,6 +377,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fix commons being immune to shoves when crouching, falling and landing. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_common_shove)
   * Remove BattleField Navigation limit when panic horde stage, which means common infected no longer spawns behind when survivor rush forward.
   * Resolves single-directional stumbling for commons
+  * Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
 
 * Special Infected:
   * **General:**
@@ -492,6 +497,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * A human tank's punch is lag compensated whether he taps or holds attack.
     * Stops dead commons' ragdolls dragging hittables out of place on clients
     * The windup-end punch target follows the fist: no hits the fist never came near, and hits the fist visibly went through.
+    * A tank punch can no longer hit a survivor through a wall when an entity stands in front of the wall.
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~
@@ -516,6 +522,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       * Direct fix: No straight-line run at her victim over a pit or open air
       * Climb fix: No endless climb-and-slide on props and rounded ledges
       * Fire fix: Map fire no longer burns the witch
+    * Fixed the bug that witch cancels retreat and comes back to chase survivor again if game starts panic event
 	
   * **Smoker:**
     * Tongue will not be released after survivor hanging from a ledge. (one of l4d1 original feature)
@@ -558,6 +565,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * M2 godframes after a hunter lands on the ground: 0.75s
     * Make hunter skeets more consistent across different pings.
     * A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
+    * A hunter landing a pounce on a survivor's head can no longer restart the pounce (and lose its damage) before the pin goes through.
 	
   * **Boomer:**
     * Boomer can be getting bashed to death

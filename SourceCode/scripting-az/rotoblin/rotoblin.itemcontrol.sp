@@ -234,14 +234,14 @@ static RemoveThrowables()
 	while ((pipeEnt = FindEntityByClassnameEx(pipeEnt, PIPEBOMB_NAME)) != -1)
 	{
 		DebugPrintToAllEx("Removing pipebomb (ent %i)", pipeEnt);
-		SafelyRemoveEdict(pipeEnt);
+		SafelyRemoveEntity(pipeEnt);
 	}
 	
 	new moloEnt = -1;
 	while ((moloEnt = FindEntityByClassnameEx(moloEnt, MOLOTOV_NAME)) != -1)
 	{
 		DebugPrintToAllEx("Removing molotov (ent %i)", moloEnt);
-		SafelyRemoveEdict(moloEnt);
+		SafelyRemoveEntity(moloEnt);
 	}
 }
 
@@ -266,7 +266,7 @@ static RemoveCarryableCannisters()
 	{
 		if(PropPhysicsIsCarryableCannister(entity))
 		{			
-			SafelyRemoveEdict(entity);			
+			SafelyRemoveEntity(entity);			
 		}		
 	}
 }
@@ -414,7 +414,7 @@ static bool:PropPhysicsIsCarryableCannister(prop_physicsEntity)
 public Action:_IC_RemoveEntity_Delayed(Handle:timer, any:entRef)
 {
 	new entity = EntRefToEntIndex(entRef);		
-	SafelyRemoveEdict(entity);
+	SafelyRemoveEntity(entity);
 	//LogMessage("Removed item");
 }
 

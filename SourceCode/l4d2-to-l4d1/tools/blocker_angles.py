@@ -14,8 +14,12 @@ plate) is left alone and listed: cut into boxes it becomes a staircase that
 players walk up (step height 18), which is the opposite of a slide-off slope.
 --steep converts those too.
 
-usage: blocker_angles.py [--tol 8] [--cap 48] [--steep] [--write] cfg...
-Without --write it only prints what it would do.
+usage: 
+    blocker_angles.py [--tol 8] [--cap 48] [--steep] [--write] cfg...
+    Without --write it only prints what it would do.
+
+Example:
+    python blocker_angles.py --steep --write --tol 8 --cap 100 cdta_01detour.cfg
 """
 import argparse, itertools, math, re, sys
 

@@ -357,7 +357,7 @@ public Action:_HC_RemoveItem_Delayed_Timer(Handle:timer, any:entRef)
 	//decl Float:entityPos[3];
 	//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
 	//LogMessage("KITS here4 %d: %f %f %f",entity,entityPos[0],entityPos[1],entityPos[2]);
-	SafelyRemoveEdict(entity);
+	SafelyRemoveEntity(entity);
 	DebugPrintToAllEx("Removed item");
 }
 
@@ -469,7 +469,7 @@ static UpdateStartingHealthItems()
 			//醫療包變成藥丸
 			if(pillsleft<=0)
 			{
-				RemoveEdict(entity);
+				RemoveEntity(entity);
 			}
 			else if(pillsleft>=5)
 			{
@@ -510,7 +510,7 @@ static UpdateStartingHealthItems()
 			//GetEntPropVector(entity, Prop_Send, "m_vecOrigin", entityPos);	
 			//LogMessage("KITS here2 %d: %f %f %f: %d,%d,%d,%d",entity,entityPos[0],entityPos[1],entityPos[2],g_iSaferoomKits[0],g_iSaferoomKits[1],g_iSaferoomKits[2],g_iSaferoomKits[3]);
 
-			if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY) SafelyRemoveEdict(entity);
+			if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY) SafelyRemoveEntity(entity);
 			else ReplaceKitWithPills(entity);
 		}
 	}
@@ -531,7 +531,7 @@ static RemoveAllPills()
 		if(!IsValidEntity(entity))
 			continue;
 		
-		if(SafelyRemoveEdict(entity))
+		if(SafelyRemoveEntity(entity))
 		{			
 			removedCount++;
 			DebugPrintToAllEx("Removed pills (ent: %i)", entity);

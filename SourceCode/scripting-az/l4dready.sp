@@ -299,9 +299,9 @@ public OnPluginStart()
 	#endif
 	
 	RegAdminCmd("sm_restartmap", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
-	#if READY_DEBUG
-		RegAdminCmd("sm_rs", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
-	#endif
+	// enable sm_rs only when sv_cheats is 1
+	RegAdminCmd("sm_rs", CommandRestartMap, ADMFLAG_CHANGEMAP, "sm_restartmap - changelevels to the current map");
+
 	//RegAdminCmd("sm_restartround", FakeRestartVoteCampaign, ADMFLAG_CHANGEMAP, "sm_restartround - executes a restart campaign vote and makes everyone votes yes");
 	
 	RegAdminCmd("sm_forcestart", compStart, ADMFLAG_BAN, "sm_forcestart");
@@ -1554,13 +1554,24 @@ RestartCampaignAny()
 	L4D_RestartScenarioFromVote(currentmap);
 }
 
-public Action:CommandRestartMap(client, args)
+Action CommandRestartMap(client, args)
 {	
+	char sName[12];
+	GetCmdArg(0, sName, sizeof(sName));
+	if(strncmp(sName, "sm_rs", 5, false) == 0)
+	{
+		if(sv_cheats.BoolValue == false)
+		{
+			return Plugin_Continue;
+		}
+	}
+
 	if(!isMapRestartPending)
 	{
 		CPrintToChatAll("{default}[{olive}TS{default}] %t","ReadyPlugin_21", READY_RESTART_MAP_DELAY+1);
 		RestartMapDelayed();
 	}
+	
 	return Plugin_Handled;
 }
 

@@ -128,7 +128,7 @@ stock ReplaceEntity(ent, const String:classname[], const String:model[], count)
 
 	if (!AcceptEntityInput(oldent, "Kill")) // If we couldn't kill old entity by input
 	{
-		SafelyRemoveEdict(oldent); // Force removal
+		SafelyRemoveEntity(oldent); // Force removal
 	}
 
 	return ent;
@@ -152,7 +152,7 @@ stock CreateEntityByNameEx(const String:classname[], const String:model[], const
 
 	if (!IsModelPrecached(model) && !PrecacheModel(model)) // If model isn't precached and we couldn't precache model
 	{
-		SafelyRemoveEdict(ent); // Kill the new entity
+		SafelyRemoveEntity(ent); // Kill the new entity
 		return 0;
 	}
 
@@ -164,13 +164,13 @@ stock CreateEntityByNameEx(const String:classname[], const String:model[], const
 
 	if (!DispatchKeyValue(ent, "count", buffer)) // If we couldn't set item count
 	{
-		SafelyRemoveEdict(ent); // Kill the new entity
+		SafelyRemoveEntity(ent); // Kill the new entity
 		return 0;
 	}
 
 	if (!DispatchSpawn(ent)) // Couldn't dispatch entity
 	{
-		SafelyRemoveEdict(ent); // Kill the new entity
+		SafelyRemoveEntity(ent); // Kill the new entity
 		return 0;
 	}
 
@@ -359,12 +359,12 @@ stock SetPlayerGhostState(client, bool:isGhost)
 }
 
 /**
- * Removes an edict.  Checks the index for validity and then tries to remove via kill, then if that doesn't work, SafelyRemoveEdict.
+ * Removes an edict.  Checks the index for validity and then tries to remove via kill, then if that doesn't work, SafelyRemoveEntity.
  *
  * @param entity		The edict to try and remove
  * @return				Whether the removal was successful or not.
  */
-stock bool:SafelyRemoveEdict(entity)
+stock bool:SafelyRemoveEntity(entity)
 {
 	if (entity == INVALID_ENT_REFERENCE || entity > MAX_EDICTS || !IsValidEntity(entity))
 	{

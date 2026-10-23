@@ -1014,6 +1014,12 @@
 //Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
 //衝鋒型關卡(又名跑圖關卡)的終章地圖上，tank存活時間管理無限屍潮的數量
 
+[255] l4d_tank_punch_wall_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//A tank punch can no longer hit a survivor through a wall when an entity stands in front of the wall.
+//修復Tank拳頭打到牆壁前的倖存者同時，也會打到牆壁後方的倖存者
+//原因: 當有任何其他實體夾在Tank眼睛和牆壁之間時，揮拳便穿透了實體後方的牆壁
+
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk
 //重製所有官方地圖的nav
