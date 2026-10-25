@@ -12,7 +12,8 @@
 // The reason lies in how players' modern, high-end graphics cards render water ripples in old source engine games, poorly optimized.
 //
 // "GauntletFinale_map": Gauntlet Finale (for custom maps and l4d2 maps)
-// Rather than having the player holdout in an enclosed arena, gauntlets force players to run to the end of the level, where the rescue vehicle is already waiting for them.
+// Rather than having the player holdout in an enclosed arena, 
+// gauntlets make an infinite horde and force players to run to the end of the level, where the rescue vehicle is already waiting for them.
 // For example: In The Parish map 5, the players must run across a bridge to make it to a rescue helicopter.
 // 1. Modify Hittable car damage to survivors 
 // 2. Monitors and changes state of infinite hordes during tanks
@@ -134,7 +135,7 @@
 		{
 			"Elevator"
 			{
-				"min"		"46"
+				"min"		"41"
 				"max"		"80"
 			}
 		}
@@ -142,7 +143,7 @@
 		{
 			"Elevator"
 			{
-				"min"		"46"
+				"min"		"41"
 				"max"		"80"
 			}
 		}

@@ -305,9 +305,7 @@ public OnPluginStart()
 	//RegAdminCmd("sm_restartround", FakeRestartVoteCampaign, ADMFLAG_CHANGEMAP, "sm_restartround - executes a restart campaign vote and makes everyone votes yes");
 	
 	RegAdminCmd("sm_forcestart", compStart, ADMFLAG_BAN, "sm_forcestart");
-	#if READY_DEBUG
-		RegAdminCmd("sm_fs", compStart, ADMFLAG_BAN, "sm_forcestart");
-	#endif
+	RegAdminCmd("sm_fs", compStart, ADMFLAG_BAN, "sm_forcestart");
 	//sm_switch
 	RegAdminCmd("sm_switch", Switch_Client, ADMFLAG_BAN, "sm_switch <player1> <player2> - switch A to B's team, and B to A's team.");
 	
@@ -2507,6 +2505,16 @@ public Action:compStart(client, args)
 	if(goingLive)
 	{
 		return Plugin_Handled;
+	}
+
+	char sName[12];
+	GetCmdArg(0, sName, sizeof(sName));
+	if(strncmp(sName, "sm_fs", 5, false) == 0)
+	{
+		if(sv_cheats.BoolValue == false)
+		{
+			return Plugin_Continue;
+		}
 	}
 	
 	//	compOn();

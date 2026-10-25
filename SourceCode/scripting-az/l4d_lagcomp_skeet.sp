@@ -11,7 +11,7 @@
 
 #include <@Forgetest/gamedatawrapper>
 
-#define DEBUG 1
+#define DEBUG 0
 #define PLUGIN_VERSION "1.5h-2026/10/23"
 
 public Plugin myinfo =
