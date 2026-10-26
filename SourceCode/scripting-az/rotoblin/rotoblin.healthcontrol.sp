@@ -435,7 +435,7 @@ static UpdateStartingHealthItems()
 	entity = -1;
 	new pillsleft = GetConVarInt(FindConVar("survivor_limit"));
 	int number;
-	if(g_bIsFinale)//救援關四顆藥丸符合當前人類數量
+	if(g_bIsFinale && !g_bGauntletFinaleMap)//非衝刺型救援關卡四顆藥丸符合當前人類數量
 	{
 		if(g_iHealthStyle == SAFEROOM_AND_FINALE_PILLS_ONLY)
 		{
@@ -485,7 +485,7 @@ static UpdateStartingHealthItems()
 			g_iFinalPills[k++] = entity;
 		}
 	}
-	else //非救援關
+	else //非救援關或衝刺型關卡
 	{
 		if(g_iHealthStyle == REPLACE_ALL_BUT_FINALE_KITS) 
 		{
@@ -1013,6 +1013,9 @@ stock bool IsInCabinet(int pill)
 
 bool IsInFinalArea(int pill)
 {
+	if(!g_bIsFinale) return false;
+	if(g_bGauntletFinaleMap) return false;
+
 	for(int i = 0; i < 16; i++)
 	{
 		if(g_iFinalPills[i] == pill)

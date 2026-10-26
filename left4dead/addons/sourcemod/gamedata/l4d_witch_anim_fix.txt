@@ -1,0 +1,38 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"MyNextBotPointer"
+			{
+				"linux"			"72"
+				"windows"		"71"
+			}
+
+			"INextBot::GetBodyInterface"
+			{
+				"linux"			"44"
+				"windows"		"43"
+			}
+		}
+	}
+
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"MyNextBotPointer"
+			{
+				"linux"			"82"
+				"windows"		"81"
+			}
+
+			"INextBot::GetBodyInterface"
+			{
+				"linux"			"49"
+				"windows"		"48"
+			}
+		}
+	}
+}

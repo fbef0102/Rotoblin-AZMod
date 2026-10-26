@@ -550,7 +550,11 @@
 //坦克石頭穿透小殭屍(還是會殺死)
 //被舌頭拉走的玩家穿透小殭屍
 //坦克石頭穿透倒地的玩家(如果即將倒地不會穿透)
-//小殭屍穿透witch(避免witch堵路)
+//hunter如果在倒地的倖存者身上剛飛起來會穿透倒地的倖存者 (避免hunter卡住飛不出去)
+//特感穿透witch(也不會被witch卡住與震退)
+//人類穿透掉在地上的土製炸彈(人類不會黏住土製炸彈)
+//殭屍穿透武器與物品卡住(避免卡住)
+//人類穿透特感梯子(避免黏住與碰到)
 
 [134] l4d_pause_message
 //如果伺服器不支援暫停功能，控制台停止刷版顯示誰暫停 誰解除暫停
@@ -891,11 +895,13 @@
 
 [233] l4d_witch_fixes
 //source: github.com/Volence/riverside-l4d-plugins
-//Witch movement fixes: corners, straight-line cuts over gaps, failed climbs, map fire
+//Witch fixes: corners, straight-line cuts over gaps, failed climbs, map fire, infected victims, launches
 //解決因為nb_update_frequency頻率過高導致witch容易卡在門口或是角落一系列問題
 //解決witch爬牆卡住問題
 //Witch不會再被地圖上的火焰燃燒, 失去目標
 //優化witch跑向倖存者的AI路徑
+//Witch不會莫名其妙彈飛到天空
+//Witch不會轉移目標至特感上
 
 [234] l4d_witch_unstuck
 //source: github.com/Volence/riverside-l4d-plugins
@@ -1009,16 +1015,34 @@
 //Stops the vphysics use-after-free that can crash the server at a level change.
 //L4D1 的 vphysics 在換圖時面臨的崩潰問題。這bug非常罕見
 
-[254] l4d2_tank_horde_monitor
-//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_tank_horde_monitor.sp
-//Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
-//衝鋒型關卡(又名跑圖關卡)的終章地圖上，tank存活時間管理無限屍潮的數量
-
-[255] l4d_tank_punch_wall_fix
+[254] l4d_tank_punch_wall_fix
 //source: github.com/Volence/riverside-l4d-plugins
 //A tank punch can no longer hit a survivor through a wall when an entity stands in front of the wall.
 //修復Tank拳頭打到牆壁前的倖存者同時，也會打到牆壁後方的倖存者
 //原因: 當有任何其他實體夾在Tank眼睛和牆壁之間時，揮拳便穿透了實體後方的牆壁
+
+[255] l4d_hide_viewmodel
+//source: github.com/Volence/riverside-l4d-plugins
+//!noviewmodel hides your own gun and arms without hiding the HUD
+//使用!noviewmodel可以視覺上隱藏自己手上的武器與手臂
+
+[256] l4d_witch_anim_fix
+//source: github.com/jensewe
+//1. witch 對倒地的倖存者 做 pre-kill 動畫時被震開會無限循環被震動畫
+//2. witch 做 landing 動畫且對倒地的倖存者 做 pre-kill 動畫時, 會持續往前跑
+//3. witch被震時從高處掉下低處, 會卡住滑行大概五六秒
+
+[257] l4d2_tank_horde_monitor
+//source: github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/l4d2_tank_horde_monitor.sp
+//Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
+//衝鋒型關卡(又名跑圖關卡)的終章地圖上，tank存活時間管理無限屍潮的數量
+//須配合stripper cfg寫上"l4d1_gauntletfinale_map"
+
+[258] l4d_onslaught_tank_pause
+//source: github.com/Volence/riverside-l4d-plugins
+//Pauses converted L4D2 mid-map onslaught hordes while a tank is alive
+//衝鋒型關卡(又名跑圖關卡)的終章地圖上，tank存活時間管理無限屍潮的數量
+//須配合stripper cfg寫上"l4d1_onslaught_on", "l4d1_onslaught_off"
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

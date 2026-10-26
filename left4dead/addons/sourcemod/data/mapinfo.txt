@@ -17,6 +17,7 @@
 // For example: In The Parish map 5, the players must run across a bridge to make it to a rescue helicopter.
 // 1. Modify Hittable car damage to survivors 
 // 2. Monitors and changes state of infinite hordes during tanks
+// 3. Rotoblin won't try to search 4 kits in final area
 //
 // "WAIT_FOR_FINALE_map": Fixed stupid "WAIT_FOR_FINALE_map" spawn issue when playing infected 
 // (Usually happen in custom maps and l4d2 maps)
@@ -826,7 +827,7 @@
 	"c5m5_bridge"
 	{
 		; --- stripper map: 4 kit spawns in the truck by the flow tank
-		"pill_limit" 			"0"
+		"pill_limit" 			"4"
 		"VersusModifier"		"2.0"
 		"WAIT_FOR_FINALE_map"	"1"
 		"witch_map_off" 		"1"

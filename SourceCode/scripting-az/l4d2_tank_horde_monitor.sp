@@ -39,14 +39,15 @@ bool
 	tankInPlay,
 	tankInPlayDelay,
 	g_bGauntletFinaleMap,
-	g_bFinaleEscapeStart;
+	g_bFinaleEscapeStart,
+	g_bGauntletStart;
 
 public Plugin myinfo = 
 {
 	name = "L4D2 Tank Horde Monitor",
 	author = "Derpduck, Visor (l4d2_horde_equaliser), Harry (l4d1 port)",
 	description = "Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map",
-	version = "1.3.1h-2026/10/21",
+	version = "1.3.1h-2026/10/26",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
@@ -64,6 +65,8 @@ public void OnPluginStart()
 	HookEvent("player_death", TankDeath);
     HookEvent("finale_escape_start", 	Finale_Escape_Start); //最後逃亡上載具，通常發生於逃亡載具開始飛進來的過場動畫，如果逃亡載具已經存在的地圖則不會觸發，譬如 C1M4, C5M5, C13M4
     HookEvent("finale_vehicle_ready",   Finale_Escape_Start); //逃亡載具已準備好，所有救援地圖必觸發
+
+	HookEntityOutput("logic_relay", "OnTrigger", OnRelayTrigger);
 }
 
 void InitGameData()
@@ -96,6 +99,7 @@ void InitGameData()
 void RoundStartEvent(Event hEvent, const char[] name, bool dontBroadcast)
 {
 	g_bFinaleEscapeStart = false;
+	g_bGauntletStart = false;
 	ResetWarnings();
 	TimerCleanUp();
 	fBypassFlow = 0.0;
@@ -160,7 +164,7 @@ void TankSpawn(Event event, const char[] name, bool dontBroadcast)
 	if (!tankInPlay)
 	{
 		tankInPlay = true;
-		if (/*IsInfiniteHordeActive() &&*/ !announcedTankSpawn)
+		if (IsInfiniteHordeActive() && !announcedTankSpawn)
 		{
 			// Find current highest flow, and where the bypass point is
 			fFurthestFlow = GetAheadSurvivorFlow();
@@ -200,7 +204,7 @@ Action Timer_CheckTank(Handle timer)
 	int tankclient = FindTankClient();
 	if (!tankclient || !IsPlayerAlive(tankclient)) 
 	{
-		if(!g_bFinaleEscapeStart && tankInPlay && g_bGauntletFinaleMap)
+		if(!g_bFinaleEscapeStart && tankInPlay && g_bGauntletFinaleMap && IsInfiniteHordeActive())
 			CreateTimer(6.0, Timer_CallHorde, _, TIMER_FLAG_NO_MAPCHANGE);
 
 		ResetWarnings();
@@ -253,8 +257,28 @@ Action FlowCheckTimer(Handle hTimer)
 	return Plugin_Continue;
 }
 
+//!activator = activator of Trigger input
+//!caller = this entity
+void OnRelayTrigger(const char[] output, int caller, int activator, float delay)
+{
+	if(!g_bGauntletFinaleMap) return;
+
+	if (!IsValidEntity(caller))
+		return;
+
+	char relay[64];
+	GetEntPropString(caller, Prop_Data, "m_iName", relay, sizeof(relay));
+	if (StrEqual(relay, "l4d1_gauntletfinale_map"))
+	{
+		g_bGauntletStart = true;
+	}
+}
+
 public Action L4D_OnSpawnMob(int &amount)
 {
+	if(!g_bGauntletFinaleMap) return Plugin_Continue;
+	if(g_bFinaleEscapeStart) return Plugin_Continue;
+
 	/////////////////////////////////////
 	// - Called on Event Hordes.
 	// - Called on Panic Event Hordes.
@@ -265,7 +289,7 @@ public Action L4D_OnSpawnMob(int &amount)
 	// - Not Called on z_spawn mob.
 	////////////////////////////////////
 
-	if (tankInPlay && g_bGauntletFinaleMap && !g_bFinaleEscapeStart /*IsInfiniteHordeActive()*/){
+	if (tankInPlay && IsInfiniteHordeActive()){
 		// If survivors have already pushed past the extra bypass distance we can ignore this
 		if (announcedHordeMax){
 			return Plugin_Continue;
@@ -317,11 +341,13 @@ public Action L4D_OnSpawnMob(int &amount)
 	return Plugin_Continue;
 }
 
-//bool IsInfiniteHordeActive()
-//{
-//	int countdown = GetHordeCountdown();
-//	//return (/*GetPendingMobCount() > 0 &&*/ countdown > -1 && countdown <= 10);
-//}
+bool IsInfiniteHordeActive()
+{
+	//int countdown = GetHordeCountdown();
+	//return (/*GetPendingMobCount() > 0 &&*/ countdown > -1 && countdown <= 10);
+
+	return g_bGauntletStart;
+}
 
 /*
 int GetPendingMobCount()

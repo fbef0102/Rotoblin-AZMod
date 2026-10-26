@@ -377,7 +377,6 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Fix commons being immune to shoves when crouching, falling and landing. Credit: [jensewe](https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_fix_common_shove)
   * Remove BattleField Navigation limit when panic horde stage, which means common infected no longer spawns behind when survivor rush forward.
   * Resolves single-directional stumbling for commons
-  * Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
 
 * Special Infected:
   * **General:**
@@ -396,8 +395,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
         - *2*: **Bill**
         - *3*: **Zoey**
         - *4*: **Louis**
-      * Buttons: RELOAD
-      * Buttons: MOUSE2
+      * Buttons: `RELOAD`
+      * Buttons: `MOUSE2`
         - Disabled by default, ```sm_warpm2``` to enable it individually
     * No gunfire slowdown and shove slowdown
     * ~~Can't spawn in any "this is restricted area" rooms (one of l4d1 original feature)~~
@@ -517,11 +516,17 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Special infecteds and tanks can now go through the witch (No stagger, No collision stuck)
     * Fixed a door can startle the witch, causing her to lose target
     * Hops a startled witch past whatever she is stuck on
-    * Witch movement fixes. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
+    * Witch fixes. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
       * Corner fix: Stops the witch freezing on corners at a low `nb_update_frequency`. 
       * Direct fix: No straight-line run at her victim over a pit or open air
       * Climb fix: No endless climb-and-slide on props and rounded ledges
       * Fire fix: Map fire no longer burns the witch
+      * Victim fix: a startled witch never switches her victim to a special infected (survivors in her way still count)
+      * Launch fix: collision lifts (a dying common under her) never fling her into the air
+    * Witch anim fixes. Credit: [Forgetest](https://github.com/jensewe)
+      * Bug 1: When a Witch get stumbled while playing her pre-kill animation on an incapacitated survivor, she gets stuck in an infinite stumble animation loop
+      * Bug 2: When a Witch landing and try to play pre-kill animation on an incapacitated survivor, she gets stuck/frozen in runing animation loop.
+      * Bug 3: When a Witch landing after staggered off-edge., she gets stuck sliding for about 5 to 6 seconds.
     * Fixed the bug that witch cancels retreat and comes back to chase survivor again if game starts panic event
 	
   * **Smoker:**
@@ -612,8 +617,14 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * **Finales with 3 event Tanks:**
     * The Sacrifice
   * No Tank Spawn as the rescue vehicle is coming
-  * ```sm_voteboss <tank> <witch>``` Boss Percents Vote
-    
+  * Set Boss Spawn Percent
+    * `sm_voteboss <tank> <witch>` Boss Percents Vote
+    * `sm_forceboss <tank> <witch>` Adm forces to change boss percentage``` Boss Percents Vote
+  * Monitors and changes state of infinite hordes during tanks on Gauntlet Finale map
+    * stripper cfg: `"l4d1_gauntletfinale_map"`
+  * Pauses converted L4D2 mid-map onslaught hordes while a tank is alive
+    * stripper cfg: `"l4d1_onslaught_on"`, `"l4d1_onslaught_off"`
+
 * Survivors:
   * Anti-baiting Timer: 30s.
   * Anti-baiting Sensitivity Delay: 15s.
@@ -679,6 +690,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Blocks ledge hangs over drops that would not hurt
   * Stops survivors dying to "fell too far" from short drops after a tank punch, fall damage is taken from the speed gravity could give.
   * Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
+  * Type `!noviewmodel` to hides your own gun and arms without hiding the HUD
+    * `!noviewmodel 0` shows them again.
+    * `!noviewmodel 1` hides gun and arms.
+    * `!noviewmodel 2` hides only main weapon. Pistols, pills and everything else still show.
+    * Typing it with no number still toggles, and the player's choice is saved.
 
 * Spectators:
   * ```sm_spechud``` toggle On/Off spechud

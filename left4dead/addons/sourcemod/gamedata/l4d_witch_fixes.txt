@@ -12,6 +12,13 @@
 				"windows"	"\x55\x8B\xEC\x83\xE4\xF0\x81\xEC\x84\x01\x00\x00\x53\x56\x57\x6A\x04\x6A\x00\x68\x2A\x2A\x2A\x2A"
 			}
 			// mov eax,[esp+4]; mov eax,[eax+OFFSET]; ret -- where the witch keeps her locomotion
+			"WitchAttack::SetVictim"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11WitchAttack9SetVictimEP11CBaseEntity"
+				// thiscall, ret 4; the first 26 bytes run up to mov [edi+0x34],eax (the victim handle)
+				"windows"	"\x56\x8B\x74\x24\x08\x85\xF6\x57\x8B\xF9\x74\x4A\x8B\x06\x8B\x50\x08\x8B\xCE\xFF\xD2\x8B\x00\x89\x47\x34"
+			}
 			"Witch::GetLocomotionInterface"
 			{
 				"library"	"server"
@@ -42,6 +49,13 @@
 				"library"	"server"
 				"linux"		"@_ZNK11ILocomotion24IsPotentiallyTraversableERK6VectorS2_NS_16TraverseWhenTypeEPf"
 				"windows"	"\x55\x8B\xEC\x83\xE4\xF0\x81\xEC\xE4\x00\x00\x00\x53\x56\x57\x6A\x04"
+			}
+			// launch fix; windows: mov al,[ecx+0xB4]; ret, padding, then IsClimbingUpToLedge
+			"ZombieBotLocomotion::IsClimbingOrJumping"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK19ZombieBotLocomotion19IsClimbingOrJumpingEv"
+				"windows"	"\x8A\x81\xB4\x00\x00\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x8A\x81\xC8\x00\x00\x00\xC3"
 			}
 			"ZombieBotLocomotion::ClimbUpToLedge"
 			{
@@ -127,6 +141,17 @@
 					"signature"	"ZombieBotLocomotion::ClimbUpToLedge"
 				}
 			}
+			"ZombieBotLocomotion::IsClimbingOrJumping"
+			{
+				"linux"
+				{
+					"signature"	"ZombieBotLocomotion::IsClimbingOrJumping"
+				}
+				"windows"
+				{
+					"signature"	"ZombieBotLocomotion::IsClimbingOrJumping"
+				}
+			}
 			"Infected::IsAbleToClimbOnto (INextBot)"
 			{
 				"linux"
@@ -173,6 +198,49 @@
 			{
 				"linux"		"2224"
 				"windows"	"2204"
+			}
+			// launch fix: the locomotion's velocity (Update rebuilds it from how far she moved) and
+			// its ground handle; IsClimbingOrJumping returns the byte at +0xB4. Same layout on windows
+			// (GetVelocity = lea eax,[ecx+0x60]; GetGround reads [ecx+0xB8]), slot one lower
+			"ILocomotion::IsClimbingOrJumping"
+			{
+				"linux"		"45"
+				"windows"	"44"
+			}
+			"ZombieBotLocomotion::m_velocity"
+			{
+				"linux"		"96"
+				"windows"	"96"
+			}
+			"ZombieBotLocomotion::m_ground"
+			{
+				"linux"		"184"
+				"windows"	"184"
+			}
+			// victim fix: SetVictim stores the victim's EHANDLE here; the constructor sets it to -1 first
+			"WitchAttack::m_victim"
+			{
+				"linux"		"52"
+				"windows"	"52"
+			}
+		}
+		"Functions"
+		{
+			// victim fix: called by the WitchAttack constructor (first victim)
+			// and by WitchAttack::OnContact (a player who bumped her twice)
+			"WitchAttack::SetVictim"
+			{
+				"signature"	"WitchAttack::SetVictim"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"address"
+				"arguments"
+				{
+					"victim"
+					{
+						"type"	"cbaseentity"
+					}
+				}
 			}
 		}
 	}

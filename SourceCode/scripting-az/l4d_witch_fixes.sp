@@ -46,6 +46,25 @@
  *   Map fire (fire barrels, burning cars: trigger_hurt that also hurts NPCs) lights her, credited to
  *   nobody, and she drops the survivor she was chasing. Burn damage to a witch is dropped unless a
  *   survivor dealt it or it comes from her own flame (lit by a survivor who has since left).
+ *
+ * victim  (l4d_witch_fixes_victim)
+ *   A startled witch takes a new victim from whoever bumps into her twice (WitchAttack::OnContact
+ *   -> SetVictim, z_witch_allow_change_victim), and that includes special infected: a hunter landing
+ *   on her makes the hunter her victim and she drops the survivor. Her victim lookup only accepts
+ *   survivors, so that can also end in "Lost our victim" and a retreat. A switch to an infected
+ *   player is refused once she has a victim; switching to a survivor who gets in her way still
+ *   happens, and her first victim (the WitchAttack constructor, victim handle still -1) is never
+ *   touched. Linux only for now (needs WitchAttack::SetVictim from server.dll on Windows).
+ *
+ * launch  (l4d_witch_fixes_launch)
+ *   ZombieBotLocomotion::Update sets her velocity to how far she really moved over the update.
+ *   The ground part is capped at run speed, the upward part is not, so when collision handling
+ *   lifts her (onto a common that has just died: its body stays solid for 2-3 s) the lift becomes
+ *   an upward speed of lift / update interval. At nb_update_frequency 0.014 a few units of lift is
+ *   ~700 u/s and she flies 300 units up and lands on her victim (match 833, Dead Before Dawn 3).
+ *   After each of her updates, an upward speed above _launch_max is zeroed unless she is climbing.
+ *   Her position is never touched, so stairs and climbs move exactly as before. Linux only for now
+ *   (needs the velocity offset and the IsClimbingOrJumping slot checked against server.dll).
  */
 #include <sourcemod>
 #include <sdktools>
@@ -59,8 +78,8 @@ public Plugin myinfo =
 {
 	name = "L4D Witch Fixes",
 	author = "Malevolence",
-	description = "Witch movement fixes: corners, straight-line cuts over gaps, failed climbs, map fire",
-	version = "1.1.1",
+	description = "Witch fixes: corners, straight-line cuts over gaps, failed climbs, map fire, infected victims, launches",
+	version = "1.3.0",
 	url = "https://github.com/Volence/riverside-l4d-plugins"
 };
 
@@ -69,7 +88,7 @@ public Plugin myinfo =
 bool g_windows;
 int g_locoOffset;               // Witch -> WitchLocomotion*
 Address g_witchVtable;          // what a WitchLocomotion's vptr holds
-bool g_okCorner, g_okDirect, g_okClimb;
+bool g_okCorner, g_okDirect, g_okClimb, g_okVictim, g_okLaunch;
 
 // corner
 Address g_rc;                   // ZombieBotLocomotion::ResolveCollision
@@ -88,8 +107,19 @@ Address g_ontoVtable;           // the INextBot vtable already checked: every wi
 int g_ontoSlot;
 DynamicHook g_hOnto, g_hUpPre, g_hUpPost;
 
-ConVar g_cvCorner, g_cvDirect, g_cvClimb, g_cvFire, g_cvLog;
-ConVar g_cvDrop, g_cvStep, g_cvMinLen, g_cvBan, g_cvAssist;
+// launch
+DynamicHook g_hLaunch;
+Handle g_sdkClimbing;           // ZombieBotLocomotion::IsClimbingOrJumping
+int g_velOffset;                // locomotion -> m_velocity
+int g_groundOffset;             // locomotion -> m_ground (EHANDLE of what she stands on)
+float g_launchLogAt[2048];
+
+// victim
+DynamicDetour g_dSetVictim;
+int g_victimOffset;             // WitchAttack -> its victim handle (-1 until the constructor sets one)
+
+ConVar g_cvCorner, g_cvDirect, g_cvClimb, g_cvFire, g_cvVictim, g_cvLaunch, g_cvLog;
+ConVar g_cvDrop, g_cvStep, g_cvMinLen, g_cvBan, g_cvAssist, g_cvLaunchMax;
 
 // per witch
 int g_idUpdPre[2048] = { INVALID_HOOK_ID, ... };
@@ -98,6 +128,7 @@ int g_idTrav[2048] = { INVALID_HOOK_ID, ... };
 int g_idOnto[2048] = { INVALID_HOOK_ID, ... };
 int g_idUpPre[2048] = { INVALID_HOOK_ID, ... };
 int g_idUpPost[2048] = { INVALID_HOOK_ID, ... };
+int g_idLaunch[2048] = { INVALID_HOOK_ID, ... };
 Address g_loco[2048], g_bot[2048];
 int g_ban[2048][BANS];
 float g_banUntil[2048][BANS];
@@ -113,11 +144,14 @@ public void OnPluginStart()
 	g_cvDirect = CreateConVar("l4d_witch_fixes_direct", "1", "Direct fix: no straight-line run at her victim over a pit or open air", _, true, 0.0, true, 1.0);
 	g_cvClimb = CreateConVar("l4d_witch_fixes_climb", "1", "Climb fix: no endless climb-and-slide on props and rounded ledges", _, true, 0.0, true, 1.0);
 	g_cvFire = CreateConVar("l4d_witch_fixes_fire", "1", "Fire fix: map fire does not light the witch", _, true, 0.0, true, 1.0);
+	g_cvVictim = CreateConVar("l4d_witch_fixes_victim", "1", "Victim fix: a startled witch never switches her victim to a special infected (survivors in her way still count)", _, true, 0.0, true, 1.0);
+	g_cvLaunch = CreateConVar("l4d_witch_fixes_launch", "1", "Launch fix: collision lifts (a dying common under her) never fling her into the air", _, true, 0.0, true, 1.0);
 	g_cvLog = CreateConVar("l4d_witch_fixes_log", "0", "1: log every change a fix makes (refused shortcut, refused climb, slide)", _, true, 0.0, true, 1.0);
 	g_cvDrop = CreateConVar("l4d_witch_fixes_direct_drop", "48", "Direct: refuse the shortcut if the floor falls this far below the line and the victim", _, true, 18.0);
 	g_cvStep = CreateConVar("l4d_witch_fixes_direct_step", "24", "Direct: spacing of the floor checks along the line", _, true, 8.0);
 	g_cvMinLen = CreateConVar("l4d_witch_fixes_direct_minlen", "96", "Direct: only check lines at least this long (shorter ones are path look-ahead probes)", _, true, 0.0);
 	g_cvBan = CreateConVar("l4d_witch_fixes_climb_ban", "15", "Climb: seconds an object she failed to climb stays off limits to her", _, true, 1.0);
+	g_cvLaunchMax = CreateConVar("l4d_witch_fixes_launch_max", "150", "Launch: upward speed (u/s) above which her upward speed is zeroed when she is not climbing", _, true, 50.0);
 	g_cvAssist = CreateConVar("l4d_witch_fixes_climb_assist", "48", "Climb: furthest she is slid onto a ledge she keeps sliding off (0 = never)", _, true, 0.0, true, 96.0);
 	AutoExecConfig(true, "l4d_witch_fixes");
 
@@ -134,11 +168,13 @@ public void OnPluginStart()
 			g_okCorner = InitCorner(gd);
 			g_okDirect = InitDirect(gd);
 			g_okClimb = InitClimb(gd);
+			g_okLaunch = InitLaunch(gd);
 		}
+		g_okVictim = InitVictim(gd);
 		delete gd;
 	}
-	LogMessage("ready (%s): corner %s, direct %s, climb %s, fire on", g_windows ? "windows" : "linux",
-		g_okCorner ? "on" : "OFF", g_okDirect ? "on" : "OFF", g_okClimb ? "on" : "OFF");
+	LogMessage("ready (%s): corner %s, direct %s, climb %s, fire on, victim %s, launch %s", g_windows ? "windows" : "linux",
+		g_okCorner ? "on" : "OFF", g_okDirect ? "on" : "OFF", g_okClimb ? "on" : "OFF", g_okVictim ? "on" : "OFF", g_okLaunch ? "on" : "OFF");
 
 	int w = -1;
 	while ((w = FindEntityByClassname(w, "witch")) != -1)
@@ -551,6 +587,96 @@ bool FindStandable(int w, const float p[3], const float dir[2], float out[3])
 
 public bool F_NotWitch(int ent, int mask, int w) { return ent != w && (ent == 0 || ent > MaxClients); }
 
+// ---- launch ----
+
+bool InitLaunch(GameData gd)
+{
+	int slot = gd.GetOffset("ILocomotion::Update");
+	int climbSlot = gd.GetOffset("ILocomotion::IsClimbingOrJumping");
+	g_velOffset = gd.GetOffset("ZombieBotLocomotion::m_velocity");
+	g_groundOffset = gd.GetOffset("ZombieBotLocomotion::m_ground");
+	if (climbSlot < 0 || g_velOffset <= 0 || g_groundOffset <= 0)
+	{
+		LogMessage("launch fix OFF: its offsets are not in the gamedata for this platform");
+		return false;
+	}
+	if (!SlotIs(gd, slot, "ZombieBotLocomotion::Update") || !SlotIs(gd, climbSlot, "ZombieBotLocomotion::IsClimbingOrJumping"))
+	{
+		LogError("launch fix OFF: WitchLocomotion slots %d / %d are not Update / IsClimbingOrJumping", slot, climbSlot);
+		return false;
+	}
+	StartPrepSDKCall(SDKCall_Raw);
+	PrepSDKCall_SetVirtual(climbSlot);
+	PrepSDKCall_SetReturnInfo(SDKType_Bool, SDKPass_Plain);
+	g_sdkClimbing = EndPrepSDKCall();
+	if (g_sdkClimbing == null) { LogError("launch fix OFF: could not prepare IsClimbingOrJumping"); return false; }
+	g_hLaunch = new DynamicHook(slot, HookType_Raw, ReturnType_Void, ThisPointer_Address);
+	return true;
+}
+
+public MRESReturn Launch_Post(Address loco)
+{
+	if (!g_cvLaunch.BoolValue) return MRES_Ignored;
+	Address vz = loco + view_as<Address>(g_velOffset + 8);
+	float up = view_as<float>(LoadFromAddress(vz, NumberType_Int32));
+	if (up <= g_cvLaunchMax.FloatValue || SDKCall(g_sdkClimbing, loco)) return MRES_Ignored;
+	StoreToAddress(vz, 0, NumberType_Int32, false);
+	if (g_cvLog.BoolValue)
+	{
+		int w = WitchOfLoco(loco);
+		// one line per launch, not one per update
+		if (w > 0 && GetGameTime() - g_launchLogAt[w] > 1.0)
+		{
+			float p[3]; GetEntPropVector(w, Prop_Send, "m_vecOrigin", p);
+			int g = LoadFromAddress(loco + view_as<Address>(g_groundOffset), NumberType_Int32);
+			int ge = g == -1 ? -1 : EntRefToEntIndex(g | (1 << 31));
+			char cls[32] = "nothing";
+			if (ge == 0) cls = "world";
+			else if (ge > 0) GetEdictClassname(ge, cls, sizeof(cls));
+			LogMessage("launch: witch %d upward speed %.0f zeroed at %.0f %.0f %.0f (standing on %s)", w, up, p[0], p[1], p[2], cls);
+		}
+		if (w > 0) g_launchLogAt[w] = GetGameTime();
+	}
+	return MRES_Ignored;
+}
+
+int WitchOfLoco(Address loco)
+{
+	for (int i = MaxClients + 1; i < 2048; i++)
+		if (g_loco[i] == loco) return i;
+	return -1;
+}
+
+// ---- victim ----
+
+bool InitVictim(GameData gd)
+{
+	g_victimOffset = gd.GetOffset("WitchAttack::m_victim");
+	g_dSetVictim = DynamicDetour.FromConf(gd, "WitchAttack::SetVictim");
+	if (g_victimOffset <= 0 || g_dSetVictim == null)
+	{
+		LogMessage("victim fix OFF: WitchAttack::SetVictim or its victim offset is not in the gamedata for this platform");
+		return false;
+	}
+	if (!g_dSetVictim.Enable(Hook_Pre, SetVictim_Pre))
+	{
+		LogError("victim fix OFF: could not detour WitchAttack::SetVictim");
+		return false;
+	}
+	return true;
+}
+
+public MRESReturn SetVictim_Pre(Address attack, DHookParam params)
+{
+	if (!g_cvVictim.BoolValue || params.IsNull(1)) return MRES_Ignored;
+	// the constructor's call: she has no victim yet, so this is whoever startled her
+	if (LoadFromAddress(attack + view_as<Address>(g_victimOffset), NumberType_Int32) == -1) return MRES_Ignored;
+	int ent = params.Get(1);
+	if (ent < 1 || ent > MaxClients || !IsClientInGame(ent) || GetClientTeam(ent) != 3) return MRES_Ignored;
+	if (g_cvLog.BoolValue) LogMessage("victim: kept her victim instead of switching to infected %N", ent);
+	return MRES_Supercede;
+}
+
 // ---- fire ----
 
 public Action OnWitchDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
@@ -583,7 +709,7 @@ public void F_Hook(int ref)
 
 void HookWitch(int w)
 {
-	if (!g_okCorner && !g_okDirect && !g_okClimb) return;
+	if (!g_okCorner && !g_okDirect && !g_okClimb && !g_okLaunch) return;
 	if (g_loco[w] != Address_Null) return;
 	Address loco = view_as<Address>(LoadFromAddress(GetEntityAddress(w) + view_as<Address>(g_locoOffset), NumberType_Int32));
 	if (loco == Address_Null) { LogError("witch %d has no locomotion yet", w); return; }
@@ -596,6 +722,7 @@ void HookWitch(int w)
 		g_idUpdPost[w] = g_hUpdate.HookRaw(Hook_Post, loco, Update_Post);
 	}
 	if (g_okDirect) g_idTrav[w] = g_hTrav.HookRaw(Hook_Post, loco, Trav_Post);
+	if (g_okLaunch) g_idLaunch[w] = g_hLaunch.HookRaw(Hook_Post, loco, Launch_Post);
 	if (g_okClimb)
 	{
 		Address bot = GetEntityAddress(w) + view_as<Address>(g_botOffset);
@@ -636,6 +763,8 @@ void Unhook(int i)
 	RemoveId(g_idOnto[i]);
 	RemoveId(g_idUpPre[i]);
 	RemoveId(g_idUpPost[i]);
+	RemoveId(g_idLaunch[i]);
+	g_launchLogAt[i] = 0.0;
 	g_loco[i] = g_bot[i] = Address_Null;
 	g_slideStep[i] = 0;
 	g_watchUntil[i] = 0.0;

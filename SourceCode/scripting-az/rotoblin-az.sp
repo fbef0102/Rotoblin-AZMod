@@ -53,7 +53,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.6.4-2026/10/16"								// Version
+#define PLUGIN_VERSION			"8.6.4-2026/10/26"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
@@ -63,7 +63,7 @@
 
 KeyValues g_hMIData = null;
 char g_sCurMap[64];
-bool g_bGasMap, g_bWAIT_FOR_FINALE_map;
+bool g_bGasMap, g_bWAIT_FOR_FINALE_map, g_bGauntletFinaleMap;
 
 Handle 
 	hInfectedAttackSurvivorTeam = null;
@@ -270,6 +270,7 @@ public void _Roto_OnMapStart()
 
 	g_bGasMap = false;
 	g_bWAIT_FOR_FINALE_map = false;
+	g_bGauntletFinaleMap = false;
 
 	MI_KV_Close();
 	MI_KV_Load();
@@ -278,6 +279,7 @@ public void _Roto_OnMapStart()
 	{
 		g_bGasMap = view_as<bool>(g_hMIData.GetNum("GasCan_map", g_bGasMap));
 		g_bWAIT_FOR_FINALE_map = view_as<bool>(g_hMIData.GetNum("WAIT_FOR_FINALE_map", g_bWAIT_FOR_FINALE_map));
+		g_bGauntletFinaleMap = view_as<bool>(g_hMIData.GetNum("GauntletFinale_map", g_bGauntletFinaleMap));
 
 		g_hMIData.GoBack();
 	}
@@ -286,6 +288,8 @@ public void _Roto_OnMapStart()
 	{
 		g_bGasMap = view_as<bool>(g_hMIData.GetNum("GasCan_map", g_bGasMap));
 		g_bWAIT_FOR_FINALE_map = view_as<bool>(g_hMIData.GetNum("WAIT_FOR_FINALE_map", g_bWAIT_FOR_FINALE_map));
+		g_bGauntletFinaleMap = view_as<bool>(g_hMIData.GetNum("GauntletFinale_map", g_bGauntletFinaleMap));
+
 		g_hMIData.GoBack();
 	}
 
