@@ -7,10 +7,11 @@ Description:
     Converts Left 4 Dead 2 VScript map fix files (.nut) into Stripper:Source (.cfg) format for Left 4 Dead 1.
     Fully implements original VScript logic for make_ladder, find_ladder, and clone_model
     by parsing the source map's BSP (Lump 0 & Lump 14).
-    Prepends "anv_mapfixes" to all targetnames. Automatically generates missing team filters
-    with dynamic origin (requesting entity origin Z + 100), places filters and logic_auto at the bottom,
-    combines logic_auto outputs with empty lines between different targetnames, and comments out
-    unresolved ladders.
+    Prepends "anv_mapfixes" to targetnames only when g_UpdateName + is used in EntFire,
+    automatically generates missing team filters, places filters and logic_auto at the bottom,
+    combines logic_auto outputs with empty lines between different targetnames, comments out
+    unresolved ladders, supports con_comment with escape character translation (\t and \n),
+    and converts EntFire into logic_auto OnMapSpawn outputs.
 
 Usage:
     python l4d2_nut_to_l4d1_stripper.py <input_file.nut> <output_file.cfg> <map.bsp>
@@ -175,6 +176,51 @@ def convert_statement_to_stripper(statement):
     statement = statement.strip()
     if not statement or statement.startswith("//"):
         return None, None, [], []
+
+    # 0a. con_comment
+    m = re.match(r'con_comment\s*\((.*?)\)\s*;?', statement, re.DOTALL)
+    if m:
+        raw_arg = m.group(1).strip()
+        if (raw_arg.startswith('"') and raw_arg.endswith('"')) or (raw_arg.startswith("'") and raw_arg.endswith("'")):
+            comment_text = raw_arg[1:-1]
+        else:
+            comment_text = raw_arg
+        
+        comment_text = comment_text.replace(r'\t', '\t').replace(r'\n', '\n')
+        
+        comment_lines = []
+        for line in comment_text.splitlines():
+            comment_lines.append(f"; {line}")
+        
+        block = "\n".join(comment_lines)
+        return None, block, [], []
+
+    # 0b. EntFire
+    m = re.match(r'EntFire\s*\((.*?)\)\s*;?', statement, re.DOTALL)
+    if m:
+        raw_args_str = m.group(1)
+        args = parse_vscript_args(raw_args_str)
+        if len(args) >= 2:
+            raw_target_arg = args[0]
+            action = args[1]
+            value = args[2] if len(args) > 2 and args[2] and args[2] != "null" else ""
+            delay = args[3] if len(args) > 3 and args[3] and args[3] != "null" else "0"
+
+            # Check if args[0] contains g_UpdateName +
+            gm = re.search(r'g_UpdateName\s*\+\s*["\']?(.*?)["\']?$', raw_target_arg)
+            if gm:
+                sub_name = gm.group(1).strip('"\'')
+                target = f"anv_mapfixes{sub_name}"
+            else:
+                gm2 = re.search(r'g_UpdateName\s*\+\s*["\']([^"\']+)["\']', raw_target_arg)
+                if gm2:
+                    sub_name = gm2.group(1)
+                    target = f"anv_mapfixes{sub_name}"
+                else:
+                    target = raw_target_arg.strip('"\'')
+
+            output_line = f'"OnMapSpawn" "{target},{action},{value},{delay},-1"'
+            return "; EntFire", None, [output_line], []
 
     # 1. make_clip
     m = re.match(r'make_clip\s*\((.*?)\)\s*;?', statement, re.DOTALL)
@@ -554,8 +600,11 @@ def main():
                 if current_statement.endswith(";"):
                     comment, block, outputs, extra_blocks = convert_statement_to_stripper(current_statement)
                     if block:
-                        if block.startswith("modify:") or block.startswith("; modify:"):
-                            modify_blocks.append((comment, block))
+                        if block.startswith("modify:") or block.startswith("; modify:") or block.startswith("; "):
+                            if comment is None:
+                                add_blocks_with_comments.append((None, block))
+                            else:
+                                modify_blocks.append((comment, block))
                         else:
                             add_blocks_with_comments.append((comment, block))
                     if outputs:
@@ -576,7 +625,9 @@ def main():
             
             last_comment = None
             for comment, block in add_blocks_with_comments:
-                if comment == "; filter_activator_team":
+                if comment is None:
+                    regular_add_lines.append(block)
+                elif comment == "; filter_activator_team":
                     filter_add_lines.append(comment)
                     filter_add_lines.append(block)
                 else:
