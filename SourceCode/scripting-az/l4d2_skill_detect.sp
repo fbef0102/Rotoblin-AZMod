@@ -314,7 +314,9 @@ float 					g_fLastCarAlarm										= 0.0;				// time when last car alarm went o
 int 					g_iLastCarAlarmReason	[MAXPLAYERS + 1];								// what this survivor did to set the last alarm off
 int 					g_iLastCarAlarmBoomer;													// if a boomer triggered an alarm, remember it
 
-bool 					g_bDeathChargeIgnore[MAXPLAYERS+1][MAXPLAYERS+1];
+bool 					
+	g_bDeathChargeIgnore[MAXPLAYERS+1][MAXPLAYERS+1],
+	g_bSpawnFromGhost[MAXPLAYERS+1];
 
 /*
 	Reports:
@@ -615,28 +617,28 @@ public void OnPluginStart()
 	// cvars: config
 	
 	g_cvarReport 			= CreateConVar( 	"sm_skill_report_enable" ,			"1", 	"Whether to report in chat.", FCVAR_NOTIFY, true, 0.0, true, 1.0 );
-	g_cvarRepSkeet			= CreateConVar( 	"sm_skill_report_skeet", 			"0", 	"Enable hunter/jockey skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepHurtSkeet		= CreateConVar( 	"sm_skill_report_hurtskeet", 		"0", 	"Enable hunter/jockey hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepLevel			= CreateConVar( 	"sm_skill_report_level", 			"0", 	"Enable level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepHurtLevel		= CreateConVar( 	"sm_skill_report_hurtlevel", 		"0", 	"Enable hurt-level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepCrow			= CreateConVar( 	"sm_skill_report_crow", 			"0", 	"Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepDrawCrow		= CreateConVar( 	"sm_skill_report_drawcrow", 		"0", 	"Enable draw-crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepTongueCut		= CreateConVar( 	"sm_skill_report_tonguecut", 		"0", 	"Enable tongue-cut reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepSkeet			= CreateConVar( 	"sm_skill_report_skeet", 			"1", 	"Enable hunter/jockey skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepHurtSkeet		= CreateConVar( 	"sm_skill_report_hurtskeet", 		"1", 	"Enable hunter/jockey hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepLevel			= CreateConVar( 	"sm_skill_report_level", 			"1", 	"Enable level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepHurtLevel		= CreateConVar( 	"sm_skill_report_hurtlevel", 		"1", 	"Enable hurt-level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepCrow			= CreateConVar( 	"sm_skill_report_crow", 			"1", 	"Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepDrawCrow		= CreateConVar( 	"sm_skill_report_drawcrow", 		"1", 	"Enable draw-crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepTongueCut		= CreateConVar( 	"sm_skill_report_tonguecut", 		"1", 	"Enable tongue-cut reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSelfClear		= CreateConVar( 	"sm_skill_report_sc", 				"1", 	"Enable self clear reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSelfClearShove = CreateConVar( 	"sm_skill_report_scs", 				"1", 	"Enable self clear Shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepRockSkeet		= CreateConVar( 	"sm_skill_report_rockskeet", 		"0", 	"Enable rock-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepRockSkeet		= CreateConVar( 	"sm_skill_report_rockskeet", 		"1", 	"Enable rock-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepRockName		= CreateConVar( 	"sm_skill_report_rockname", 		"0", 	"Enable Tank name reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepDeadStop		= CreateConVar( 	"sm_skill_report_deadstop", 		"0", 	"Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepPop			= CreateConVar( 	"sm_skill_report_pop", 				"0", 	"Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepDeadStop		= CreateConVar( 	"sm_skill_report_deadstop", 		"1", 	"Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepPop			= CreateConVar( 	"sm_skill_report_pop", 				"1", 	"Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepShove			= CreateConVar( 	"sm_skill_report_shove", 			"0", 	"Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepHunterDP		= CreateConVar( 	"sm_skill_report_hunterdp", 		"0", 	"Enable hunter DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepHunterDP		= CreateConVar( 	"sm_skill_report_hunterdp", 		"1", 	"Enable hunter DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepJockeyDP		= CreateConVar( 	"sm_skill_report_jockeydp", 		"0", 	"Enable jockey DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepDeathCharge	= CreateConVar( 	"sm_skill_report_deadcharger", 		"0", 	"Enable deadcharger reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepDeathCharge	= CreateConVar( 	"sm_skill_report_deadcharger", 		"1", 	"Enable deadcharger reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepInstanClear	= CreateConVar( 	"sm_skill_report_instanclear", 		"1", 	"Enable instan-clear reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepBhopStreak		= CreateConVar( 	"sm_skill_report_bhop", 			"1", 	"Enable bhop streak reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepCarAlarm		= CreateConVar( 	"sm_skill_report_caralarm", 		"1", 	"Enable car alarm reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepPopStop		= CreateConVar( 	"sm_skill_report_pop_stop", 		"0", 	"Enable pop stop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepVomitPerfect	= CreateConVar( 	"sm_skill_report_vomit_perfect", 	"0", 	"Enable Boomer Perfect Vomit reporting (Vomit 4+ survivors).", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepPopStop		= CreateConVar( 	"sm_skill_report_pop_stop", 		"1", 	"Enable pop stop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepVomitPerfect	= CreateConVar( 	"sm_skill_report_vomit_perfect", 	"1", 	"Enable Boomer Perfect Vomit reporting (Vomit 4+ survivors).", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepTeamSkeet		= CreateConVar( 	"sm_skill_report_teamskeet", 		"0", 	"Hunter/Jockey team skeet assist report.", FCVAR_NONE, true, 0.0, true, 1.0);
 
 	g_hCvarAllowShotgun = CreateConVar(			"sm_skill_skeet_shotgun",			"1", 	"Whether to count/forward shotgun skeets.", FCVAR_NOTIFY, true, 0.0, true, 1.0 );
@@ -1179,7 +1181,7 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 		g_fPouncePosition[client][1] = 0.0;
 		g_fPouncePosition[client][2] = 0.0;
 
-		if(IsFakeClient(client)) ResetHunter(client);
+		if(g_bSpawnFromGhost[client] == false) ResetHunter(client);
 	}
 	else if(g_bL4D2Version && zClass == ZC_JOCKEY)
 	{
@@ -1189,7 +1191,7 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 		g_fPouncePosition[client][1] = 0.0;
 		g_fPouncePosition[client][2] = 0.0;
 
-		if(IsFakeClient(client)) ResetHunter(client);
+		if(g_bSpawnFromGhost[client] == false) ResetHunter(client);
 	}
 	else if(g_bL4D2Version && zClass == ZC_CHARGER)
 	{
@@ -4247,6 +4249,8 @@ public void OnActionCreated(BehaviorAction action, int actor, const char[] name)
 	}
 }
 
+// left4dhooks
+
 bool isCulling = false;
 public Action L4D_OnEnterGhostStatePre(int client)
 {
@@ -4273,7 +4277,24 @@ public void L4D_OnEnterGhostState(int client)
 	}
 }
 
-// left4dhooks
+public Action L4D_OnMaterializeFromGhostPre(int client)
+{
+	if(IsFakeClient(client)) return;
+
+	g_bSpawnFromGhost[client] = true;
+}
+
+public void L4D_OnMaterializeFromGhost(int client)
+{
+	if(IsFakeClient(client)) return;
+
+	g_bSpawnFromGhost[client] = false;
+}
+
+public void L4D_OnMaterializeFromGhost_PostHandled(int client)
+{
+	g_bSpawnFromGhost[client] = false;
+}
 
 public void L4D_OnShovedBySurvivor_Post(int attacker, int victim, const float vecDir[3])
 {

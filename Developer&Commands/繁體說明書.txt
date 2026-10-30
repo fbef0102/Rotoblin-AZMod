@@ -234,7 +234,7 @@
 //Tank pounch and throw rock control
 
 [36] l4d_versus_GhostWarp
-//Infected ghost player can warp to any survivor (use mouse2 or command)
+//Infected ghost player can warp to any survivor (Press E key or use command)
 //!warpto <#|name> (1|Francis, 2|Bill, 3|Zoey, 4|Louis)
 
 [37] l4d2_blind_infected
@@ -1023,7 +1023,7 @@
 
 [255] l4d_hide_viewmodel
 //source: github.com/Volence/riverside-l4d-plugins
-//!noviewmodel hides your own gun and arms without hiding the HUD
+//`!noviewmodel` hides your own first-person gun and arms while the HUD (ammo, items) stays.
 //使用!noviewmodel可以視覺上隱藏自己手上的武器與手臂
 
 [256] l4d_witch_anim_fix

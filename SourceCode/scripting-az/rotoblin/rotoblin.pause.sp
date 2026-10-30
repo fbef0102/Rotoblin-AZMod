@@ -450,8 +450,9 @@ Action ForceUnpause_Cmd(int client, int args)
 
 		g_bIsUnpausing = true; // Set unpausing state
 		CreateTimer(1.0, _P_Unpause_Timer, client, TIMER_REPEAT); // Start unpause countdown
+		UpdatePanel();
 	}
-	UpdatePanel();
+	
 	return Plugin_Handled;
 }
 

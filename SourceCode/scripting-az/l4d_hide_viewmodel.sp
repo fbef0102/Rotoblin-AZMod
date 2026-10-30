@@ -14,6 +14,10 @@
  * Weapons named in l4d_hide_viewmodel_show (pills by default) still draw, so
  * players can see what they are holding; a weapon switch hook updates at once.
  * Infected keep their claws unless l4d_hide_viewmodel_infected is 1.
+ *
+ * !noviewmodel with no argument toggles; 1 hides, 0 shows, and 2 hides only the
+ * main (primary slot) weapon so pistols and everything else still draw. Toggling
+ * back on returns to whichever of 1 or 2 the player used last.
  * We only ever turn the flag back on if we were the ones who turned it off, so
  * the game's own hides (death fall camera) are left alone.
  */
@@ -25,14 +29,19 @@
 #include <clientprefs>
 #include <sdkhooks>
 
-#define PLUGIN_VERSION	"1.2"
+#define PLUGIN_VERSION	"1.3"
 #define TEAM_SURVIVOR	2
+
+#define MODE_OFF	0
+#define MODE_ALL	1	// hide every weapon not on the show list
+#define MODE_MAIN	2	// hide only the primary slot weapon
 
 ConVar g_cvEnable;
 ConVar g_cvShow;
 ConVar g_cvInfected;
 Cookie g_hCookie;
-bool g_bHide[MAXPLAYERS + 1];	// the player asked for !noviewmodel
+int g_iMode[MAXPLAYERS + 1];	// MODE_*, what the player asked for
+int g_iLastOn[MAXPLAYERS + 1];	// the mode a bare toggle turns back on
 bool g_bWeHid[MAXPLAYERS + 1];	// m_bDrawViewmodel is false because we set it
 
 public Plugin myinfo =
@@ -53,10 +62,10 @@ public void OnPluginStart()
 	g_cvInfected = CreateConVar("l4d_hide_viewmodel_infected", "0", "1 = !noviewmodel also hides infected claws", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvEnable.AddChangeHook(OnEnableChanged);
 
-	g_hCookie = new Cookie("hide_viewmodel", "1 = hide your first-person gun and arms", CookieAccess_Protected);
+	g_hCookie = new Cookie("hide_viewmodel", "1 = hide your first-person gun and arms, 2 = hide only your main weapon", CookieAccess_Protected);
 
-	RegConsoleCmd("sm_noviewmodel", Cmd_Toggle, "Toggle hiding your own gun and arms");
-	RegConsoleCmd("sm_viewmodel", Cmd_Toggle, "Toggle hiding your own gun and arms");
+	RegConsoleCmd("sm_noviewmodel", Cmd_Toggle, "Hide your own gun and arms: no argument toggles, 1 hides, 0 shows, 2 hides only your main weapon");
+	RegConsoleCmd("sm_viewmodel", Cmd_Toggle, "Hide your own gun and arms: no argument toggles, 1 hides, 0 shows, 2 hides only your main weapon");
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -81,7 +90,8 @@ public void OnPluginEnd()
 
 public void OnClientConnected(int client)
 {
-	g_bHide[client] = false;
+	g_iMode[client] = MODE_OFF;
+	g_iLastOn[client] = MODE_ALL;
 	g_bWeHid[client] = false;
 }
 
@@ -92,7 +102,7 @@ public void OnClientPutInServer(int client)
 
 void OnWeaponSwitchPost(int client, int weapon)
 {
-	if (g_bHide[client] && g_cvEnable.BoolValue)
+	if (g_iMode[client] != MODE_OFF && g_cvEnable.BoolValue)
 		Update(client);
 }
 
@@ -103,7 +113,12 @@ public void OnClientCookiesCached(int client)
 
 	char value[4];
 	g_hCookie.Get(client, value, sizeof(value));
-	g_bHide[client] = (value[0] == '1');
+	int mode = StringToInt(value);
+	if (mode < MODE_OFF || mode > MODE_MAIN)
+		mode = MODE_OFF;
+	g_iMode[client] = mode;
+	if (mode != MODE_OFF)
+		g_iLastOn[client] = mode;
 }
 
 void OnEnableChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -129,16 +144,44 @@ Action Cmd_Toggle(int client, int args)
 		return Plugin_Handled;
 	}
 
-	g_bHide[client] = !g_bHide[client];
-	if (AreClientCookiesCached(client))
-		g_hCookie.Set(client, g_bHide[client] ? "1" : "0");
+	int mode;
+	if (args >= 1)
+	{
+		char arg[8];
+		GetCmdArg(1, arg, sizeof(arg));
+		mode = StringToInt(arg);
+		if (!IsCharNumeric(arg[0]) || mode < MODE_OFF || mode > MODE_MAIN)
+		{
+			ReplyToCommand(client, "\x04[Viewmodel]\x01 Use \x05!noviewmodel 1\x01 to hide, \x05!noviewmodel 0\x01 to show, \x05!noviewmodel 2\x01 to hide only your main weapon.");
+			return Plugin_Handled;
+		}
+	}
+	else
+	{
+		mode = (g_iMode[client] == MODE_OFF) ? g_iLastOn[client] : MODE_OFF;
+	}
 
-	if (g_bHide[client])
+	g_iMode[client] = mode;
+	if (mode != MODE_OFF)
+		g_iLastOn[client] = mode;
+	if (AreClientCookiesCached(client))
+	{
+		char value[4];
+		IntToString(mode, value, sizeof(value));
+		g_hCookie.Set(client, value);
+	}
+
+	if (mode != MODE_OFF)
 		Update(client);
 	else
 		Restore(client);
-	ReplyToCommand(client, "\x04[Viewmodel]\x01 Your gun and arms are now %s. Type \x05!noviewmodel\x01 to %s.",
-		g_bHide[client] ? "hidden" : "shown", g_bHide[client] ? "show them again" : "hide them");
+
+	if (mode == MODE_ALL)
+		ReplyToCommand(client, "\x04[Viewmodel]\x01 Your gun and arms are now hidden. \x05!noviewmodel 0\x01 shows them, \x05!noviewmodel 2\x01 hides only your main weapon.");
+	else if (mode == MODE_MAIN)
+		ReplyToCommand(client, "\x04[Viewmodel]\x01 Your main weapon is now hidden; pistols, pills and the rest still show. \x05!noviewmodel 0\x01 shows it, \x05!noviewmodel 1\x01 hides everything.");
+	else
+		ReplyToCommand(client, "\x04[Viewmodel]\x01 Your gun and arms are now shown. \x05!noviewmodel 1\x01 hides them, \x05!noviewmodel 2\x01 hides only your main weapon.");
 	return Plugin_Handled;
 }
 
@@ -149,19 +192,22 @@ Action Timer_Enforce(Handle timer)
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (g_bHide[i] && IsClientInGame(i))
+		if (g_iMode[i] != MODE_OFF && IsClientInGame(i))
 			Update(i);
 	}
 	return Plugin_Continue;
 }
 
-// Hide unless the active weapon is on the show list (or the player is infected
-// and infected are not hidden). SetEntProp marks m_Local
-// changed, so only write on a real change.
+// Hide unless the active weapon is on the show list, or the player is on
+// MODE_MAIN and not holding their primary, or the player is infected and
+// infected are not hidden. SetEntProp marks m_Local changed, so only write on a
+// real change.
 void Update(int client)
 {
 	bool draw = GetEntProp(client, Prop_Send, "m_bDrawViewmodel") != 0;
-	if (IsShownWeapon(client) || (GetClientTeam(client) != TEAM_SURVIVOR && !g_cvInfected.BoolValue))
+	if (IsShownWeapon(client)
+		|| (g_iMode[client] == MODE_MAIN && !IsHoldingPrimary(client))
+		|| (GetClientTeam(client) != TEAM_SURVIVOR && !g_cvInfected.BoolValue))
 	{
 		Restore(client);
 	}
@@ -180,6 +226,12 @@ void Restore(int client)
 	g_bWeHid[client] = false;
 	if (GetEntProp(client, Prop_Send, "m_bDrawViewmodel") == 0)
 		SetEntProp(client, Prop_Send, "m_bDrawViewmodel", 1);
+}
+
+bool IsHoldingPrimary(int client)
+{
+	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	return weapon > MaxClients && weapon == GetPlayerWeaponSlot(client, 0);
 }
 
 bool IsShownWeapon(int client)

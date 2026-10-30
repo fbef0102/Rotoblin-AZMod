@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION	"2.1"
+#define PLUGIN_VERSION	"2.1-2026/10/30"
 
 #pragma semicolon 1
 
@@ -11,9 +11,7 @@
 
 #define debug		0
 
-#define PRESENT			"%"
-
-#define NULL					-1
+#define MAXENTITY 2048
 #define BOSSES				2
 #define TANK_PASS_TIME		(g_fCvarTankSelectTime + 1.0)
 
@@ -40,9 +38,10 @@ public Plugin:myinfo =
 }
 
 static		Handle:g_hTankHealth, Handle:g_hVsBonusHealth, Handle:g_hDifficulty, Handle:g_hGameMode, bool:g_bCvarSkipBots, g_iCvarHealth[BOSSES],
-			g_iDamage[MAXPLAYERS+1][MAXPLAYERS+1][BOSSES], g_iWitchIndex[MAXPLAYERS+1], g_iTotalDamage[MAXPLAYERS+1][BOSSES],
+			g_iDamageToTank[MAXPLAYERS+1][MAXPLAYERS+1], g_iTotalDamageToTank[MAXPLAYERS+1],
+			g_iWitchIndex[MAXENTITY+1], g_iDamageToWitch[MAXPLAYERS+1][MAXENTITY+1], g_iTotalDamageToWitch[MAXENTITY+1],
 			bool:g_bRoundEnd, g_iLastKnownTank, bool:g_bTankInGame, Handle:g_hTrine, g_iCvarFlags, g_iCvarPrivateFlags,
-			bool:g_bNoHrCrown[MAXPLAYERS+1], g_iWitchCount, bool:g_bCvarRunAway, g_iWitchRef[MAXPLAYERS+1];
+			bool:g_bNoHrCrown[MAXPLAYERS+1], g_iWitchCount;
 new control_time;
 new                     g_iLastTankHealth           = 0;                // Used to award the killing blow the exact right amount of damage
 new bool:g_bIsTankAlive;
@@ -75,16 +74,13 @@ public OnPluginStart()
 	new Handle:hCvarSurvLimit			= FindConVar("survivor_limit");
 
 	new Handle:hCvarFlags		= CreateConVar("prodmg_announce_flags",		"3", "What stats get printed to chat. Flags: 0=disabled, 1=witch, 2=tank, 3=all", CVAR_FLAGS, true, 0.0, true, 3.0);
-	new Handle:hCvarSkipBots	= CreateConVar("prodmg_ignore_bots",			"0", "If set, bots stats won't get printed to chat", CVAR_FLAGS, true, 0.0, true, 1.0);
+	new Handle:hCvarSkipBots	= CreateConVar("prodmg_ignore_bots",		"0", "If set, bots stats won't get printed to chat", CVAR_FLAGS, true, 0.0, true, 1.0);
 	new Handle:hCvarPrivate		= CreateConVar("prodmg_announce_private",	"0", "If set, stats wont print to public chat. Flags (add together): 0=disabled, 1=witch, 2=tank, 3=all", CVAR_FLAGS, true, 0.0, true, 3.0);
-	new Handle:hCvarRunAway		= CreateConVar("prodmg_failed_crown",		"1", "If set, witch stats at round end won't print if she isn't killed", CVAR_FLAGS, true, 0.0, true, 1.0);
-
 	g_iCvarHealth[TANK]	= RoundFloat(GetConVarFloat(g_hTankHealth) * (IsVersusGameMode() ? GetConVarFloat(g_hVsBonusHealth) : GetCoopMultiplie()));
 	g_iCvarHealth[WITCH]	= GetConVarInt(hCvarWitchHealth);
 	g_bCvarSurvLimit			= GetConVarInt(hCvarSurvLimit);
 	g_iCvarFlags				= GetConVarInt(hCvarFlags);
 	g_bCvarSkipBots			= GetConVarBool(hCvarSkipBots);
-	g_bCvarRunAway			= GetConVarBool(hCvarRunAway);
 
 	HookConVarChange(g_hDifficulty,			OnConvarChange_TankHealth);
 	HookConVarChange(g_hTankHealth,			OnConvarChange_TankHealth);
@@ -95,7 +91,6 @@ public OnPluginStart()
 	HookConVarChange(hCvarFlags,				OnConvarChange_Flags);
 	HookConVarChange(hCvarSkipBots,			OnConvarChange_SkipBots);
 	HookConVarChange(hCvarPrivate,			OnConvarChange_Private);
-	HookConVarChange(hCvarRunAway,			OnConvarChange_RunAway);
 
 	HookEvent("round_start",			PD_ev_RoundStart,		EventHookMode_PostNoCopy);//每回合開始就發生的event
 	HookEvent("round_end",			PD_ev_RoundEnd,			EventHookMode_PostNoCopy);
@@ -143,18 +138,14 @@ public Action:PD_ev_RoundStart(Handle:event, const String:name[], bool:dontBroad
 	control_time = 1;
 	ClearTrie(g_hTrine);
 
-	for (new i; i <= MAXPLAYERS; i++){
+	for (new i; i <= MaxClients; i++){
 
-		for (new elem; elem <= MAXPLAYERS; elem++){
+		for (new elem; elem <= MaxClients; elem++){
 
-			g_iDamage[i][elem][TANK] = 0;
-			g_iDamage[i][elem][WITCH] = 0;
+			g_iDamageToTank[i][elem] = 0;
 		}
 
-		g_iTotalDamage[i][TANK] = 0;
-		g_iTotalDamage[i][WITCH] = 0;
-		g_iWitchRef[i] = INVALID_ENT_REFERENCE;
-		g_iWitchIndex[i] = 0;
+		g_iTotalDamageToTank[i] = 0;
 		g_bNoHrCrown[i] = false;
 	}
 }
@@ -172,7 +163,7 @@ public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 	if (g_iCvarFlags & (1 << _:TANK)){
 
 		new iTank = IsTankInGame();
-		if (iTank && !g_iTotalDamage[iTank][TANK]){
+		if (iTank && !g_iTotalDamageToTank[iTank]){
 
 			GetClientName(iTank, sName, 32);
 			if(g_bIsTankAlive&& IsClientAndInGame(iTank)&& GetClientTeam(iTank) == 3 && IsPlayerTank(iTank) ) 
@@ -185,22 +176,29 @@ public Action:PD_ev_RoundEnd(Handle:event, const String:name[], bool:dontBroadca
 
 	for (new i; i <= MaxClients; i++){
 
-		if (g_iTotalDamage[i][TANK]){
+		if (g_iTotalDamageToTank[i]){
 			if( g_bIsTankAlive&& IsClientAndInGame(i)&& GetClientTeam(i) == 3 && IsPlayerTank(i) ){
 				CPrintToChatAll("{green}[TS] %t","Tank health remaining",  g_iLastTankHealth);
 				
 				PrintDamage(i, 1, false,0);
 			}
 		}
-		if (g_iTotalDamage[i][WITCH]){
-
-			if (g_bCvarRunAway && g_iWitchRef[i] != INVALID_ENT_REFERENCE && EntRefToEntIndex(g_iWitchRef[i]) == INVALID_ENT_REFERENCE) continue;
-
-			PrintDamage(i, 0, false,5);
-		}
 	}
 	g_iLastTankHealth = 0;
 	g_TankOtherDamage = 0;
+
+	int iWitch = -1, index;
+	while((iWitch = FindEntityByClassname(iWitch, "witch")) != -1)
+	{
+		if(!IsValidEntity(iWitch)) continue;
+
+		index = GetWitchIndex(iWitch);
+
+		if (g_iTotalDamageToWitch[index])
+		{
+			PrintDamage(index, 0, false, 5);
+		}
+	}
 }
 // Tank
 public OnClientPutInServer(client)
@@ -251,6 +249,7 @@ public Action:PD_ev_TankSpawn(Handle:event, const String:name[], bool:dontBroadc
 	if (!g_bIsTankAlive)
 	{
 		g_TankOtherDamage = 0;
+		g_iLastKnownTank = 0;  // riverside2: a fresh tank, not a pass
 		g_bIsTankAlive = true;
 		CPrintToChatAll("{default}[{olive}TS{default}] %t","Tank has spawned!");
 		EmitSoundToAll("ui/pickup_secret01.wav");
@@ -289,7 +288,7 @@ public Action:PD_ev_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 
 	if (IsClientAndInGame(victim) && IsClientAndInGame(attacker) && GetClientTeam(attacker) == 2  && GetClientTeam(victim) == 3){
 
-		if (!IsPlayerTank(victim) || g_iTotalDamage[victim][TANK] == g_iCvarHealth[TANK]) return;
+		if (!IsPlayerTank(victim) || g_iTotalDamageToTank[victim]== g_iCvarHealth[TANK]) return;
 		
 		if (g_iLastKnownTank)
 			CloneStats(victim,g_iLastKnownTank);
@@ -297,11 +296,11 @@ public Action:PD_ev_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 		new iDamage = GetEventInt(event, "dmg_health");
 		g_iLastTankHealth = GetEventInt(event,"health");
 
-		g_iDamage[attacker][victim][TANK] += iDamage;
-		g_iTotalDamage[victim][TANK] += iDamage;
+		g_iDamageToTank[attacker][victim] += iDamage;
+		g_iTotalDamageToTank[victim] += iDamage;
 		
 		#if debug
-			LogMessage("#1. total %d dmg %d (%N, health %d)", g_iTotalDamage[victim][TANK], iDamage, victim, GetEventInt(event, "health"));
+			LogMessage("#1. total %d dmg %d (%N, health %d)", g_iTotalDamageToTank[victim], iDamage, victim, GetEventInt(event, "health"));
 		#endif
 
 		CorrectDmg(attacker, victim, 1);
@@ -318,13 +317,17 @@ public Action:PD_ev_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 		if(type == 131072){g_iLastTankHealth = 0 ;return;}
 		g_TankOtherDamage += iDamage;
 		g_iLastTankHealth = GetEventInt(event,"health");
-		if (g_iTotalDamage[victim][1] + g_TankOtherDamage > g_iCvarHealth[1]){
-			new iDiff = g_iTotalDamage[victim][1] + g_TankOtherDamage - g_iCvarHealth[1];
+		if (g_iTotalDamageToTank[victim] + g_TankOtherDamage > g_iCvarHealth[1]){
+			new iDiff = g_iTotalDamageToTank[victim] + g_TankOtherDamage - g_iCvarHealth[1];
 			g_TankOtherDamage -= iDiff;
 		}
 	}
 }
 
+// riverside2: the frustrated tank takes hits during the 3 s pass lottery, and each hit called this with
+// client == previoustankclient, which used to clear g_iLastKnownTank, so the new holder never inherited the
+// damage (match 877: 2185 of 8000 dropped, percentages summed to 71%). Keep the link until a real hand-off,
+// and add instead of overwrite so a repeated clone (the duplicate tank_frustrated) cannot wipe a total.
 CloneStats(client,previoustankclient)
 {
 	if (client && client != previoustankclient){
@@ -335,22 +338,22 @@ CloneStats(client,previoustankclient)
 
 		for (new i; i <= MaxClients; i++){
 
-			if (g_iDamage[i][previoustankclient][TANK]){
+			if (g_iDamageToTank[i][previoustankclient]){
 
-				g_iDamage[i][client][TANK] = g_iDamage[i][previoustankclient][TANK];
-				g_iDamage[i][previoustankclient][TANK] = 0;
+				g_iDamageToTank[i][client] += g_iDamageToTank[i][previoustankclient];
+				g_iDamageToTank[i][previoustankclient] = 0;
 			}
 		}
 
-		g_iTotalDamage[client][TANK] = g_iTotalDamage[previoustankclient][TANK];
-		g_iTotalDamage[previoustankclient][TANK] = 0;
+		g_iTotalDamageToTank[client] += g_iTotalDamageToTank[previoustankclient];
+		g_iTotalDamageToTank[previoustankclient] = 0;
+
+		g_iLastKnownTank = 0;
 	}
 	#if debug
 	else
 		LogMessage("don't clone tank stats %N -> %N", previoustankclient, client);
 	#endif
-
-	g_iLastKnownTank = 0;
 }
 
 public void OnClientDisconnect(int client)
@@ -360,7 +363,7 @@ public void OnClientDisconnect(int client)
 
 	if (!g_bRoundEnd && g_bTankInGame && g_iCvarFlags & (1 << _:TANK))
 	{
-		if (g_iTotalDamage[client][TANK])
+		if (g_iTotalDamageToTank[client])
 		{
 			if(g_bIsTankAlive){
 				PrintDamage(client, 1);
@@ -381,7 +384,7 @@ public Action:PD_ev_EntityKilled(Handle:event, const String:name[], bool:dontBro
 	decl client;
 	if (!g_bRoundEnd && g_bTankInGame && g_iCvarFlags & (1 << _:TANK) && IsPlayerTank((client = GetEventInt(event, "entindex_killed"))))
 	{
-		if (g_iTotalDamage[client][TANK])
+		if (g_iTotalDamageToTank[client])
 		{
 			CreateTimer(0.1, PD_t_FindAnyTank2, client, TIMER_FLAG_NO_MAPCHANGE);
 		}
@@ -434,7 +437,7 @@ public Action:PD_ev_PlayerBotReplace(Handle:event, const String:name[], bool:don
 	
 	if (StrEqual(name, "player_bot_replace")) // fake client takes over bot
 	{
-		if(IsClientInGame(bot) && IsFakeClient(bot) && GetClientTeam(bot) == 3 && IsPlayerTank(bot) && g_iTotalDamage[player][TANK])
+		if(IsClientInGame(bot) && IsFakeClient(bot) && GetClientTeam(bot) == 3 && IsPlayerTank(bot) && g_iTotalDamageToTank[player])
 		{
 			CloneStats(bot,player);
 		}
@@ -486,7 +489,7 @@ public Action:CheckForAITank(Handle:timer,any:client)//passing to AI
 				CPrintToChatAll("{green}[TS] Tank ({red}%N{default}) %t", client,"Tank got lost and lost control.");
 				CPrintToChatAll("{green}[TS] %t","l4d_tank_witch_damage_announce_spawnAnnouncer1", g_iLastTankHealth);
 	
-				if (g_iTotalDamage[client][TANK])//人類沒有造成任何傷害就不印
+				if (g_iTotalDamageToTank[client])//人類沒有造成任何傷害就不印
 					PrintDamage(client, 1, false);
 				g_bIsTankAlive = false;
 				g_TankOtherDamage = 0;
@@ -501,20 +504,24 @@ public Action:CheckForAITank(Handle:timer,any:client)//passing to AI
 public Action:PD_ev_WitchSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if(b_IsSecondWitch == false) CPrintToChatAll("[{olive}TS{default}] %t","Witch has spawned!");
-	CreateTimer(0.5, PD_t_EnumThisWitch, EntIndexToEntRef(GetEventInt(event, "witchid")), TIMER_FLAG_NO_MAPCHANGE);
+	int witch = GetEventInt(event, "witchid");
+	g_iWitchIndex[witch] = 0;
+	for(int i = 0; i <= MaxClients; i++)
+	{
+		g_iDamageToWitch[i][witch] = 0;
+	}
+	g_iTotalDamageToWitch[witch] = 0;
+	CreateTimer(0.5, PD_t_EnumThisWitch, EntIndexToEntRef(witch), TIMER_FLAG_NO_MAPCHANGE);
 	b_IsSecondWitch = true;
 }
 
 public Action:PD_t_EnumThisWitch(Handle:timer, any:entity)
 {
-	new ref = entity;
-	if ((entity = EntRefToEntIndex(entity)) != INVALID_ENT_REFERENCE && g_iWitchCount < MAXPLAYERS){
-
-		g_iWitchRef[g_iWitchCount] = ref;
-
-		decl String:sWitchName[8];
-		FormatEx(sWitchName, 8, "%d", g_iWitchCount++);
-		DispatchKeyValue(entity, "targetname", sWitchName);
+	entity = EntRefToEntIndex(entity);
+	if (entity != INVALID_ENT_REFERENCE)
+	{
+		g_iWitchCount++;
+		g_iWitchIndex[entity] = g_iWitchCount;
 	}
 }
 
@@ -528,20 +535,20 @@ public Action:PD_ev_InfectedHurt(Handle:event, const String:name[], bool:dontBro
 	if (IsWitch((iWitchEnt = GetEventInt(event, "entityid"))) && IsClientAndInGame(attacker) && GetClientTeam(attacker) == 2){
 
 		new iIndex = GetWitchIndex(iWitchEnt);
-		if (iIndex == NULL) return;
+		if (iIndex == 0) return;
 
 		if (!g_bNoHrCrown[iIndex] && GetEventInt(event, "amount") != 90)
 			g_bNoHrCrown[iIndex] = true;
 
-		if (g_iTotalDamage[iIndex][WITCH] == g_iCvarHealth[WITCH]) return;
+		if (g_iTotalDamageToWitch[iIndex] == g_iCvarHealth[WITCH]) return;
 
 		new iDamage = GetEventInt(event, "amount");
 
-		g_iDamage[attacker][iIndex][WITCH] += iDamage;
-		g_iTotalDamage[iIndex][WITCH] += iDamage;
+		g_iDamageToWitch[attacker][iIndex] += iDamage;
+		g_iTotalDamageToWitch[iIndex] += iDamage;
 
 		#if debug
-			LogMessage("%d (Witch: indx %d, elem %d)", g_iTotalDamage[iIndex][WITCH], iWitchEnt, iIndex);
+			LogMessage("%d (Witch: indx %d, elem %d)", g_iTotalDamageToWitch[iIndex], iWitchEnt, iIndex);
 		#endif
 
 		CorrectDmg(attacker, iIndex, 0);
@@ -550,25 +557,38 @@ public Action:PD_ev_InfectedHurt(Handle:event, const String:name[], bool:dontBro
 
 GetWitchIndex(entity)
 {
-	decl String:sWitchName[8];
-	GetEntPropString(entity, Prop_Data, "m_iName", sWitchName, 8);
-	if (strlen(sWitchName) != 1) return -1;
-
-	return StringToInt(sWitchName);
+	return g_iWitchIndex[entity];
 }
 // ---
 
 CorrectDmg(attacker, iIndex, int TankorWitch)
 {
-	if (g_iTotalDamage[iIndex][TankorWitch] + g_TankOtherDamage> g_iCvarHealth[TankorWitch]){
-		new iDiff = g_iTotalDamage[iIndex][TankorWitch] + g_TankOtherDamage - g_iCvarHealth[TankorWitch];
+	if(TankorWitch == _:WITCH)
+	{
+		if (g_iTotalDamageToWitch[iIndex] > g_iCvarHealth[TankorWitch])
+		{
+			int iDiff = g_iTotalDamageToWitch[iIndex] - g_iCvarHealth[TankorWitch];
 
-		#if debug
-			LogMessage("dmg corrected %d. total dmg %d", iDiff, g_iTotalDamage[iIndex][bTankBoss]);
-		#endif
+			#if debug
+				LogMessage("dmg corrected %d. total dmg %d", iDiff, g_iTotalDamageToWitch[iIndex]);
+			#endif
 
-		g_iDamage[attacker][iIndex][TankorWitch] -= iDiff;
-		g_iTotalDamage[iIndex][TankorWitch] -= iDiff;
+			g_iDamageToWitch[attacker][iIndex] -= iDiff;
+			g_iTotalDamageToWitch[iIndex] -= iDiff;
+		}
+	}
+	else
+	{
+		if (g_iTotalDamageToTank[iIndex] + g_TankOtherDamage> g_iCvarHealth[TankorWitch]){
+			new iDiff = g_iTotalDamageToTank[iIndex] + g_TankOtherDamage - g_iCvarHealth[TankorWitch];
+
+			#if debug
+				LogMessage("dmg corrected %d. total dmg %d", iDiff, g_iTotalDamageToTank[iIndex]);
+			#endif
+
+			g_iDamageToTank[attacker][iIndex] -= iDiff;
+			g_iTotalDamageToTank[iIndex] -= iDiff;
+		}
 	}
 }
 
@@ -578,7 +598,7 @@ public Action:PD_ev_WitchKilled(Handle:event, const String:name[], bool:dontBroa
 
 	new iIndex = GetWitchIndex(GetEventInt(event, "witchid"));
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (iIndex == NULL || !g_iTotalDamage[iIndex][WITCH]) return;
+	if (iIndex == 0 || !g_iTotalDamageToWitch[iIndex]) return;
 
 	PrintDamage(iIndex, 0, _, GetEventInt(event, "oneshot"), client);
 	g_bNoHrCrown[iIndex] = false;
@@ -597,25 +617,47 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 			istankAI =true;
 	}
 	
-	decl iClient[MAXPLAYERS+1][BOSSES];
+	decl iClient[MaxClients+1][BOSSES];
 	new iSurvivors;
-		
-	for (new i = 1; i <= MaxClients; i++){
 
-		if (!g_iDamage[i][iIndex][TankorWitch]) continue;
+	if (TankorWitch == _:WITCH)
+	{
+		for (new i = 1; i <= MaxClients; i++){
 
-		if (TankorWitch == _:WITCH && IsClientInGame(i) || TankorWitch == _:TANK){
+			if (!g_iDamageToWitch[i][iIndex]) continue;
 
-			if ((g_bCvarSkipBots && IsClientInGame(i) && !IsFakeClient(i)) || !g_bCvarSkipBots){
+			if (IsClientInGame(i))
+			{
+				if ((g_bCvarSkipBots && IsClientInGame(i) && !IsFakeClient(i)) || !g_bCvarSkipBots)
+				{
+					iClient[iSurvivors][INDEX] = i;
+					iClient[iSurvivors][DMG] = g_iDamageToWitch[i][iIndex];
+					iSurvivors++;
+				}
+			}
+			// reset var
+			g_iDamageToWitch[i][iIndex] = 0;
+		}
+	}
+	else
+	{
+		for (new i = 1; i <= MaxClients; i++){
 
+			if (!g_iDamageToTank[i][iIndex]) continue;
+
+			if ((g_bCvarSkipBots && IsClientInGame(i) && !IsFakeClient(i)) || !g_bCvarSkipBots)
+			{
 				iClient[iSurvivors][INDEX] = i;
-				iClient[iSurvivors][DMG] = g_iDamage[i][iIndex][TankorWitch];
+				iClient[iSurvivors][DMG] = g_iDamageToTank[i][iIndex];
 				iSurvivors++;
 			}
+
+			// reset var
+			g_iDamageToTank[i][iIndex] = 0;
 		}
-		// reset var
-		g_iDamage[i][iIndex][TankorWitch] = 0;
 	}
+		
+
 	if (!iSurvivors) return;
 
 	if (iSurvivors == 1 && !bLoose){
@@ -672,8 +714,8 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 			else
 				CPrintToChatAll("{olive}[TS] %t","Damage dealt to Witch");
 
-		if (TankorWitch == _:TANK){
-
+		if (TankorWitch == _:TANK)
+		{
 			decl String:sName[48], client, bool:bInGame;
 
 			for (new i; i < iSurvivors; i++){
@@ -695,7 +737,7 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 				if (g_iCvarPrivateFlags & (1 << _:TANK)){
 
 					if (bInGame)
-						CPrintToChat(client, "{olive}[TS] %T","l4d_tank_witch_damage_announce_spawnAnnouncer5",client, g_iTotalDamage[iIndex][TankorWitch], iClient[i][DMG], RoundToNearest((float(iClient[i][DMG]) / fTotalDamage) * 100.0));
+						CPrintToChat(client, "{olive}[TS] %T","l4d_tank_witch_damage_announce_spawnAnnouncer5",client, g_iTotalDamageToTank[iIndex], iClient[i][DMG], RoundToNearest((float(iClient[i][DMG]) / fTotalDamage) * 100.0));
 				}
 				else{ // public
 					CPrintToChatAll(" {olive}%d{default} [{green}%.0f%%{default}] - {blue}%s", iClient[i][DMG], (float(iClient[i][DMG]) / fTotalDamage) * 100.0,sName);
@@ -711,7 +753,7 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 			for (new i; i < iSurvivors; i++){
 				if (g_iCvarPrivateFlags & (1 << _:WITCH))
 				{
-					CPrintToChat(iClient[i][INDEX], "{olive}[TS] %T","l4d_tank_witch_damage_announce_spawnAnnouncer6", iClient[i][INDEX],g_iTotalDamage[iIndex][TankorWitch], i + 1, iClient[i][DMG], RoundToNearest((float(iClient[i][DMG]) / fTotalDamage) * 100.0));
+					CPrintToChat(iClient[i][INDEX], "{olive}[TS] %T","l4d_tank_witch_damage_announce_spawnAnnouncer6", iClient[i][INDEX],g_iTotalDamageToWitch[iIndex], i + 1, iClient[i][DMG], RoundToNearest((float(iClient[i][DMG]) / fTotalDamage) * 100.0));
 				}
 				else
 				{
@@ -721,8 +763,8 @@ void PrintDamage(int iIndex, int TankorWitch, bool bLoose = false, int iCrownTec
 		}
 	}
 
-	// reset var
-	g_iTotalDamage[iIndex][TankorWitch] = 0;
+	if (TankorWitch == _:WITCH) g_iTotalDamageToWitch[iIndex] = 0;
+	else g_iTotalDamageToTank[iIndex] = 0;
 }
 
 public SortFuncByDamageDesc(x[], y[], const array[][], Handle:hndl)
@@ -732,7 +774,7 @@ public SortFuncByDamageDesc(x[], y[], const array[][], Handle:hndl)
 	else if (x[1] == y[1])
 		return 0;
 
-	return NULL;
+	return -1;
 }
 
 Float:GetCoopMultiplie()
@@ -790,13 +832,6 @@ public OnConvarChange_Private(Handle:convar, const String:oldValue[], const Stri
 	if (!StrEqual(oldValue, newValue))
 		g_iCvarPrivateFlags = GetConVarInt(convar);
 }
-
-public OnConvarChange_RunAway(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	if (!StrEqual(oldValue, newValue))
-		g_bCvarRunAway = GetConVarBool(convar);
-}
-
 public Action:PD_ev_Finale_Start(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	resuce_start = true;

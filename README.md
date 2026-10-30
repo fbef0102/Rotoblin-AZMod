@@ -390,12 +390,12 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Improvement AI Cvars, make AI Smart
     * Despawning a special infected restores 50% of missing health
     * Allows ghost infected to warp to survivors
-      * Command: ```sm_warpto [#|name]```
+      * Command: `sm_warpto [#|name]`
         - *1*: **Francis**
         - *2*: **Bill**
         - *3*: **Zoey**
         - *4*: **Louis**
-      * Buttons: `RELOAD`
+      * Buttons: `Use` (E)
       * Buttons: `MOUSE2`
         - Disabled by default, ```sm_warpm2``` to enable it individually
     * No gunfire slowdown and shove slowdown
@@ -690,7 +690,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Blocks ledge hangs over drops that would not hurt
   * Stops survivors dying to "fell too far" from short drops after a tank punch, fall damage is taken from the speed gravity could give.
   * Fixed an issue where Survivors get launched into the sky when pulled while stumbled.
-  * Type `!noviewmodel` to hides your own gun and arms without hiding the HUD
+  * Type `!noviewmodel` to hide your own first-person gun and arms while the HUD (ammo, items) stays.
     * `!noviewmodel 0` shows them again.
     * `!noviewmodel 1` hides gun and arms.
     * `!noviewmodel 2` hides only main weapon. Pistols, pills and everything else still show.

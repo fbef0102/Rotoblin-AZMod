@@ -29,8 +29,9 @@ enum
 	eAllowCommand		= (1 << 0),
 	eAllowButtonM2		= (1 << 1),
 	eAllowButtonReload	= (1 << 2),
+	eAllowButtonUse		= (1 << 3),
 
-	eAllowAll			= (1 << 3) - 1
+	eAllowAll			= (1 << 4) - 1
 };
 
 int
@@ -53,7 +54,8 @@ int
 bool
 	g_bCvarGhostWarpFlagAllowCommand,
 	g_bCvarGhostWarpFlagAllowM2,
-	g_bCvarGhostWarpFlagAllowReload;
+	g_bCvarGhostWarpFlagAllowReload,
+	g_bCvarGhostWarpFlagAllowUSE;
 
 float 
 	g_fCvarGhostWarpDelay;
@@ -76,7 +78,7 @@ public Plugin myinfo =
 	name = "Infected Warp",
 	author = "Confogl Team, CanadaRox, A1m`, HarryPotter",
 	description = "Allows infected to warp to survivors",
-	version = "2.5",
+	version = "2.4.2h-2026/10/29",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
@@ -101,8 +103,8 @@ public void OnPluginStart()
 
 	g_hCvarGhostWarpFlag = CreateConVar( \
 		"l4d_ghost_warp_flag", \
-		"5", \
-		"Enable|Disable ghost warp. 0 - disable, 1 - enable warp via command 'sm_warpto', 2 - enable warp via button 'IN_ATTACK2', 4 - enable warp via button 'IN_Reload', 7 - enable all.", \
+		"9", \
+		"Enable|Disable ghost warp. 0=disable, 1=enable warp via command 'sm_warpto', 2=enable warp via button 'IN_ATTACK2', 4=enable warp via button 'IN_Reload', 8=enable warp via button 'IN_USE'  15 - enable all.", \
 		_, true, 0.0, true, float(eAllowAll)
 	);
 
@@ -152,6 +154,7 @@ void GetCvars()
 	g_bCvarGhostWarpFlagAllowCommand = (g_hCvarGhostWarpFlag.IntValue & eAllowCommand) > 0;
 	g_bCvarGhostWarpFlagAllowM2 = (g_hCvarGhostWarpFlag.IntValue & eAllowButtonM2) > 0;
 	g_bCvarGhostWarpFlagAllowReload = (g_hCvarGhostWarpFlag.IntValue & eAllowButtonReload) > 0;
+	g_bCvarGhostWarpFlagAllowUSE = (g_hCvarGhostWarpFlag.IntValue & eAllowButtonUse) > 0;
 
 	g_fCvarGhostWarpDelay = g_hCvarGhostWarpDelay.FloatValue;
 	g_iCvarSurvivorLimit = g_hCvarSurvivorLimit.IntValue;
@@ -357,7 +360,9 @@ void Hook_OnPostThinkPost(int iClient)
 
 	int iPressButtons = GetEntProp(iClient, Prop_Data, "m_afButtonPressed");
 
-	if( (g_bEnableGhostM2Warp[iClient] && iPressButtons & IN_ATTACK2) || (g_bCvarGhostWarpFlagAllowReload && iPressButtons & IN_RELOAD) )
+	if( (g_bEnableGhostM2Warp[iClient] && iPressButtons & IN_ATTACK2) 
+		|| (g_bCvarGhostWarpFlagAllowReload && iPressButtons & IN_RELOAD)
+		|| (g_bCvarGhostWarpFlagAllowUSE && iPressButtons & IN_USE) )
 	{
 		// For some reason, the game resets button 'IN_ATTACK2' for infected ghosts at some point.
 		// So we need spam protection.
