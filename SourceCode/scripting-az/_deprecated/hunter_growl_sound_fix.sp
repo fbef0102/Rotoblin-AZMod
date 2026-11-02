@@ -1,3 +1,5 @@
+// deprecated, use l4d2_voice_mechanics_fix
+
 #define PLUGIN_VERSION "1.2"
 
 #include <sourcemod>
