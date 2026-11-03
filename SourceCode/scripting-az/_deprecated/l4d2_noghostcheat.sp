@@ -1,3 +1,5 @@
+// We're still testing this until people stop reporting that they can't see spawned SI.
+
 #pragma semicolon 1
 #pragma newdecls required
 
@@ -7,9 +9,9 @@
 public Plugin myinfo =
 {
 	name = "L4D2 Ghost-Cheat Preventer",
-	author = "Sir",
+	author = "Sir, Harry",
 	description = "Don't broadcast Infected entities to Survivors while in ghost mode, disabling them from hooking onto the entities with 3rd party programs.",
-	version = "1.1",
+	version = "1.1h-2026/11/3",
 	url = "https://github.com/SirPlease/L4D2-Competitive-Rework"
 };
 
@@ -17,7 +19,7 @@ public Plugin myinfo =
 static const char g_sGhostEvents[][] =
 {
 	"player_left_checkpoint",
-	"weapon_spawn_visible",
+	//"weapon_spawn_visible", "weapon_spawn_visible" does not exist in l4d1
 	"entity_visible"
 };
 

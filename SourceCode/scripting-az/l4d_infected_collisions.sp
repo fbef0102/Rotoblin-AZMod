@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <dhooks>
-#include <collisionhook>
 #include <sdktools>
 #include <@Forgetest/gamedatawrapper>
 

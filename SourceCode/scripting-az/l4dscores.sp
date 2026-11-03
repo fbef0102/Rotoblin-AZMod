@@ -2,8 +2,9 @@
 #include <sdktools>
 #include <multicolors>
 #include <left4dhooks>
+#include <dhooks>
 #include <l4d_lib>
-#define SCORE_VERSION "8.5.9"
+#define SCORE_VERSION "8.5.9-2026/11/3"
 
 #define SCORE_DEBUG 0
 #define SCORE_DEBUG_LOG 0
@@ -28,7 +29,7 @@
 #define L4D_TEAM_SPECTATE 1
 #define L4D_TEAM_MAX_CLIENTS 4
 #define L4D_TEAM_NAME(%1) (%1 == 2 ? "Survivors" : (%1 == 3 ? "Infected" : (%1 == 1 ? "Spectators" : "Unknown")))
-#define CONFIG_MAPINFO		"data/mapinfo.txt" //真正修改遊戲難度的在left4dead\missions
+#define CONFIG_MAPINFO		"data/mapinfo.txt" //用dhooks修改"VersusModifier"
 
 /*
 TODO:
@@ -97,7 +98,7 @@ new Float:Round1ScorePercent,Float:Round2ScorePercent;
 new bool:Round1WipedOut,bool:Round2WipedOut;
 
 static		bool:IsSecondRound,bool:RoundEnding;
-static Float:MapVersusDifficulty = 0.0;
+float g_fMapVersusDifficulty = 1.0;
 static survivor_progress;
 static String:previousmap[128];
 
@@ -157,6 +158,23 @@ int
 
 public OnPluginStart()
 {
+	// 載入 Gamedata 檔案
+    GameData hGameConf = new GameData("l4dscores");
+    if (hGameConf == null)
+    {
+        SetFailState("Failed to load gamedata: l4dscores.txt");
+        return;
+    }
+
+	DynamicDetour hDetour = DynamicDetour.FromConf(hGameConf, "KeyValues::GetFloat");
+	if( !hDetour )
+		SetFailState("Failed to find \"KeyValues::GetFloat\" signature.");
+	if( !hDetour.Enable(Hook_Pre, OnKeyValuesGetFloat_Pre) )
+		SetFailState("Failed to detour \"KeyValues::GetFloat\".");
+	
+	delete hDetour;
+    delete hGameConf;
+
 	LoadTranslations("common.phrases");
 	LoadTranslations("Roto2-AZ_mod.phrases");	
 
@@ -610,20 +628,20 @@ public OnMapStart()
 
 	if(hFile.JumpToKey("default"))
 	{
-		MapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
+		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
 
 		hFile.GoBack();
 	}
 
 	if (hFile.JumpToKey(sMap)) 
 	{
-		MapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
+		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", g_fMapVersusDifficulty);
 
 		hFile.GoBack();
 	}
 
 	#if SCORE_DEBUG
-		LogMessage("%s: %f",sMap,MapVersusDifficulty);
+		LogMessage("%s: %f",sMap,g_fMapVersusDifficulty);
 	#endif
 	CloseHandle(hFile);
 	
@@ -665,7 +683,7 @@ public OnMapStart()
 public void OnConfigsExecuted()
 {
 	int sur = GetTeamMaxHumans(L4D_TEAM_SURVIVORS);
-	g_iMaxCompletionScore = RoundToNearest(  (100+vs_score_pp_health.FloatValue*sur*100+g_iPillScore*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*MapVersusDifficulty );
+	g_iMaxCompletionScore = RoundToNearest(  (100+vs_score_pp_health.FloatValue*sur*100+g_iPillScore*sur)*GetTeamMaxHumans(L4D_TEAM_SURVIVORS)*g_fMapVersusDifficulty );
 	
 	L4D_SetVersusMaxCompletionScore(g_iMaxCompletionScore);
 }
@@ -1493,7 +1511,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 		}
 		AD = L4D_GetTeamScore(6, false);
-		MD = MapVersusDifficulty;
+		MD = g_fMapVersusDifficulty;
 		N = GetNumberSurvived();
 		fScores = (AD+HB+PILLS)*N*MD; //L4D1 對抗分數計算方式 (平均距離+生命加值+藥分)*存活數*地圖難度,(P+HB)*N*MD
 		iScores = RoundToNearest(fScores);
@@ -1514,7 +1532,7 @@ PrintGetNowScores(client,roundend = false)
 					CPrintToChat(client,"%T \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",client,round,Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
 			}
 			else{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
 			}
 		}
 		else
@@ -1527,7 +1545,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
 			}				
 		}
 	}
@@ -1548,7 +1566,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.1f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
 			}				
 		}
 		else
@@ -1566,7 +1584,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.1f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
 			}	
 		}			
 	}
@@ -2552,4 +2570,29 @@ VoteMenuClose()
 Float:GetVotePercent(votes, totalVotes)
 {
 	return (float(votes) / float(totalVotes));
+}
+
+MRESReturn OnKeyValuesGetFloat_Pre(int pThis, DHookReturn hReturn, DHookParam hParams)
+{
+	if(hParams.IsNull(1))
+	{
+		return MRES_Ignored;
+	}
+
+	char keyName[64];
+	hParams.GetString(1, keyName, sizeof(keyName));
+
+	// 檢查是否為我們要修改的 "VersusModifier"
+	if (strcmp(keyName, "VersusModifier", false) == 0)
+	{
+		// LogError("OnKeyValuesGetFloat_Pre - VersusModifier -> %f", hReturn.Value, 3.0);
+		// 強制修改回傳值（例如改為你想要的數值）
+		// 回傳值是 float
+		hReturn.Value = g_fMapVersusDifficulty;
+		
+		// 回傳 MRES_Override 代表覆寫原本函式的回傳結果，不再執行原本的讀取邏輯
+		return MRES_Override;
+	}
+
+	return MRES_Ignored;
 }

@@ -1042,7 +1042,7 @@
 [258] l4d_onslaught_tank_pause
 //source: github.com/Volence/riverside-l4d-plugins
 //Pauses converted L4D2 mid-map onslaught hordes while a tank is alive
-//衝鋒型關卡(又名跑圖關卡)的終章地圖上，tank存活時間管理無限屍潮的數量
+//衝鋒型關卡(又名跑圖關卡)的非終章地圖上，tank存活時間管理無限屍潮的數量
 //須配合stripper cfg寫上"l4d1_onslaught_on", "l4d1_onslaught_off"
 
 [259] l4d2_voice_mechanics_fix
@@ -1050,6 +1050,12 @@
 //Stops in-game voice chat from affecting game mechanics & audio.
 //修正Hunter玩家MIC說話的時候Hunter會發出低吼聲即使Hunter仍然站著不動
 //修正人類玩家MIC說話的時候身體光圈會發給特感看到
+
+[260] fix_pill_pass
+//source: https://github.com/SirPlease/L4D2-Competitive-Rework/blob/master/addons/sourcemod/scripting/fix_pill_pass.sp
+//Fixes being unable to pass Pills to Survivor considered 'In Combat' + Pills being thrown away.
+//傳遞藥丸時如果對方正處於危險當中，會導致藥丸被丟掉或是無法傳送到隊友身上
+//此插件就是修復這個問題，讓藥丸可以正確傳送到隊友身上
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

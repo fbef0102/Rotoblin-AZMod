@@ -6,7 +6,7 @@
 #include <sourcescramble>
 #include <dhooks>
 
-#define PLUGIN_VERSION "1.5"
+#define PLUGIN_VERSION "1.5h-2026/11/3"
 
 public Plugin myinfo = 
 {
@@ -30,12 +30,19 @@ public Plugin myinfo =
 #define PATCH_DUMMY "__AddEntityToIgnore_dummypatch"
 #define PATCH_COOP_DUMMY "__AddEntityToIgnore_noncompetitive_dummypatch"
 
+#define MAX_EDICTS 2048
+
 DynamicDetour g_hDetour;
 
 int
 	g_iTankClass,
 	g_iTipFlag,
-	g_iFlyFlag;
+	g_iFlyFlag,
+	g_iOwnerOffset,
+	g_iZombieClassOffset;
+
+bool g_bIsTongue[MAX_EDICTS + 1];
+bool g_bUpdateTongueTarget = false;
 
 enum
 {
@@ -76,6 +83,7 @@ public void OnPluginStart()
 		SetFailState("Failed to get address of \""...KEY_SETPASSENTITY..."\"");
 	
 	CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_ARG);
+	CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_COOP_ARG);
 	CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_PASSENT);
 	
 	MemoryPatch hPatch = CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_DUMMY);
@@ -86,8 +94,6 @@ public void OnPluginStart()
 	
 	if (GetEngineVersion() == Engine_Left4Dead)
 	{
-		CreateEnabledPatch(conf, KEY_ONUPDATEEXTENDINGSTATE...PATCH_COOP_ARG);
-
 		hPatch = CreateEnabledPatch(conf, KEY_ISTARGETVISIBLE...PATCH_DUMMY);
 		PatchNearJump(0xE8, hPatch.Address, pfnSetPassEntity);
 		
@@ -100,6 +106,9 @@ public void OnPluginStart()
 		SetFailState("Missing detour setup \""...KEY_UPDATETONGUETARGET..."\"");
 	
 	delete conf;
+
+	g_iOwnerOffset = FindSendPropOffset("CTongue", "m_owner");
+	g_iZombieClassOffset = FindSendPropOffset("CTerrorPlayer", "m_zombieClass");
 	
 	CreateConVarHook("tongue_tip_through_teammate",
 					"1",
@@ -116,6 +125,12 @@ public void OnPluginStart()
 					FCVAR_SPONLY,
 					true, 0.0, true, 7.0,
 					CvarChg_FlyThroughTeammate);
+}
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (entity > MaxClients && entity <= MAX_EDICTS)
+		g_bIsTongue[entity] = (strcmp(classname, "ability_tongue") == 0);
 }
 
 void CvarChg_TipThroughTeammate(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -150,7 +165,6 @@ void ToggleDetour(bool enable)
 	}
 }
 
-bool g_bUpdateTongueTarget = false;
 MRESReturn DTR_OnUpdateTongueTarget(int pThis)
 {
 	g_bUpdateTongueTarget = true;
@@ -165,27 +179,24 @@ MRESReturn DTR_OnUpdateTongueTarget_Post(int pThis)
 
 public Action CH_PassFilter(int touch, int pass, bool &result)
 {
-	if (!touch || touch > MaxClients || !IsClientInGame(touch))
+	if (touch < 1 || touch > MaxClients)
 		return Plugin_Continue;
 	
 	if (!g_bUpdateTongueTarget)
 	{
-		if (pass <= MaxClients)
+		// both flags off never passes through, skip the client checks
+		if (!g_iFlyFlag || pass <= MaxClients || pass > MAX_EDICTS || !g_bIsTongue[pass])
 			return Plugin_Continue;
 		
-		static char cls[64];
-		if (!GetEdictClassname(pass, cls, sizeof(cls)))
+		if (!IsClientInGame(touch) || GetClientTeam(touch) != 3)
 			return Plugin_Continue;
 		
-		if (strcmp(cls, "ability_tongue") != 0)
-			return Plugin_Continue;
-		
-		if (touch == GetEntPropEnt(pass, Prop_Send, "m_owner")) // probably won't happen
+		if (touch == GetEntDataEnt2(pass, g_iOwnerOffset)) // probably won't happen
 			return Plugin_Continue;
 			
 		if (GetClientTeam(touch) == 3)
 		{
-			if (GetEntProp(touch, Prop_Send, "m_zombieClass") == g_iTankClass)
+			if (GetEntData(touch, g_iZombieClassOffset) == g_iTankClass)
 			{
 				if (~g_iFlyFlag & FLY_TANK)
 					return Plugin_Continue;
@@ -201,19 +212,19 @@ public Action CH_PassFilter(int touch, int pass, bool &result)
 	}
 	else
 	{
-		if (!pass || pass > MaxClients)
+		if (pass < 1 || pass > MaxClients)
 			return Plugin_Continue;
-		
-		if (!IsClientInGame(pass))
+
+		if (!IsClientInGame(touch) || GetClientTeam(touch) != 3)
 			return Plugin_Continue;
 		
 		if (GetClientTeam(touch) != 3)
 			return Plugin_Continue;
 		
-		if (GetClientTeam(pass) != 3 || GetEntProp(pass, Prop_Send, "m_zombieClass") != 1)
+		if (GetClientTeam(pass) != 3 || GetEntData(pass, g_iZombieClassOffset) != 1)
 			return Plugin_Continue;
 			
-		if (GetEntProp(touch, Prop_Send, "m_zombieClass") == g_iTankClass)
+		if (GetEntData(touch, g_iZombieClassOffset) == g_iTankClass)
 		{
 			if (~g_iTipFlag & TIP_TANK)
 				return Plugin_Continue;
@@ -254,6 +265,15 @@ ConVar CreateConVarHook(const char[] name,
 	cv.AddChangeHook(callback);
 	
 	return cv;
+}
+
+int FindSendPropOffset(const char[] cls, const char[] prop)
+{
+	int offset = FindSendPropInfo(cls, prop);
+	if (offset <= 0)
+		SetFailState("Failed to find offset of \"%s::%s\"", cls, prop);
+
+	return offset;
 }
 
 void PatchNearJump(int instruction, Address src, Address dest)

@@ -1,6 +1,8 @@
 //
 // "VersusModifier": Level's score multiplier. 
-//	Value is locked by mission file of each map, can not be modified here
+// Must >= 1.0
+// Setting this value actually modifies the server-side map difficulty, which affects the final Versus score. 
+// However, the map difficulty displayed on the client-side scoreboard will remain unchanged.
 //
 // "WaterSlowDown_map": The map contains water areas
 // 1. Control survivor speed in the water
@@ -76,12 +78,13 @@
 	// apply to all maps by default
 	"default"
 	{
+		"VersusModifier"				"1.0"
+
 		"no_start_area" 				"0"
 		"custom_start_area_distance"	"300.0"
 		"custom_start_area_beam_ring"	"1"
 
 		"no_final_first_tank"			"1"
-		"VersusModifier"				"1.0"
 		"WaterSlowDown_map"				"0"
 		"WaterCrash_map"				"0"
 		"tank_map_off"					"0"
@@ -102,8 +105,8 @@
 	"l4d_vs_hospital01_apartment"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"One way drop"
@@ -121,21 +124,21 @@
 	"l4d_vs_hospital02_subway"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.2"
 		"pill_limit" "2"
-		"VersusModifier"		"1.3"
 	}
 	"l4d_vs_hospital03_sewers"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_vs_hospital04_interior"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -156,28 +159,28 @@
 	"l4d_vs_hospital05_rooftop"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"l4d_garage01_alleys"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.5"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 	}
 	"l4d_garage02_lots"
 	{
 		//"VersusCompletionScore"	"800"
+		"VersusModifier"		"2.0"
 		"pill_limit" 			"2"
 		"pillflow_finale"		"1"
 		"pillflow_max"			"1.0"
-		"VersusModifier"		"2.0"
 	}
 	"l4d_vs_smalltown01_caves"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Too early"
@@ -203,21 +206,21 @@
 	"l4d_vs_smalltown02_drainage"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.2"
 		"pill_limit" "2"
-		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_vs_smalltown03_ranchhouse"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 	}
 	"l4d_vs_smalltown04_mainstreet"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Start of event"
@@ -253,15 +256,15 @@
 	"l4d_vs_smalltown05_houseboat"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_vs_airport01_greenhouse"
 	{
 		//"VersusCompletionScore"	"300"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Before Green House"
@@ -274,8 +277,8 @@
 	"l4d_vs_airport02_offices"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 		
 		"tank_ban_flow"
 		{
@@ -289,8 +292,8 @@
 	"l4d_vs_airport03_garage"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.65"
 		"pill_limit" "2"
-		"VersusModifier"		"1.4"
 		"tank_ban_flow"
 		{
 			"Around Alarm Car"
@@ -321,8 +324,8 @@
 	"l4d_vs_airport04_terminal"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -343,8 +346,8 @@
 	"l4d_vs_airport05_runway"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Before Plane"
@@ -375,8 +378,8 @@
 	"l4d_vs_farm01_hilltop"
 	{
 		//"VersusCompletionScore"	"300"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Too early"
@@ -389,8 +392,8 @@
 	"l4d_vs_farm02_traintunnel"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.3"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"House"
@@ -426,8 +429,8 @@
 	"l4d_vs_farm03_bridge"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Late spawns (bugged spawn)"
@@ -448,14 +451,14 @@
 	"l4d_vs_farm04_barn"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 	}
 	"l4d_vs_farm05_cornfield"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"After one way drop"
@@ -468,15 +471,15 @@
 	"l4d_river01_docks"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.25"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"tank_map_off" "1"
 	}
 	"l4d_river02_barge"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -498,8 +501,8 @@
 	"l4d_river03_port"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"		"3.0"
 		"pill_limit" "1"
-		"VersusModifier"		"3.5"
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 	}
@@ -508,8 +511,8 @@
 	"c1m1_hotel"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Instant spawns"
@@ -545,8 +548,8 @@
 	"c1m2_streets"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.25"
 		"Cola_map" "1"
 		"tank_ban_flow"
 		{
@@ -565,8 +568,8 @@
 	"c1m3_mall"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Event escalators"
@@ -579,8 +582,8 @@
 	"c1m4_atrium"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_map_off" "1"
 		"witch_map_off" "1"
 		"GasCan_map" "1"
@@ -596,8 +599,8 @@
 	"c2m1_highway"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -612,8 +615,8 @@
 	"c2m2_fairgrounds"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.25"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"tank_ban_flow"
 		{
 			"Alley choke to up top"
@@ -631,8 +634,8 @@
 	"c2m3_coaster"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.5"
 		"pill_limit" "2"
-		"VersusModifier"		"1.4"
 		"tank_ban_flow"
 		{
 			"One way drop"
@@ -650,8 +653,8 @@
 	"c2m4_barns"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.6"
 		"tank_ban_flow"
 		{
 			"Event 2nd stage"
@@ -664,15 +667,15 @@
 	"c2m5_concert"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		
 	}
 	"c3m1_plankcountry"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -695,8 +698,8 @@
 	"c3m2_swamp"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.1"
 		"pill_limit" "2"
-		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -711,8 +714,8 @@
 	"c3m3_shantytown"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -727,16 +730,16 @@
 	"c3m4_plantation"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 	}
 	"c4m1_milltown_a"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WAIT_FOR_FINALE_map"	"1"
 		"tank_ban_flow"
 		{
@@ -750,8 +753,8 @@
 	"c4m2_sugarmill_a"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.35"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -774,8 +777,8 @@
 	"c4m3_sugarmill_b"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -798,16 +801,16 @@
 	"c4m4_milltown_b"
 	{
 		//"VersusCompletionScore"	"400"
+		"VersusModifier"		"1.2"
 		"pill_limit" "2"
-		"VersusModifier"		"1.6"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 	}
 	"c4m5_milltown_escape"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" 			"0"
 		"VersusModifier"		"2.0"
+		"pill_limit" 			"0"
 		"tank_map_off" 			"1"
 		"witch_map_off" 		"1"
 		"no_final_first_tank" 	"0"
@@ -817,8 +820,8 @@
 	"c5m1_waterfront"
 	{
 		//"VersusCompletionScore"	"300"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"Early spawns"
@@ -831,8 +834,8 @@
 	"c5m2_park"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"tank_ban_flow"
 		{
 			"CEDA trailer and alarm event"
@@ -845,8 +848,8 @@
 	"c5m3_cemetery"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.6"
 		"pill_limit" "3"
-		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -861,8 +864,8 @@
 	"c5m4_quarter"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "2"
 		"VersusModifier"		"1.6"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Last one way drop"
@@ -875,9 +878,9 @@
 	"c5m5_bridge"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.8"
 		; --- stripper map: 4 kit spawns in the truck by the flow tank
 		"pill_limit" 			"4"
-		"VersusModifier"		"2.0"
 		"WAIT_FOR_FINALE_map"	"1"
 		"witch_map_off" 		"1"
 		"tank_map_off"			"1"
@@ -886,8 +889,8 @@
 	"c6m1_riverbank"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.25"
 		"pill_limit" "1"
-		"VersusModifier"		"1.0"
 		"witch_map_off" "1"
 		"BrideWitch_map" "1"
 		"WaterSlowDown_map" 	"1"
@@ -903,8 +906,8 @@
 	"c6m2_bedlam"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -924,8 +927,8 @@
 	"c6m3_port"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_map_off" "1"
 		"witch_map_off" "1"
 		"no_final_first_tank" "0"
@@ -942,8 +945,8 @@
 	"c13m1_alpinecreek"
 	{
 		//"VersusCompletionScore"	"300"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -966,8 +969,8 @@
 	"c13m2_southpinestream"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.25"
 		"tank_ban_flow"
 		{
 			"Event"
@@ -988,8 +991,8 @@
 	"c13m3_memorialbridge"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" 			"2"
 		"VersusModifier"		"1.5"
+		"pill_limit" 			"2"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -1004,10 +1007,10 @@
 	"c13m4_cutthroatcreek"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"2.0"
 		"pill_limit" "2"
 		"pillflow_finale"		"1"
 		"pillflow_max"			"1.0"
-		"VersusModifier"		"2.0"
 		"tank_ban_flow"
 		{
 			"River Rush"
@@ -1020,15 +1023,15 @@
 	"c14m1_junkyard"
 	{
 		//"VersusCompletionScore"	"800"
+		"VersusModifier"		"1.6"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
 	}
 	"c14m2_lighthouse"
 	{
 		//"VersusCompletionScore"	"1000"
-		"pill_limit" 			"1"
 		"VersusModifier"		"2.0"
+		"pill_limit" 			"1"
 		"WaterSlowDown_map" 	"1"
 		"GasCan_map" "1"
 		"tank_ban_flow"
@@ -1053,16 +1056,16 @@
 	"l4d_vs_city17_01"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"300.0"
 	}
 	"l4d_vs_city17_02"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.2"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1089,25 +1092,25 @@
 	"l4d_vs_city17_03"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 	}
 	"l4d_vs_city17_04"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "3"
 		"VersusModifier"		"1.6"
+		"pill_limit" "3"
 	}
 	"l4d_vs_city17_05"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"l4d_vs_deadflagblues01_city"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.0"
+		"pill_limit" "2"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"160.0"
 		"tank_ban_flow"
@@ -1126,8 +1129,8 @@
 	}
 	"l4d_vs_deadflagblues02_library"
 	{
+		"VersusModifier"		"1.25"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"tank_ban_flow"
 		{
 			"End Alarm Event"
@@ -1147,8 +1150,8 @@
 	}
 	"l4d_vs_deadflagblues03_arena"
 	{
+		"VersusModifier"		"1.6"
 		"pill_limit" "3"
-		"VersusModifier"		"1.4"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1169,8 +1172,8 @@
 	}
 	"l4d_vs_deadflagblues04_woods"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"End Of Map"
@@ -1190,14 +1193,14 @@
 	}
 	"l4d_vs_deadflagblues05_station"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"l4d_vs_stadium1_apartment"
 	{
 		//"VersusCompletionScore"	"400"
+		"VersusModifier"		"1.1"
 		"pill_limit" "1"
-		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -1217,21 +1220,21 @@
 	}
 	"l4d_vs_stadium2_underground"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.2"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_vs_stadium3_city1"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 	}
 	"l4d_vs_stadium4_city2"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.5"
 		"pill_limit" "3"
-		"VersusModifier"		"1.6"
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -1252,8 +1255,8 @@
 	"l4d_vs_stadium5_stadium"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" 			"1"
 		"VersusModifier"		"2.0"
+		"pill_limit" 			"1"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -1273,8 +1276,8 @@
 	}
 	"l4d_dbd_citylights"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"1.1"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"the start of the map"
@@ -1292,8 +1295,8 @@
 	"l4d_dbd_anna_is_gone"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1307,8 +1310,8 @@
 	"l4d_dbd_the_mall"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Store House"
@@ -1339,36 +1342,36 @@
 	"l4d_dbd_clean_up"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "3"
 		"VersusModifier"		"1.6"
+		"pill_limit" "3"
 	}
 	"l4d_dbd_new_dawn"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"2.0"
 		"pill_limit" 			"2"
 		"pillflow_finale"		"1"
 		"pillflow_max"			"1.0"
-		"VersusModifier"		"2.0"
 	}
 	"l4d_deathaboard01_prison"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_deathaboard02_yard"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.2"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_deathaboard03_docks"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1382,8 +1385,8 @@
 	"l4d_deathaboard04_ship"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"		"1.5"
 		"pill_limit" "2"
-		"VersusModifier"		"1.6"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -1403,15 +1406,15 @@
 	"l4d_deathaboard05_light"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_ihm01_forest"
 	{
 		//"VersusCompletionScore"	"400"
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"End Saferoom"
@@ -1432,16 +1435,16 @@
 	"l4d_ihm02_manor"
 	{
 		//"VersusCompletionScore"	"500"
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 		"tank_map_off"			"1"
 		"witch_map_off"			"1"
 	}
 	"l4d_ihm03_underground"
 	{
 		//"VersusCompletionScore"	"600"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1463,8 +1466,8 @@
 	"l4d_ihm04_lumberyard"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -1477,24 +1480,24 @@
 	"l4d_ihm05_lakeside"
 	{
 		//"VersusCompletionScore"	"800"
-		"pill_limit" 			"1"
 		"VersusModifier"		"2.0"
+		"pill_limit" 			"1"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_jsarena01_town"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 	}
 	"l4d_jsarena02_alley"
 	{
+		"VersusModifier"		"1.2"
 		"pill_limit" "1"
-		"VersusModifier"		"1.25"
 	}
 	"l4d_jsarena03_roof"
 	{
+		"VersusModifier"		"1.3"
 		"pill_limit" "1"
-		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -1506,13 +1509,13 @@
 	}
 	"l4d_jsarena04_arena"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"l4d_149_1"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1543,8 +1546,8 @@
 	}
 	"l4d_149_2"
 	{
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1565,8 +1568,8 @@
 	}
 	"l4d_149_3"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Elevator"
@@ -1591,8 +1594,8 @@
 	}
 	"l4d_149_4"
 	{
+		"VersusModifier"		"1.65"
 		"pill_limit" "3"
-		"VersusModifier"		"1.7"
 		"tank_ban_flow"
 		{
 			"One Way Drop"
@@ -1617,13 +1620,13 @@
 	}
 	"l4d_149_5"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"l4d_darkblood01_tanker"
 	{
+		"VersusModifier"		"1.1"
 		"pill_limit" "1"
-		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
 			"Too early"
@@ -1640,8 +1643,8 @@
 	}
 	"l4d_darkblood02_engine"
 	{
+		"VersusModifier"		"1.5"
 		"pill_limit" "3"
-		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1664,8 +1667,8 @@
 	}
 	"l4d_darkblood03_platform"
 	{
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 		"tank_ban_flow"
 		{
 			"Too early"
@@ -1690,15 +1693,15 @@
 	}
 	"l4d_darkblood04_extraction"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 	}
 	"rombu01"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"1.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1711,13 +1714,13 @@
 	}
 	"rombu02"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 	}
 	"rombu03"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1730,8 +1733,8 @@
 	}
 	"rombu04"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.5"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"Too late"
@@ -1743,14 +1746,14 @@
 	}
 	"rombu05"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_noprecinct01_crash"
 	{
+		"VersusModifier"		"1.15"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
 			"The End of the Map"
@@ -1762,14 +1765,14 @@
 	}
 	"l4d_noprecinct02_train"
 	{
+		"VersusModifier"		"1.35"
 		"pill_limit" "2"
-		"VersusModifier"		"1.25"
 		"WaterSlowDown_map" 	"1"
 	}
 	"l4d_noprecinct03_clubd"
 	{
 		"pill_limit" "3"
-		"VersusModifier"		"1.5"
+		"VersusModifier"		"1.65"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1782,8 +1785,8 @@
 	}
 	"l4d_noprecinct04_precinct"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_ban_flow"
 		{
 			"trigger police car"
@@ -1795,8 +1798,8 @@
 	}
 	"cotd01_apartments_redux"
 	{
+		"VersusModifier"		"1.1"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
 			"elevator"
@@ -1816,8 +1819,8 @@
 	}
 	"cotd02_streets_redux"
 	{
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1830,8 +1833,8 @@
 	}
 	"cotd03_sewers_redux"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.3"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -1853,8 +1856,8 @@
 	}
 	"cotd04_mall_redux"
 	{
-		"pill_limit" "3"
 		"VersusModifier"		"1.4"
+		"pill_limit" "3"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1867,13 +1870,13 @@
 	}
 	"cotd05_rooftop_redux"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 	}
 	"hotel01_market_two"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.0"
+		"pill_limit" "2"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"350.0"
 		"WaterSlowDown_map" 	"1"
@@ -1888,8 +1891,8 @@
 	}
 	"hotel02_sewer_two"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.2"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"
 		"tank_ban_flow"
@@ -1921,14 +1924,14 @@
 	}
 	"hotel03_ramsey_two"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 	}
 	"hotel04_scaling_two"
 	{
+		"VersusModifier"		"1.65"
 		"pill_limit" "3"
-		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -1964,8 +1967,8 @@
 	}
 	"hotel05_rooftop_two"
 	{
-		"pill_limit" "0"
 		"VersusModifier"		"2.0"
+		"pill_limit" "0"
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 		"witch_ban_flow"
@@ -1984,8 +1987,8 @@
 	}
 	"uz_crash"
 	{
+		"VersusModifier"		"1.15"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
 		"no_start_area" "1"
 		"custom_start_area_distance"	"450.0"
@@ -2008,13 +2011,13 @@
 	}
 	"uz_town"
 	{
+		"VersusModifier"		"1.3"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 	}
 	"uz_desert"
 	{
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2035,8 +2038,8 @@
 	}
 	"uz_bunker"
 	{
-		"pill_limit" "3"
 		"VersusModifier"		"1.6"
+		"pill_limit" "3"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2049,22 +2052,22 @@
 	}
 	"uz_escape"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 	}
 
 	"re3short_m1"
 	{
+		"VersusModifier"		"1.1"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 	}	
 	
 	"re3short_m2"
 	{
+		"VersusModifier"		"1.5"
 		"pill_limit" "3"
-		"VersusModifier"		"1.3"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2078,8 +2081,8 @@
 	
 	"re3short_m3"
 	{
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2093,8 +2096,8 @@
 	
 	"re3short_m4"
 	{
-		"pill_limit" "1"
 		"VersusModifier"		"2.0"
+		"pill_limit" "1"
 		"tank_map_off" "1"
 		"no_final_first_tank" "0"
 		"witch_ban_flow"
@@ -2112,8 +2115,8 @@
 	
 	"dw1_woods"
 	{
+		"VersusModifier"		"1.3"
 		"pill_limit" "5"
-		"VersusModifier"		"1.0"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2133,8 +2136,8 @@
 	
 	"dw2_underground"
 	{
-		"pill_limit" "5"
 		"VersusModifier"		"1.3"
+		"pill_limit" "5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2158,8 +2161,8 @@
 	
 	"dw3_complex"
 	{
-		"pill_limit" "5"
 		"VersusModifier"		"1.4"
+		"pill_limit" "5"
 		"tank_ban_flow"
 		{
 			"Early Tank"
@@ -2196,8 +2199,8 @@
 	
 	"dw4_otherworld"
 	{
+		"VersusModifier"		"1.6"
 		"pill_limit" "5"
-		"VersusModifier"		"1.5"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2249,10 +2252,10 @@
 	
 	"dw5_final"
 	{
+		"VersusModifier"		"2.0"
 		"pill_limit" 			"3"
 		"pillflow_finale"		"1"
 		"pillflow_max"			"1.0"
-		"VersusModifier"		"2.0"
 		"WaterSlowDown_map" 	"1"
 		"tank_ban_flow"
 		{
@@ -2270,15 +2273,15 @@
 	
 	"l4d_daybreak01_hotel"
 	{
+		"VersusModifier"		"1.1"
 		//"VersusCompletionScore"	"400"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 	}
 	"l4d_daybreak02_coastline"
 	{
+		"VersusModifier"		"1.3"
 		//"VersusCompletionScore"	"500"
 		"pill_limit" "2"
-		"VersusModifier"		"1.1"
 		"tank_ban_flow"
 		{
 			"end of map"
@@ -2292,15 +2295,15 @@
 	}
 	"l4d_daybreak03_bridge"
 	{
+		"VersusModifier"		"1.4"
 		//"VersusCompletionScore"	"600"
 		"pill_limit" "2"
-		"VersusModifier"		"1.2"
 	}
 	"l4d_daybreak04_cruise"
 	{
+		"VersusModifier"		"1.5"
 		//"VersusCompletionScore"	"700"
 		"pill_limit" "2"
-		"VersusModifier"		"1.3"
 		"tank_ban_flow"
 		{
 			"end of map"
@@ -2312,17 +2315,17 @@
 	}
 	"l4d_daybreak05_rescue"
 	{
+		"VersusModifier"		"2.0"
 		//"VersusCompletionScore"	"800"
 		"pill_limit" "1"
-		"VersusModifier"		"2.0"
 	}
 	
 	//=============== Detour Ahead 迂回前进
 	"cdta_01detour"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"		"1.1"
 		"pill_limit" "2"
-		"VersusModifier"		"1.0"
 		"tank_ban_flow"
 		{
 			"Valley one way drop until house"
@@ -2346,8 +2349,8 @@
 	"cdta_02road"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.2"
 		"pill_limit" "2"
-		"VersusModifier"		"1.3"
 		"tank_ban_flow"
 		{
 			"Event"
@@ -2361,8 +2364,8 @@
 	"cdta_03warehouse"
 	{
 		//"VersusCompletionScore"	"700"
-		"pill_limit" "2"
 		"VersusModifier"		"1.4"
+		"pill_limit" "2"
 		"tank_ban_flow"
 		{
 			"During sewers + double ladder drop"
@@ -2376,15 +2379,15 @@
 	"cdta_04onarail"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
-		"VersusModifier"		"1.5"
 	}	
 	
 	"cdta_05finalroad"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"		"1.8"
 		"pill_limit" 			"2"
-		"VersusModifier"		"2.0"
 		"tank_map_off"			"1"
 		"witch_map_off" 		"1"
 		"GauntletFinale_map"	"1"
@@ -2394,26 +2397,31 @@
 	"x1m1_cliffs"
 	{
 		//"VersusCompletionScore"	"400"
+		"VersusModifier"			"1.0"
 	}
 
 	"x1m2_path"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"x1m3_city"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"x1m4_forest"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"x1m5_salvation"
 	{
 		//"VersusCompletionScore"	"800"
+		"VersusModifier"			"2.0"
 		"tank_map_off"			"1"
 		"no_final_first_tank" 	"0"
 	}
@@ -2422,21 +2430,25 @@
 	"l4d2_diescraper1_apartment_361"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"			"1.2"
 	}
 
 	"l4d2_diescraper2_streets_361"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"l4d2_diescraper3_mid_361"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"			"1.6"
 	}
 
 	"l4d2_diescraper4_top_361"
 	{
 		//"VersusCompletionScore"	"800"
+		"VersusModifier"			"2.0"
 		"tank_map_off"			"1"
 		"no_final_first_tank" 	"0"
 	}
@@ -2445,21 +2457,25 @@
 	"hf01_theforest"
 	{
 		//"VersusCompletionScore"	"500"
+		"VersusModifier"			"1.2"
 	}
 
 	"hf02_thesteeple"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"hf03_themansion"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"			"1.6"
 	}
 
 	"hf04_escape"
 	{
 		//"VersusCompletionScore"	"800"
+		"VersusModifier"			"1.8"
 		"tank_map_off"			"1"
 		"witch_map_off" 		"1"
 		"GauntletFinale_map"	"1"
@@ -2469,21 +2485,25 @@
 	"cwm1_intro"
 	{
 		//"VersusCompletionScore"	"400"
+		"VersusModifier"			"1.2"
 	}
 
 	"cwm2_warehouse"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"			"1.5"
 	}
 
 	"cwm3_drain"
 	{
 		//"VersusCompletionScore"	"600"
+		"VersusModifier"			"1.4"
 	}
 
 	"cwm4_building"
 	{
 		//"VersusCompletionScore"	"700"
+		"VersusModifier"			"1.8"
 		"tank_map_off"			"1"
 		"witch_map_off" 		"1"
 		"GauntletFinale_map"	"1"

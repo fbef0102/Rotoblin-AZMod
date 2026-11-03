@@ -1,0 +1,38 @@
+"Games"
+{
+    "left4dead"
+    {
+		"Functions"
+        {
+            "KeyValues::GetFloat"
+            {
+				//long double __cdecl KeyValues::GetFloat(char **endptr, char *a2, float a3)
+                "signature"        	"KeyValues::GetFloat"
+                "callconv" 			"thiscall"
+				"return"			"float"
+				"this"				"address"
+                "arguments"
+                {
+                    "char *a2"
+                    {
+                        "type"   "charptr" 
+                    }
+                    "float a3"
+                    {
+                        "type"   "float"
+                    }
+                }
+            }
+        }
+		"Signatures"
+        {
+            "KeyValues::GetFloat"
+            {
+                "library"    "server"
+                "linux"      "@_ZN9KeyValues8GetFloatEPKcf"
+                "windows"    "\x8B\x44\x24\x04\x83\xEC\x08\x6A\x00" 
+                //sub_103B95D0: 8B 44 24 04 83 EC 08 6A 00 
+            }
+        }
+    }
+}

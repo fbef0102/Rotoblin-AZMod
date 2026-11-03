@@ -685,6 +685,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * ~~Allows gravity when survivors are staggering + allows staggering over a ledge and falling.~~
     * ~~Survivor still gets stumble even in the air~~
   * Return pills/adrenalines thrown through shoving key if not successfully given
+  * Fixes being unable to pass Pills to Survivor considered 'In Combat' + Pills being thrown away.
   * Stopping pick-up progress on incapped survivors right after getting tank punch or tank Rock
   * Enable skill report to chat
   * Blocks ledge hangs over drops that would not hurt
