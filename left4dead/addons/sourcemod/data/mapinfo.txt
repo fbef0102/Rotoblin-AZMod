@@ -1,6 +1,5 @@
 //
 // "VersusModifier": Level's score multiplier. 
-// Must >= 1.0
 // Setting this value actually modifies the server-side map difficulty, which affects the final Versus score. 
 // However, the map difficulty displayed on the client-side scoreboard will remain unchanged.
 //
@@ -263,7 +262,7 @@
 	"l4d_vs_airport01_greenhouse"
 	{
 		//"VersusCompletionScore"	"300"
-		"VersusModifier"		"1.0"
+		"VersusModifier"		"0.8"
 		"pill_limit" "1"
 		"tank_ban_flow"
 		{
@@ -820,7 +819,7 @@
 	"c5m1_waterfront"
 	{
 		//"VersusCompletionScore"	"300"
-		"VersusModifier"		"1.0"
+		"VersusModifier"		"0.8"
 		"pill_limit" "1"
 		"tank_ban_flow"
 		{
@@ -945,7 +944,7 @@
 	"c13m1_alpinecreek"
 	{
 		//"VersusCompletionScore"	"300"
-		"VersusModifier"		"1.0"
+		"VersusModifier"		"0.9"
 		"pill_limit" "1"
 		"WaterSlowDown_map" 	"1"
 		"WaterCrash_map"		"1"

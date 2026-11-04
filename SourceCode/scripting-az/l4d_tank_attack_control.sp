@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "1.8-2026/1/7"
+#define PLUGIN_VERSION "1.9-2026/11/15"
 
 #pragma semicolon 1
 
@@ -31,7 +31,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 enum
 {
-	Null = 0,
+	NullHook = 0,
 	UpperHook = 38,
 	RightHook = 41,
 	LeftHook = 43,
@@ -49,7 +49,11 @@ int
 	g_iQueuedPunch[MAXPLAYERS + 1];
 
 bool 
-	g_bQueuedCommandThrow[MAXPLAYERS+1];
+	g_bQueuedCommandThrow[MAXPLAYERS+1],
+	g_bIgnorePlayer[MAXPLAYERS+1];
+
+StringMap 
+	g_smWhitelist;
 
 public OnPluginStart()
 {
@@ -65,6 +69,9 @@ public OnPluginStart()
 	RegConsoleCmd("sm_underhand", Cmd_sm_underhand);
 	RegConsoleCmd("sm_overhand", Cmd_sm_overhand);
 	RegConsoleCmd("sm_overonehand", Cmd_sm_overonehand);
+
+	delete g_smWhitelist;
+	g_smWhitelist = new StringMap();
 }
 
 void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVal)
@@ -77,9 +84,58 @@ void GetCvars()
     g_iCvarPunchControl = hCvarPunchControl.IntValue;
 }
 
-public void OnClientConnected(int client)
+public void OnConfigsExecuted()
 {
+	delete g_smWhitelist;
+	g_smWhitelist = new StringMap();
+
+	char sWhitelist[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sWhitelist, sizeof(sWhitelist), "data/l4d_tank_attack_control.cfg");
+
+	File hFile = OpenFile(sWhitelist, "r");
+
+	if(hFile == null)
+	{
+		SetFailState("data/l4d_tank_attack_control.cfg does not exist");
+		delete hFile;
+		return;
+	}
+
+	char auth[64];
+	while(!hFile.EndOfFile() && hFile.ReadLine(auth, sizeof(auth)))
+	{
+		TrimString(auth);
+		StripQuotes(auth);
+
+		if(strlen(auth) < 1) continue;
+		if(strncmp(auth, "//", 2, false) == 0) continue;
+
+		g_smWhitelist.SetValue(auth, true, true);
+	}
+
+	delete hFile;
+}
+
+public void OnClientPostAdminCheck(int client)
+{
+	if(IsFakeClient(client)) return;
+
+	static char authId[64];
+	if (!GetClientAuthId(client, AuthId_SteamID64, authId, sizeof(authId)))
+		return;
+
+	g_bIgnorePlayer[client] = false;
+	if(g_smWhitelist.ContainsKey(authId))
+	{
+		g_bIgnorePlayer[client] = true;
+	}
+}
+
+public void OnClientDisconnect(int client)
+{
+	g_bIgnorePlayer[client] = false;
 	g_bQueuedCommandThrow[client] = false;
+	g_iQueuedThrow[client] = NullHook;
 }
 
 Action Cmd_sm_underhand(int client, int args)
@@ -115,7 +171,7 @@ Action Cmd_sm_overonehand(int client, int args)
 void TankSpawn_Event(Event event, const char[] name, bool dontBroadcast)
 {
 	int tank = GetClientOfUserId(event.GetInt("userid"));
-	if (!tank || !IsClientInGame(tank) || IsFakeClient(tank)) return;
+	if (!tank || !IsClientInGame(tank) || IsFakeClient(tank) || g_bIgnorePlayer[tank]) return;
 
 	CPrintToChat(tank, "%T","l4d_tank_attack_control_Rock", tank);
 }
@@ -123,7 +179,7 @@ void TankSpawn_Event(Event event, const char[] name, bool dontBroadcast)
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
 	if (!IsClientInGame(client) || GetClientTeam(client) != 3 || !IsPlayerTank(client) || !IsPlayerAlive(client)
-		|| IsFakeClient(client))
+		|| IsFakeClient(client) )
 		return Plugin_Continue;
 
 	bool bCommandThrow = g_bQueuedCommandThrow[client];
@@ -135,6 +191,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	else
 	{
+		if(g_bIgnorePlayer[client]) return Plugin_Continue;
+
 		if(buttons & IN_ATTACK2)
 		{
 			g_iQueuedThrow[client] = OneOverhand;
@@ -150,6 +208,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			buttons |= IN_ATTACK2;
 		}
 	}
+
+	if(g_bIgnorePlayer[client]) return Plugin_Continue;
 
 	if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK))
 	{
@@ -175,19 +235,27 @@ public Action L4D2_OnSelectTankAttack(int client, int &sequence)
 {
 	if(IsFakeClient(client)) return Plugin_Continue;
 
-	if (sequence > Throw && g_iQueuedThrow[client] > Null) // throw
+	if (sequence > Throw && g_iQueuedThrow[client] > NullHook) // throw
 	{
 		//rock throw
 		sequence = g_iQueuedThrow[client];
+		RequestFrame(OnNextFrame_OnSelectTankAttack, client);
 		return Plugin_Handled;
 	}
 	
 	
-	if (g_iCvarPunchControl > 0 && sequence < Throw && Null < g_iQueuedPunch[client] < Throw) // punch
+	if (g_iCvarPunchControl > 0 && sequence < Throw && NullHook < g_iQueuedPunch[client] < Throw) // punch
 	{ 
 		sequence = g_iQueuedPunch[client];
+		RequestFrame(OnNextFrame_OnSelectTankAttack, client);
 		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
+}
+
+void OnNextFrame_OnSelectTankAttack(int client)
+{
+	g_iQueuedThrow[client] = NullHook;
+	g_iQueuedPunch[client] = NullHook;
 }

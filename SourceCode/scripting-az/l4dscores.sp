@@ -2585,7 +2585,7 @@ MRESReturn OnKeyValuesGetFloat_Pre(int pThis, DHookReturn hReturn, DHookParam hP
 	// 檢查是否為我們要修改的 "VersusModifier"
 	if (strcmp(keyName, "VersusModifier", false) == 0)
 	{
-		// LogError("OnKeyValuesGetFloat_Pre - VersusModifier -> %f", hReturn.Value, 3.0);
+		//LogError("OnKeyValuesGetFloat_Pre - VersusModifier -> %f", g_fMapVersusDifficulty);
 		// 強制修改回傳值（例如改為你想要的數值）
 		// 回傳值是 float
 		hReturn.Value = g_fMapVersusDifficulty;

@@ -6,8 +6,9 @@
 	}
 	"SurvivorsRunBack"
 	{
-		"en"		"For every {green}%i%% {default}the Survivors run back, the Tank's frustration is frozen for {green}%0.1f seconds{default}."
-		"zho"		"倖存者每回退 {green}%i%% {default}路程, Tank有 {green}%0.1f秒{default} 時間不會失去控制權."
-		"chi"		"生还者每回退 {green}%i%% {default}路程, 坦克有 {green}%0.1f秒{default} 时间不会失去控制权."
+		"#format"		"{1:i}"
+		"en"		"For every {green}{1} units {default}the Survivors run back, the Tank's frustration is frozen for {green}%0.1f seconds{default}."
+		"zho"		"倖存者每回退 {green}{1} 單位距離{default}, Tank有 {green}%0.1f秒{default} 時間不會失去控制權."
+		"chi"		"生还者每回退 {green}{1} 单位距离{default}, 坦克有 {green}%0.1f秒{default} 时间不会失去控制权."
 	}
 }

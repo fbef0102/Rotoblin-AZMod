@@ -5,7 +5,7 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define MAXENTITY 2048
+#define MAXENTITIES 2048
 #define SOUND_INTERVAL 0.25
 #define DEBUG 0
 
@@ -14,7 +14,7 @@ public Plugin myinfo =
 	name = "Addon Map Common Sound Fix",
 	author = "Harry Potter",
 	description = "In some custom maps, fix the wrong .wav sound coming from common infected when been shot or burning (usually happen in custom maps)",
-	version = "1.3-2026/10/3",
+	version = "1.4-2026/11/4",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -67,13 +67,34 @@ stock const char sFix_Bullets_Sound[][] =
     "npc/infected/action/been_shot/been_shot_24.wav"
 };*/
 
-/*stock char sFix_Burning_Sound[][] =
+/*stock char sFix_BurningLoop_Sound[][] =
 {   
     "npc/headcrab/headcrab_burning_loop2.wav"
 };*/
 
-float g_fCommonShotTime[MAXENTITY + 1];
-bool g_bCommonBeenShot[MAXENTITY + 1];
+stock const char sFix_Ignite_Sound[][] =
+{   
+    "npc/infected/action/ignite/ignite01.wav",
+    "npc/infected/action/ignite/ignite07.wav",
+    "npc/infected/action/ignite/ignite08.wav",
+    "npc/infected/action/ignite/ignite09.wav",
+};
+
+float g_fCommonShotTime[MAXENTITIES + 1];
+bool g_bCommonBeenShot[MAXENTITIES + 1];
+bool g_bCommonBeenBurn[MAXENTITIES + 1];
+
+enum EEntity_Type
+{
+	EEntity_Unknown,
+
+	EEntity_Infected,
+	EEntity_Witch,
+	EEntity_Flame,
+}
+
+EEntity_Type 
+	g_iEntityType[MAXENTITIES+1];
 
 bool g_bLate;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -120,7 +141,9 @@ Action SI_OnSoundEmitted(int clients[MAXPLAYERS], int &numClients, char sample[P
 {
     if(entity > MaxClients)
     {
-        PrintToChatAll("Sound:%s - numClients %d, entity %d, tick: %d", sample, numClients, entity, GetGameTickCount());
+        static char sClassName[64];
+        GetEntityClassname(entity, sClassName, sizeof sClassName);
+        PrintToChatAll("Sound:%s - numClients %d, entity %d(%s), tick: %d", sample, numClients, entity, sClassName, GetGameTickCount());
     }
 
     return Plugin_Continue;
@@ -139,39 +162,61 @@ Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, char samp
 {
     if (numClients >= 1 && entity> MaxClients && IsValidEntity(entity)){
 
-        if(IsCommonInfected(entity) && g_bCommonBeenShot[entity])
+        if(g_iEntityType[entity] == EEntity_Infected)
         {
-            if( strncmp(sample, "npc/infected/gore/bullets/", 26, false) != 0
-                && strncmp(sample, "npc/infected/action/been_shot/", 30, false) != 0)
+            if(g_bCommonBeenShot[entity])
             {
-                //PrintToChatAll("zombie been shot sound or zombie bullet bug sound: %s", sample);
-
-                if(g_fCommonShotTime[entity] < GetEngineTime())
+                if( strncmp(sample, "npc/infected/gore/bullets/", 26, false) != 0
+                    && strncmp(sample, "npc/infected/action/been_shot/", 30, false) != 0)
                 {
-                    int random = GetRandomInt(0, sizeof(sFix_Bullets_Sound)-1);
-                    EmitSoundToAll(sFix_Bullets_Sound[random], entity);
-                    g_fCommonShotTime[entity] = GetEngineTime() + SOUND_INTERVAL;
+                    //PrintToChatAll("zombie been shot sound or zombie bullet bug sound: %s", sample);
+
+                    if(g_fCommonShotTime[entity] < GetEngineTime())
+                    {
+                        int random = GetRandomInt(0, sizeof(sFix_Bullets_Sound)-1);
+                        EmitSoundToAll(sFix_Bullets_Sound[random], entity);
+                        g_fCommonShotTime[entity] = GetEngineTime() + SOUND_INTERVAL;
+                    }
+                    
+                    return Plugin_Stop;
                 }
-                
-                return Plugin_Stop;
+            }
+            else if(g_bCommonBeenBurn[entity])
+            {
+                if( strncmp(sample, "npc/infected/action/", 20, false) != 0 //including die sound
+                    && strcmp(sample, "common/null.wav", false) != 0)
+                {
+                    //PrintToChatAll("zombie burning bug sound: %s", sample);
+
+                    if(g_fCommonShotTime[entity] < GetEngineTime())
+                    {
+                        int random = GetRandomInt(0, sizeof(sFix_Ignite_Sound)-1);
+                        EmitSoundToAll(sFix_Ignite_Sound[random], entity);
+                        g_fCommonShotTime[entity] = GetEngineTime() + SOUND_INTERVAL;
+                    }
+
+                    return Plugin_Stop;
+                }
             }
         }
-        else if(IsFireFlame(entity))
+        else if(g_iEntityType[entity] == EEntity_Flame)
         {
             int entity2 = GetEntPropEnt(entity, Prop_Data, "m_hEntAttached");
             if( entity2 <= 0)
                 return Plugin_Continue;
 
-            if(entity2 > MaxClients && IsValidEntity(entity2) && IsValidEdict(entity2))
+            if(entity2 > MaxClients && IsValidEntity(entity2))
             {
-                if(!IsCommonInfected(entity2) && !IsWitch(entity2)) return Plugin_Continue;
+                if(g_iEntityType[entity2] != EEntity_Infected && g_iEntityType[entity2] != EEntity_Witch) return Plugin_Continue;
+
+                //PrintToChatAll("BURN, ci: %d, tick: %d", entity2, GetGameTickCount());
+                g_bCommonBeenBurn[entity2] = true;
 
                 if(strncmp(sample, "npc/headcrab/", 13, false) == 0) return Plugin_Continue;
 
                 //PrintToChatAll("zombie burning bug sound: %s", sample);
-
-                //int random = GetRandomInt(0, sizeof(sFix_Burning_Sound)-1);
-                //EmitSoundToAll(sFix_Burning_Sound[random], entity);
+                //int random = GetRandomInt(0, sizeof(sFix_BurningLoop_Sound)-1);
+                //EmitSoundToAll(sFix_BurningLoop_Sound[random], entity);
                 
                 return Plugin_Stop;
             }
@@ -187,11 +232,12 @@ Action SI_OnSoundEmitted_Fix(int clients[MAXPLAYERS], int &numClients, char samp
     return Plugin_Continue;
 }
 
-
 public void OnEntityCreated(int entity, const char[] classname)
 {
     if (!IsValidEntityIndex(entity))
         return;
+
+    g_iEntityType[entity] = EEntity_Unknown;
 
     switch (classname[0])
     {
@@ -199,10 +245,26 @@ public void OnEntityCreated(int entity, const char[] classname)
         {
             if (strcmp(classname, "infected") == 0)
             {
+                g_iEntityType[entity] = EEntity_Infected;
                 g_fCommonShotTime[entity] = 0.0;
                 g_bCommonBeenShot[entity] = false;
+                g_bCommonBeenBurn[entity] = false;
                 RequestFrame(OnNextFrame_Common, EntIndexToEntRef(entity));
             }
+        }
+		case 'w':
+		{
+			if (strcmp(classname, "witch") == 0)
+			{
+				g_iEntityType[entity] = EEntity_Witch;
+			}
+        }
+		case 'e':
+		{
+			if (strcmp(classname, "entityflame") == 0)
+			{
+				g_iEntityType[entity] = EEntity_Flame;
+			}
         }
     }
 }
@@ -220,11 +282,11 @@ void OnNextFrame_Common(int entityRef)
 
 Action OnTakeDamage_Common(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-    if(damagetype & DMG_BULLET == 0) return Plugin_Continue;
-
-    //PrintToChatAll("OnTakeDamage_Common - ci: %d, tick: %d", victim, GetGameTickCount());
-
-    g_bCommonBeenShot[victim] = true;
+    if(damagetype & DMG_BULLET)
+    {
+        //PrintToChatAll("OnTakeDamage_Common - DMG_BULLET, ci: %d, tick: %d", victim, GetGameTickCount());
+        g_bCommonBeenShot[victim] = true;
+    }
 
     return Plugin_Continue;
 }
@@ -236,28 +298,7 @@ void OnTakeDamagePost_Common(int victim, int attacker, int inflictor, float dama
     g_bCommonBeenShot[victim] = false;
 }
 
-bool IsCommonInfected(int entity)
-{
-    static char classname[32];
-    GetEdictClassname(entity, classname, sizeof(classname));
-    return strcmp(classname, "infected") == 0;
-}
-
-bool IsWitch(int entity)
-{
-    static char classname[32];
-    GetEdictClassname(entity, classname, sizeof(classname));
-    return strcmp(classname, "witch") == 0;
-}
-
-bool IsFireFlame(int entity)
-{
-    static char classname[32];
-    GetEdictClassname(entity, classname, sizeof(classname));
-    return strcmp(classname, "entityflame") == 0;
-}
-
 bool IsValidEntityIndex(int entity)
 {
-    return (MaxClients+1 <= entity <= GetMaxEntities());
+    return (MaxClients+1 <= entity <= MAXENTITIES);
 }
