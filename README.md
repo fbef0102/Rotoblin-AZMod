@@ -363,6 +363,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
 * When a player disconnects due to crash, automatically pause the game. When they rejoin, give them a correct spawn timer.
 * Stops the vphysics use-after-free that can crash the server at a level change.
+* Model-less brush entities spawn non-solid, so a trace cannot crash CM_VCollideForModel
 
 - - - -
 ### Gameplay / Balance Changes ###

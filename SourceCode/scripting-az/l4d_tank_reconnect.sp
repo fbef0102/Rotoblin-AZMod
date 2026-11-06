@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION "0.2"
+#define PLUGIN_VERSION "0.4"
 
 /**
  * l4d_tank_reconnect - a tank whose player drops gets the tank back on rejoin.
@@ -49,6 +49,18 @@
  *  - A kick at match end (pug-match's end kick) or a server shutdown saves nothing, so the
  *    "The AI holds their tank" line no longer shows after the last round.
  *
+ * 0.3/0.4, from PUG #1032 (2026-11-06 02:44 UTC, Riverside #3, c4m4 half 1): .MeGaKiller'
+ * crashed as tank during a pause and rejoined from the same address before the old slot timed
+ * out. Nothing was saved. The engine's reconnect path (CBaseServer::GetFreeClientInternal,
+ * "%s:reconnect") calls RemoveClientFromGame FIRST, so the game's ClientDisconnect makes the AI
+ * tank and SourceMod's OnClientDisconnect_Post invalidates the client; only then does the old
+ * net channel close (ConnectionClosing(NULL) -> "Connection closing") and fire
+ * player_disconnect, for a client index that is no longer in game. A normal drop goes through
+ * CGameClient::PerformDisconnection, which fires player_disconnect before RemoveClientFromGame.
+ * 0.3 read the tank in OnClientDisconnect but still committed from player_disconnect, so it did
+ * not catch this; 0.4 commits from OnClientDisconnect_Post when player_bot_replace handed this
+ * player's tank to a bot inside the game's ClientDisconnect and player_disconnect has not run.
+ *
  * Every save, return and drop is logged to logs/tank_reconnect.log.
  * l4d_tank_reconnect 0 turns the give-back off (saves are still logged).
  */
@@ -72,6 +84,8 @@ int g_iPendFrus[MAXPLAYERS + 1];
 int g_iPendPass[MAXPLAYERS + 1];
 float g_fPendGrace[MAXPLAYERS + 1];  // seconds left on the rage grace timer, 0 = rage was growing
 bool g_bPendLeaving[MAXPLAYERS + 1];
+bool g_bPendWasTank[MAXPLAYERS + 1]; // OnClientDisconnect saw them as an alive tank (0.3)
+bool g_bPendKicked[MAXPLAYERS + 1];  // ...and in the kick queue (0.4)
 char g_sPendAuth[MAXPLAYERS + 1][32];
 char g_sPendName[MAXPLAYERS + 1][MAX_NAME_LENGTH];
 float g_fPutInAt[MAXPLAYERS + 1];    // engine time each client was put in server
@@ -211,6 +225,8 @@ void ClearPending(int client)
 {
 	g_iPendBot[client] = 0;
 	g_bPendLeaving[client] = false;
+	g_bPendWasTank[client] = false;
+	g_bPendKicked[client] = false;
 	g_sPendAuth[client][0] = '\0';
 }
 
@@ -218,6 +234,48 @@ public void OnClientPutInServer(int client)
 {
 	g_fPutInAt[client] = GetEngineTime();
 	ClearPending(client);
+}
+
+/**
+ * 0.3: runs before the game's ClientDisconnect, so the player still holds the
+ * tank here even on the engine's reconnect path, where the game hands it to
+ * the AI before player_disconnect fires. OnClientDisconnect_Post commits it.
+ */
+public void OnClientDisconnect(int client)
+{
+	if (!IsClientInGame(client) || IsFakeClient(client) || g_bPendLeaving[client]) return;
+	if (!IsAliveTank(client)) return;
+	g_bPendWasTank[client] = true;
+	g_bPendKicked[client] = IsClientInKickQueue(client);
+	int frus = Frustration(client);
+	if (frus > g_iPendFrus[client] || g_iPendBot[client] == 0)
+		g_iPendFrus[client] = frus;
+	g_iPendPass[client] = L4D2Direct_GetTankPassedCount();
+	g_fPendGrace[client] = GraceLeft(client);
+	GetClientAuthId(client, AuthId_Engine, g_sPendAuth[client], sizeof(g_sPendAuth[]), false);
+	GetClientName(client, g_sPendName[client], sizeof(g_sPendName[]));
+}
+
+/**
+ * 0.4: the end of the game's ClientDisconnect. When player_disconnect came first
+ * (the normal drop) it already committed. When it has not, and player_bot_replace
+ * gave this tank to a bot just now, this is the engine's reconnect path: commit
+ * here, as the later player_disconnect finds the client no longer in game. A tank
+ * that just leaves the team (frustration, a team move) never gets here, and a
+ * changelevel makes no bot.
+ */
+public void OnClientDisconnect_Post(int client)
+{
+	if (g_bPendLeaving[client] || !g_bPendWasTank[client] || g_iPendBot[client] == 0) return;
+	if (g_bPendKicked[client])
+	{
+		LogToFileEx(g_sLog, "left \"%s\" as tank by kick (before player_disconnect); nothing saved", g_sPendName[client]);
+		ClearPending(client);
+		return;
+	}
+	LogToFileEx(g_sLog, "\"%s\" %s: game disconnect before player_disconnect (reconnect path)", g_sPendName[client], g_sPendAuth[client]);
+	g_bPendLeaving[client] = true;
+	Frame_CommitIndex(client);
 }
 
 /**
@@ -237,9 +295,11 @@ public void Event_PlayerBotReplace(Event event, const char[] name, bool dontBroa
 	int frus = Frustration(bot);
 	int own = Frustration(player);
 	if (own > frus) frus = own;
-	if (!g_bPendLeaving[player] || frus > g_iPendFrus[player])
+	// 0.3: OnClientDisconnect's snapshot was read while they still held the tank
+	bool known = g_bPendLeaving[player] || g_bPendWasTank[player];
+	if (!known || frus > g_iPendFrus[player])
 		g_iPendFrus[player] = frus;
-	if (!g_bPendLeaving[player])
+	if (!known)
 	{
 		g_iPendPass[player] = L4D2Direct_GetTankPassedCount();
 		g_fPendGrace[player] = GraceLeft(player);
@@ -255,7 +315,7 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 	if (client <= 0 || !IsClientInGame(client) || IsFakeClient(client)) return Plugin_Continue;
 
 	bool tank = IsAliveTank(client);
-	if (!tank && g_iPendBot[client] == 0) return Plugin_Continue;
+	if (!tank && !g_bPendWasTank[client] && g_iPendBot[client] == 0) return Plugin_Continue;
 
 	// 0.2: the end-of-match kick and a shutdown are not a drop to come back from
 	char reason[128];

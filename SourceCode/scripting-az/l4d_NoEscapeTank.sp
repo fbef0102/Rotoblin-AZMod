@@ -43,7 +43,7 @@ public OnPluginStart()
 	HookEvent("finale_escape_start", NET_ev_FinaleEscStart, EventHookMode_PostNoCopy);
 	HookEvent("finale_vehicle_ready", 	NET_ev_Vehicle_Ready,		EventHookMode_PostNoCopy);
 	HookEvent("round_start", 	NET_ev_RoundStart, EventHookMode_PostNoCopy);
-	HookEvent("tank_spawn", NET_ev_TankSpawn, EventHookMode_PostNoCopy);
+	//HookEvent("tank_spawn", NET_ev_TankSpawn, EventHookMode_PostNoCopy);
 	
 	g_bEnableNoEscTank = GetConVarBool(g_hEnableNoEscTank);
 	HookConVarChange(g_hEnableNoEscTank, _NET_Enable_CvarChange);
@@ -64,17 +64,18 @@ public NET_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 	g_bVehicleIncoming = false;
 }
 
-// public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
-// {
-// 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
-// 	{
-// 		PrintToChatAll("Blocking L4D_OnSpawnTank...");
-// 		return Plugin_Handled;
-// 	}
-// 	return Plugin_Continue;
-// }
+ public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
+ {
+ 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
+ 	{
+ 		//PrintToChatAll("Blocking L4D_OnSpawnTank...");
+ 		return Plugin_Handled;
+ 	}
 
-public void NET_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
+ 	return Plugin_Continue;
+ }
+
+/*void NET_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if(g_bEnableNoEscTank && g_bVehicleIncoming)
 	{
@@ -92,7 +93,7 @@ public void NET_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public Action KillEscapeTank(Handle timer, int userid)
+Action KillEscapeTank(Handle timer, int userid)
 {
 	int iTank = GetClientOfUserId(userid);
 	if(iTank && IsClientInGame(iTank) && IsFakeClient(iTank) && GetClientTeam(iTank) == 3 && IsPlayerTank(iTank) && IsPlayerAlive(iTank))
@@ -102,7 +103,7 @@ public Action KillEscapeTank(Handle timer, int userid)
 	}
 
 	return Plugin_Continue;
-}
+}*/
 
 public Action L4D_OnTryOfferingTankBot(int tank_index, bool &enterStatis)
 {
@@ -118,7 +119,7 @@ public _NET_Enable_CvarChange(Handle:convar, const String:oldValue[], const Stri
 	g_bEnableNoEscTank = GetConVarBool(g_hEnableNoEscTank);
 }
 
-bool IsPlayerTank(int client)
+/*bool IsPlayerTank(int client)
 {
 	return GetEntProp(client, Prop_Send, "m_zombieClass") == 5;
-}
+}*/

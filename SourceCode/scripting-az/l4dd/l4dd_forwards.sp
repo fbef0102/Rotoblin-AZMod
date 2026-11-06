@@ -324,6 +324,14 @@ void SetupDetours(GameData hGameData = null)
 
 	// Forwards listed here must match forward list in plugin start.
 	//			 GameData			DHookCallback PRE											DHookCallback POST											Signature Name														Forward Name									useLast index		DynamicHook			Hook Address		forceOn detour
+	
+	if( !g_bLeft4Dead2 && g_bLinuxOS )
+	{
+		CreateDetour(hGameData,		DTR_ZombieManager_SpawnTank_Area,							DTR_ZombieManager_SpawnTank_Area_Post,						"L4DD::ZombieManager::SpawnTank_Area",								"L4D_OnSpawnTank");
+		CreateDetour(hGameData,		DTR_ZombieManager_SpawnTank_Area,							DTR_ZombieManager_SpawnTank_Area_Post,						"L4DD::ZombieManager::SpawnTank_Area",								"L4D_OnSpawnTank_Post",							true);
+		CreateDetour(hGameData,		DTR_ZombieManager_SpawnTank_Area,							DTR_ZombieManager_SpawnTank_Area_Post,						"L4DD::ZombieManager::SpawnTank_Area",								"L4D_OnSpawnTank_PostHandled",					true);
+	}
+
 	CreateDetour(hGameData,			DTR_ZombieManager_SpawnTank,								DTR_ZombieManager_SpawnTank_Post,							"L4DD::ZombieManager::SpawnTank",									"L4D_OnSpawnTank");
 	CreateDetour(hGameData,			DTR_ZombieManager_SpawnTank,								DTR_ZombieManager_SpawnTank_Post,							"L4DD::ZombieManager::SpawnTank",									"L4D_OnSpawnTank_Post",							true); // Different forwards, same detour as above - same index.
 	CreateDetour(hGameData,			DTR_ZombieManager_SpawnTank,								DTR_ZombieManager_SpawnTank_Post,							"L4DD::ZombieManager::SpawnTank",									"L4D_OnSpawnTank_PostHandled",					true);
@@ -1281,6 +1289,63 @@ MRESReturn DTR_ZombieManager_SpawnTank_Post(DHookReturn hReturn, DHookParam hPar
 	return Spawn_TankWitch_Post(g_hFWD_ZombieManager_SpawnTank_Post, g_hFWD_ZombieManager_SpawnTank_PostHandled, hReturn, hParams);
 }
 
+bool g_bBlock_ZombieManager_SpawnTank;
+MRESReturn DTR_ZombieManager_SpawnTank_Area(DHookReturn hReturn, DHookParam hParams) // Forward "L4D_OnSpawnTank"
+{
+	//PrintToServer("##### DTR_ZombieManager_SpawnTank_Area");
+	g_bBlock_ZombieManager_SpawnTank = false;
+
+	// From the post hook
+	/*
+	int entity = hReturn.Value;
+	if( entity == 0 ) return MRES_Ignored;
+
+	float a1[3];
+	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", a1);
+	*/
+
+	float a2[3];
+	hParams.GetVector(2, a2);
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hFWD_ZombieManager_SpawnTank);
+	Call_PushArray(NULL_VECTOR, sizeof(a2));
+	Call_PushArray(a2, sizeof(a2));
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		g_bBlock_ZombieManager_SpawnTank = true;
+
+		// RemoveEntity(entity); // From the post hook
+		hReturn.Value = -1;
+		return MRES_Supercede;
+	}
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_ZombieManager_SpawnTank_Area_Post(DHookReturn hReturn, DHookParam hParams) // Forward "L4D_OnSpawnTank_Post" and "L4D_OnSpawnTank_PostHandled"
+{
+	//PrintToServer("##### DTR_ZombieManager_SpawnTank_Area_Post");
+	float a1[3], a2[3];
+
+	int entity = hReturn.Value;
+	if( entity > 0 && IsClientInGame(entity) )
+	{
+		GetClientAbsOrigin(entity, a1);
+		hParams.GetVector(2, a2);
+	}
+
+	Call_StartForward(g_bBlock_ZombieManager_SpawnTank ? g_hFWD_ZombieManager_SpawnTank_PostHandled : g_hFWD_ZombieManager_SpawnTank_Post);
+	Call_PushCell(entity);
+	Call_PushArray(a1, sizeof(a1));
+	Call_PushArray(a2, sizeof(a2));
+	Call_Finish();
+
+	return MRES_Ignored;
+}
+
 bool g_bBlock_Spawn_TankWitch;
 MRESReturn Spawn_TankWitch(Handle hForward, DHookReturn hReturn, DHookParam hParams)
 {
@@ -1345,12 +1410,13 @@ MRESReturn DTR_ZombieManager_SpawnWitch_Area(DHookReturn hReturn, DHookParam hPa
 	int entity = hReturn.Value;
 	if( entity == 0 ) return MRES_Ignored;
 
-	float a1[3], a2[3];
+	float a1[3];
 	GetEntPropVector(entity, Prop_Send, "m_vecOrigin", a1);
-	hParams.GetVector(2, a2);
 	*/
 
 	float a2[3];
+	hParams.GetVector(2, a2);
+
 	Action aResult = Plugin_Continue;
 	Call_StartForward(g_hFWD_ZombieManager_SpawnWitch);
 	Call_PushArray(NULL_VECTOR, sizeof(a2));
@@ -1372,13 +1438,18 @@ MRESReturn DTR_ZombieManager_SpawnWitch_Area(DHookReturn hReturn, DHookParam hPa
 MRESReturn DTR_ZombieManager_SpawnWitch_Area_Post(DHookReturn hReturn, DHookParam hParams) // Forward "L4D_OnSpawnWitch_Post" and "L4D_OnSpawnWitch_PostHandled"
 {
 	//PrintToServer("##### DTR_ZombieManager_SpawnWitch_Area_Post");
-	float a2[3];
+	float a1[3], a2[3];
 
 	int entity = hReturn.Value;
+	if( entity > MaxClients )
+	{
+		GetEntPropVector(entity, Prop_Send, "m_vecOrigin", a1);
+		hParams.GetVector(2, a2);
+	}
 
 	Call_StartForward(g_bBlock_ZombieManager_SpawnWitch ? g_hFWD_ZombieManager_SpawnWitch_PostHandled : g_hFWD_ZombieManager_SpawnWitch_Post);
 	Call_PushCell(entity);
-	Call_PushArray(NULL_VECTOR, sizeof(a2));
+	Call_PushArray(a1, sizeof(a1));
 	Call_PushArray(a2, sizeof(a2));
 	Call_Finish();
 
@@ -3545,11 +3616,36 @@ MRESReturn DTR_CTerrorPlayer_OnIncapacitatedAsSurvivor(int pThis, DHookReturn hR
 	//PrintToServer("##### DTR_CTerrorPlayer_OnIncapacitatedAsSurvivor");
 	g_bBlock_CTerrorPlayer_OnIncapacitatedAsSurvivor = false;
 
-	int inflictor = hParams.GetObjectVar(1, 48, ObjectValueType_EhandlePtr);
-	int attacker = hParams.GetObjectVar(1, 52, ObjectValueType_EhandlePtr);
-	int weapon = hParams.GetObjectVar(1, 56, ObjectValueType_Ehandle);
-	float damage = hParams.GetObjectVar(1, 60, ObjectValueType_Float);
-	int damagetype = hParams.GetObjectVar(1, 72, ObjectValueType_Int);
+	int inflictor;
+	int attacker;
+	int weapon;
+	float damage;
+	int damagetype;
+
+	if( g_bLeft4Dead2 )
+	{
+		inflictor = hParams.GetObjectVar(1, 48, ObjectValueType_EhandlePtr);
+		attacker = hParams.GetObjectVar(1, 52, ObjectValueType_EhandlePtr);
+		weapon = hParams.GetObjectVar(1, 56, ObjectValueType_Ehandle);
+		damage = hParams.GetObjectVar(1, 60, ObjectValueType_Float);
+		damagetype = hParams.GetObjectVar(1, 72, ObjectValueType_Int);
+	}
+	else
+	{
+		inflictor = hParams.GetObjectVar(1, 36, ObjectValueType_EhandlePtr);
+		attacker = hParams.GetObjectVar(1, 40, ObjectValueType_EhandlePtr);
+		damage = hParams.GetObjectVar(1, 44, ObjectValueType_Float);
+		damagetype = hParams.GetObjectVar(1, 56, ObjectValueType_Int);
+
+		if( attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker) )
+		{
+			weapon = GetEntPropEnt(attacker, Prop_Send, "m_hActiveWeapon");
+		}
+		else
+		{
+			weapon = -1;
+		}
+	}
 
 	Action aResult = Plugin_Continue;
 	Call_StartForward(g_hFWD_CTerrorPlayer_OnIncapacitatedAsSurvivor);
@@ -3571,11 +3667,22 @@ MRESReturn DTR_CTerrorPlayer_OnIncapacitatedAsSurvivor(int pThis, DHookReturn hR
 
 	if( aResult == Plugin_Changed )
 	{
-		hParams.SetObjectVar(1, 48, ObjectValueType_EhandlePtr, inflictor);
-		hParams.SetObjectVar(1, 52, ObjectValueType_EhandlePtr, attacker);
-		hParams.SetObjectVar(1, 56, ObjectValueType_Ehandle, weapon);
-		hParams.SetObjectVar(1, 60, ObjectValueType_Float, damage);
-		hParams.SetObjectVar(1, 72, ObjectValueType_Int, damagetype);
+		if( g_bLeft4Dead2 )
+		{
+			hParams.SetObjectVar(1, 48, ObjectValueType_EhandlePtr, inflictor);
+			hParams.SetObjectVar(1, 52, ObjectValueType_EhandlePtr, attacker);
+			hParams.SetObjectVar(1, 56, ObjectValueType_Ehandle, weapon);
+			hParams.SetObjectVar(1, 60, ObjectValueType_Float, damage);
+			hParams.SetObjectVar(1, 72, ObjectValueType_Int, damagetype);
+		}
+		else
+		{
+			hParams.SetObjectVar(1, 36, ObjectValueType_EhandlePtr, inflictor);
+			hParams.SetObjectVar(1, 40, ObjectValueType_EhandlePtr, attacker);
+			hParams.SetObjectVar(1, 44, ObjectValueType_Float, damage);
+			hParams.SetObjectVar(1, 56, ObjectValueType_Int, damagetype);
+		}
+
 		return MRES_ChangedHandled;
 	}
 
@@ -3584,11 +3691,36 @@ MRESReturn DTR_CTerrorPlayer_OnIncapacitatedAsSurvivor(int pThis, DHookReturn hR
 
 MRESReturn DTR_CTerrorPlayer_OnIncapacitatedAsSurvivor_Post(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D_OnIncapacitated_Post" abd "L4D_OnIncapacitated_PostHandled"
 {
-	int inflictor = hParams.GetObjectVar(1, 48, ObjectValueType_EhandlePtr);
-	int attacker = hParams.GetObjectVar(1, 52, ObjectValueType_EhandlePtr);
-	int weapon = hParams.GetObjectVar(1, 56, ObjectValueType_Ehandle);
-	float damage = hParams.GetObjectVar(1, 60, ObjectValueType_Float);
-	int damagetype = hParams.GetObjectVar(1, 72, ObjectValueType_Int);
+	int inflictor;
+	int attacker;
+	int weapon;
+	float damage;
+	int damagetype;
+
+	if( g_bLeft4Dead2 )
+	{
+		inflictor = hParams.GetObjectVar(1, 48, ObjectValueType_EhandlePtr);
+		attacker = hParams.GetObjectVar(1, 52, ObjectValueType_EhandlePtr);
+		weapon = hParams.GetObjectVar(1, 56, ObjectValueType_Ehandle);
+		damage = hParams.GetObjectVar(1, 60, ObjectValueType_Float);
+		damagetype = hParams.GetObjectVar(1, 72, ObjectValueType_Int);
+	}
+	else
+	{
+		inflictor = hParams.GetObjectVar(1, 36, ObjectValueType_EhandlePtr);
+		attacker = hParams.GetObjectVar(1, 40, ObjectValueType_EhandlePtr);
+		damage = hParams.GetObjectVar(1, 44, ObjectValueType_Float);
+		damagetype = hParams.GetObjectVar(1, 56, ObjectValueType_Int);
+
+		if( attacker > 0 && attacker <= MaxClients && IsClientInGame(attacker) )
+		{
+			weapon = GetEntPropEnt(attacker, Prop_Send, "m_hActiveWeapon");
+		}
+		else
+		{
+			weapon = -1;
+		}
+	}
 
 	Call_StartForward(g_bBlock_CTerrorPlayer_OnIncapacitatedAsSurvivor ? g_hFWD_CTerrorPlayer_OnIncapacitatedAsSurvivor_PostHandled : g_hFWD_CTerrorPlayer_OnIncapacitatedAsSurvivor_Post);
 	Call_PushCell(pThis);

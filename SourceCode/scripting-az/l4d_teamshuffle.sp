@@ -344,7 +344,14 @@ bool HasIdlePlayer(int bot)
 
 void ShuffleArray(int[] iClients, int iClientCount)
 {
-	int temp, random;
+	// Using "int random" to vary the output
+	// Using "GetGameTickCount" to vary the output
+	// Using "SetRandomSeed" to generate a truly random number
+	// Without this, the server will always output the same random numbers in the same order over reboots
+	int random = GetRandomInt(0, 2147483647);
+	SetRandomSeed(GetGameTickCount() + random);
+
+	int temp;
 	for(int i = 0; i < iClientCount; i++)
 	{
 		random = GetRandomInt(0, iClientCount-1);

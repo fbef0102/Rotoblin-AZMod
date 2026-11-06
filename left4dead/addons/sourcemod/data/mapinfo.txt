@@ -323,7 +323,7 @@
 	"l4d_vs_airport04_terminal"
 	{
 		//"VersusCompletionScore"	"500"
-		"VersusModifier"		"1.5"
+		"VersusModifier"		"1.4"
 		"pill_limit" "2"
 		"tank_ban_flow"
 		{
@@ -655,6 +655,14 @@
 		"VersusModifier"		"1.4"
 		"pill_limit" "2"
 		"tank_ban_flow"
+		{
+			"drop after crossing the roofs"
+			{
+				"min"		"73"
+				"max"		"100"
+			}
+		}
+		"witch_ban_flow"
 		{
 			"Event 2nd stage"
 			{

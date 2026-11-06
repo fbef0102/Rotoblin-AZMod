@@ -438,7 +438,13 @@ static ChooseFinalTank() {
 		return;
 	}
 
-	new idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
+	// Using "int random" to vary the output
+	// Using "GetGameTickCount" to vary the output
+	// Using "SetRandomSeed" to generate a truly random number
+	// Without this, the server will always output the same random numbers in the same order over reboots
+	int random = GetRandomInt(0, 2147483647);
+	SetRandomSeed(GetGameTickCount() + random);
+	int idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
 	GetArrayString(SteamIds, idx, tankSteamId, sizeof(tankSteamId));
 	queuedTank = GetInfectedPlayerBySteamId(tankSteamId);
 }
@@ -493,7 +499,13 @@ static ChooseTank() {
 		return;
 	}
 
-	new idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
+	// Using "int random" to vary the output
+	// Using "GetGameTickCount" to vary the output
+	// Using "SetRandomSeed" to generate a truly random number
+	// Without this, the server will always output the same random numbers in the same order over reboots
+	int random = GetRandomInt(0, 2147483647);
+	SetRandomSeed(GetGameTickCount() + random);
+	int idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
 	GetArrayString(SteamIds, idx, tankSteamId, sizeof(tankSteamId));
 	queuedTank = GetInfectedPlayerBySteamId(tankSteamId);
 }

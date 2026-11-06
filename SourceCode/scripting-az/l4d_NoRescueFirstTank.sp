@@ -50,7 +50,7 @@ public OnPluginStart()
 	HookEvent("finale_start", Event_Finale_Start);
 	HookEvent("finale_radio_start", Event_Finale_Start);
 	HookEvent("round_start", 	Event_RoundStart, EventHookMode_PostNoCopy);
-	HookEvent("tank_spawn", PD_ev_TankSpawn, EventHookMode_PostNoCopy);
+	HookEvent("tank_spawn", Event_TankSpawn, EventHookMode_PostNoCopy);
 	
 	g_bEnableNoFinalFirstTank = GetConVarBool(g_hEnableNoFinalFirstTank);
 	HookConVarChange(g_hEnableNoFinalFirstTank, Enable_CvarChange);
@@ -123,7 +123,26 @@ public Action:L4D_OnTryOfferingTankBot(tank_index, &bool:enterStatis)
 	return Plugin_Continue;
 }
 
-public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
+/*
+// 沒有用, 遊戲會一直嘗試生成
+public Action L4D_OnSpawnTank(const float vector[3], const float qangle[3])
+{
+	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank) return Plugin_Continue;
+
+	if(resuce_start)
+	{
+		if(!HasBlockFirstTank)
+		{
+			CPrintToChatAll("%t","l4d_NoRescueFirstTank");
+			HasBlockFirstTank = true;
+			return Plugin_Handled;
+		}
+	}
+
+ 	return Plugin_Continue;
+}*/
+
+void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	if(!g_bNoFinalFirstTankMap || !g_bEnableNoFinalFirstTank) return;
 
@@ -140,40 +159,39 @@ public void PD_ev_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 			CreateTimer(1.5, KillFirstTank, userid);
 			return;
 		}
-		/*
-		else
-		{
-			//PrintToChatAll("Second Tank Spawn");
-			if (!InSecondHalfOfRound())
-			{
-				if(!Tank_firstround_spawn){
-					new iTank = IsTankInGame();
-					if (iTank){
-						GetEntPropVector(iTank, Prop_Send, "m_angRotation", g_fTankData_angel);
-						GetEntPropVector(iTank, Prop_Send, "m_vecOrigin", g_fTankData_origin);
-						//PrintToChatAll("round1 tank pos: %.1f %.1f %.1f", vector[0], vector[1], vector[2]);
-						Tank_firstround_spawn = true;
-					}
-				}
-			}
-			else
-			{
-				if(g_bFixed || !Tank_firstround_spawn) return;
-				
-				new iTank = IsTankInGame();
-				if (iTank){
-
-					TeleportEntity(iTank, g_fTankData_origin, g_fTankData_angel, NULL_VECTOR);
-					//PrintToChatAll("teleport '%N' to round1 pos.", iTank);
-					g_bFixed = true;
-				}
-			}
-		}
-		*/
+		//else
+		//{
+		//	//PrintToChatAll("Second Tank Spawn");
+		//	if (!InSecondHalfOfRound())
+		//	{
+		//		if(!Tank_firstround_spawn){
+		//			new iTank = IsTankInGame();
+		//			if (iTank){
+		//				GetEntPropVector(iTank, Prop_Send, "m_angRotation", g_fTankData_angel);
+		//				GetEntPropVector(iTank, Prop_Send, "m_vecOrigin", g_fTankData_origin);
+		//				//PrintToChatAll("round1 tank pos: %.1f %.1f %.1f", vector[0], vector[1], vector[2]);
+		//				Tank_firstround_spawn = true;
+		//			}
+		//		}
+		//	}
+		//	else
+		//	{
+		//		if(g_bFixed || !Tank_firstround_spawn) return;
+		//		
+		//		new iTank = IsTankInGame();
+		//		if (iTank){
+		//
+		//			TeleportEntity(iTank, g_fTankData_origin, g_fTankData_angel, NULL_VECTOR);
+		//			//PrintToChatAll("teleport '%N' to round1 pos.", iTank);
+		//			g_bFixed = true;
+		//		}
+		//	}
+		//}
 	}
 	
 }
-public Action KillFirstTank(Handle timer, int userid)
+
+Action KillFirstTank(Handle timer, int userid)
 {
 	int iTank = GetClientOfUserId(userid);
 	if(iTank && IsClientInGame(iTank) && IsFakeClient(iTank) && GetClientTeam(iTank) == 3 && IsPlayerTank(iTank) && IsPlayerAlive(iTank))
@@ -186,6 +204,7 @@ public Action KillFirstTank(Handle timer, int userid)
 
 	return Plugin_Continue;
 }
+
 public Enable_CvarChange(Handle:convar, const String:oldValue[], const String:newValue[])
 {
 	if (StrEqual(oldValue, newValue)) return;

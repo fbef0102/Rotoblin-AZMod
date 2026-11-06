@@ -69,8 +69,6 @@ public void OnPluginStart()
 
 	LoadGameData();
 	RegServerCmd("saferoom_frustration_tickdown", SetSaferoomFrustrationTickdown);
-
-	HookEvent("tank_spawn",			Event_TankSpawn);
 }
 
 Action SetSaferoomFrustrationTickdown(int args)
@@ -113,22 +111,7 @@ public void OnMapEnd()
 	UnHookAll();
 }
 
-void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	if (g_bIsHooked)
-		return;
-
-	HookEvent("player_entered_start_area",		Event_EnteredStartArea);
-	HookEvent("player_entered_checkpoint",		Event_EnteredCheckpoint);
-	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
-
-	DebugPrint("{blue}Prepared hooks{default} from Event_TankSpawn");
-	g_bIsHooked = true;
-}
-
-// Not fire in l4d1 linux, wait for left4dhooks fix
-/*public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float vecAng[3])
+public void L4D_OnSpawnTank_Post(int client, const float vecPos[3], const float vecAng[3])
 {
 	if (g_bIsHooked)
 		return;
@@ -140,7 +123,7 @@ void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 
 	DebugPrint("{blue}Prepared hooks{default} from L4D_OnSpawnTank_Post");
 	g_bIsHooked = true;
-}*/
+}
 
 public void OnClientDisconnect(int client)
 {
