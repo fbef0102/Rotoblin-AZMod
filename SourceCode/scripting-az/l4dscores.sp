@@ -574,6 +574,36 @@ public OnReadyRoundRestarted()
 	roundRestarting = true;
 }
 
+public void OnMapInit()
+{	
+	static char currentmap[128];
+	GetCurrentMap(currentmap, sizeof(currentmap));
+
+	KeyValues hFile = OpenConfig();
+	if( hFile == null )
+		return;
+
+	char sMap[64];
+	GetCurrentMap(sMap, 64);
+
+	if(hFile.JumpToKey("default"))
+	{
+		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
+
+		hFile.GoBack();
+	}
+
+	if (hFile.JumpToKey(sMap)) 
+	{
+		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", g_fMapVersusDifficulty);
+
+		hFile.GoBack();
+	}
+
+	//LogError("%s: %f", sMap, g_fMapVersusDifficulty);
+	delete hFile;
+}
+
 public OnMapStart()
 {	
 	PrecacheSound("ui/holdout_teamrec.wav");
@@ -616,34 +646,6 @@ public OnMapStart()
 	Round1WipedOut = false;
 	Round2WipedOut = false;
 	IsSecondRound = false;
-	
-	// Load config
-	KeyValues hFile = OpenConfig();
-	if( hFile == null )
-		return;
-
-	// Check for current map in the config
-	decl String:sMap[64];
-	GetCurrentMap(sMap, 64);
-
-	if(hFile.JumpToKey("default"))
-	{
-		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", 1.0);
-
-		hFile.GoBack();
-	}
-
-	if (hFile.JumpToKey(sMap)) 
-	{
-		g_fMapVersusDifficulty = hFile.GetFloat("VersusModifier", g_fMapVersusDifficulty);
-
-		hFile.GoBack();
-	}
-
-	#if SCORE_DEBUG
-		LogMessage("%s: %f",sMap,g_fMapVersusDifficulty);
-	#endif
-	CloseHandle(hFile);
 	
 	if(!roundCounterReset)
 		GetRoundCounter(/*increment*/false, /*reset*/true);
@@ -1488,8 +1490,8 @@ PrintGetNowScores(client,roundend = false)
 	int iScores,AD,N,HB=0,round,PILLS=0;
 	float MD, fScores;
 	int HealthB,tempHealthB,pillB,Ent;
-	if(!roundend)
-	{
+	//if(!roundend)
+	//{
 		for (int j = 1; j <= MaxClients; j++)
 		{
 			if (IsClientInGame(j)&& GetClientTeam(j) == L4D_TEAM_SURVIVORS)
@@ -1516,7 +1518,7 @@ PrintGetNowScores(client,roundend = false)
 		fScores = (AD+HB+PILLS)*N*MD; //L4D1 對抗分數計算方式 (平均距離+生命加值+藥分)*存活數*地圖難度,(P+HB)*N*MD
 		iScores = RoundToNearest(fScores);
 		//生命加值計算:floor(實血/4)+floor(虛血/2)
-	}
+	//}
 
 	round = IsSecondRound ? 2 : 1;
 	int surplayer = GetTeamMaxHumans(L4D_TEAM_SURVIVORS); 
@@ -1525,23 +1527,31 @@ PrintGetNowScores(client,roundend = false)
 	{
 		if(client)
 		{
-			if(roundend){
+			if(roundend)
+			{
 				if(Round1WipedOut)
 					CPrintToChat(client,"%T %T","l4dscores5",client,round,Round1Score,"wiped out",client);
 				else
 					CPrintToChat(client,"%T \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",client,round,Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
 			}
-			else{
+			else
+			{
 				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
 			}
 		}
 		else
 		{
-			if(roundend){
+			if(roundend)
+			{
 				if(Round1WipedOut)
-					CPrintToChatAll("%t %t","l4dscores5",round,Round1Score,"wiped out");
+				{
+					CPrintToChatAll("%t %t [%t: \x03%.2f\x01]", "l4dscores5", round, Round1Score, "wiped out", "Map", MD+0.005);
+				}
 				else
+				{
 					CPrintToChatAll("%t \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",round,Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
+					CPrintToChatAll("[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD+0.005);
+				}
 			}
 			else
 			{
@@ -1576,11 +1586,17 @@ PrintGetNowScores(client,roundend = false)
 			else
 				CPrintToChatAll("%t \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores6",Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
 			
-			if(roundend){
+			if(roundend)
+			{
 				if(Round2WipedOut)
-					CPrintToChatAll("%t %t","l4dscores5",round,Round2Score,"wiped out");
+				{
+					CPrintToChatAll("%t %t [%t: \x03%.2f\x01]", "l4dscores5", round, Round2Score, "wiped out", "Map", MD+0.005);
+				}
 				else
+				{
 					CPrintToChatAll("%t \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",round,Round2Score,Round2ScorePercent,Round2SurAlive,surplayer);
+					CPrintToChatAll("[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD+0.005);
+				}
 			}
 			else
 			{

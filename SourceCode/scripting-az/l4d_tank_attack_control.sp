@@ -191,25 +191,27 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	else
 	{
-		if(g_bIgnorePlayer[client]) return Plugin_Continue;
-
 		if(buttons & IN_ATTACK2)
 		{
+			if(g_bIgnorePlayer[client]) return Plugin_Continue;
+
 			g_iQueuedThrow[client] = OneOverhand;
 		}
 		else if (buttons & IN_USE)
 		{
+			if(g_bIgnorePlayer[client]) return Plugin_Continue;
+
 			g_iQueuedThrow[client] = Underhand;
 			buttons |= IN_ATTACK2;
 		}
 		else if (buttons & IN_RELOAD)
 		{
+			if(g_bIgnorePlayer[client]) return Plugin_Continue;
+			
 			g_iQueuedThrow[client] = TwoOverhand;
 			buttons |= IN_ATTACK2;
 		}
 	}
-
-	if(g_bIgnorePlayer[client]) return Plugin_Continue;
 
 	if (g_iCvarPunchControl > 0 && (buttons & IN_ATTACK))
 	{

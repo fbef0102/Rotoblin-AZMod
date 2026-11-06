@@ -10,8 +10,8 @@ Description:
     Prepends "anv_mapfixes" to targetnames only when g_UpdateName + is used in EntFire,
     automatically generates missing team filters, places filters and logic_auto at the bottom,
     combines logic_auto outputs with empty lines between different targetnames, comments out
-    unresolved ladders, supports con_comment with escape character translation (\t and \n),
-    and converts EntFire into logic_auto OnMapSpawn outputs.
+    unresolved ladders or patch_ladders missing hammerid, supports con_comment with escape character
+    translation (\t and \n), and converts EntFire into logic_auto OnMapSpawn outputs.
 
 Usage:
     python l4d2_nut_to_l4d1_stripper.py <input_file.nut> <output_file.cfg> <map.bsp>
@@ -29,7 +29,7 @@ from bspinfo import lumps, lump, ents
 # BSP Parser helpers for find_ladder, clone_model, and filter emulation
 # ============================================================================
 def parse_bsp_data(bsp_path):
-    """Parse Lump 0 and Lump 14 of BSP to build ladder database and find team filters."""
+    """Parse Lump 0 and Lump 14 of BSP to build ladder database (including hammerid) and find team filters."""
     ladders_db = []
     filters_db = []
     
@@ -92,10 +92,13 @@ def parse_bsp_data(bsp_path):
                 else:
                     normal_str = kv.get("normal", "0 1 0")
 
+                hammerid = kv.get("hammerid", "")
+
                 ladders_db.append({
                     "vssm": vssm,
                     "model": model_str,
-                    "normal": normal_str
+                    "normal": normal_str,
+                    "hammerid": hammerid
                 })
             
             elif classname == "filter_activator_team":
@@ -206,7 +209,6 @@ def convert_statement_to_stripper(statement):
             value = args[2] if len(args) > 2 and args[2] and args[2] != "null" else ""
             delay = args[3] if len(args) > 3 and args[3] and args[3] != "null" else "0"
 
-            # Check if args[0] contains g_UpdateName +
             gm = re.search(r'g_UpdateName\s*\+\s*["\']?(.*?)["\']?$', raw_target_arg)
             if gm:
                 sub_name = gm.group(1).strip('"\'')
@@ -527,8 +529,14 @@ def convert_statement_to_stripper(statement):
 
             found_ladder = find_ladder_in_db(desired_vssm, 1.4, GLOBAL_LADDERS_DB)
             ladder_model = found_ladder["model"] if found_ladder and found_ladder["model"] else ""
+            ladder_hammerid = found_ladder["hammerid"] if found_ladder and "hammerid" in found_ladder else ""
 
-            match_block = f'"model" "{ladder_model}"' if ladder_model else f'"origin" "{desired_vssm}"'
+            if ladder_model and ladder_hammerid:
+                match_block = f'"model" "{ladder_model}"\n        "hammerid" "{ladder_hammerid}"'
+            elif ladder_model:
+                match_block = f'"model" "{ladder_model}"'
+            else:
+                match_block = f'"origin" "{desired_vssm}"'
 
             replace_lines = ""
             if offset_origin and offset_origin != "0 0 0":
@@ -555,7 +563,7 @@ def convert_statement_to_stripper(statement):
     {{{replace_lines}
     }}
 }}"""
-            if not found_ladder or not ladder_model:
+            if not found_ladder or not ladder_hammerid:
                 block = comment_out_block(block)
 
             return "; patch_ladder", block, [], []

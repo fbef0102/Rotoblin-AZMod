@@ -19,6 +19,71 @@
 				"return"		"int"
 				"this"			"ignore"
 			}
+
+			"l4d_vomit_trace_patch::CTraceFilterSimpleList"
+			{
+				"signature"		"CTraceFilterSimpleList::CTraceFilterSimpleList"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"address"
+				"arguments"
+				{
+					"CollisionGroup"
+					{
+						"type"	"int"
+					}
+				}
+			}
+
+			"l4d_vomit_trace_patch::OnVomitCollide"
+			{
+				"signature"		"OnVomitCollide"
+				"callconv"		"cdecl"
+				"return"		"void"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"	"cbaseentity"
+					}
+					"a2"
+					{
+						"type"	"cbaseentity"
+					}
+					"a3"
+					{
+						"type"	"cbaseentity"
+					}
+					"a4"
+					{
+						"type"	"int"
+					}
+					"a5"
+					{
+						"type"	"float"
+					}
+					"a5_1"
+					{
+						"type"	"float"
+					}
+					"a5_2"
+					{
+						"type"	"float"
+					}
+					"a6"
+					{
+						"type"	"float"
+					}
+					"a6_1"
+					{
+						"type"	"float"
+					}
+					"a6_2"
+					{
+						"type"	"float"
+					}
+				}
+			}
 		}
 	}
 
@@ -179,6 +244,20 @@
 				"windows"		"\x81\xEC\x2A\x2A\x2A\x2A\x8B\x84\x24\x2A\x2A\x2A\x2A\x8B\x8C\x24\x2A\x2A\x2A\x2A\x8B\x94\x24"
 				/* 81 EC ? ? ? ? 8B 84 24 ? ? ? ? 8B 8C 24 ? ? ? ? 8B 94 24 */
 			}
+
+			"CTraceFilterSimpleList::CTraceFilterSimpleList"
+			{
+				"library"		"server"
+				"linux"			"@_ZN22CTraceFilterSimpleListC2Ei"
+				"windows"		"\x8B\x54\x24\x04\x8B\xC1\x33\xC9"
+			}
+
+			"CTraceFilterSimpleList::AddEntityToIgnore"
+			{
+				"library"		"server"
+				"linux"			"@_ZN22CTraceFilterSimpleList17AddEntityToIgnoreEP13IHandleEntity"
+				"windows"		"\x8B\x51\x1C\x83\xC1\x10"
+			}
 		}
 	}
 
@@ -186,10 +265,41 @@
 	{
 		"Offsets"
 		{
+			"CBaseAbility::UpdateAbility"
+			{
+				"linux"		"205"
+				"windows"	"204"
+			}
+
 			"CBaseEntity::PhysicsSolidMaskForEntity"
 			{
 				"linux"		"178"
 				"windows"	"177"
+			}
+		}
+
+		"Signatures"
+		{
+			"CTraceFilterSimpleList::CTraceFilterSimpleList"
+			{
+				"library"		"server"
+				"linux"			"@_ZN22CTraceFilterSimpleListC2Ei"
+				"windows"		"\x55\x8B\xEC\x8B\x55\x08\x8B\xC1\x33\xC9"
+			}
+
+			"CTraceFilterSimpleList::AddEntityToIgnore"
+			{
+				"library"		"server"
+				"linux"			"@_ZN22CTraceFilterSimpleList17AddEntityToIgnoreEP13IHandleEntity"
+				"windows"		"\x55\x8B\xEC\x8B\x41\x14\x56"
+			}
+			
+			"OnVomitCollide"
+			{
+				"library"		"server"
+				"linux"			"@_Z14OnVomitCollideP13CTerrorPlayerP11CBaseEntityS2_i6VectorS3_"
+				"windows"		"\x55\x8B\xEC\x81\xEC\xE0\x00\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x8B\x45\x18"
+				/* 55 8B EC 81 EC E0 00 00 00 A1 ? ? ? ? 33 C5 89 45 FC 8B 45 18 */
 			}
 		}
 	}
