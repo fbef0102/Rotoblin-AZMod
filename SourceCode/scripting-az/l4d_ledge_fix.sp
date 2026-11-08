@@ -26,6 +26,15 @@
  * and debris are never the floor), the horizontal look-ahead (1.0 traced straight down
  * only and could block a fast survivor over a real pit's lip), the min_damage cvar, and
  * the game's own estimate in the log next to ours.
+ *
+ * 1.2: grabs left alone because no floor could be found are logged too, with the reason
+ * and the height to the first surface below ("unjudged"). Until now they left no trace.
+ *
+ * 1.3: rock crevices. A tank punch into the DT1 woods rocks (matches 322 and 705) hung
+ * survivors 70 to 120 units up: following the steep face, the next 16-unit step started
+ * inside the facing rock and the search gave up. Shorter steps, then the crevice itself
+ * as the floor. And the grab that finally hangs is logged even within a second of a
+ * blocked one.
  */
 #pragma semicolon 1
 #pragma newdecls required
@@ -34,7 +43,7 @@
 #include <sdktools>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION	"1.1"
+#define PLUGIN_VERSION	"1.3"
 #define TEAM_SURVIVOR	2
 // Past this we treat the drop as bottomless and leave the game's call alone.
 #define TRACE_DEPTH		4096.0
@@ -46,6 +55,10 @@
 ConVar g_cvMode, g_cvLog, g_cvSafe, g_cvFatal, g_cvGravity, g_cvMinDamage;
 Handle g_hEstimate;		// CTerrorPlayer::EstimateFallingDamage, for the log only
 float g_fLastLog[MAXPLAYERS + 1];
+char g_sSkip[96];		// why the last DropBelow found no floor (log only)
+float g_fFirst;			// height to the first surface under the survivor (log only)
+bool g_bWedged;			// a slide ended in a rock crevice (log only)
+bool g_bLastHang[MAXPLAYERS + 1];	// the last logged verdict for this survivor was a hang
 char g_sLogPath[PLATFORM_MAX_PATH];
 
 public Plugin myinfo =
@@ -84,6 +97,20 @@ public void OnPluginStart()
 public void OnClientPutInServer(int client)
 {
 	g_fLastLog[client] = 0.0;
+	g_bLastHang[client] = false;
+}
+
+// A blocked grab is offered again every tick while the survivor is still
+// airborne, so each survivor is logged at most once a second, except that the
+// grab which finally hangs is always logged even right after a blocked one.
+bool ShouldLog(int client, bool hang)
+{
+	float now = GetEngineTime();
+	if( now - g_fLastLog[client] < 1.0 && (!hang || g_bLastHang[client]) )
+		return false;
+	g_fLastLog[client] = now;
+	g_bLastHang[client] = hang;
+	return true;
 }
 
 // CTraceFilterNoNPCsOrPlayer with COLLISION_GROUP_PLAYER_MOVEMENT, as CheckForLedge uses:
@@ -105,7 +132,13 @@ public bool TraceFilter_World(int entity, int contentsMask)
 // stand on (normal.z < 0.7) is followed downhill, 16 units at a time, the way
 // the survivor would slide down it: a tank punch into rocks usually lands on
 // one. Sliding never lands faster than falling the same height, so the total
-// height is a safe bound. Returns false when no standable floor turns up.
+// height is a safe bound. Rock crevices: when the next 16-unit step starts inside
+// the face opposite, 8 and then 4 units are tried; if all are inside rock the
+// survivor would wedge in the crevice, so that is where they land (the slab is
+// narrower than a player, so it wedges lower than they would: still a safe bound).
+// Returns false when no standable floor turns up, with
+// the reason in g_sSkip for the log. g_fFirst is the height to the first surface
+// hit at all, standable or not (log only).
 bool DropBelow(const float origin[3], float &drop)
 {
 	float start[3], end[3], hit[3], normal[3];
@@ -117,24 +150,58 @@ bool DropBelow(const float origin[3], float &drop)
 		end = start;
 		end[2] = origin[2] - TRACE_DEPTH;
 		Handle tr = TR_TraceHullFilterEx(start, end, mins, maxs, MASK_SURVIVOR_MOVE, TraceFilter_World);
-		bool found = TR_DidHit(tr) && !TR_StartSolid(tr);
+		bool solid = TR_StartSolid(tr);
+		bool found = TR_DidHit(tr) && !solid;
 		if( found )
 		{
 			TR_GetEndPosition(hit, tr);
 			TR_GetPlaneNormal(tr, normal);
 		}
 		delete tr;
-		if( !found ) return false;
+		if( !found )
+		{
+			if( solid ) FormatEx(g_sSkip, sizeof(g_sSkip), "start solid after %d slide steps", step);
+			else FormatEx(g_sSkip, sizeof(g_sSkip), "no floor within %.0f after %d slide steps", TRACE_DEPTH, step);
+			return false;
+		}
+		if( step == 0 && g_fFirst < 0.0 ) g_fFirst = origin[2] - hit[2];
 		if( normal[2] >= 0.7 )
 		{
 			drop = origin[2] - hit[2];
 			return true;
 		}
 		float len = SquareRoot(normal[0] * normal[0] + normal[1] * normal[1]);
-		if( len < 0.01 ) return false;
-		start[0] = hit[0] + normal[0] / len * 16.0;
-		start[1] = hit[1] + normal[1] / len * 16.0;
-		start[2] = hit[2] + 1.0;
+		if( len < 0.01 ) { FormatEx(g_sSkip, sizeof(g_sSkip), "flat steep normal"); return false; }
+		if( !SlideStep(hit, normal, len, mins, maxs, start) )
+		{
+			g_bWedged = true;
+			drop = origin[2] - hit[2];
+			return true;
+		}
+	}
+	FormatEx(g_sSkip, sizeof(g_sSkip), "slope longer than %d steps, %.0f down so far", SLIDE_STEPS, origin[2] - start[2]);
+	return false;
+}
+
+// The next start point 16, 8 or 4 units out from a steep face, the first that is
+// not inside solid. False when all three are (a crevice).
+bool SlideStep(const float hit[3], const float normal[3], float len, const float mins[3], const float maxs[3], float start[3])
+{
+	static const float steps[3] = { 16.0, 8.0, 4.0 };
+	for( int i = 0; i < 3; i++ )
+	{
+		float next[3];
+		next[0] = hit[0] + normal[0] / len * steps[i];
+		next[1] = hit[1] + normal[1] / len * steps[i];
+		next[2] = hit[2] + 1.0;
+		Handle tr = TR_TraceHullFilterEx(next, next, mins, maxs, MASK_SURVIVOR_MOVE, TraceFilter_World);
+		bool solid = TR_StartSolid(tr);
+		delete tr;
+		if( !solid )
+		{
+			start = next;
+			return true;
+		}
 	}
 	return false;
 }
@@ -157,7 +224,11 @@ bool DeepestDrop(int client, const float origin[3], const float vel[3], float &d
 		TR_GetEndPosition(at, tr);
 		bool wall = TR_DidHit(tr);
 		delete tr;
-		if( !DropBelow(at, d) ) return false;
+		if( !DropBelow(at, d) )
+		{
+			Format(g_sSkip, sizeof(g_sSkip), "%s (look-ahead %.1f s)", g_sSkip, t);
+			return false;
+		}
 		if( d > drop ) drop = d;
 		if( wall ) break;
 	}
@@ -175,8 +246,21 @@ public Action L4D_OnLedgeGrabbed(int client)
 	GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", vel);
 	// The deepest floor at the survivor and along where their horizontal speed carries them
 	// in the next half second (stopping at walls). Any bottomless sample leaves the grab alone.
+	g_fFirst = -1.0;
+	g_bWedged = false;
 	if( !DeepestDrop(client, origin, vel, drop) )
+	{
+		// No floor we could judge: the grab stands. Logged so these spots can be found.
+		if( g_cvLog.BoolValue && ShouldLog(client, true) )
+		{
+			char map[64];
+			GetCurrentMap(map, sizeof(map));
+			float est = g_hEstimate != null ? SDKCall(g_hEstimate, client) : -1.0;
+			LogToFileEx(g_sLogPath, "%s %N at %.0f %.0f %.0f first %.1f vz %.0f vxy %.0f game_est %.1f -> hang (unjudged: %s)",
+				map, client, origin[0], origin[1], origin[2], g_fFirst, vel[2], SquareRoot(vel[0] * vel[0] + vel[1] * vel[1]), est, g_sSkip);
+		}
 		return Plugin_Continue;
+	}
 
 	float gravity = g_cvGravity.FloatValue;
 	float scale = GetEntPropFloat(client, Prop_Data, "m_flGravity");
@@ -195,17 +279,13 @@ public Action L4D_OnLedgeGrabbed(int client)
 
 	if( g_cvLog.BoolValue )
 	{
-		// A blocked grab is offered again every tick while the survivor is
-		// still airborne, so log each survivor at most once a second.
-		float now = GetEngineTime();
-		if( now - g_fLastLog[client] >= 1.0 )
+		if( ShouldLog(client, !harmless || mode != 1) )
 		{
-			g_fLastLog[client] = now;
 			char map[64];
 			GetCurrentMap(map, sizeof(map));
 			float est = g_hEstimate != null ? SDKCall(g_hEstimate, client) : -1.0;
-			LogToFileEx(g_sLogPath, "%s %N at %.0f %.0f %.0f drop %.1f vz %.0f vxy %.0f landing %.0f safe %.0f dmg %.1f game_est %.1f -> %s",
-				map, client, origin[0], origin[1], origin[2], drop, vel[2], SquareRoot(vel[0] * vel[0] + vel[1] * vel[1]), landing, safe, damage, est,
+			LogToFileEx(g_sLogPath, "%s %N at %.0f %.0f %.0f drop %.1f vz %.0f vxy %.0f landing %.0f safe %.0f dmg %.1f game_est %.1f%s -> %s",
+				map, client, origin[0], origin[1], origin[2], drop, vel[2], SquareRoot(vel[0] * vel[0] + vel[1] * vel[1]), landing, safe, damage, est, g_bWedged ? " wedged" : "",
 				!harmless ? "hang" : (mode == 1 ? "BLOCKED" : "would block"));
 		}
 	}

@@ -396,7 +396,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
         - *2*: **Bill**
         - *3*: **Zoey**
         - *4*: **Louis**
-      * Buttons: `Use` (E)
+      * Buttons: `Reload` (R)
       * Buttons: `MOUSE2`
         - Disabled by default, ```sm_warpm2``` to enable it individually
     * No gunfire slowdown and shove slowdown
@@ -594,6 +594,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       <br/>![Boomer_vomit_pass_fence](image/Boomer_vomit_pass_fence.gif)
       * Pass through incapacitated survivors who have already been vomited on.
     * Boomer's exploding can trigger alarm car and startle witch
+    * Boomer hordes replace far or stuck commons with fresh ones so the full horde arrives
 	  
   * **Charger/Spitter/Jockey:**
     * No!!!!!!!!!!!!! This is L4D1, GO AWAY!!

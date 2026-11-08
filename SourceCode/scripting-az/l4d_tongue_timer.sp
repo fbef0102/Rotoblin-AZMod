@@ -16,8 +16,11 @@ bool bLateLoad;
 bool bPlayerPulled[MAXPLAYERS + 1];
 ConVar convarTongueDelayTank;
 ConVar convarTongueDelaySurvivor;
+ConVar convarTongueDelayLedge;
+ConVar convarTongueHitDelay;
 float fTongueDelayTank;
 float fTongueDelaySurvivor;
+float fTongueDelayLedge;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -38,7 +41,7 @@ public Plugin myinfo =
 	name = "Tongue Timer",
 	author = "Sir, l4d1 port by Harry",
 	description = "Modify the Smoker's tongue ability timer in certain scenarios.",
-	version = "1.3",
+	version = "1.3-riverside1",
 	url = "Nope"
 }
 
@@ -47,10 +50,17 @@ public void OnPluginStart()
 	// ConVars
 	convarTongueDelayTank = CreateConVar("l4d_tongue_delay_tank", "8.0", "How long of a cooldown does the Smoker get on a quick clear by Tank punch/rock? (Vanilla = 3.0s)");
 	convarTongueDelaySurvivor = CreateConVar("l4d_tongue_delay_survivor", "4.0", "How long of a cooldown does the Smoker get on a quick clear by Survivors? (Vanilla = 3.0s)");
+	// Riverside: L4D2's CTongue::GetAbilityActivationDelay gives the full tongue_hit_delay when the victim is
+	// hanging from a ledge as the tongue lets go (it tests m_isHangingFromLedge); L4D1's only looks at the drag time,
+	// so a victim pulled onto a ledge within a second handed the smoker the short miss delay.
+	convarTongueDelayLedge = CreateConVar("l4d_tongue_delay_ledge", "-1", "Cooldown the Smoker gets when his victim is hanging from a ledge as the tongue releases. -1 = tongue_hit_delay (L4D2 behaviour), 0 = off");
+	convarTongueHitDelay = FindConVar("tongue_hit_delay");
 	fTongueDelayTank = convarTongueDelayTank.FloatValue;
 	fTongueDelaySurvivor = convarTongueDelaySurvivor.FloatValue;
+	fTongueDelayLedge = convarTongueDelayLedge.FloatValue;
 	convarTongueDelayTank.AddChangeHook(ConvarChanged);
 	convarTongueDelaySurvivor.AddChangeHook(ConvarChanged);
+	convarTongueDelayLedge.AddChangeHook(ConvarChanged);
 
 	// Events
 	HookEvent("round_start", Event_TongueRelease);
@@ -146,6 +156,16 @@ public void Event_TongueGrab(Event event, const char[] name, bool dontBroadcast)
 public void Event_TongueRelease(Event event, const char[] name, bool dontBroadcast)
 {
 	RequestFrame(OnNextFrame);
+
+	// round_start shares this handler and has no tongue fields.
+	if (fTongueDelayLedge == 0.0 || !StrEqual(name, "tongue_release")) return;
+
+	// Checked a frame later so the game's own ResetTongueTimer has already run and the ledge grab that broke the
+	// tongue has landed, whichever of the two came first.
+	DataPack pack = new DataPack();
+	pack.WriteCell(event.GetInt("userid"));
+	pack.WriteCell(event.GetInt("victim"));
+	RequestFrame(OnTongueReleaseLedgeCheck, pack);
 }
 
 public void Event_Replace(Event event, const char[] name, bool dontBroadcast)
@@ -188,6 +208,35 @@ void OnNextFrame(any victim)
 	ClearPulls();
 }
 
+void OnTongueReleaseLedgeCheck(DataPack pack)
+{
+	pack.Reset();
+	int smoker = GetClientOfUserId(pack.ReadCell());
+	int victim = GetClientOfUserId(pack.ReadCell());
+	delete pack;
+
+	if (!IsValidAliveSmoker(smoker) || !IsValidClient(victim) || GetClientTeam(victim) != 2) return;
+	if (!GetEntProp(victim, Prop_Send, "m_isHangingFromLedge")) return;
+
+	float delay = fTongueDelayLedge;
+	if (delay < 0.0)
+	{
+		if (convarTongueHitDelay == null) return;
+		delay = convarTongueHitDelay.FloatValue;
+	}
+
+	float timestamp;
+	float duration;
+	if (!GetInfectedAbilityTimer(smoker, timestamp, duration)) return;
+
+	// Only ever lengthens the cooldown, like the two cases above.
+	float next = GetGameTime() + delay;
+	if (next > timestamp)
+	{
+		SetInfectedAbilityTimer(smoker, next, delay);
+	}
+}
+
 public void OnSmokerSurvivorClear(any smoker)
 {
 	if (IsValidAliveSmoker(smoker))
@@ -219,6 +268,7 @@ public void ConvarChanged(ConVar convar, const char[] oldValue, const char[] new
 {
 	fTongueDelayTank = convarTongueDelayTank.FloatValue;
 	fTongueDelaySurvivor = convarTongueDelaySurvivor.FloatValue;
+	fTongueDelayLedge = convarTongueDelayLedge.FloatValue;
 }
 
 // ----------------------------------------------

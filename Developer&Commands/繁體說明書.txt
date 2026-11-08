@@ -1064,6 +1064,11 @@
 //L4D2 無此問題，故移植二代地圖常包含此漏洞
 //插件於 SpawnPost 攔截 model index 為 0 的 BSP/VPHYSICS 實體，強制寫入 KeyValue "solid" "0" 呼叫 SetSolid(SOLID_NONE) 將其剔除出碰撞分區
 
+[262] l4d_boomer_horde_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//Boomer hordes replace far or stuck commons with fresh ones so the full horde arrives
+//Boomer噴到時，事先檢查並移除地圖上太遠的小殭屍，確保完整的屍潮到達
+
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk
 //重製所有官方地圖的nav
