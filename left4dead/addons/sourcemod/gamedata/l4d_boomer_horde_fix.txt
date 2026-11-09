@@ -1,0 +1,19 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Signatures"
+		{
+			// void TerrorNavMesh::OnAreaCleared(TerrorNavArea*): what MarkAreaCleared runs when an area is
+			// newly cleared; moves the boundary spread past it (server.so 0x72b1ae)
+			"TerrorNavMesh::OnAreaCleared"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13TerrorNavMesh13OnAreaClearedEP13TerrorNavArea"
+				"windows"	"\x83\xEC\x08\x57\x6A\x04"
+				// sub_102738E0:83 EC 08 57 6A 04 
+
+			}
+		}
+	}
+}

@@ -155,20 +155,21 @@ public void OnEntityCreated(int entity, const char[] classname)
 	}
 }
 
+int g_iVomitSprayer = -1;
 MRESReturn L4D1_CVomit_UpdateAbility(int pThis)
 {
 	if (GetEntProp(pThis, Prop_Send, "m_isSpraying"))
 	{
-		ApplyPatch(true);
+			g_iVomitSprayer = GetEntPropEnt(pThis, Prop_Send, "m_owner");
+			ApplyPatch(true);
 	}
-	
 	return MRES_Ignored;
 }
 
 MRESReturn L4D1_CVomit_UpdateAbility_Post(int pThis)
 {
 	ApplyPatch(false);
-	
+	g_iVomitSprayer = -1;
 	return MRES_Ignored;
 }
 
@@ -251,7 +252,6 @@ stock bool SwapProfilerResults(float &avgTime=0.0, float &medTime=0.0)
 #endif
 }
 
-int g_iVomitSprayer = -1;
 MRESReturn L4D2_CVomit_UpdateAbility(int pThis)
 {
 	if (GetEntProp(pThis, Prop_Send, "m_isSpraying"))
