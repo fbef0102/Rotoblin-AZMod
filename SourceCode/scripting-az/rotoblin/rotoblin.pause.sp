@@ -120,6 +120,7 @@ public _P_OnPluginEnabled()
 	HookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 
 	HookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
+	HookPublicEvent(EVENT_ONPLAYERRUNCMD, _P_OnPlayerRunCmd);
 }
 
 /**
@@ -143,6 +144,7 @@ public _P_OnPluginDisabled()
 	UnhookEvent("round_start", _PC_RoundStart_Event, EventHookMode_PostNoCopy);
 
 	UnhookPublicEvent(EVENT_ONCLIENTPUTINSERVER, _P_OnClientPutInServer);
+	UnhookPublicEvent(EVENT_ONPLAYERRUNCMD, _P_OnPlayerRunCmd);
 }
 
 public void _P_OnClientPutInServer(int client)
@@ -223,6 +225,16 @@ void FrameDelay_PlayerSay(int iUserId)
 	SetEntPropFloat(iClient, Prop_Data, "m_fLastPlayerTalkTime", 0.0);
 }
 
+public _P_OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
+	if (g_bIsPaused && (buttons & IN_ATTACK) && GetClientTeam(client) == L4D1Team_Infected && L4D_IsPlayerGhost(client))
+	{
+		buttons &= ~IN_ATTACK;
+		return Plugin_Changed;
+	}
+	return Plugin_Continue;
+}
+
 public Action:Pause_Cmd(client, args)
 {
 	if (client == SERVER_INDEX)
@@ -264,7 +276,7 @@ public Action:Pause_Cmd(client, args)
 		return Plugin_Handled;
 	}
 	new teamIndex = GetClientTeam(client);
-	if (teamIndex != TEAM_SURVIVOR && teamIndex != TEAM_INFECTED)
+	if (teamIndex != TEAM_SURVIVOR && teamIndex != L4D1Team_Infected)
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin5",client);
 		return Plugin_Handled;
@@ -342,7 +354,7 @@ public Action:Unpause_Cmd(client, args)
 		
 	new teamIndex = GetClientTeam(client);
 
-	if (teamIndex != TEAM_SURVIVOR && teamIndex != TEAM_INFECTED)
+	if (teamIndex != TEAM_SURVIVOR && teamIndex != L4D1Team_Infected)
 	{
 		CPrintToChat(client, "[{olive}TS{default}] %T","rotoblin8",client);
 		return Plugin_Handled;
@@ -518,7 +530,6 @@ static void Pause()
 		
 		if (team == L4D1Team_Infected && IsPlayerGhost(client))
 		{
-			SetEntProp(client, Prop_Send, "m_hasVisibleThreats", 1);
 			int buttons = GetClientButtons(client);
 			if (buttons & IN_ATTACK)
 			{
@@ -692,8 +703,10 @@ static int GetTeamHumanCount(int team)
 
 static IsPlayer(client)
 {
+	if (!client || !IsClientInGame(client)) return false;
+	
 	new team = GetClientTeam(client);
-	return (client && (team == 2 || team == 3));
+	return (team == L4D1Team_Survivor || team == L4D1Team_Infected);
 }
 
 int Native_IsPauseing(Handle plugin, int numParams)

@@ -135,8 +135,6 @@ public _IC_OnPluginDisabled()
 	UnhookConVarChange(g_hEnableCannisters_Cvar, _IC_EnableCannisters_CvarChange);
 	
 	DebugPrintToAllEx("Module is now unloaded");
-
-	MI_KV_Close();
 }
 public _IC_OnMapStart()
 {

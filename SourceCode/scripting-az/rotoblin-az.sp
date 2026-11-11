@@ -53,7 +53,7 @@
 #define PLUGIN_SHORTNAME		"rotoblin"							// Shorter version of the full name, used in file paths, and other things
 #define PLUGIN_AUTHOR			"Rotoblin Team, HarryPotter"						// Author of the plugin
 #define PLUGIN_DESCRIPTION		"A competitive mod for L4D1"			// Description of the plugin
-#define PLUGIN_VERSION			"8.6.4-2026/10/26"								// Version
+#define PLUGIN_VERSION			"8.6.4-2026/11/11"								// Version
 #define PLUGIN_URL				"https://github.com/fbef0102/Rotoblin-AZMod"	// URL associated with the project
 #define PLUGIN_CVAR_PREFIX		PLUGIN_SHORTNAME				// Prefix for cvars
 #define PLUGIN_CMD_PREFIX		PLUGIN_SHORTNAME				// Prefix for cmds
@@ -177,7 +177,6 @@ public OnPluginStartEx()
 
 	HookPublicEvent(EVENT_ONPLUGINEND, _Roto_OnPluginEnd);
 	HookPublicEvent(EVENT_ONMAPSTART, _Roto_OnMapStart);
-	HookPublicEvent(EVENT_ONMAPEND, _Roto_OnMapEnd);
 
 	decl String:buffer[128];
 	Format(buffer, sizeof(buffer), "%s version", PLUGIN_FULLNAME);
@@ -227,8 +226,6 @@ public OnPluginStartEx()
 
 	HookConVarChange(convar, _Main_Enable_CvarChange);
 	DebugPrintToAll(DEBUG_CHANNEL_GENERAL, "[Main] Done setting up!");
-
-	MI_KV_Load();
 }
 
 /**
@@ -261,7 +258,7 @@ public OnConfigsExecuted()
 
 public void _Roto_OnPluginEnd()
 {
-	MI_KV_Close();
+	delete g_hMIData;
 }
 
 public void _Roto_OnMapStart()
@@ -272,8 +269,15 @@ public void _Roto_OnMapStart()
 	g_bWAIT_FOR_FINALE_map = false;
 	g_bGauntletFinaleMap = false;
 
-	MI_KV_Close();
-	MI_KV_Load();
+	delete g_hMIData;
+	char sNameBuff[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
+
+	g_hMIData = new KeyValues("MapInfo");
+	if (!g_hMIData.ImportFromFile(sNameBuff)) {
+		LogError("[TS] Couldn't load MapInfo data!");
+		delete g_hMIData;
+	}
 
 	if(g_hMIData.JumpToKey("default"))
 	{
@@ -291,32 +295,5 @@ public void _Roto_OnMapStart()
 		g_bGauntletFinaleMap = view_as<bool>(g_hMIData.GetNum("GauntletFinale_map", g_bGauntletFinaleMap));
 
 		g_hMIData.GoBack();
-	}
-
-	KvRewind(g_hMIData);
-}
-
-public void _Roto_OnMapEnd()
-{
-	KvRewind(g_hMIData);
-}
-
-void MI_KV_Close()
-{
-	if (g_hMIData != null) {
-		CloseHandle(g_hMIData);
-		g_hMIData = null;
-	}
-}
-
-void MI_KV_Load()
-{
-	char sNameBuff[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sNameBuff, 256, "data/%s", "mapinfo.txt");
-
-	g_hMIData = CreateKeyValues("MapInfo");
-	if (!FileToKeyValues(g_hMIData, sNameBuff)) {
-		LogError("[MI] Couldn't load MapInfo data!");
-		MI_KV_Close();
 	}
 }
