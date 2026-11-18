@@ -10,14 +10,16 @@
 
 native Is_Ready_Plugin_On();
 
-static	queuedTank, String:tankSteamId[32], Handle:hTeamTanks, Handle:hTeamFinalTanks;
+int queuedTank;
+char sChosenTankSteamId_ThisRound[32];
+Handle hTeamTanks, hTeamFinalTanks;
 ConVar g_hCvarInfLimit, g_hCvarSurLimit;
 static		bool:IsSecondTank,bool:IsFinal;	
 static Handle:hPreviousMapTeamTanks;
 public Plugin:myinfo = {
 	name = "L4D Tank Control",
 	author = "Jahze, vintik, raziEiL [disawar1], Harry Potter",
-	version = "2.3",
+	version = "2.4-2026/11/18",
 	description = "Forces each player to play the tank at least once before Map change."
 };
 
@@ -55,7 +57,10 @@ public Native_ChoseTankPrintWhoBecome(Handle:plugin, numParams)
 		CPrintToChatAll("%t","player will be the tank", queuedTankName); 
 	}
 	else
-		ChoseTankAndPrintWhoBecome();
+	{
+		bool bFirstChoose = GetNativeCell(1);
+		ChoseTankAndPrintWhoBecome(bFirstChoose);
+	}
 }
 
 public OnPluginStart()
@@ -76,8 +81,9 @@ public OnPluginStart()
 	RegConsoleCmd("sm_tank", Command_FindNexTank);
 	RegConsoleCmd("sm_t", Command_FindNexTank);
 	RegConsoleCmd("sm_boss", Command_FindNexTank);
-	RegAdminCmd("sm_settankplayer", Command_SetTank, ADMFLAG_BAN, "sm_settank <player> - force this player will become the tank");
-	RegAdminCmd("sm_clearteam", ClearTeam_Cmd, ADMFLAG_BAN, "clear who_has_been_tank_arraylist for both team, useful when map change.");
+	RegAdminCmd("sm_settankplayer", Command_SetTank, ADMFLAG_SLAY, "sm_settankplayer <player> - force this player will become the tank");
+	RegAdminCmd("sm_givetank", Command_SetTank, ADMFLAG_SLAY, "sm_givetank <player> - force this player will become the tank");
+	RegAdminCmd("sm_clearteam", ClearTeam_Cmd, ADMFLAG_SLAY, "clear who_has_been_tank_arraylist for both team, useful when map change.");
 	
 	hTeamTanks = CreateArray(64);
 	hTeamFinalTanks = CreateArray(64);
@@ -91,7 +97,7 @@ public OnPluginStart()
 public TC_ev_LeftStartAreaEvent(Handle:event, String:name[], bool:dontBroadcast)
 {
 	if(!Is_Ready_Plugin_On())
-		ChoseTankAndPrintWhoBecome();
+		ChoseTankAndPrintWhoBecome(true);
 }
 
 public Action:Command_SetTank(client, args)
@@ -137,9 +143,11 @@ public Action:Command_SetTank(client, args)
 	}
 	
 	queuedTank = player_id;
-	decl String:queuedTankName[128];
-	GetClientName(queuedTank,queuedTankName,128);
+	static char queuedTankName[128];
+	GetClientName(queuedTank,queuedTankName,sizeof(queuedTankName));
 	CPrintToChatAll("%t","l4d_tank_control2", queuedTankName); 
+	if (!GetClientAuthId(queuedTank, AuthId_Steam2, sChosenTankSteamId_ThisRound, sizeof(sChosenTankSteamId_ThisRound)))
+		sChosenTankSteamId_ThisRound[0] = '\0';
 	
 	return Plugin_Handled;	
 }
@@ -238,7 +246,7 @@ public OnMapStart()//每個地圖的第一關載入時清除所有has been tank 
 	ClearArray(hPreviousMapTeamTanks);
 }
 
-public void TC_ev_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+void TC_ev_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if (client && IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 3 && IsPlayerAlive(client) && IsPlayerTank(client))
@@ -247,41 +255,77 @@ public void TC_ev_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	}
 }
 
-public Action:TC_ev_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+void TC_ev_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	queuedTank = 0;
 	IsSecondTank = false;
+	sChosenTankSteamId_ThisRound[0] = '\0';
 }
 
-public TC_ev_OnTeamChange(Handle:event, String:name[], bool:dontBroadcast)
+void TC_ev_OnTeamChange(Event event, const char[] name, bool dontBroadcast)
 {
 	if (IsPluginDisabled()) return;
 
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	CreateTimer(1.0,PlayerChangeTeamCheck,client);//延遲一秒檢查
+	int userid = event.GetInt("userid");
+	CreateTimer(0.1, PlayerChangeTeamCheck, userid);//延遲一秒檢查
 }
-public Action:PlayerChangeTeamCheck(Handle:timer,any:client)
+
+Action PlayerChangeTeamCheck(Handle timer, any userid)
 {
-	if (client && client == queuedTank)
-		if(!IsClientInGame(client) || GetClientTeam(client)!=3)
-			ChoseTankAndPrintWhoBecome();
+	int client = GetClientOfUserId(userid);
+	if (client && IsClientInGame(client) && !IsFakeClient(client))
+	{
+		int team = GetClientTeam(client);
+		if(team == 3)
+		{
+			static char sTankSteamId[32];
+			// 回合開始時被選上tank的玩家回到了特感隊伍
+			if(GetClientAuthId(client, AuthId_Steam2, sTankSteamId, sizeof(sTankSteamId)) 
+			&& strcmp(sTankSteamId, sChosenTankSteamId_ThisRound) == 0)
+			{
+				queuedTank = client;
+				static char queuedTankName[128];
+				GetClientName(queuedTank,queuedTankName, sizeof(queuedTankName));
+				CPrintToChatAll("%t","player will be the tank", queuedTankName); 
+	
+				return Plugin_Continue;
+			}
+		}
+		else
+		{
+			// 被選上tank的玩家離開了特感隊伍
+			if(client == queuedTank)
+				ChoseTankAndPrintWhoBecome();
+		}
+	}
+
+	return Plugin_Continue;
 }
+
 public OnClientDisconnect(client)
 {
-	if (IsPluginDisabled()) return;
+	if (IsPluginDisabled() || !IsClientInGame(client) || IsFakeClient(client)) return;
 
 	if (client && client == queuedTank)
 		ChoseTankAndPrintWhoBecome();
 }
 
-ChoseTankAndPrintWhoBecome()
+void ChoseTankAndPrintWhoBecome(bool bFirstChoose = false)
 {
 	if (IsPluginDisabled()) return;
+
 	ChooseTank();
-	if (queuedTank>0) {
-		decl String:queuedTankName[128];
-		GetClientName(queuedTank,queuedTankName,128);
+	if (queuedTank>0) 
+	{
+		static char queuedTankName[128];
+		GetClientName(queuedTank,queuedTankName,sizeof(queuedTankName));
 		CPrintToChatAll("%t","player will be the tank", queuedTankName); 
+
+		if(bFirstChoose) 
+		{
+			if (!GetClientAuthId(queuedTank, AuthId_Steam2, sChosenTankSteamId_ThisRound, sizeof(sChosenTankSteamId_ThisRound)))
+				sChosenTankSteamId_ThisRound[0] = '\0';
+		}
 	}
 	else if (queuedTank==-1){
 		CPrintToChatAll("%t","l4d_tank_control3"); 
@@ -344,24 +388,29 @@ public void L4D_OnTryOfferingTankBot_Post(int tank_index, bool enterStasis)
 	{
 		CreateTimer(5.0, CheckForAITank, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
-	if (queuedTank>0){
+	if (queuedTank>0)
+	{
 		ForceTankPlayer(queuedTank);//強制該玩家當tank
+		static char sTankSteamId[32];
 
-		GetClientAuthId(queuedTank, AuthId_Steam2, tankSteamId, sizeof(tankSteamId));
-		
-		if(HasBeenTank(tankSteamId) == false)
+		if (GetClientAuthId(queuedTank, AuthId_Steam2, sTankSteamId, sizeof(sTankSteamId))) 
 		{
-			if(FindStringInArray(hTeamTanks, tankSteamId) == -1)
-				PushArrayString(hTeamTanks, tankSteamId);
+			if(HasBeenTank(sTankSteamId) == false)
+			{
+				if(FindStringInArray(hTeamTanks, sTankSteamId) == -1)
+					PushArrayString(hTeamTanks, sTankSteamId);
+			}
+			if(IsFinal)
+			{
+				if(FindStringInArray(hTeamFinalTanks, sTankSteamId) == -1)
+					PushArrayString(hTeamFinalTanks, sTankSteamId);
+			}
+				
+			if(FindStringInArray(hPreviousMapTeamTanks, sTankSteamId) == -1)
+				PushArrayString(hPreviousMapTeamTanks, sTankSteamId);
 		}
-		if(IsFinal)
-		{
-			if(FindStringInArray(hTeamFinalTanks, tankSteamId) == -1)
-				PushArrayString(hTeamFinalTanks, tankSteamId);
-		}
-			
-		if(FindStringInArray(hPreviousMapTeamTanks, tankSteamId) == -1)
-			PushArrayString(hPreviousMapTeamTanks, tankSteamId);
+
+		sChosenTankSteamId_ThisRound[0] = '\0';
 	}
 	IsSecondTank = true;//已經第一隻Tank了
 }
@@ -383,13 +432,15 @@ public Action:CheckForAITank(Handle:timer)
 		{
 			if (!IsFakeClient(i))//Tank is not AI
 			{
-				decl String:SteamId[32];
-				GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId));
+				static char SteamId[32];
+				if (!GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId))) {
+					continue;
+				}
 
 				if(HasBeenTank(SteamId) == false)
 				{
-					if(FindStringInArray(hTeamTanks, tankSteamId) == -1)
-						PushArrayString(hTeamTanks, tankSteamId);
+					if(FindStringInArray(hTeamTanks, SteamId) == -1)
+						PushArrayString(hTeamTanks, SteamId);
 				}
 				if(IsFinal)
 				{
@@ -411,16 +462,18 @@ static ChooseFinalTank() {
 	new infectedplayer = 0;
 
 	for (new i = 1; i < MaxClients+1; i++) {
-		if (!IsClientConnected(i) || !IsClientInGame(i) ||IsFakeClient(i)) {
+		if (!IsClientInGame(i) ||IsFakeClient(i)) {
 			continue;
 		}
-		if(IsInfected(i))
-			infectedplayer++;
-		
+
 		if(!IsInfected(i))
 			continue;
+		
+		infectedplayer++;
 
-		GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId));
+		if (!GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId))) {
+			continue;
+		}
 
 		if (HasBeenFinalTank(SteamId) || i == queuedTank) {
 			continue;
@@ -445,8 +498,9 @@ static ChooseFinalTank() {
 	int random = GetRandomInt(0, 2147483647);
 	SetRandomSeed(GetGameTickCount() + random);
 	int idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
-	GetArrayString(SteamIds, idx, tankSteamId, sizeof(tankSteamId));
-	queuedTank = GetInfectedPlayerBySteamId(tankSteamId);
+	static char sTankSteamId[32];
+	GetArrayString(SteamIds, idx, sTankSteamId, sizeof(sTankSteamId));
+	queuedTank = GetInfectedPlayerBySteamId(sTankSteamId);
 }
 
 static bool:HasBeenFinalTank(const String:SteamId[])
@@ -472,16 +526,18 @@ static ChooseTank() {
 	new infectedplayer = 0;
 
 	for (new i = 1; i < MaxClients+1; i++) {
-		if (!IsClientConnected(i) || !IsClientInGame(i) ||IsFakeClient(i)) {
+		if (!IsClientInGame(i) ||IsFakeClient(i)) {
 			continue;
 		}
-		if(IsInfected(i))
-			infectedplayer++;
-		
+
 		if(!IsInfected(i))
 			continue;
 
-		GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId));
+		infectedplayer++;
+
+		if (!GetClientAuthId(i, AuthId_Steam2, SteamId, sizeof(SteamId))) {
+			continue;
+		}
 
 		if (HasBeenTank(SteamId) || i == queuedTank) {
 			continue;
@@ -506,13 +562,14 @@ static ChooseTank() {
 	int random = GetRandomInt(0, 2147483647);
 	SetRandomSeed(GetGameTickCount() + random);
 	int idx = GetRandomInt(0, GetArraySize(SteamIds)-1);
-	GetArrayString(SteamIds, idx, tankSteamId, sizeof(tankSteamId));
-	queuedTank = GetInfectedPlayerBySteamId(tankSteamId);
+	static char sTankSteamId[32];
+	GetArrayString(SteamIds, idx, sTankSteamId, sizeof(sTankSteamId));
+	queuedTank = GetInfectedPlayerBySteamId(sTankSteamId);
 }
 
 static ForceTankPlayer(iTank) {
 	for (new i = 1; i < MaxClients+1; i++) {
-		if (!IsClientConnected(i) || !IsClientInGame(i)) {
+		if (!IsClientInGame(i)) {
 			continue;
 		}
 
@@ -531,15 +588,13 @@ static GetInfectedPlayerBySteamId(const String:SteamId[]) {
 	decl String:cmpSteamId[32];
 
 	for (new i = 1; i < MaxClients+1; i++) {
-		if (!IsClientConnected(i)) {
-			continue;
-		}
-
 		if (!IsInfected(i)) {
 			continue;
 		}
 
-		GetClientAuthId(i, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId));
+		if (!GetClientAuthId(i, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId))) {
+			continue;
+		}
 
 		if (StrEqual(SteamId, cmpSteamId)) {
 			return i;
@@ -553,11 +608,13 @@ static GetPlayerBySteamId(const String:SteamId[]) {
 	decl String:cmpSteamId[32];
 
 	for (new i = 1; i < MaxClients+1; i++) {
-		if (!IsClientConnected(i)) {
+		if (!IsClientInGame(i)) {
 			continue;
 		}
 
-		GetClientAuthId(i, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId));
+		if (!GetClientAuthId(i, AuthId_Steam2, cmpSteamId, sizeof(cmpSteamId))) {
+			continue;
+		}
 
 		if (StrEqual(SteamId, cmpSteamId)) {
 			return i;

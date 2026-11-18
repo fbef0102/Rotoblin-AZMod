@@ -4,7 +4,7 @@
 #include <left4dhooks>
 #include <dhooks>
 #include <l4d_lib>
-#define SCORE_VERSION "8.5.9-2026/11/3"
+#define SCORE_VERSION "8.5.9-2026/11/14"
 
 #define SCORE_DEBUG 0
 #define SCORE_DEBUG_LOG 0
@@ -122,6 +122,7 @@ enum TeamSwappingType
 new bool:swapTeamsOverride;
 #endif
 native IsInReady();
+native int GetSurCurrent(); //from l4d_current_survivor_progress
 
 Menu hVote = null;
 int Votey = 0, Voten = 0;
@@ -154,7 +155,9 @@ ConVar
 	vs_score_pp_healthbuffer;
 
 int 
-	g_iMaxCompletionScore;
+	g_iMaxCompletionScore,
+	g_iRound1_AD,
+	g_iRound2_AD;
 
 public OnPluginStart()
 {
@@ -1512,8 +1515,9 @@ PrintGetNowScores(client,roundend = false)
 				PILLS+=pillB;
 			}
 		}
-		AD = L4D_GetTeamScore(6, false);
-		MD = g_fMapVersusDifficulty;
+		//AD = L4D_GetTeamScore(6, false);
+		AD = 100;
+		MD = g_fMapVersusDifficulty+0.0001;
 		N = GetNumberSurvived();
 		fScores = (AD+HB+PILLS)*N*MD; //L4D1 對抗分數計算方式 (平均距離+生命加值+藥分)*存活數*地圖難度,(P+HB)*N*MD
 		iScores = RoundToNearest(fScores);
@@ -1536,7 +1540,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Map",client,MD);
 			}
 		}
 		else
@@ -1545,18 +1549,19 @@ PrintGetNowScores(client,roundend = false)
 			{
 				if(Round1WipedOut)
 				{
-					CPrintToChatAll("%t %t [%t: \x03%.2f\x01]", "l4dscores5", round, Round1Score, "wiped out", "Map", MD+0.005);
+					CPrintToChatAll("%t %t", "l4dscores5", round, Round1Score, "wiped out");
+					CPrintToChatAll("[%t: \x03%d%%\x01 | %t: \x03%.2f\x01]", "AD", g_iRound1_AD, "Map", MD);
 				}
 				else
 				{
 					CPrintToChatAll("%t \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",round,Round1Score,Round1ScorePercent,Round1SurAlive,surplayer);
-					CPrintToChatAll("[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD+0.005);
+					CPrintToChatAll("[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]", "AD", g_iRound1_AD, "HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD);
 				}
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
-			}				
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD);
+			}
 		}
 	}
 	else
@@ -1576,7 +1581,7 @@ PrintGetNowScores(client,roundend = false)
 			}
 			else
 			{
-				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%d%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%d\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"AD",client,AD,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Alive",client,N,"Map",client,MD+0.005);		
+				CPrintToChat(client,"%T \x01<\x03%.1f%%\x01>\n\x01[%T: \x03%.0f%%\x01 | %T: \x03%.0f%%\x01 | %T: \x03%.2f\x01]","l4dscores5",client,round,iScores,ScorePercent,"HB",client,CalculateHBPercent(HB),"Pills",client,CalculatePillsPercent(PILLS),"Map",client,MD);
 			}				
 		}
 		else
@@ -1590,17 +1595,18 @@ PrintGetNowScores(client,roundend = false)
 			{
 				if(Round2WipedOut)
 				{
-					CPrintToChatAll("%t %t [%t: \x03%.2f\x01]", "l4dscores5", round, Round2Score, "wiped out", "Map", MD+0.005);
+					CPrintToChatAll("%t %t", "l4dscores5", round, Round2Score,"wiped out");
+					CPrintToChatAll("[%t: \x03%d%%\x01 | %t: \x03%.2f\x01]", "AD", g_iRound2_AD, "Map", MD);
 				}
 				else
 				{
 					CPrintToChatAll("%t \x01<\x03%.1f%%\x01> [\x05%d\x01/\x05%d\x01]","l4dscores5",round,Round2Score,Round2ScorePercent,Round2SurAlive,surplayer);
-					CPrintToChatAll("[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD+0.005);
+					CPrintToChatAll("[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]", "AD", g_iRound2_AD, "HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD);
 				}
 			}
 			else
 			{
-				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%d%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%d\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"AD",AD,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Alive",N,"Map",MD+0.005);
+				CPrintToChatAll("%t \x01<\x03%.1f%%\x01>\n\x01[%t: \x03%.0f%%\x01 | %t: \x03%.0f%%\x01 | %t: \x03%.2f\x01]","l4dscores5",round,iScores,ScorePercent,"HB",CalculateHBPercent(HB),"Pills",CalculatePillsPercent(PILLS),"Map",MD);
 			}	
 		}			
 	}
@@ -2386,6 +2392,12 @@ public Action L4D2_OnEndVersusModeRound(bool countSurvivors)
 	return Plugin_Continue;
 }
 
+public void L4D2_OnEndVersusModeRound_Post()
+{
+	if(IsSecondRound) g_iRound2_AD = L4D_GetTeamScore(6, false); 
+	else g_iRound1_AD = L4D_GetTeamScore(6, false);
+}
+
 float CalculateHBPercent(int HB)
 {
 	int maxbonus = RoundToNearest( GetTeamMaxHumans(L4D_TEAM_SURVIVORS) * 100 * vs_score_pp_health.FloatValue );
@@ -2400,7 +2412,7 @@ Float:CalculatePillsPercent(Pills)
 
 CheckSurvivorProgress()
 {
-	new AD = L4D_GetTeamScore(6, false);
+	int AD = GetSurCurrent();
 	
 	if(AD>=survivor_progress)
 	{

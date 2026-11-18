@@ -890,7 +890,7 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 			{
 				CPrintToChat(g_iBoomerKiller, "{default}[{olive}TS{default}] %T","l4dcompstats8",g_iBoomerKiller);
 
-				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_01", g_iBoomerShover);
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_01", g_iBoomerKiller);
 			}
 			else
 			{
@@ -903,7 +903,7 @@ public Action:Timer_BoomerKilledCheck(Handle:timer, any:client)
 				CPrintToChat(client, "{default}[{olive}TS{default}] %T","l4dcompstats10",client, g_iBoomerKillername);
 				CreateTimer(0.1, Award, client, TIMER_FLAG_NO_MAPCHANGE);
 
-				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_02", g_iBoomerShover, client);
+				PrintToTeam(FLAG_TEAM_SPECTATOR, "[{olive}TS{default}] %t", "l4dcompstats_all_02", g_iBoomerKiller, client);
 			}
 		}
 		g_iMapStats[g_iBoomerKiller][BoomerShutdowns]++;

@@ -66,7 +66,7 @@ public OnPluginStart()
 
 	RegConsoleCmd("sm_5v5hud", Toggle5v5HudCmd);
 	
-	HookEvent("player_left_checkpoint", Event_player_left_checkpoint, EventHookMode_Pre);
+	HookEvent("player_left_start_area", LeftStartAreaEvent, EventHookMode_Pre);
 	HookEvent("round_start", RoundStartEvent, EventHookMode_PostNoCopy);//每回合開始就發生的event
 	HookEvent("tank_frustrated", OnTankFrustrated, EventHookMode_Post);
 	HookEvent("entity_killed",		PD_ev_EntityKilled);
@@ -98,10 +98,9 @@ public OnMapStart()
 	passCount = 1;
 }
 
-public Event_player_left_checkpoint(Handle:event, const String:name[], bool:dontBroadcast)
+public LeftStartAreaEvent(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(IsInReady()||g_bLeftStartRoom) return;
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if(client && IsClientInGame(client) && IsSurvivor(client))
 	{
 		decl String:Info[50];

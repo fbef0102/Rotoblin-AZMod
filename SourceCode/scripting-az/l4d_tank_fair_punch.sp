@@ -6,7 +6,7 @@
 #include <dhooks>
 #include <profiler>
 
-#define PLUGIN_VERSION "0.4.0"
+#define PLUGIN_VERSION "0.5.0"
 #define GAMEDATA "l4d_tank_fair_punch"
 
 #define TEAM_SURVIVOR	2
@@ -19,8 +19,8 @@
 #define SEQ_POUND1		44	// ground pound (low attack at an incapped survivor)
 #define SEQ_POUND2		45
 
-#define HIST			256		// survivor position history, one entry per server frame
-#define MAXSAMP			160		// fist samples per windup (0.5 s at 100 tick is 50)
+#define HIST			256		// survivor position history, one entry per server frame (2 s at 128 tick)
+#define MAXSAMP			160		// fist samples per punch (at 128 tick: 64 in the 0.5 s windup, 32 in the 0.25 s after)
 
 // Why this exists: a tank punch is decided by where the fist is, except at one moment.
 //
@@ -52,6 +52,10 @@
 //     of a standing survivor in the last l4d_tank_fair_punch_add_time of the windup, in
 //     front of the tank and in its line of sight: the sweep starts at his centre, exactly
 //     as the scan would have done.
+//   * LINE VETO (0.5.0): the scan found nobody (seed eye + forward * 56) or only an incapped
+//     survivor (seed his centre), and that first sweep's line would touch a standing survivor
+//     the fist never came within veto_dist of and who is not hugging the tank: the sweep
+//     starts at the fist instead, as a veto does.
 //
 // Distances use the tank player's view: the survivor's position rewound to the tick SweepFist's lag
 // compensation tests him at (ViewDelay, 0.4.0).
@@ -86,11 +90,18 @@
 //   usercmd's tick_count minus the lerp in ticks, falling back to latency + lerp when they differ by
 //   more than 0.2 s, capped by sv_maxunlag, none at all with cl_lagcompensation 0. 0.3 used latency +
 //   lerp against the tickbase clock. Survivor history is keyed by simulation time, as the game's records are.
-ConVar g_hCvarPickSeed, g_hCvarMaxUnlag;
-int g_iCmdTick[MAXPLAYERS + 1];		// tick_count of the usercmd being run
-float g_fActSeedGap[MAXPLAYERS + 1];
-bool g_bActReseed[MAXPLAYERS + 1];
+//
+// 0.5.0 (2026-11-06 review of ~24k live punches): the veto only ever judged a standing pick. With no
+// pick or an incapped one, the first sweep still runs from a point the fist was never at, and in versus
+// SweepFist's second pass hits every survivor that line touches: ~120 long arms (fist > 30 u away,
+// never within 15 in the window, not hugging the tank), about as many as the veto removed. The line
+// veto judges those (l4d_tank_fair_punch_line_veto, log first). The line test is the fist cube
+// (half-size tank_fist_radius) swept from the seed to the hand against his rewound 32-wide box, with
+// the versus gate that the tank's eye sees the contact point. A kept or hugging standing pick is left
+// alone: its line is logged (PUNCH line=1) but never acted on.
 ConVar g_hCvarMode, g_hCvarVetoDist, g_hCvarVetoGap, g_hCvarAddTime, g_hCvarLog, g_hCvarLogAll, g_hCvarFistRadius, g_hCvarSwingDur;
+ConVar g_hCvarPickSeed, g_hCvarLineVeto, g_hCvarMaxUnlag;
+int g_iCmdTick[MAXPLAYERS + 1];		// tick_count of the usercmd being run
 Handle g_hGetAttachment;
 char g_sLogPath[PLATFORM_MAX_PATH];
 
@@ -115,7 +126,7 @@ float g_fPostUntil[MAXPLAYERS + 1];
 int g_iWindN[MAXPLAYERS + 1];		// samples up to and including the fist at the windup's end
 float g_fWindEnd[MAXPLAYERS + 1];
 
-int g_iStatPunches, g_iStatScan, g_iStatVeto, g_iStatAdd;
+int g_iStatPunches, g_iStatScan, g_iStatVeto, g_iStatAdd, g_iStatLine;
 float g_fLastCost, g_fMaxCost;
 
 // the punch an action was taken on, followed to the end of the hit window for the log
@@ -125,7 +136,12 @@ int g_iActVeto[MAXPLAYERS + 1], g_iActAdd[MAXPLAYERS + 1];
 float g_fActVetoMin[MAXPLAYERS + 1], g_fActAddMin[MAXPLAYERS + 1], g_fActDelay[MAXPLAYERS + 1];
 int g_iActMode[MAXPLAYERS + 1], g_iActSeq[MAXPLAYERS + 1], g_iActHug[MAXPLAYERS + 1];
 float g_fActGap[MAXPLAYERS + 1];
-bool g_bActLine[MAXPLAYERS + 1];		// a veto, add or hug happened: write the WOULD/APPLIED line
+float g_fActSeedGap[MAXPLAYERS + 1];
+bool g_bActReseed[MAXPLAYERS + 1];
+int g_iActLineV[MAXPLAYERS + 1];		// the line veto's survivor (applied or would)
+float g_fActLineMin[MAXPLAYERS + 1];
+bool g_bActLineApplied[MAXPLAYERS + 1];
+bool g_bActLine[MAXPLAYERS + 1];		// a veto, add, hug, reseed or line veto happened: write the WOULD/APPLIED line
 
 // PUNCH lines: every human punch, per standing survivor near the tank at the windup's end
 bool g_bPunchLog[MAXPLAYERS + 1];
@@ -134,10 +150,11 @@ int g_iPunchNo[MAXPLAYERS + 1];
 int g_iPunchPick[MAXPLAYERS + 1];
 bool g_bNear[MAXPLAYERS + 1][MAXPLAYERS + 1];
 float g_fNearWind[MAXPLAYERS + 1][MAXPLAYERS + 1], g_fNearLate[MAXPLAYERS + 1][MAXPLAYERS + 1], g_fNearGap[MAXPLAYERS + 1][MAXPLAYERS + 1];
+bool g_bNearLine[MAXPLAYERS + 1][MAXPLAYERS + 1];	// the stock first sweep's line touches him
 float g_fHitT[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 // human tank punches this map, for the SUMMARY line at map end
-int g_iMapPunches, g_iMapPicks, g_iMapVetoes, g_iMapAdds, g_iMapHugs;
+int g_iMapPunches, g_iMapPicks, g_iMapVetoes, g_iMapAdds, g_iMapHugs, g_iMapLines;
 
 public Plugin myinfo =
 {
@@ -188,6 +205,7 @@ public void OnPluginStart()
 	g_hCvarLog = CreateConVar("l4d_tank_fair_punch_log", "1", "Log every veto and add to logs/tank_fair_punch.log.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_hCvarLogAll = CreateConVar("l4d_tank_fair_punch_log_all", "1", "Also log a PUNCH line for every tank punch and each standing survivor within 250 units, acted on or not. 1 = human tanks, 2 = bot tanks too (test rigs).", FCVAR_NONE, true, 0.0, true, 2.0);
 	g_hCvarPickSeed = CreateConVar("l4d_tank_fair_punch_pick_seed", "1", "When the scan's pick is kept: 0 = stock seed (his present centre). 1 = stock, log the gap to his rewound centre (seed_gap). 2 = seed at his rewound centre, where the sweep tests him.", FCVAR_NOTIFY, true, 0.0, true, 2.0);
+	g_hCvarLineVeto = CreateConVar("l4d_tank_fair_punch_line_veto", "1", "When the scan found nobody or only an incapped survivor, the first sweep's line can hit a standing survivor the fist never came within veto_dist of. 0 = ignore. 1 = log what it would do. 2 = start that sweep at the fist (needs mode 2).", FCVAR_NOTIFY, true, 0.0, true, 2.0);
 	g_hCvarMaxUnlag = FindConVar("sv_maxunlag");
 	g_hCvarFistRadius = FindConVar("tank_fist_radius");
 	g_hCvarSwingDur = FindConVar("tank_swing_duration");
@@ -202,10 +220,10 @@ public void OnMapEnd()
 	{
 		char map[64];
 		GetCurrentMap(map, sizeof(map));
-		LogToFileEx(g_sLogPath, "SUMMARY map=%s mode=%d human_punches=%d scan_picks=%d vetoes=%d adds=%d hugs_kept=%d",
-			map, g_hCvarMode.IntValue, g_iMapPunches, g_iMapPicks, g_iMapVetoes, g_iMapAdds, g_iMapHugs);
+		LogToFileEx(g_sLogPath, "SUMMARY map=%s mode=%d human_punches=%d scan_picks=%d vetoes=%d adds=%d hugs_kept=%d line_vetoes=%d line_veto=%d",
+			map, g_hCvarMode.IntValue, g_iMapPunches, g_iMapPicks, g_iMapVetoes, g_iMapAdds, g_iMapHugs, g_iMapLines, g_hCvarLineVeto.IntValue);
 	}
-	g_iMapPunches = 0; g_iMapPicks = 0; g_iMapVetoes = 0; g_iMapAdds = 0; g_iMapHugs = 0;
+	g_iMapPunches = 0; g_iMapPicks = 0; g_iMapVetoes = 0; g_iMapAdds = 0; g_iMapHugs = 0; g_iMapLines = 0;
 }
 
 public void OnMapStart()
@@ -287,14 +305,13 @@ public void OnGameFrame()
 	{
 		if( !IsClientInGame(i) || !IsPlayerAlive(i) ) continue;
 		int team = GetClientTeam(i);
-		if( team == TEAM_SURVIVOR ) RecordSurvivor(i, now);
+		if( team == TEAM_SURVIVOR ) RecordSurvivor(i);
 		else if( team == TEAM_INFECTED ) TankFrame(i, now);
 	}
 }
 
-void RecordSurvivor(int client, float now)
+void RecordSurvivor(int client)
 {
-	#pragma unused now
 	int h = (g_iHHead[client] + 1) % HIST;
 	float pos[3], maxs[3];
 	GetClientAbsOrigin(client, pos);
@@ -338,8 +355,9 @@ void TankFrame(int tank, float now)
 	if( GetEntProp(tank, Prop_Send, "m_zombieClass") != ZC_TANK ) return;
 	int seq = GetEntProp(tank, Prop_Send, "m_fireLayerSequence");
 	float start = GetEntPropFloat(tank, Prop_Send, "m_fireLayerStartTime");
-	// 0.3.2: any other new fire sequence (ground pound 44/45, rock throw) ends a recording whose
-	// windup never finished, so a later sweep is not judged on that punch's old fist samples
+	// 0.3.2: a new non-punch fire sequence (a rock throw) ends a recording whose windup never
+	// finished, so a later sweep is not judged on that punch's old fist samples. Ground pounds
+	// (44/45) are recorded like punches since 0.4.0.
 	if( !IsPunch(seq) && start != g_fLastStart[tank] && start > 0.0 )
 	{
 		g_fLastStart[tank] = start;
@@ -428,6 +446,32 @@ float BoxGap(const float to[3], const float tmins[3], const float tmaxs[3], cons
 	return SquareRoot(g[0] * g[0] + g[1] * g[1] + g[2] * g[2]);
 }
 
+// Would SweepFist's fist cube (half-size r), swept from a to b, touch the survivor box at o (32 x 32 x top)?
+// That is the segment against the box grown by r (slab test). entry = the cube's centre at first touch.
+bool SweepTouches(const float a[3], const float b[3], const float o[3], float top, float r, float entry[3])
+{
+	float lo[3], hi[3];
+	lo[0] = o[0] - 16.0 - r; lo[1] = o[1] - 16.0 - r; lo[2] = o[2] - r;
+	hi[0] = o[0] + 16.0 + r; hi[1] = o[1] + 16.0 + r; hi[2] = o[2] + top + r;
+	float t0 = 0.0, t1 = 1.0;
+	for( int k = 0; k < 3; k++ )
+	{
+		float d = b[k] - a[k];
+		if( FloatAbs(d) < 0.0001 )
+		{
+			if( a[k] < lo[k] || a[k] > hi[k] ) return false;
+			continue;
+		}
+		float ta = (lo[k] - a[k]) / d, tb = (hi[k] - a[k]) / d;
+		if( ta > tb ) { float x = ta; ta = tb; tb = x; }
+		if( ta > t0 ) t0 = ta;
+		if( tb < t1 ) t1 = tb;
+		if( t0 > t1 ) return false;
+	}
+	for( int k = 0; k < 3; k++ ) entry[k] = a[k] + (b[k] - a[k]) * t0;
+	return true;
+}
+
 bool TraceWorldOnly(int entity, int contentsMask)
 {
 	return entity == 0 || entity > MaxClients;
@@ -501,13 +545,15 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 	for( int s = 1; s <= MaxClients; s++ )
 	{
 		g_bNear[tank][s] = false;
+		g_bNearLine[tank][s] = false;
 		g_fHitT[tank][s] = -1.0;
 	}
 	float tmins[3], tmaxs[3];
 	GetClientMins(tank, tmins);
 	GetClientMaxs(tank, tmaxs);
-	int add = 0;
-	float addMin = 99999.0, addSeed[3];
+	float vetoGap = g_hCvarVetoGap.FloatValue;
+	int add = 0, lineCand = 0;
+	float addMin = 99999.0, addSeed[3], lineMin = -1.0;
 	for( int s = 1; s <= MaxClients; s++ )
 	{
 		if( !IsClientInGame(s) || !IsPlayerAlive(s) || GetClientTeam(s) != TEAM_SURVIVOR || !IsStanding(s) ) continue;
@@ -532,14 +578,26 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 		}
 		else continue;
 
+		float gap = BoxGap(tpos, tmins, tmaxs, o, top);
 		g_bNear[tank][s] = true;
 		g_fNearWind[tank][s] = all;
 		g_fNearLate[tank][s] = late;
-		g_fNearGap[tank][s] = BoxGap(tpos, tmins, tmaxs, o, top);
+		g_fNearGap[tank][s] = gap;
 		if( s == picked )
 		{
 			pickedMin = all;
-			pickedGap = BoxGap(tpos, tmins, tmaxs, o, top);
+			pickedGap = gap;
+		}
+		// 0.5.0: the stock first sweep's own line (seed -> hand) touches him where the tank's eye sees it
+		float entry[3];
+		if( s != picked && SweepTouches(from, to, o, top, radius, entry) && CanSee(tank, entry) )
+		{
+			g_bNearLine[tank][s] = true;
+			if( vetoDist > 0.0 && all >= vetoDist && gap >= vetoGap && all > lineMin )
+			{
+				lineCand = s;
+				lineMin = all;
+			}
 		}
 		if( s != picked && late < radius && late < addMin )
 		{
@@ -556,7 +614,7 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 	}
 
 	bool far = picked && pickedMin >= 0.0 && vetoDist > 0.0 && pickedMin >= vetoDist;
-	bool hug = far && pickedGap < g_hCvarVetoGap.FloatValue;
+	bool hug = far && pickedGap < vetoGap;
 	bool veto = far && !hug;
 	// a punch the scan already aimed at someone the fist reached (or who hugs the tank) keeps that
 	// target. 0.3.2: only a standing pick: an incapped one can never be vetoed (pickedMin stays -1)
@@ -565,6 +623,10 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 	if( picked && !veto && IsStanding(picked) ) add = 0;
 	// a ground pound is only ever narrowed, never pointed at someone new
 	if( pound ) add = 0;
+	// 0.5.0 line veto: the seed is not a survivor the punch keeps (nobody, or an incapped pick) and its
+	// line would hit a standing survivor the fist never came near. Pounds included: it only narrows.
+	int line = (g_hCvarLineVeto.IntValue >= 1 && !add && (!picked || !IsStanding(picked))) ? lineCand : 0;
+	bool lineVeto = line && g_hCvarLineVeto.IntValue >= 2;
 	// a kept standing pick: where the sweep will test him (rewound) vs the stock seed (present centre)
 	float seedGap = -1.0, pickSeed[3];
 	if( picked && !veto && IsStanding(picked) && g_hCvarPickSeed.IntValue >= 1 )
@@ -587,6 +649,7 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 		if( veto ) g_iMapVetoes++;
 		if( add ) g_iMapAdds++;
 		if( hug ) g_iMapHugs++;
+		if( line ) g_iMapLines++;
 	}
 	// the fist at the windup's end closes the windup samples; the hit window's follow.
 	// Not `to`: the game always passes rhand, which is behind the tank in a left hook.
@@ -604,12 +667,13 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 	g_bPost[tank] = true;
 	g_fPostUntil[tank] = now + 0.25;
 
-	bool action = veto || add || hug || reseed;
+	bool action = veto || add || hug || reseed || line;
 	bool punchLog = g_hCvarLog.BoolValue && (human ? g_hCvarLogAll.IntValue >= 1 : g_hCvarLogAll.IntValue >= 2);
 	if( !action && !punchLog ) return MRES_Ignored;
 
 	if( veto ) g_iStatVeto++;
 	if( add ) g_iStatAdd++;
+	if( line ) g_iStatLine++;
 	if( g_hCvarLog.BoolValue )
 	{
 		// written when the hit window is over, with who the punch hit
@@ -630,13 +694,16 @@ MRESReturn Decide(int tank, int mode, DHookParam hParams)
 		g_iActSeq[tank] = g_iRecSeq[tank];
 		g_fActSeedGap[tank] = seedGap;
 		g_bActReseed[tank] = reseed;
+		g_iActLineV[tank] = line;
+		g_fActLineMin[tank] = lineMin;
+		g_bActLineApplied[tank] = lineVeto && mode >= 2;
 		CreateTimer(0.35, T_Outcome, GetClientUserId(tank), TIMER_FLAG_NO_MAPCHANGE);
 	}
-	if( mode < 2 || (!veto && !add && !reseed) ) return MRES_Ignored;
+	if( mode < 2 || (!veto && !add && !reseed && !lineVeto) ) return MRES_Ignored;
 
 	if( reseed ) hParams.SetVector(1, pickSeed);
 	else if( add ) hParams.SetVector(1, addSeed);
-	else hParams.SetVector(1, to);
+	else hParams.SetVector(1, to);		// veto or line veto: start at the fist
 	return MRES_ChangedHandled;
 }
 
@@ -667,6 +734,9 @@ Action T_Outcome(Handle timer, int userid)
 	if( add && IsClientInGame(add) ) GetClientName(add, aname, sizeof(aname));
 	int hug = g_iActHug[tank];
 	if( hug && IsClientInGame(hug) ) GetClientName(hug, hname, sizeof(hname));
+	int line = g_iActLineV[tank];
+	char lname[MAX_NAME_LENGTH] = "-";
+	if( line && IsClientInGame(line) ) GetClientName(line, lname, sizeof(lname));
 	for( int i = 1; i <= MaxClients; i++ )
 	{
 		if( !g_bHitBy[tank][i] || !IsClientInGame(i) ) continue;
@@ -678,12 +748,14 @@ Action T_Outcome(Handle timer, int userid)
 	if( !g_bActLine[tank] ) return Plugin_Stop;
 	// veto_hit = the vetoed survivor was hit anyway (by the fist in the window, or by stock in log mode).
 	// hug = the fist never came near the scan's pick but he was within veto_min_gap of the tank, so he kept the hit.
-	LogToFileEx(g_sLogPath, "%s map=%s tank=\"%s\"%s seq=%d tdelay=%.3f veto=\"%s\" veto_min=%.1f veto_hit=%d gap=%.1f hug=\"%s\" add=\"%s\" add_min=%.1f add_hit=%d reseed=%d seed_gap=%.1f hits=\"%s\"",
+	// line = the line veto's survivor; line_applied 0 = logged only (line_veto 1 or mode 1); line_hit as veto_hit.
+	LogToFileEx(g_sLogPath, "%s map=%s tank=\"%s\"%s seq=%d tdelay=%.3f veto=\"%s\" veto_min=%.1f veto_hit=%d gap=%.1f hug=\"%s\" add=\"%s\" add_min=%.1f add_hit=%d reseed=%d seed_gap=%.1f hits=\"%s\" line=\"%s\" line_min=%.1f line_applied=%d line_hit=%d",
 		g_iActMode[tank] >= 2 ? "APPLIED" : "WOULD", map, tname, IsFakeClient(tank) ? " bot=1" : "", g_iActSeq[tank], g_fActDelay[tank],
 		vname, (veto || hug) ? g_fActVetoMin[tank] : -1.0, veto ? view_as<int>(g_bHitBy[tank][veto]) : -1,
 		g_fActGap[tank], hname,
 		aname, add ? g_fActAddMin[tank] : -1.0, add ? view_as<int>(g_bHitBy[tank][add]) : -1,
-		view_as<int>(g_bActReseed[tank]), g_fActSeedGap[tank], hits);
+		view_as<int>(g_bActReseed[tank]), g_fActSeedGap[tank], hits,
+		lname, line ? g_fActLineMin[tank] : -1.0, view_as<int>(g_bActLineApplied[tank]), line ? view_as<int>(g_bHitBy[tank][line]) : -1);
 	return Plugin_Stop;
 }
 
@@ -710,6 +782,7 @@ void LogPunch(int tank, const char[] map, const char[] tname)
 	else if( g_iActAdd[tank] ) strcopy(act, sizeof(act), "add");
 	else if( g_iActHug[tank] ) strcopy(act, sizeof(act), "hug");
 	else if( g_bActReseed[tank] ) strcopy(act, sizeof(act), "reseed");
+	else if( g_bActLineApplied[tank] ) strcopy(act, sizeof(act), "line");
 	else strcopy(act, sizeof(act), "none");
 	for( int s = 1; s <= MaxClients; s++ )
 	{
@@ -732,16 +805,18 @@ void LogPunch(int tank, const char[] map, const char[] tname)
 		char sname[MAX_NAME_LENGTH];
 		GetClientName(s, sname, sizeof(sname));
 		bool hit = g_bHitBy[tank][s];
-		LogToFileEx(g_sLogPath, "PUNCH id=%d map=%s tank=\"%s\" seq=%d tdelay=%.3f surv=\"%s\" picked=%d pick=\"%s\" act=%s wind=%.1f late=%.1f window=%.1f post=%.1f gap=%.1f hit=%d hit_dt=%.3f hit_d=%.1f seed_gap=%.1f",
+		// line: 1 = the stock first sweep's line touches him, 2 = and he is the line veto's survivor
+		int lineFlag = g_iActLineV[tank] == s ? 2 : view_as<int>(g_bNearLine[tank][s]);
+		LogToFileEx(g_sLogPath, "PUNCH id=%d map=%s tank=\"%s\" seq=%d tdelay=%.3f surv=\"%s\" picked=%d pick=\"%s\" act=%s wind=%.1f late=%.1f window=%.1f post=%.1f gap=%.1f hit=%d hit_dt=%.3f hit_d=%.1f seed_gap=%.1f line=%d",
 			g_iPunchNo[tank], map, tname, g_iActSeq[tank], tdelay, sname, s == pick, pname, act,
 			g_fNearWind[tank][s], g_fNearLate[tank][s] > 9999.0 ? -1.0 : g_fNearLate[tank][s], window, post, g_fNearGap[tank][s],
-			hit, hit ? hitT - g_fWindEnd[tank] : -1.0, hitD, s == pick ? g_fActSeedGap[tank] : -1.0);
+			hit, hit ? hitT - g_fWindEnd[tank] : -1.0, hitD, s == pick ? g_fActSeedGap[tank] : -1.0, lineFlag);
 	}
 }
 
 Action Cmd_Stats(int client, int args)
 {
-	ReplyToCommand(client, "[fairpunch] mode %d: punches %d, scan picks %d, vetoes %d, adds %d; decision cost last %.3f ms, max %.3f ms",
-		g_hCvarMode.IntValue, g_iStatPunches, g_iStatScan, g_iStatVeto, g_iStatAdd, g_fLastCost, g_fMaxCost);
+	ReplyToCommand(client, "[fairpunch] mode %d line_veto %d: punches %d, scan picks %d, vetoes %d, adds %d, line vetoes %d; decision cost last %.3f ms, max %.3f ms",
+		g_hCvarMode.IntValue, g_hCvarLineVeto.IntValue, g_iStatPunches, g_iStatScan, g_iStatVeto, g_iStatAdd, g_iStatLine, g_fLastCost, g_fMaxCost);
 	return Plugin_Handled;
 }

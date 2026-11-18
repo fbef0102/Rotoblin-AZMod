@@ -237,10 +237,11 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * Still Spread: 0.32 -> 0.22
   * Moveing Spread: 3.0 -> 2.0
   * Ammo: 480->800
-  * Damage Drop-off: 0.84 Unchanged
   * Reload Time: 2.23s -> 1.8s
   * Magazine Quick Reload: 1.40s
   * Damage: 20 -> 22
+  * Damage Drop-off: 0.84 Unchanged
+  * Damage To Common Infected: x1.25
   * Range: 2500 Unchanged
   * Limit: 3
   * FF Protect Range: 30
@@ -483,7 +484,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Prevent underhand rocks and fix sticking aim after throws for AI Tanks.
     * Fixed passing Tank (going AI) triggering next stage of script finales.
     * Fix tank's punch getting cancelled when they heavily land on ground.
-    * Stops the Tanks footsteps causing the screen to shake.
+    * ~~Stops the Tanks footsteps causing the screen to shake.~~
     * For every 7% Survivors run back, the Tank will have their frustration frozen for 4 seconds.
     * Tank won't get stumbled by a door
     * Sends Survivors flying on the incapping punch
@@ -498,6 +499,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Stops dead commons' ragdolls dragging hittables out of place on clients
     * The windup-end punch target follows the fist: no hits the fist never came near, and hits the fist visibly went through.
     * A tank punch can no longer hit a survivor through a wall when an entity stands in front of the wall.
+    * A tank stuck in a prop or wall (the engine's stuck state, 1 s without moving) goes back to its last clear spot instead of waiting 5 s for the stock warp onto a teammate, which could be thousands of units away
+      * A passed tank that comes up inside a prop is covered too
 
   * **Witch:**
     * ~~Fixes the Witch not dying from a perfectly aligned shotgun blast due to the random nature of the pellet spread~~

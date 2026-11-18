@@ -140,7 +140,7 @@ bool bInSecondHalfOfRound;
 
 native GetTankPercent();
 native GetWitchPercent();
-native ChoseTankPrintWhoBecome();
+native ChoseTankPrintWhoBecome(bool bFirstChoose);
 native OpenSpectatorsListenMode();
 native GiveSurAllPills();
 native ShowRotoInfo();
@@ -2848,7 +2848,7 @@ RoundIsLive()
 	readyOff();
 	GiveSurAllPills();
 	antibaiter_clear();
-	ChoseTankPrintWhoBecome();
+	ChoseTankPrintWhoBecome(true);
 	CreateTimer(1.5, timerLiveMessageCallback, _, _);
 
 	directorStart();
