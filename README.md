@@ -333,8 +333,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Spectators stay spectator on map change.
 * Forces all players on the right team after map/campaign/match change"
 * Fixed players using bunnyhop to increase their MaxSpeed.
-* Fixed second team having different SI spawns on round start.
-  * Spawns for the first hit are announced once round starts.
+* ~~Fixed second team having different SI spawns on round start.~~
+  * ~~Spawns for the first hit are announced once round starts.~~
 * Blocks all button presses during stumbles
 * Disallows special infected from breaching into safe room by preventing them from spawning nearby the safe room door ([video](https://www.youtube.com/watch?v=-w1iWOx72LU&t=400s)).
 * Fixes an exploit where unlimited grenades could be created.
@@ -363,8 +363,9 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
 * Fix thin/small 'prop_*' entity not blocking LOS.
 * Lets incapacitated survivors fire their weapon normally (with sound) while holding shove
 * When a player disconnects due to crash, automatically pause the game. When they rejoin, give them a correct spawn timer.
-* Stops the vphysics use-after-free that can crash the server at a level change.
-* Model-less brush entities spawn non-solid, so a trace cannot crash CM_VCollideForModel
+* Stops the vphysics use-after-free that can crash the server at a level change. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
+* Model-less brush entities spawn non-solid, so a trace cannot crash CM_VCollideForModel. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
+* A revived survivor with incaps left goes down, not dies, when a hit takes exactly all his temp health. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
 
 - - - -
 ### Gameplay / Balance Changes ###
@@ -434,6 +435,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
   * ~~Allows gravity when infected players are staggering + allows staggering over a ledge and falling.~~
     * ~~Infected still gets stumble even in the air~~
   * Instantly slay and kick SI bots that were previously controlled by human players.
+  * Every half's first attack is 2 hunters + 1 smoker + 1 boomer in 4v4
 
   * **Tanks:**
     * Announce in chat and via a sound when a Tank has spawned
@@ -496,7 +498,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Gives a tank back to its player when they rejoin after a disconnect, with the same rage and pass count
     * Stops one tank rock hurting a survivor twice
     * A human tank's punch is lag compensated whether he taps or holds attack.
-    * Stops dead commons' ragdolls dragging hittables out of place on clients
+    * Stops dead commons' ragdolls dragging hittables out of place on clients. Credit: [Malevolence](https://github.com/Volence/riverside-l4d-plugins)
     * The windup-end punch target follows the fist: no hits the fist never came near, and hits the fist visibly went through.
     * A tank punch can no longer hit a survivor through a wall when an entity stands in front of the wall.
     * A tank stuck in a prop or wall (the engine's stuck state, 1 s without moving) goes back to its last clear spot instead of waiting 5 s for the stock warp onto a teammate, which could be thousands of units away
@@ -548,6 +550,7 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
       - *Smoker get on a quick clear by Survivors*: 3.0s -> 4.0s
     * Fix unable to stagger smoker when smoker is shooting tongue
     * A tongue aimed through several survivors goes to the nearest one, judged on what the smoker saw.
+    * If smoker dies last, next infected spawn: hunters + exactly one boomer (the smoker's player)
 	
   * **Hunter:**
     * Fixed silence Hunter produces growl sound when player MIC on. ([video](https://www.youtube.com/watch?v=L7x_x6dc1-Y&t=120s))
@@ -575,6 +578,8 @@ as they're designed around Roto-AZMod and are likely to be unstable in other con
     * Make hunter skeets more consistent across different pings.
     * A dead hunter no longer keeps playing its shredding sound and blood after being cleared.
     * A hunter landing a pounce on a survivor's head can no longer restart the pounce (and lose its damage) before the pin goes through.
+    * If hunter dies last, next infected spawn: never gives a quad
+      * The last ghost of the wave becomes the boomer if nobody else is one
 	
   * **Boomer:**
     * Boomer can be getting bashed to death

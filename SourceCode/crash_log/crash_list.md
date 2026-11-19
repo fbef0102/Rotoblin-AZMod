@@ -97,3 +97,4 @@
     * StartDisabled makes the brush FSOLID_NOT_SOLID at spawn, so traces skip it.
     * Enable then clears that flag, and the brush ends up as solid 2 with the correct bounds, which is what the cfg intends. I checked this by firing the inputs from a debug plugin.
     * The attached patch applies this to all 10 model-less brushes in the bedlam cfg.
+    * 一勞永逸的插件版本: https://github.com/Volence/riverside-l4d-plugins/blob/main/addons/sourcemod/scripting/l4d_nullmodel_guard.sp

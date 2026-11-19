@@ -21,13 +21,15 @@ ConVar HCVAR_Z_VS_SMOKER_LIMIT;
 ConVar HCVAR_Z_VS_BOOMER_LIMIT;
 ConVar HCVAR_Z_VS_HUNTER_LIMIT;
 ConVar z_max_player_zombies;
-int CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL, CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL, CVAR_Z_VS_HUNTER_LIMIT_ORIGINAL;
+int CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL, CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL, CVAR_Z_VS_HUNTER_LIMIT_ORIGINAL,
+	g_iOfficialCvar_z_max_player_zombies;
 
 ConVar hCvar3HT1SProbability;
 ConVar hCvarDirtyAfterSmoker;
 ConVar hCvarNoQuadAfterHunter;
+ConVar hCvarStandardFirstAttack;
 int g_iCvar3HT1SProbability;
-bool g_bCvarDirtyAfterSmoker, g_bCvarNoQuadAfterHunter;
+bool g_bCvarDirtyAfterSmoker, g_bCvarNoQuadAfterHunter, g_bCvarStandardFirstAttack;
 
 int 
 	Hunter_Starting_Line,
@@ -49,7 +51,7 @@ public Plugin myinfo =
 	name = "L4D Quad Caps Control",
 	author = "Harry Potter",
 	description = "As the name says, you dumb fuck",
-	version = "1.6-2026/10/30",
+	version = "1.7-2026/11/20",
 	url = "http://steamcommunity.com/profiles/76561198026784913"
 }
 
@@ -85,22 +87,25 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath,	EventHookMode_PostNoCopy);
 	HookEvent("player_team", Event_PlayerTeam);
 	
-	z_max_player_zombies = FindConVar("z_max_player_zombies");
 	HCVAR_Z_VS_SMOKER_LIMIT = FindConVar("z_versus_smoker_limit");
 	HCVAR_Z_VS_BOOMER_LIMIT = FindConVar("z_versus_boomer_limit");
 	HCVAR_Z_VS_HUNTER_LIMIT = FindConVar("z_hunter_limit");
 	CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL = HCVAR_Z_VS_SMOKER_LIMIT.IntValue;
 	CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL = HCVAR_Z_VS_BOOMER_LIMIT.IntValue;
 	CVAR_Z_VS_HUNTER_LIMIT_ORIGINAL = HCVAR_Z_VS_HUNTER_LIMIT.IntValue;
+	z_max_player_zombies = FindConVar("z_max_player_zombies");
 
-	hCvar3HT1SProbability 	= CreateConVar("sm_3ht1s_percent_chance", 	"90",	"X% chance of \"3 hunters + 1 smoker\" and 100-X% remaining chance of \"4 hunters\" after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
-	hCvarDirtyAfterSmoker 	= CreateConVar("sm_dirty_after_smoker", 	"1", 	"1 = smoker dies last gives hunters + exactly one boomer (the smoker's player)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	hCvarNoQuadAfterHunter 	= CreateConVar("sm_noquad_after_hunter", 	"1", 	"1 = hunter dies last never gives a quad (the last ghost of the wave becomes the boomer if nobody else is one)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	hCvar3HT1SProbability 		= CreateConVar("sm_3ht1s_percent_chance", 	"90",	"X% chance of \"3 hunters + 1 smoker\" and 100-X% remaining chance of \"4 hunters\" after Boomer dies", FCVAR_NOTIFY, true, 0.0,true, 100.0);
+	hCvarDirtyAfterSmoker 		= CreateConVar("sm_dirty_after_smoker", 	"1", 	"1 = smoker dies last gives hunters + exactly one boomer (the smoker's player)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	hCvarNoQuadAfterHunter 		= CreateConVar("sm_noquad_after_hunter", 	"1", 	"1 = hunter dies last never gives a quad (the last ghost of the wave becomes the boomer if nobody else is one)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	hCvarStandardFirstAttack 	= CreateConVar("sm_standard_first_attack", 	"1", 	"1 = every half's first attack is 2 hunters + 1 smoker + 1 boomer; 0 = half two copies half one's stock deal", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	GetCvars();
+	z_max_player_zombies.AddChangeHook(ConVarChanged_Cvars);
 	hCvar3HT1SProbability.AddChangeHook(ConVarChanged_Cvars);
 	hCvarDirtyAfterSmoker.AddChangeHook(ConVarChanged_Cvars);
 	hCvarNoQuadAfterHunter.AddChangeHook(ConVarChanged_Cvars);
+	hCvarStandardFirstAttack.AddChangeHook(ConVarChanged_Cvars);
 	
 	PluginDisable = false;
 }
@@ -121,9 +126,12 @@ void ConVarChanged_Cvars(ConVar hCvar, const char[] sOldVal, const char[] sNewVa
 
 void GetCvars()
 {
+	g_iOfficialCvar_z_max_player_zombies = z_max_player_zombies.IntValue;
+
 	g_iCvar3HT1SProbability = hCvar3HT1SProbability.IntValue;
 	g_bCvarDirtyAfterSmoker = hCvarDirtyAfterSmoker.BoolValue;
 	g_bCvarNoQuadAfterHunter = hCvarNoQuadAfterHunter.BoolValue;
+	g_bCvarStandardFirstAttack = hCvarStandardFirstAttack.BoolValue;
 }
 
 
@@ -131,7 +139,6 @@ public void OnConfigsExecuted()
 {
 	CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL = HCVAR_Z_VS_SMOKER_LIMIT.IntValue;
 	CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL = HCVAR_Z_VS_BOOMER_LIMIT.IntValue;
-	CVAR_Z_VS_HUNTER_LIMIT_ORIGINAL = HCVAR_Z_VS_HUNTER_LIMIT.IntValue;
 	
 	if(CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL == 0  && CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL == 0) 
 	{
@@ -200,10 +207,16 @@ void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
 Action PluginStart(Handle timer)
 {
+	if(PluginDisable)
+		return Plugin_Continue;
+
 	if(!InSecondHalfOfRound())
 	{
 		Sub_DebugPrint("Round 1");
-		return Plugin_Continue;
+
+		if(!g_bCvarStandardFirstAttack) return Plugin_Continue;
+		
+		SetStandardLine();
 	}
 
 	Sub_DebugPrint("round start event");
@@ -211,7 +224,7 @@ Action PluginStart(Handle timer)
 	{
 		if(IsClientInGame(i) && GetClientTeam(i) == L4D_TEAM_INFECTED && !IsFakeClient(i) && L4D_IsPlayerGhost(i))
 		{
-			RequestFrame(OnNextFrame_ChangeClass_Round2, GetClientUserId(i));
+			RequestFrame(OnNextFrame_ChangeClass_FirstAttack, GetClientUserId(i));
 		}
 	}
 
@@ -280,7 +293,7 @@ Action KeepSIStarting(Handle timer)
 			}
 		}
 		Sub_DebugPrint("H: %d, S: %d, B: %d",Hunter_Starting_Line,Smoker_Starting_Line,Boomer_Starting_Line);
-		if(Smoker_Starting_Line + Boomer_Starting_Line + Hunter_Starting_Line > z_max_player_zombies.IntValue)	
+		if(Smoker_Starting_Line + Boomer_Starting_Line + Hunter_Starting_Line > g_iOfficialCvar_z_max_player_zombies)	
 		{
 			Sub_DebugPrint("Error! infected players more than z_max_player_zombies");
 			CreateTimer(KeepSITrackingCheckDelay, KeepSIStarting); // keep checking
@@ -397,14 +410,19 @@ public Action L4D_OnEnterGhostStatePre(int client)
 // this could happen before "round_start" event (right before round starts)
 public void L4D_OnEnterGhostState(int client)
 {
-	if(isCulling || IsFakeClient(client)) return;
+	if(PluginDisable || isCulling || IsFakeClient(client)) return;
 
-	if(InSecondHalfOfRound() && !g_bRoundIsLive)
+	if(!g_bRoundIsLive)
 	{
-		//PrintToChatAll("Round 2 Is in saferoom or Is in Ready");
+		if(!InSecondHalfOfRound() && !g_bCvarStandardFirstAttack)
+		{
+			return;
+		}
+
+		//PrintToChatAll("Round Is in saferoom or Is in Ready");
 		//PrintToChatAll("%N: OnEnterGhostState %s", client, TEAM_CLASS(GetEntProp(client, Prop_Send, "m_zombieClass")));
 
-		RequestFrame(OnNextFrame_ChangeClass_Round2, GetClientUserId(client));
+		RequestFrame(OnNextFrame_ChangeClass_FirstAttack, GetClientUserId(client));
 	
 		return;
 	}
@@ -416,7 +434,7 @@ public void L4D_OnEnterGhostState(int client)
 		RequestFrame(OnNextFrame_NoQuadCheck, GetClientUserId(client));
 }
 
-void OnNextFrame_ChangeClass_Round2(int userid)
+void OnNextFrame_ChangeClass_FirstAttack(int userid)
 {
 	int client = GetClientOfUserId(userid);
 	if(!client || !IsClientInGame(client) || GetClientTeam(client) != L4D_TEAM_INFECTED || !L4D_IsPlayerGhost(client))	return;
@@ -549,6 +567,14 @@ void Sub_DebugPrint(const char[] Message, any ...)
 #else
 	#pragma unused Message
 #endif
+}
+
+void SetStandardLine()
+{
+	Smoker_Starting_Line = (CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL > 0 && g_iOfficialCvar_z_max_player_zombies >= 1) ? CVAR_Z_VS_SMOKER_LIMIT_ORIGINAL : 0;
+	Boomer_Starting_Line = (CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL > 0 && g_iOfficialCvar_z_max_player_zombies - Smoker_Starting_Line >= 1) ? CVAR_Z_VS_BOOMER_LIMIT_ORIGINAL : 0;
+	Hunter_Starting_Line = g_iOfficialCvar_z_max_player_zombies - Smoker_Starting_Line - Boomer_Starting_Line;
+	if (Hunter_Starting_Line < 0) Hunter_Starting_Line = 0;
 }
 
 void RestoreLimits()

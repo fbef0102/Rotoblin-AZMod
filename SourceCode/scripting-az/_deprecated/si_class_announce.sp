@@ -1,3 +1,5 @@
+// deprecated, every half's first attack is now the standard: 2 hunters + 1 smoker + 1 boomer
+
 #pragma semicolon 1
 
 #include <sourcemod>

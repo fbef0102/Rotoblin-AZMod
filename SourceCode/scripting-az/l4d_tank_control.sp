@@ -252,6 +252,8 @@ void TC_ev_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 	if (client && IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) == 3 && IsPlayerAlive(client) && IsPlayerTank(client))
 	{
 		queuedTank = 0;
+		IsSecondTank = true;
+		sChosenTankSteamId_ThisRound[0] = '\0';
 	}
 }
 
@@ -272,16 +274,20 @@ void TC_ev_OnTeamChange(Event event, const char[] name, bool dontBroadcast)
 
 Action PlayerChangeTeamCheck(Handle timer, any userid)
 {
+	if (IsSecondTank || queuedTank == 0) return Plugin_Continue;
+
 	int client = GetClientOfUserId(userid);
 	if (client && IsClientInGame(client) && !IsFakeClient(client))
 	{
 		int team = GetClientTeam(client);
 		if(team == 3)
 		{
+			if(client == queuedTank || strlen(sChosenTankSteamId_ThisRound) <= 0) return Plugin_Continue;
+
 			static char sTankSteamId[32];
 			// 回合開始時被選上tank的玩家回到了特感隊伍
 			if(GetClientAuthId(client, AuthId_Steam2, sTankSteamId, sizeof(sTankSteamId)) 
-			&& strcmp(sTankSteamId, sChosenTankSteamId_ThisRound) == 0)
+				&& strcmp(sTankSteamId, sChosenTankSteamId_ThisRound) == 0)
 			{
 				queuedTank = client;
 				static char queuedTankName[128];
@@ -409,10 +415,7 @@ public void L4D_OnTryOfferingTankBot_Post(int tank_index, bool enterStasis)
 			if(FindStringInArray(hPreviousMapTeamTanks, sTankSteamId) == -1)
 				PushArrayString(hPreviousMapTeamTanks, sTankSteamId);
 		}
-
-		sChosenTankSteamId_ThisRound[0] = '\0';
 	}
-	IsSecondTank = true;//已經第一隻Tank了
 }
 
 public Action:KickBot(Handle:timer, any:client)

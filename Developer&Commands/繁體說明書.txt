@@ -459,7 +459,11 @@
 //Kills survivors before the score is calculated so they don't get full distance and health bonus if they are incapped as the rescue vehicle leaves.
 
 [105] l4d_QuadCaps
+//Every half's first attack is 2 hunters + 1 smoker + 1 boomer in 4v4
 //If Boomer dies last, then next Special Infected Spawn: 100% Quad Incaps
+//If smoker dies last, next infected spawn: hunters + exactly one boomer (the smoker's player)
+//If hunter dies last, next infected spawn: never gives a quad. The last ghost of the wave becomes the boomer if nobody else is one
+
 //The Starting SI remain random (yet equal on both sides)
 
 [106] savechat
@@ -1082,6 +1086,12 @@
 //source: github.com/Volence/riverside-l4d-plugins
 //Uzi bullets do extra damage to common infected only
 //機槍對普通感染者造成的傷害增加
+
+[265] l4d_last_life_fix
+//source: github.com/Volence/riverside-l4d-plugins
+//A revived survivor with incaps left goes down, not dies, when a hit takes exactly all his temp health
+//原版: 被拯救過一次的倖存者，在仍有剩餘生命值與倒地次數的條件下，受到的攻擊傷害如果剛好符合其臨時生命值的1 tick時，會直接死亡，而非倒地。
+//修正: 當受到的攻擊傷害剛好等於臨時生命值時，倖存者會倒地而非直接死亡。
 
 --------vpk支援--------
 [01] l4d1_mission_nav.vpk

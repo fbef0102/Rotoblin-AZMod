@@ -145,7 +145,6 @@ native OpenSpectatorsListenMode();
 native GiveSurAllPills();
 native ShowRotoInfo();
 //native R2comp_UnscrambleKeep(); //From l4d_team_unscramble.smx
-native AnnounceSIClasses();//From si_class_announce
 native antibaiter_clear();//From l4d_antibaiter
 native Score_GetTeamCampaignScore(team);//From l4dscores
 native bool TS_GetHostName(char[] str, int size); //From l4d_DynamicHostname, just prevent idiots from changing hostname "[ZS]"
@@ -1211,7 +1210,6 @@ public Action:timerLiveMessageCallback(Handle:timer)
 	ShowRotoInfo();
 	OpenSpectatorsListenMode();
 	//R2comp_UnscrambleKeep();
-	AnnounceSIClasses();
 	
 	return Plugin_Stop;
 }
